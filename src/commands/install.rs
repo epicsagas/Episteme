@@ -52,8 +52,8 @@ pub fn cmd_install(
         false
     };
 
-    // --- Build RAG index ---
-    if seeded && !dry_run {
+    // --- Build RAG index (skip if DB already provided by archive) ---
+    if seeded && !dry_run && !syntagma::adapters::paths::db_path().exists() {
         println!("\nBuilding RAG index...");
         super::build::cmd_build(None, None, false, false, 64, true, false)?;
     }
