@@ -1,0 +1,134 @@
+[project]
+name = "syntagma"
+version = "0.0.5"
+description = "Multi-Language Knowledge Graph System for Code Smell Detection and Refactoring"
+authors = [
+    {name = "EpicSagas Research Team", email = "epicsagas@research.org"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+keywords = [
+    "code-smell",
+    "refactoring",
+    "knowledge-graph",
+    "static-analysis",
+    "software-engineering"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "sentence-transformers>=2.2.2",
+    "numpy>=1.24.0",
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.0.0",
+    "javalang>=0.13.0",
+    "slowapi>=0.1.9",
+    "prometheus-client>=0.19.0",
+    "prometheus-fastapi-instrumentator>=6.1.0",
+    "psutil>=5.9.0",
+    "redis>=5.0.0",
+    "jinja2>=3.1.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0.3",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/epicsagas/Syntagma"
+Documentation = "https://github.com/epicsagas/Syntagma/blob/main/API.md"
+Repository = "https://github.com/epicsagas/Syntagma"
+"Bug Tracker" = "https://github.com/epicsagas/Syntagma/issues"
+
+[project.scripts]
+syntagma = "syntagma.__main__:main"
+syntagma-api = "syntagma.api.main:start"
+syntagma-mcp = "syntagma.mcp.server:main"
+syntagma-analyze = "syntagma.cli.analyze:main"
+syntagma-explore = "syntagma.cli.explore:main"
+syntagma-infer = "syntagma.cli.infer:main"
+syntagma-build = "syntagma.cli.build:main"
+syntagma-web = "syntagma.web.graph_viewer:start"
+syntagma-install = "syntagma.cli.install:main"
+syntagma-service = "syntagma.cli.service:main"
+syntagma-hook = "syntagma.cli.hooks:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.hooks.custom]
+path = "hatch_build.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/syntagma"]
+include = [
+    "src/syntagma/registry/**",
+    "src/syntagma/_keys.py",
+]
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "meta/syntagma.db",
+    "raw/",
+    "dist/",
+    ".venv/",
+    "src/syntagma/_keys.py",
+]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]
