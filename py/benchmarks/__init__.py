@@ -1,3 +1,0 @@
-"""
-Syntagma Performance Benchmarking Suite
-"""
