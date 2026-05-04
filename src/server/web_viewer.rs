@@ -386,279 +386,6 @@ async fn graph_tree(State(mcp): State<Arc<SyntagmaMCP>>) -> Json<serde_json::Val
     Json(serde_json::json!({"tree": tree}))
 }
 
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::domain::graph::KnowledgeGraph;
-    use crate::domain::types::Entity;
-    use axum::body::Body;
-    use axum::http::{Request, StatusCode};
-    use std::collections::HashMap;
-    use tower::ServiceExt;
-
-    /// Build a test entity with all fields.
-    fn make_entity(id: &str, r#type: &str, category: &str, title: &str) -> Entity {
-        Entity {
-            id: id.to_owned(),
-            r#type: r#type.to_owned(),
-            title: title.to_owned(),
-            description: String::new(),
-            name: String::new(),
-            category: category.to_owned(),
-            tags: vec![],
-            relations: HashMap::new(),
-            context: HashMap::new(),
-            file_path: String::new(),
-            source: serde_json::Value::Null,
-        }
-    }
-
-    /// Build an SyntagmaMCP handler from a vec of entities.
-    fn make_mcp(entities: Vec<Entity>) -> Arc<SyntagmaMCP> {
-        let map: HashMap<String, Entity> = entities.into_iter().map(|e| (e.id.clone(), e)).collect();
-        let kg = KnowledgeGraph::from_entities(map);
-        Arc::new(SyntagmaMCP::new(kg))
-    }
-
-    fn test_app(mcp: Arc<SyntagmaMCP>) -> Router {
-        web_router(mcp)
-    }
-
-    #[tokio::test]
-    async fn sankey_returns_nodes_and_links() {
-        let mut smell = make_entity("SMELL-01", "smell", "quality", "Long Method");
-        smell.relations.insert("solved_by".into(), vec!["RF-001".into()]);
-        let mut rf = make_entity("RF-001", "refactoring", "design", "Extract Method");
-        rf.relations.insert("enforces".into(), vec!["LAW-001".into()]);
-        let law = make_entity("LAW-001", "law", "quality", "Single Responsibility");
-
-        let mcp = make_mcp(vec![smell, rf, law]);
-        let app = test_app(mcp);
-
-        let req = Request::builder()
-            .uri("/api/graph/sankey")
-            .body(Body::empty())
-            .unwrap();
-        let resp = app.oneshot(req).await.unwrap();
-        assert_eq!(resp.status(), StatusCode::OK);
-
-        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
-            .await
-            .unwrap();
-        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
-
-        let nodes = val["nodes"].as_array().unwrap();
-        assert!(!nodes.is_empty());
-
-        // Check that smell node has count 1
-        let smell_node = nodes.iter().find(|n| n["id"] == "smell").unwrap();
-        assert_eq!(smell_node["count"], 1);
-    }
-
-    #[tokio::test]
-    async fn sankey_excludes_filtered_relations() {
-        let mut e1 = make_entity("DP-001", "pattern", "creational", "Factory");
-        e1.relations.insert("related_to".into(), vec!["DP-002".into()]);
-        let e2 = make_entity("DP-002", "pattern", "structural", "Adapter");
-
-        let mcp = make_mcp(vec![e1, e2]);
-        let app = test_app(mcp);
-
-        let req = Request::builder()
-            .uri("/api/graph/sankey")
-            .body(Body::empty())
-            .unwrap();
-        let resp = app.oneshot(req).await.unwrap();
-        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
-            .await
-            .unwrap();
-        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
-
-        let links = val["links"].as_array().unwrap();
-        assert!(links.is_empty(), "related_to should be excluded");
-    }
-
-    #[tokio::test]
-    async fn sankey_includes_allowed_relations() {
-        let mut smell = make_entity("SMELL-01", "smell", "quality", "Long Method");
-        smell.relations.insert("solved_by".into(), vec!["RF-001".into()]);
-        let rf = make_entity("RF-001", "refactoring", "design", "Extract Method");
-
-        let mcp = make_mcp(vec![smell, rf]);
-        let app = test_app(mcp);
-
-        let req = Request::builder()
-            .uri("/api/graph/sankey")
-            .body(Body::empty())
-            .unwrap();
-        let resp = app.oneshot(req).await.unwrap();
-        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
-            .await
-            .unwrap();
-        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
-
-        let links = val["links"].as_array().unwrap();
-        assert_eq!(links.len(), 1);
-        assert_eq!(links[0]["source"], "smell");
-        assert_eq!(links[0]["target"], "refactoring");
-        assert_eq!(links[0]["relation"], "solved_by");
-        assert_eq!(links[0]["value"], 1);
-    }
-
-    #[tokio::test]
-    async fn sankey_aggregates_multiple_edges() {
-        let mut smell1 = make_entity("SMELL-01", "smell", "quality", "Long Method");
-        smell1.relations.insert("solved_by".into(), vec!["RF-001".into(), "RF-002".into()]);
-        let rf1 = make_entity("RF-001", "refactoring", "design", "Extract Method");
-        let rf2 = make_entity("RF-002", "refactoring", "design", "Decompose Conditional");
-
-        let mcp = make_mcp(vec![smell1, rf1, rf2]);
-        let app = test_app(mcp);
-
-        let req = Request::builder()
-            .uri("/api/graph/sankey")
-            .body(Body::empty())
-            .unwrap();
-        let resp = app.oneshot(req).await.unwrap();
-        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
-            .await
-            .unwrap();
-        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
-
-        let links = val["links"].as_array().unwrap();
-        let link = links.iter().find(|l| l["relation"] == "solved_by").unwrap();
-        assert_eq!(link["value"], 2);
-    }
-
-    #[tokio::test]
-    async fn tree_returns_grouped_structure() {
-        let dp1 = make_entity("DP-001", "pattern", "creational", "Abstract Factory");
-        let dp2 = make_entity("DP-002", "pattern", "creational", "Builder");
-        let dp3 = make_entity("DP-003", "pattern", "structural", "Adapter");
-        let rf1 = make_entity("RF-001", "refactoring", "design", "Extract Method");
-
-        let mcp = make_mcp(vec![dp1, dp2, dp3, rf1]);
-        let app = test_app(mcp);
-
-        let req = Request::builder()
-            .uri("/api/graph/tree")
-            .body(Body::empty())
-            .unwrap();
-        let resp = app.oneshot(req).await.unwrap();
-        assert_eq!(resp.status(), StatusCode::OK);
-
-        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
-            .await
-            .unwrap();
-        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
-
-        let tree = val["tree"].as_array().unwrap();
-        assert!(tree.len() >= 2);
-
-        // Find pattern type node
-        let pattern_node = tree.iter().find(|n| n["type"] == "pattern").unwrap();
-        assert_eq!(pattern_node["label"], "Design Patterns");
-        let children = pattern_node["children"].as_array().unwrap();
-        assert_eq!(children.len(), 2); // creational + structural
-
-        // Find creational category
-        let creational = children.iter().find(|c| c["category"] == "creational").unwrap();
-        assert_eq!(creational["label"], "Creational");
-        let leaf_items = creational["children"].as_array().unwrap();
-        assert_eq!(leaf_items.len(), 2);
-        assert_eq!(leaf_items[0]["id"], "DP-001");
-        assert_eq!(leaf_items[1]["id"], "DP-002");
-    }
-
-    #[tokio::test]
-    async fn tree_handles_empty_category() {
-        let e = make_entity("LAW-001", "law", "", "DRY");
-        let mcp = make_mcp(vec![e]);
-        let app = test_app(mcp);
-
-        let req = Request::builder()
-            .uri("/api/graph/tree")
-            .body(Body::empty())
-            .unwrap();
-        let resp = app.oneshot(req).await.unwrap();
-        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
-            .await
-            .unwrap();
-        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
-
-        let tree = val["tree"].as_array().unwrap();
-        let law_node = tree.iter().find(|n| n["type"] == "law").unwrap();
-        let cats = law_node["children"].as_array().unwrap();
-        assert_eq!(cats[0]["category"], "uncategorized");
-    }
-
-    #[tokio::test]
-    async fn tree_types_are_ordered_consistently() {
-        let e1 = make_entity("SMELL-01", "smell", "quality", "S1");
-        let e2 = make_entity("LAW-001", "law", "quality", "L1");
-        let e3 = make_entity("DP-001", "pattern", "design", "P1");
-        let e4 = make_entity("RF-001", "refactoring", "design", "R1");
-
-        let mcp = make_mcp(vec![e1, e2, e3, e4]);
-        let app = test_app(mcp);
-
-        let req = Request::builder()
-            .uri("/api/graph/tree")
-            .body(Body::empty())
-            .unwrap();
-        let resp = app.oneshot(req).await.unwrap();
-        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
-            .await
-            .unwrap();
-        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
-
-        let tree = val["tree"].as_array().unwrap();
-        let types: Vec<&str> = tree.iter().map(|n| n["type"].as_str().unwrap()).collect();
-        assert_eq!(types, vec!["pattern", "refactoring", "law", "smell"]);
-    }
-
-    #[tokio::test]
-    async fn sankey_empty_graph_returns_empty() {
-        let mcp = make_mcp(vec![]);
-        let app = test_app(mcp);
-
-        let req = Request::builder()
-            .uri("/api/graph/sankey")
-            .body(Body::empty())
-            .unwrap();
-        let resp = app.oneshot(req).await.unwrap();
-        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
-            .await
-            .unwrap();
-        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
-
-        assert_eq!(val["nodes"].as_array().unwrap().len(), 0);
-        assert_eq!(val["links"].as_array().unwrap().len(), 0);
-    }
-
-    #[tokio::test]
-    async fn tree_empty_graph_returns_empty() {
-        let mcp = make_mcp(vec![]);
-        let app = test_app(mcp);
-
-        let req = Request::builder()
-            .uri("/api/graph/tree")
-            .body(Body::empty())
-            .unwrap();
-        let resp = app.oneshot(req).await.unwrap();
-        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
-            .await
-            .unwrap();
-        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
-
-        assert_eq!(val["tree"].as_array().unwrap().len(), 0);
-    }
-}
-
 const GRAPH_HTML: &str = r#"<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Syntagma Knowledge Graph</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
@@ -1181,3 +908,276 @@ window.addEventListener('resize',function(){if(sankeyData&&document.getElementBy
 loadAll();
 })();
 </script></body></html>"#;
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::domain::graph::KnowledgeGraph;
+    use crate::domain::types::Entity;
+    use axum::body::Body;
+    use axum::http::{Request, StatusCode};
+    use std::collections::HashMap;
+    use tower::ServiceExt;
+
+    /// Build a test entity with all fields.
+    fn make_entity(id: &str, r#type: &str, category: &str, title: &str) -> Entity {
+        Entity {
+            id: id.to_owned(),
+            r#type: r#type.to_owned(),
+            title: title.to_owned(),
+            description: String::new(),
+            name: String::new(),
+            category: category.to_owned(),
+            tags: vec![],
+            relations: HashMap::new(),
+            context: HashMap::new(),
+            file_path: String::new(),
+            source: serde_json::Value::Null,
+        }
+    }
+
+    /// Build an SyntagmaMCP handler from a vec of entities.
+    fn make_mcp(entities: Vec<Entity>) -> Arc<SyntagmaMCP> {
+        let map: HashMap<String, Entity> = entities.into_iter().map(|e| (e.id.clone(), e)).collect();
+        let kg = KnowledgeGraph::from_entities(map);
+        Arc::new(SyntagmaMCP::new(kg))
+    }
+
+    fn test_app(mcp: Arc<SyntagmaMCP>) -> Router {
+        web_router(mcp)
+    }
+
+    #[tokio::test]
+    async fn sankey_returns_nodes_and_links() {
+        let mut smell = make_entity("SMELL-01", "smell", "quality", "Long Method");
+        smell.relations.insert("solved_by".into(), vec!["RF-001".into()]);
+        let mut rf = make_entity("RF-001", "refactoring", "design", "Extract Method");
+        rf.relations.insert("enforces".into(), vec!["LAW-001".into()]);
+        let law = make_entity("LAW-001", "law", "quality", "Single Responsibility");
+
+        let mcp = make_mcp(vec![smell, rf, law]);
+        let app = test_app(mcp);
+
+        let req = Request::builder()
+            .uri("/api/graph/sankey")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+
+        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
+            .await
+            .unwrap();
+        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
+
+        let nodes = val["nodes"].as_array().unwrap();
+        assert!(!nodes.is_empty());
+
+        // Check that smell node has count 1
+        let smell_node = nodes.iter().find(|n| n["id"] == "smell").unwrap();
+        assert_eq!(smell_node["count"], 1);
+    }
+
+    #[tokio::test]
+    async fn sankey_excludes_filtered_relations() {
+        let mut e1 = make_entity("DP-001", "pattern", "creational", "Factory");
+        e1.relations.insert("related_to".into(), vec!["DP-002".into()]);
+        let e2 = make_entity("DP-002", "pattern", "structural", "Adapter");
+
+        let mcp = make_mcp(vec![e1, e2]);
+        let app = test_app(mcp);
+
+        let req = Request::builder()
+            .uri("/api/graph/sankey")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
+            .await
+            .unwrap();
+        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
+
+        let links = val["links"].as_array().unwrap();
+        assert!(links.is_empty(), "related_to should be excluded");
+    }
+
+    #[tokio::test]
+    async fn sankey_includes_allowed_relations() {
+        let mut smell = make_entity("SMELL-01", "smell", "quality", "Long Method");
+        smell.relations.insert("solved_by".into(), vec!["RF-001".into()]);
+        let rf = make_entity("RF-001", "refactoring", "design", "Extract Method");
+
+        let mcp = make_mcp(vec![smell, rf]);
+        let app = test_app(mcp);
+
+        let req = Request::builder()
+            .uri("/api/graph/sankey")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
+            .await
+            .unwrap();
+        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
+
+        let links = val["links"].as_array().unwrap();
+        assert_eq!(links.len(), 1);
+        assert_eq!(links[0]["source"], "smell");
+        assert_eq!(links[0]["target"], "refactoring");
+        assert_eq!(links[0]["relation"], "solved_by");
+        assert_eq!(links[0]["value"], 1);
+    }
+
+    #[tokio::test]
+    async fn sankey_aggregates_multiple_edges() {
+        let mut smell1 = make_entity("SMELL-01", "smell", "quality", "Long Method");
+        smell1.relations.insert("solved_by".into(), vec!["RF-001".into(), "RF-002".into()]);
+        let rf1 = make_entity("RF-001", "refactoring", "design", "Extract Method");
+        let rf2 = make_entity("RF-002", "refactoring", "design", "Decompose Conditional");
+
+        let mcp = make_mcp(vec![smell1, rf1, rf2]);
+        let app = test_app(mcp);
+
+        let req = Request::builder()
+            .uri("/api/graph/sankey")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
+            .await
+            .unwrap();
+        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
+
+        let links = val["links"].as_array().unwrap();
+        let link = links.iter().find(|l| l["relation"] == "solved_by").unwrap();
+        assert_eq!(link["value"], 2);
+    }
+
+    #[tokio::test]
+    async fn tree_returns_grouped_structure() {
+        let dp1 = make_entity("DP-001", "pattern", "creational", "Abstract Factory");
+        let dp2 = make_entity("DP-002", "pattern", "creational", "Builder");
+        let dp3 = make_entity("DP-003", "pattern", "structural", "Adapter");
+        let rf1 = make_entity("RF-001", "refactoring", "design", "Extract Method");
+
+        let mcp = make_mcp(vec![dp1, dp2, dp3, rf1]);
+        let app = test_app(mcp);
+
+        let req = Request::builder()
+            .uri("/api/graph/tree")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+
+        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
+            .await
+            .unwrap();
+        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
+
+        let tree = val["tree"].as_array().unwrap();
+        assert!(tree.len() >= 2);
+
+        // Find pattern type node
+        let pattern_node = tree.iter().find(|n| n["type"] == "pattern").unwrap();
+        assert_eq!(pattern_node["label"], "Design Patterns");
+        let children = pattern_node["children"].as_array().unwrap();
+        assert_eq!(children.len(), 2); // creational + structural
+
+        // Find creational category
+        let creational = children.iter().find(|c| c["category"] == "creational").unwrap();
+        assert_eq!(creational["label"], "Creational");
+        let leaf_items = creational["children"].as_array().unwrap();
+        assert_eq!(leaf_items.len(), 2);
+        assert_eq!(leaf_items[0]["id"], "DP-001");
+        assert_eq!(leaf_items[1]["id"], "DP-002");
+    }
+
+    #[tokio::test]
+    async fn tree_handles_empty_category() {
+        let e = make_entity("LAW-001", "law", "", "DRY");
+        let mcp = make_mcp(vec![e]);
+        let app = test_app(mcp);
+
+        let req = Request::builder()
+            .uri("/api/graph/tree")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
+            .await
+            .unwrap();
+        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
+
+        let tree = val["tree"].as_array().unwrap();
+        let law_node = tree.iter().find(|n| n["type"] == "law").unwrap();
+        let cats = law_node["children"].as_array().unwrap();
+        assert_eq!(cats[0]["category"], "uncategorized");
+    }
+
+    #[tokio::test]
+    async fn tree_types_are_ordered_consistently() {
+        let e1 = make_entity("SMELL-01", "smell", "quality", "S1");
+        let e2 = make_entity("LAW-001", "law", "quality", "L1");
+        let e3 = make_entity("DP-001", "pattern", "design", "P1");
+        let e4 = make_entity("RF-001", "refactoring", "design", "R1");
+
+        let mcp = make_mcp(vec![e1, e2, e3, e4]);
+        let app = test_app(mcp);
+
+        let req = Request::builder()
+            .uri("/api/graph/tree")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
+            .await
+            .unwrap();
+        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
+
+        let tree = val["tree"].as_array().unwrap();
+        let types: Vec<&str> = tree.iter().map(|n| n["type"].as_str().unwrap()).collect();
+        assert_eq!(types, vec!["pattern", "refactoring", "law", "smell"]);
+    }
+
+    #[tokio::test]
+    async fn sankey_empty_graph_returns_empty() {
+        let mcp = make_mcp(vec![]);
+        let app = test_app(mcp);
+
+        let req = Request::builder()
+            .uri("/api/graph/sankey")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
+            .await
+            .unwrap();
+        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
+
+        assert_eq!(val["nodes"].as_array().unwrap().len(), 0);
+        assert_eq!(val["links"].as_array().unwrap().len(), 0);
+    }
+
+    #[tokio::test]
+    async fn tree_empty_graph_returns_empty() {
+        let mcp = make_mcp(vec![]);
+        let app = test_app(mcp);
+
+        let req = Request::builder()
+            .uri("/api/graph/tree")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        let body = axum::body::to_bytes(resp.into_body(), 1024 * 1024)
+            .await
+            .unwrap();
+        let val: serde_json::Value = serde_json::from_slice(&body).unwrap();
+
+        assert_eq!(val["tree"].as_array().unwrap().len(), 0);
+    }
+}
