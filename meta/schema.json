@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Syntagma Knowledge Graph Schema",
+  "description": "Metadata schema for RAG embeddings with relational mapping",
+  "version": "0.0.1",
+
+  "definitions": {
+    "entity": {
+      "type": "object",
+      "required": ["id", "type", "file_path", "title"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(DP|RF|LAW|AP)-[0-9]{3}$",
+          "description": "Unique identifier: DP=Design Pattern, RF=Refactoring, LAW=Software Law, AP=Anti-Pattern"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["pattern", "refactoring", "law", "antipattern"]
+        },
+        "file_path": {
+          "type": "string",
+          "description": "Relative path from raw/ directory"
+        },
+        "title": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "description": "Subcategory: creational/structural/behavioral, etc."
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "relation": {
+      "type": "object",
+      "properties": {
+        "solves": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "IDs of problems/antipatterns this entity solves"
+        },
+        "solved_by": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "IDs of patterns/refactorings that solve this problem"
+        },
+        "enforces": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "IDs of laws/principles this entity enforces"
+        },
+        "violates": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "IDs of laws/principles this entity violates"
+        },
+        "related_to": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "IDs of similar/alternative entities"
+        },
+        "requires": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "IDs of prerequisite knowledge"
+        },
+        "enables": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "IDs of advanced patterns this enables"
+        }
+      }
+    },
+
+    "context": {
+      "type": "object",
+      "properties": {
+        "when_to_use": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Scenarios where this should be applied"
+        },
+        "when_not_to_use": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Anti-scenarios where this should be avoided"
+        },
+        "symptoms": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Code smells or indicators (for antipatterns/refactorings)"
+        },
+        "benefits": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "drawbacks": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  },
+
+  "type": "object",
+  "patternProperties": {
+    "^(DP|RF|LAW|AP)-[0-9]{3}$": {
+      "allOf": [
+        { "$ref": "#/definitions/entity" },
+        {
+          "properties": {
+            "relations": { "$ref": "#/definitions/relation" },
+            "context": { "$ref": "#/definitions/context" }
+          }
+        }
+      ]
+    }
+  }
+}

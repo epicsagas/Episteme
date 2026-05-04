@@ -1,0 +1,306 @@
+{
+  "version": "0.0.1",
+  "description": "Code smell definitions for relation mapping",
+  "smells": {
+    "SMELL-01": {
+      "id": "SMELL-01",
+      "name": "Long Method",
+      "category": "bloater",
+      "description": "Method contains too many lines of code (typically >20-30 lines)",
+      "symptoms": [
+        "Method exceeds 20-30 lines",
+        "Multiple levels of nesting",
+        "Requires inline comments to explain sections"
+      ],
+      "solved_by": ["RF-001", "RF-008"],
+      "violates": ["LAW-042-S", "LAW-041"]
+    },
+    "SMELL-02": {
+      "id": "SMELL-02",
+      "name": "Long Parameter List",
+      "category": "bloater",
+      "description": "More than 3-4 parameters in a method",
+      "symptoms": [
+        "Method has more than 3-4 parameters",
+        "Parameter list keeps growing",
+        "Parameters form natural groups"
+      ],
+      "solved_by": ["RF-039", "RF-037"],
+      "violates": ["LAW-041"]
+    },
+    "SMELL-03": {
+      "id": "SMELL-03",
+      "name": "Primitive Obsession",
+      "category": "bloater",
+      "description": "Use of primitives instead of small objects for simple tasks",
+      "symptoms": [
+        "Using primitives for domain concepts",
+        "Simulation of types via constants",
+        "Type code as field names"
+      ],
+      "solved_by": ["RF-026"],
+      "violates": ["LAW-040"]
+    },
+    "SMELL-04": {
+      "id": "SMELL-04",
+      "name": "Large Class",
+      "category": "bloater",
+      "description": "Class contains too many fields, methods, or lines of code",
+      "symptoms": [
+        "Class exceeds 200-300 lines",
+        "Multiple unrelated responsibilities",
+        "High instance variable count"
+      ],
+      "solved_by": ["RF-032", "RF-024"],
+      "violates": ["LAW-042-S"]
+    },
+    "SMELL-05": {
+      "id": "SMELL-05",
+      "name": "Data Clumps",
+      "category": "bloater",
+      "description": "Different parts of code contain identical groups of variables",
+      "symptoms": [
+        "Same group of parameters in multiple methods",
+        "Same fields in multiple classes",
+        "Grouped data used together"
+      ],
+      "solved_by": ["RF-032", "RF-039"],
+      "violates": ["LAW-040"]
+    },
+    "SMELL-06": {
+      "id": "SMELL-06",
+      "name": "Switch Statements",
+      "category": "oo-abuser",
+      "description": "Complex switch/case or long if-else chains",
+      "symptoms": [
+        "Switch on type code",
+        "Same switch duplicated across methods",
+        "New cases require modification"
+      ],
+      "solved_by": ["RF-029"],
+      "violates": ["LAW-042-O"]
+    },
+    "SMELL-07": {
+      "id": "SMELL-07",
+      "name": "Data Class",
+      "category": "dispensable",
+      "description": "Class contains only fields with getters and setters but no meaningful behavior",
+      "symptoms": [
+        "High field-to-method ratio",
+        "Methods are mostly getters and setters",
+        "No behavior or business logic in the class"
+      ],
+      "solved_by": ["RF-026", "RF-019"],
+      "violates": ["LAW-040"]
+    },
+    "SMELL-08": {
+      "id": "SMELL-08",
+      "name": "Temporary Field",
+      "category": "oo-abuser",
+      "description": "Object field set only in certain circumstances, leaving it empty or null the rest of the time",
+      "symptoms": [
+        "Field is only set in specific code paths",
+        "Field is null or empty under normal conditions",
+        "Code checks whether field is set before using it"
+      ],
+      "solved_by": ["RF-032"],
+      "violates": ["LAW-040"]
+    },
+    "SMELL-09": {
+      "id": "SMELL-09",
+      "name": "Shotgun Surgery",
+      "category": "change-preventer",
+      "description": "Single change requires many small changes to many different classes",
+      "symptoms": [
+        "One change affects many classes",
+        "Related functionality scattered",
+        "Hard to find all places to change"
+      ],
+      "solved_by": ["RF-019", "RF-033"],
+      "violates": ["LAW-042-S"]
+    },
+    "SMELL-10": {
+      "id": "SMELL-10",
+      "name": "Divergent Change",
+      "category": "change-preventer",
+      "description": "One class commonly changed in different ways for different reasons",
+      "symptoms": [
+        "Class changes for multiple reasons",
+        "Different methods change for different features",
+        "Multiple responsibilities"
+      ],
+      "solved_by": ["RF-032"],
+      "violates": ["LAW-042-S"]
+    },
+    "SMELL-11": {
+      "id": "SMELL-11",
+      "name": "Lazy Class",
+      "category": "dispensable",
+      "description": "Class that does too little and does not justify its existence",
+      "symptoms": [
+        "Very few methods or lines of code",
+        "Class is nearly empty or trivial",
+        "Could be merged into another class"
+      ],
+      "solved_by": ["RF-034", "RF-024"],
+      "violates": ["LAW-040"]
+    },
+    "SMELL-12": {
+      "id": "SMELL-12",
+      "name": "Speculative Generality",
+      "category": "dispensable",
+      "description": "Unused abstraction created for anticipated future needs that never materialise",
+      "symptoms": [
+        "Abstract class or interface with only one implementation",
+        "Class is defined but never or rarely used",
+        "Over-engineered hooks for hypothetical extensions"
+      ],
+      "solved_by": ["RF-034", "RF-024"],
+      "violates": ["LAW-040"]
+    },
+    "SMELL-13": {
+      "id": "SMELL-13",
+      "name": "Duplicate Code",
+      "category": "dispensable",
+      "description": "Same code structure appears in multiple places",
+      "symptoms": [
+        "Identical expressions in multiple methods",
+        "Similar code in sibling subclasses",
+        "Copied and pasted code"
+      ],
+      "solved_by": ["RF-001", "RF-019", "RF-046"],
+      "violates": ["LAW-040"]
+    },
+    "SMELL-14": {
+      "id": "SMELL-14",
+      "name": "Middle Man",
+      "category": "coupler",
+      "description": "Class delegates most of its work to another class, adding no value of its own",
+      "symptoms": [
+        "Most methods are single-line delegations",
+        "High delegation-to-method ratio",
+        "Class can be removed without losing behaviour"
+      ],
+      "solved_by": ["RF-022", "RF-034"],
+      "violates": ["LAW-043"]
+    },
+    "SMELL-19": {
+      "id": "SMELL-19",
+      "name": "Inappropriate Intimacy",
+      "category": "coupler",
+      "description": "Two classes access each other's private parts more than necessary, creating excessive coupling",
+      "symptoms": [
+        "Classes access each other's private fields or methods",
+        "Bidirectional dependencies between classes",
+        "Excessive coupling making changes in one class affect the other"
+      ],
+      "solved_by": ["RF-020", "RF-032"],
+      "violates": ["LAW-043"]
+    },
+    "SMELL-15": {
+      "id": "SMELL-15",
+      "name": "Parallel Inheritance Hierarchies",
+      "category": "change-preventer",
+      "description": "Every time you create a subclass for one class you find yourself needing to create a subclass for another",
+      "symptoms": [
+        "Two class hierarchies mirror each other",
+        "Adding a subclass in one hierarchy requires adding one in another",
+        "Class name prefixes are the same in both hierarchies"
+      ],
+      "solved_by": ["RF-019", "RF-032"],
+      "violates": ["LAW-042-S"]
+    },
+    "SMELL-16": {
+      "id": "SMELL-16",
+      "name": "Comments",
+      "category": "dispensable",
+      "description": "Comment used as deodorant to explain confusing code rather than to convey intent that code cannot express",
+      "symptoms": [
+        "Long comment block explaining what the code does",
+        "Comment that would be unnecessary if the code were clearer",
+        "TODO or FIXME comments persisting without resolution"
+      ],
+      "solved_by": ["RF-001", "RF-035"],
+      "violates": ["LAW-040"]
+    },
+    "SMELL-17": {
+      "id": "SMELL-17",
+      "name": "Dead Code",
+      "category": "dispensable",
+      "description": "Code that is no longer used or reachable and could be safely removed",
+      "symptoms": [
+        "Unreachable code after a return or throw",
+        "Variables, methods, or classes that are never referenced",
+        "Commented-out code left in the codebase"
+      ],
+      "solved_by": ["RF-034"],
+      "violates": ["LAW-040"]
+    },
+    "SMELL-18": {
+      "id": "SMELL-18",
+      "name": "Feature Envy",
+      "category": "coupler",
+      "description": "Method accesses data of another object more than its own",
+      "symptoms": [
+        "Method uses many getters from another class",
+        "Method is more interested in other class than its own",
+        "Method manipulates foreign data"
+      ],
+      "solved_by": ["RF-001", "RF-019"],
+      "violates": ["LAW-043"]
+    },
+    "SMELL-20": {
+      "id": "SMELL-20",
+      "name": "Message Chains",
+      "category": "coupler",
+      "description": "Client asks object for another object, which asks for another, etc.",
+      "symptoms": [
+        "Long chains like a.getB().getC().getD()",
+        "Client depends on navigation structure",
+        "Changes ripple through chain"
+      ],
+      "solved_by": ["RF-023"],
+      "violates": ["LAW-043"]
+    },
+    "SMELL-21": {
+      "id": "SMELL-21",
+      "name": "God Object",
+      "category": "bloater",
+      "description": "Class that knows and does too much, centralising an excessive number of responsibilities",
+      "symptoms": [
+        "Excessive method count (>30)",
+        "Excessive field count (>20)",
+        "Very high lines of code (>500)",
+        "Extreme cyclomatic complexity"
+      ],
+      "solved_by": ["RF-032", "RF-024"],
+      "violates": ["LAW-042-S", "LAW-042-O"]
+    },
+    "SMELL-22": {
+      "id": "SMELL-22",
+      "name": "Refused Bequest",
+      "category": "inheritance",
+      "description": "Subclass inherits methods or data it does not need or want from its parent",
+      "symptoms": [
+        "Subclass inherits methods or data it does not use",
+        "Subclass overrides inherited behaviour to do nothing or throw",
+        "Base class carries baggage that only some subclasses need"
+      ],
+      "solved_by": ["RF-032"],
+      "violates": ["LAW-042-L"]
+    },
+    "SMELL-23": {
+      "id": "SMELL-23",
+      "name": "Alternative Classes with Different Interfaces",
+      "category": "oo-abuser",
+      "description": "Two classes perform identical or similar functions but have different method signatures",
+      "symptoms": [
+        "Two classes do similar things but have different method names",
+        "Classes could be used interchangeably but lack a common interface",
+        "Clients must know which class to use and adapt to each"
+      ],
+      "solved_by": ["RF-001", "RF-049"],
+      "violates": ["LAW-042-I"]
+    }
+  }
+}

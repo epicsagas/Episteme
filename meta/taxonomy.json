@@ -1,0 +1,215 @@
+{
+  "version": "0.0.1",
+  "description": "Hierarchical classification system for Syntagma knowledge base",
+
+  "patterns": {
+    "creational": [
+      "Factory Method",
+      "Abstract Factory",
+      "Builder",
+      "Prototype",
+      "Singleton"
+    ],
+    "structural": [
+      "Adapter",
+      "Bridge",
+      "Composite",
+      "Decorator",
+      "Facade",
+      "Flyweight",
+      "Proxy"
+    ],
+    "behavioral": [
+      "Chain of Responsibility",
+      "Command",
+      "Iterator",
+      "Mediator",
+      "Memento",
+      "Observer",
+      "State",
+      "Strategy",
+      "Template Method",
+      "Visitor"
+    ]
+  },
+
+  "refactorings": {
+    "composing_methods": [
+      "Extract Method",
+      "Inline Method",
+      "Extract Variable",
+      "Inline Temp",
+      "Replace Temp with Query",
+      "Split Temporary Variable",
+      "Remove Assignments to Parameters",
+      "Replace Method with Method Object",
+      "Substitute Algorithm"
+    ],
+    "moving_features": [
+      "Move Method",
+      "Move Field",
+      "Extract Class",
+      "Inline Class",
+      "Hide Delegate",
+      "Remove Middle Man",
+      "Introduce Foreign Method",
+      "Introduce Local Extension"
+    ],
+    "organizing_data": [
+      "Self Encapsulate Field",
+      "Replace Data Value with Object",
+      "Change Value to Reference",
+      "Change Reference to Value",
+      "Replace Array with Object",
+      "Duplicate Observed Data",
+      "Change Unidirectional Association to Bidirectional",
+      "Change Bidirectional Association to Unidirectional",
+      "Replace Magic Number with Symbolic Constant",
+      "Encapsulate Field",
+      "Encapsulate Collection",
+      "Replace Type Code with Class",
+      "Replace Type Code with Subclasses",
+      "Replace Type Code with State/Strategy",
+      "Replace Subclass with Fields"
+    ],
+    "simplifying_conditionals": [
+      "Decompose Conditional",
+      "Consolidate Conditional Expression",
+      "Consolidate Duplicate Conditional Fragments",
+      "Remove Control Flag",
+      "Replace Nested Conditional with Guard Clauses",
+      "Replace Conditional with Polymorphism",
+      "Introduce Null Object",
+      "Introduce Assertion"
+    ],
+    "simplifying_calls": [
+      "Rename Method",
+      "Add Parameter",
+      "Remove Parameter",
+      "Separate Query from Modifier",
+      "Parameterize Method",
+      "Replace Parameter with Explicit Methods",
+      "Preserve Whole Object",
+      "Replace Parameter with Method Call",
+      "Introduce Parameter Object",
+      "Remove Setting Method",
+      "Hide Method",
+      "Replace Constructor with Factory Method",
+      "Replace Error Code with Exception",
+      "Replace Exception with Test"
+    ],
+    "generalization": [
+      "Pull Up Field",
+      "Pull Up Method",
+      "Pull Up Constructor Body",
+      "Push Down Method",
+      "Push Down Field",
+      "Extract Subclass",
+      "Extract Superclass",
+      "Extract Interface",
+      "Collapse Hierarchy",
+      "Form Template Method",
+      "Replace Inheritance with Delegation",
+      "Replace Delegation with Inheritance"
+    ]
+  },
+
+  "laws": {
+    "teams": [
+      "Conway's Law",
+      "Brooks's Law",
+      "Dunbar's Number",
+      "Ringelmann Effect",
+      "Price's Law",
+      "Putt's Law",
+      "Peter Principle",
+      "Bus Factor",
+      "Dilbert Principle"
+    ],
+    "planning": [
+      "Premature Optimization",
+      "Parkinson's Law",
+      "90-90 Rule",
+      "Hofstadter's Law",
+      "Goodhart's Law",
+      "Gilb's Law"
+    ],
+    "architecture": [
+      "Hyrum's Law",
+      "Gall's Law",
+      "Law of Leaky Abstractions",
+      "Tesler's Law",
+      "CAP Theorem",
+      "Second System Effect",
+      "Fallacies of Distributed Computing",
+      "Law of Unintended Consequences",
+      "Zawinski's Law"
+    ],
+    "quality": [
+      "Boy Scout Rule",
+      "Murphy's Law",
+      "Postel's Law",
+      "Broken Windows Theory",
+      "Technical Debt",
+      "Linus's Law",
+      "Kernighan's Law",
+      "Testing Pyramid",
+      "Pesticide Paradox",
+      "Lehman's Laws",
+      "Sturgeon's Law",
+      "YAGNI"
+    ],
+    "scalability": [
+      "Amdahl's Law",
+      "Gustafson's Law",
+      "Metcalfe's Law"
+    ],
+    "design": [
+      "DRY",
+      "KISS",
+      "SOLID Principles",
+      "Law of Demeter",
+      "Principle of Least Astonishment"
+    ],
+    "decisions": [
+      "Dunning-Kruger Effect",
+      "Hanlon's Razor",
+      "Occam's Razor",
+      "Sunk Cost Fallacy",
+      "Map is Not Territory",
+      "Confirmation Bias",
+      "Hype Cycle and Amara's Law",
+      "Lindy Effect",
+      "First Principles Thinking",
+      "Inversion",
+      "Pareto Principle",
+      "Cunningham's Law"
+    ]
+  },
+
+  "code_smells": [
+    "Long Method",
+    "Large Class",
+    "Primitive Obsession",
+    "Long Parameter List",
+    "Data Clumps",
+    "Switch Statements",
+    "Temporary Field",
+    "Refused Bequest",
+    "Alternative Classes with Different Interfaces",
+    "Divergent Change",
+    "Shotgun Surgery",
+    "Parallel Inheritance Hierarchies",
+    "Comments",
+    "Duplicate Code",
+    "Lazy Class",
+    "Data Class",
+    "Dead Code",
+    "Speculative Generality",
+    "Feature Envy",
+    "Inappropriate Intimacy",
+    "Message Chains",
+    "Middle Man",
+    "God Object"
+  ]
+}

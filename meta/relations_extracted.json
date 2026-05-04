@@ -1,0 +1,4376 @@
+{
+  "version": "1.1.0",
+  "description": "Auto-extracted relational mapping for Syntagma RAG knowledge graph",
+  "last_updated": "2026-04-28",
+  "DP-001": {
+    "id": "DP-001",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/abstract-factory.md",
+    "title": "Abstract Factory",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-004",
+        "DP-010",
+        "DP-007",
+        "DP-002",
+        "DP-005",
+        "DP-003"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Code must work with various product families"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Eliminates tight coupling between",
+        "Guarantees compatible products from the same factory"
+      ],
+      "drawbacks": [
+        "Introduces additional interfaces and classes, increasing code complexity",
+        "May be unnecessarily elaborate for simpler scenarios"
+      ]
+    }
+  },
+  "DP-002": {
+    "id": "DP-002",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/builder.md",
+    "title": "Builder",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-008",
+        "DP-004",
+        "DP-007",
+        "DP-005",
+        "DP-003",
+        "DP-001"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "**"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Step-by-step"
+      ],
+      "drawbacks": [
+        "Increased overall code complexity through multiple new classes"
+      ]
+    }
+  },
+  "DP-003": {
+    "id": "DP-003",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/factory-method.md",
+    "title": "Factory Method",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "**"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-004": {
+    "id": "DP-004",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/prototype.md",
+    "title": "Prototype",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-017",
+        "DP-001",
+        "DP-009",
+        "DP-005",
+        "DP-003",
+        "DP-008"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Code shouldn't depend on concrete object classes"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Decouples code from"
+      ],
+      "drawbacks": [
+        "Cloning objects with circular references becomes complicated"
+      ]
+    }
+  },
+  "DP-005": {
+    "id": "DP-005",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/singleton.md",
+    "title": "Singleton",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [
+        "LAW-042-S"
+      ],
+      "related_to": [
+        "DP-011",
+        "DP-010"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- A class should have only one instance accessible to all clients (e.g., shared database objects)"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Provides global access to that instance",
+        "Lazy initialization—objects are created only when first requested",
+        "Guarantees single class instance existence"
+      ],
+      "drawbacks": [
+        "Complicates unit testing due to private constructors and static method overriding limitations",
+        "Requires special multithreaded handling to prevent multiple instances",
+        "Violates the Single Responsibility Principle (solves two problems simultaneously)",
+        "Can mask poor design patterns and excessive component interdependence"
+      ]
+    }
+  },
+  "DP-006": {
+    "id": "DP-006",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/adapter.md",
+    "title": "Adapter",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-010",
+        "DP-012",
+        "DP-019",
+        "DP-007",
+        "DP-020",
+        "DP-009"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Existing classes have incompatible interfaces requiring integration"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Separates interface/data"
+      ],
+      "drawbacks": [
+        "Increases overall code complexity through additional interfaces and classes",
+        "Sometimes simpler to modify the service class directly"
+      ]
+    }
+  },
+  "DP-007": {
+    "id": "DP-007",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/bridge.md",
+    "title": "Bridge",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Dividing monolithic classes with multiple functionality variants"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-008": {
+    "id": "DP-008",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/composite.md",
+    "title": "Composite",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Your application models tree-like structures"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Simplifies handling complex tree structures through polymorphism",
+        "Follows Open/Closed Principle—new element types integrate without breaking existing code"
+      ],
+      "drawbacks": [
+        "Can complicate the interface unnecessarily",
+        "Creating unified interfaces for dissimilar functionality may require overgeneralization"
+      ]
+    }
+  },
+  "DP-009": {
+    "id": "DP-009",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/decorator.md",
+    "title": "Decorator",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Assigning extra behaviors at runtime without breaking existing code"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Add/remove responsibilities at runtime",
+        "Supports Single Responsibility Principle",
+        "Extend objects without subclassing",
+        "Combine multiple behaviors through wrapping"
+      ],
+      "drawbacks": [
+        "Behavior may depend on decorator order",
+        "Difficult removing specific wrappers from stack",
+        "Initial configuration code can appear complex"
+      ]
+    }
+  },
+  "DP-010": {
+    "id": "DP-010",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/facade.md",
+    "title": "Facade",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-016",
+        "DP-006",
+        "DP-012",
+        "DP-005",
+        "DP-001"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- You need straightforward access to complex subsystems"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Isolates client code from subsystem complexity"
+      ],
+      "drawbacks": [
+        "Facades can become \"god objects\" tightly coupled to numerous application classes"
+      ]
+    }
+  },
+  "DP-011": {
+    "id": "DP-011",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/flyweight.md",
+    "title": "Flyweight",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Applications spawn huge numbers of similar objects"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Significant RAM savings with numerous similar objects"
+      ],
+      "drawbacks": [
+        "May trade memory for CPU cycles during recalculation of context data",
+        "Increased code complexity confuses team members about state separation"
+      ]
+    }
+  },
+  "DP-012": {
+    "id": "DP-012",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/proxy.md",
+    "title": "Proxy",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        ""
+      ],
+      "drawbacks": [
+        "Increased code complexity from additional classes",
+        "Potential response delays from service"
+      ]
+    }
+  },
+  "DP-013": {
+    "id": "DP-013",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/chain-of-responsibility.md",
+    "title": "Chain Of Responsibility",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Processing different request types in various ways with unknown sequences beforehand"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        ""
+      ],
+      "drawbacks": [
+        "Requests may reach the chain's end unhandled"
+      ]
+    }
+  },
+  "DP-014": {
+    "id": "DP-014",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/command.md",
+    "title": "Command",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-017",
+        "DP-004",
+        "DP-013",
+        "DP-019",
+        "DP-020",
+        "DP-022"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "**"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-015": {
+    "id": "DP-015",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/iterator.md",
+    "title": "Iterator",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-019",
+        "DP-017",
+        "DP-003",
+        "DP-008",
+        "DP-022"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "**"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Allows delayed and resumable iteration",
+        "Upholds Single Responsibility Principle by extracting traversal logic",
+        "Enables parallel iteration over the same collection",
+        "Supports Open/Closed Principle for new collection and iterator types"
+      ],
+      "drawbacks": [
+        "May be excessive for simple collections",
+        "Potentially less efficient than direct element access in specialized collections"
+      ]
+    }
+  },
+  "DP-016": {
+    "id": "DP-016",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/mediator.md",
+    "title": "Mediator",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-018",
+        "DP-014",
+        "DP-010",
+        "DP-013"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "**"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Enhances component reusability",
+        "Supports Open/Closed Principle through new mediator implementations",
+        "Reduces component coupling",
+        "Improves Single Responsibility: \"extract the communications between various components into a single"
+      ],
+      "drawbacks": [
+        "Mediators can evolve into \"God Objects\" over time, accumulating excessive responsibilities"
+      ]
+    }
+  },
+  "DP-017": {
+    "id": "DP-017",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/memento.md",
+    "title": "Memento",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-015",
+        "DP-004",
+        "DP-019",
+        "DP-014"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "you need to:"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Simplifies originator code by delegating history management",
+        "Maintains encapsulation during state capture"
+      ],
+      "drawbacks": [
+        "Excessive RAM consumption from frequent memento creation",
+        "Dynamic languages (PHP, Python, JavaScript) cannot guarantee memento immutability",
+        "Caretakers must track originator lifecycle to dispose obsolete mementos"
+      ]
+    }
+  },
+  "DP-018": {
+    "id": "DP-018",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/observer.md",
+    "title": "Observer",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- State changes in one object require updating others with an unknown or dynamic set"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Follows Open/Closed Principle—new subscribers integrate without modifying publisher code",
+        "Runtime relationship establishment between objects"
+      ],
+      "drawbacks": [
+        "Subscribers receive notifications in random order"
+      ]
+    }
+  },
+  "DP-019": {
+    "id": "DP-019",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/state.md",
+    "title": "State",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Objects behave differently based on internal state"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Supports Open/Closed Principle for adding new states",
+        "Adheres to Single Responsibility Principle",
+        "Eliminates bulky"
+      ],
+      "drawbacks": [
+        "Can be excessive for simple state machines with few states"
+      ]
+    }
+  },
+  "DP-020": {
+    "id": "DP-020",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/strategy.md",
+    "title": "Strategy",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "you need to:"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Composition replaces inheritance",
+        "Open/Closed Principle compliance—add strategies without modifying",
+        "Implementation isolation from usage code",
+        "Runtime algorithm swapping capability"
+      ],
+      "drawbacks": [
+        "Modern languages with functional support may eliminate the need for extra classes",
+        "Clients must understand strategy differences to select appropriately",
+        "Unnecessary complexity for simple, stable algorithms"
+      ]
+    }
+  },
+  "DP-021": {
+    "id": "DP-021",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/template-method.md",
+    "title": "Template Method",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-020",
+        "DP-003"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "you want clients extending only specific algorithm steps while preserving overall structure. It's particularly valuable "
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Shared implementations",
+        "Clients override only necessary algorithm portions, minimizing impact from other modifications"
+      ],
+      "drawbacks": [
+        "Limited client flexibility constrained by provided algorithm skeletons",
+        "Risk of violating the Liskov Substitution Principle through step suppression",
+        "Maintenance complexity increases with additional template steps"
+      ]
+    }
+  },
+  "DP-022": {
+    "id": "DP-022",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/visitor.md",
+    "title": "Visitor",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Performing operations on all elements of complex structures (object trees)"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Follows Open/Closed Principle—add behaviors without modifying classes",
+        "Follows Single Responsibility—group related behaviors in visitor classes",
+        "Visitors can accumulate information while traversing complex structures"
+      ],
+      "drawbacks": [
+        "Visitors may lack access to private fields and methods",
+        "Must update all visitors when adding/removing element classes"
+      ]
+    }
+  },
+  "RF-001": {
+    "id": "RF-001",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/extract-method.md",
+    "title": "Extract Method",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-18",
+        "SMELL-13",
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "RF-003",
+        "RF-043",
+        "RF-044",
+        "RF-059",
+        "RF-016"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Feature Envy",
+        "Duplicate Code",
+        "Long Method"
+      ],
+      "benefits": [
+        "evident",
+        "Improved Readability:",
+        "Reduced Duplication:",
+        "Better Error Isolation:"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-002": {
+    "id": "RF-002",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/extract-variable.md",
+    "title": "Extract Variable",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "RF-004",
+        "RF-001"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-003": {
+    "id": "RF-003",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/inline-method.md",
+    "title": "Inline Method",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-004": {
+    "id": "RF-004",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/inline-temp.md",
+    "title": "Inline Temp",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-005": {
+    "id": "RF-005",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/remove-assignments-to-parameters.md",
+    "title": "Remove Assignments To Parameters",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Supports Extraction:** This refactoring facilitates identifying and extracting repetitive code int",
+        "**Single Responsibility:** Each code element handles one concern, simplifying maintenance and enabli"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-006": {
+    "id": "RF-006",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/replace-method-with-method-object.md",
+    "title": "Replace Method With Method Object",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Long Method"
+      ],
+      "benefits": [
+        "**Organization:** Keeps utility methods out of the original class",
+        "**Clarity:** Isolates complex logic in its own dedicated space",
+        "**Size management:** Prevents methods from becoming unwieldy and allows splitting into smaller subme"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-007": {
+    "id": "RF-007",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/replace-temp-with-query.md",
+    "title": "Replace Temp With Query",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13",
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "RF-001"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Duplicate Code",
+        "Long Method"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-008": {
+    "id": "RF-008",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/split-temporary-variable.md",
+    "title": "Split Temporary Variable",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Improved readability:** Descriptive names like `customerTaxValue` or `cityUnemploymentRate` replac",
+        "**Single responsibility:** Each variable focuses on one purpose, simplifying maintenance and reducin",
+        "**Preparation for extraction:** Cleaner variable semantics facilitate future Extract Method refactor"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-009": {
+    "id": "RF-009",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/substitute-algorithm.md",
+    "title": "Substitute Algorithm",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13",
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Duplicate Code",
+        "Long Method"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-010": {
+    "id": "RF-010",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/extract-class.md",
+    "title": "Extract Class",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-05",
+        "SMELL-13",
+        "SMELL-02"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Data Clumps",
+        "Large Class",
+        "Duplicate Code"
+      ],
+      "benefits": [
+        "**Single Responsibility Principle**: Splitting responsibilities ensures each class has one clear pur",
+        "**Increased Reliability**: Classes with focused responsibilities are more stable when changes occur."
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-011": {
+    "id": "RF-011",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/hide-delegate.md",
+    "title": "Hide Delegate",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Reduced coupling**: Client code requires less knowledge about relationships between objects",
+        "**Better encapsulation**: Implementation details remain hidden",
+        "**Easier maintenance**: Changes to internal object relationships can be made with minimal client-sid"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-012": {
+    "id": "RF-012",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/inline-class.md",
+    "title": "Inline Class",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-21"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Shotgun Surgery"
+      ],
+      "benefits": [
+        "**Memory Efficiency**: Fewer class objects means better resource utilization",
+        "**Reduced Complexity**: Eliminating unnecessary classes simplifies the codebase",
+        "**Cognitive Load**: Developers have fewer abstractions to track and understand"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-013": {
+    "id": "RF-013",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/introduce-foreign-method.md",
+    "title": "Introduce Foreign Method",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "RF-014"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Reduces duplication**: Replace repeated code fragments across your program with a single method ca"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-014": {
+    "id": "RF-014",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/introduce-local-extension.md",
+    "title": "Introduce Local Extension",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Improves component coherence and reusability across your codebase.",
+        "\"By moving additional methods to a separate extension class (wrapper or subclass), you avoid gumming"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-015": {
+    "id": "RF-015",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/move-field.md",
+    "title": "Move Field",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-21"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "RF-016",
+        "RF-010",
+        "RF-012"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Shotgun Surgery"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-016": {
+    "id": "RF-016",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/move-method.md",
+    "title": "Move Method",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-18",
+        "SMELL-06",
+        "SMELL-21"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Shotgun Surgery",
+        "Feature Envy",
+        "Switch Statements"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-017": {
+    "id": "RF-017",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/remove-middle-man.md",
+    "title": "Remove Middle Man",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-018": {
+    "id": "RF-018",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/change-bidirectional-association-to-unidirectional.md",
+    "title": "Change Bidirectional Association To Unidirectional",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Reduced Dependencies**: Independent classes are easier to modify since changes affect only that sp",
+        "**Simplified Classes**: Removing unnecessary associations reduces code footprint and maintenance bur"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-019": {
+    "id": "RF-019",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/change-reference-to-value.md",
+    "title": "Change Reference To Value",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Simpler Implementation**: Value objects are much easier to implement than managed references.",
+        "**Immutability**: Objects should remain unchangeable. Each query should return consistent results, p"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-020": {
+    "id": "RF-020",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/change-unidirectional-association-to-bidirectional.md",
+    "title": "Change Unidirectional Association To Bidirectional",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Clarity**: Makes bidirectional relationships explicit rather than computed on-the-fly",
+        "**Flexibility**: Eliminates the need for complex calculations when reverse associations are frequent",
+        "**Performance**: Avoids repeated calculations of the reverse path"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-021": {
+    "id": "RF-021",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/change-value-to-reference.md",
+    "title": "Change Value To Reference",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "An object maintains the most current information about a specific entity, ensuring changes propagate"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-022": {
+    "id": "RF-022",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/duplicate-observed-data.md",
+    "title": "Duplicate Observed Data",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O",
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Team Scalability**: Different developers can work simultaneously on business logic versus user int",
+        "**Open/Closed Principle**: New interface views require only new presentation classes; domain logic r",
+        "**Single Responsibility**: Business logic and presentation classes maintain distinct concerns, impro"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-023": {
+    "id": "RF-023",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/encapsulate-collection.md",
+    "title": "Encapsulate Collection",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Encapsulation**: \"The collection field is encapsulated inside a class. When the getter is called, ",
+        "**Access Control**: Encapsulation restricts access to unwanted standard collection methods, preventi",
+        "**Convenience**: Creating specialized methods for collections improves usability compared to generic"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-024": {
+    "id": "RF-024",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/encapsulate-field.md",
+    "title": "Encapsulate Field",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Maintainability:** When data and associated behaviors reside together, modifying and maintaining c",
+        "**Control:** Access methods allow implementing sophisticated logic, validation rules, and side effec"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-025": {
+    "id": "RF-025",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-array-with-object.md",
+    "title": "Replace Array With Object",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Associated behaviors can be placed directly in the resulting class rather than scattered elsewhere",
+        "\"The fields of a class are much easier to document than the elements of an array\""
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-026": {
+    "id": "RF-026",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-data-value-with-object.md",
+    "title": "Replace Data Value With Object",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Duplicate Code"
+      ],
+      "benefits": [
+        "**Reduced redundancy**: Shared field-behavior patterns need only exist once",
+        "**Enhanced internal cohesion**: Data and its corresponding operations reside together within a singl"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-027": {
+    "id": "RF-027",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-magic-number-with-symbolic-constant.md",
+    "title": "Replace Magic Number With Symbolic Constant",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Documentation**: Constants serve as live documentation explaining value significance",
+        "**Reduced Duplication**: Consolidates repeated or complex numeric values like `3.14159`",
+        "**Maintainability**: Changing constant values is simpler and safer than searching throughout codebas"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-028": {
+    "id": "RF-028",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-subclass-with-fields.md",
+    "title": "Replace Subclass With Fields",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Easier maintenance**: Fewer classes to manage and update",
+        "**Simplified architecture**: Eliminates unnecessary subclass hierarchies when only value differentia",
+        "**Reduced code complexity**: Consolidates class structure without losing functionality"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-029": {
+    "id": "RF-029",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-type-code-with-class.md",
+    "title": "Replace Type Code With Class",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-030": {
+    "id": "RF-030",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-type-code-with-state-strategy.md",
+    "title": "Replace Type Code With State Strategy",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Cleaner separation of concerns through polymorphic behavior",
+        "Handles situations where coded type values change during object lifetime through state object replac",
+        "New coded type values require only new state subclasses without modifying existing code (Open/Closed"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-031": {
+    "id": "RF-031",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-type-code-with-subclasses.md",
+    "title": "Replace Type Code With Subclasses",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-06"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O",
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Switch Statements"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-032": {
+    "id": "RF-032",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/self-encapsulate-field.md",
+    "title": "Self Encapsulate Field",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Enables subclass customization through method overriding",
+        "**Indirect field access** through accessor methods provides superior flexibility compared to direct ",
+        "Allows read-only fields by omitting setters—values become immutable after construction",
+        "Supports complex operations on assignment and retrieval, including lazy initialization and validatio"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-033": {
+    "id": "RF-033",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/consolidate-conditional-expression.md",
+    "title": "Consolidate Conditional Expression",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Duplicate Code"
+      ],
+      "benefits": [
+        "**Improves clarity:** Combines conditions that check the same objective into a named method expressi",
+        "**Eliminates duplication:** Reduces redundant control flow across separate conditions"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-034": {
+    "id": "RF-034",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/consolidate-duplicate-conditional-fragments.md",
+    "title": "Consolidate Duplicate Conditional Fragments",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Duplicate Code"
+      ],
+      "benefits": [
+        "**Code deduplication:** Eliminates redundant logic and reduces maintenance burden."
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-035": {
+    "id": "RF-035",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/decompose-conditional.md",
+    "title": "Decompose Conditional",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Long Method"
+      ],
+      "benefits": [
+        "Improves code readability and maintainability across development teams",
+        "Descriptive method names like `isSalaryDay()` communicate intent more effectively than raw date-comp",
+        "\"By extracting conditional code to clearly named methods, you make life easier for the person who'll"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-036": {
+    "id": "RF-036",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/introduce-assertion.md",
+    "title": "Introduce Assertion",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Test coverage gaps revealed**: Failed assertions indicate missing test cases during development",
+        "**Self-documenting code**: Assertions clarify what conditions must be true for correct operation",
+        "**Early failure detection**: If an assumption proves false, execution stops before causing fatal con"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-037": {
+    "id": "RF-037",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/introduce-null-object.md",
+    "title": "Introduce Null Object",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-06"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Switch Statements"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-038": {
+    "id": "RF-038",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/remove-control-flag.md",
+    "title": "Remove Control Flag",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-039": {
+    "id": "RF-039",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/replace-conditional-with-polymorphism.md",
+    "title": "Replace Conditional With Polymorphism",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-06"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Switch Statements"
+      ],
+      "benefits": [
+        "**Supports Open/Closed Principle**: Adding new execution variants requires only a new subclass, pres",
+        "**Eliminates Code Duplication**: Removes numerous nearly identical conditional blocks.",
+        "**Follows Tell-Don't-Ask Principle**: Instead of checking an object's state and acting accordingly, "
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-040": {
+    "id": "RF-040",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/replace-nested-conditional-with-guard-clauses.md",
+    "title": "Replace Nested Conditional With Guard Clauses",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Improved readability**: Sequential guard clauses are easier to scan and understand",
+        "**Reduced cognitive load**: Developers don't need to track nested scope context",
+        "**Easier maintenance**: Adding new conditions follows a consistent pattern",
+        "**Clearer intent**: Special cases stand out explicitly at the method's beginning"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-041": {
+    "id": "RF-041",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/add-parameter.md",
+    "title": "Add Parameter",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-042": {
+    "id": "RF-042",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/hide-method.md",
+    "title": "Hide Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Simplified Evolution**: Restricting method visibility reduces the surface area of potential breaki",
+        "**Clarified Intent**: Designating methods as private emphasizes which functionality comprises the le"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-043": {
+    "id": "RF-043",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/introduce-parameter-object.md",
+    "title": "Introduce Parameter Object",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-05",
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Data Clumps",
+        "Long Method"
+      ],
+      "benefits": [
+        "**Improved readability**: A single named object is clearer than multiple scattered parameters",
+        "**Reduced duplication**: Identical parameter groups scattered throughout code create their own form "
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-044": {
+    "id": "RF-044",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/parameterize-method.md",
+    "title": "Parameterize Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Duplicate Code"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-045": {
+    "id": "RF-045",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/preserve-whole-object.md",
+    "title": "Preserve Whole Object",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-05",
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Data Clumps",
+        "Long Method"
+      ],
+      "benefits": [
+        "**Easier maintenance**: \"If the method needs more data from an object, you won't need to rewrite all",
+        "**Clearer code**: \"Instead of a hodgepodge of parameters, you see a single object with a comprehensi"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-046": {
+    "id": "RF-046",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/remove-parameter.md",
+    "title": "Remove Parameter",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Improved readability for other developers",
+        "Methods contain only the parameters they actually require",
+        "Cleaner, more maintainable code with reduced complexity"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-047": {
+    "id": "RF-047",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/remove-setting-method.md",
+    "title": "Remove Setting Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-048": {
+    "id": "RF-048",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/rename-method.md",
+    "title": "Rename Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "documenting and easier for other developers to understand at a glance."
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-049": {
+    "id": "RF-049",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-constructor-with-factory-method.md",
+    "title": "Replace Constructor With Factory Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "RF-021",
+        "RF-031"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Object Reuse:** \"A factory method can return an already created object, unlike a constructor, whic",
+        "**Flexible Return Types:** \"A factory method doesn't necessarily return an object of the class in wh",
+        "**Descriptive Naming:** Factory methods can have meaningful names like `Troops::GetCrew(myTank)` tha"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-050": {
+    "id": "RF-050",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-error-code-with-exception.md",
+    "title": "Replace Error Code With Exception",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Constructor compatibility**: Unlike error codes, exceptions can be used in constructors since they",
+        "**Encapsulation**: Exception classes can implement their own methods, allowing them to contain error",
+        "**Reduces conditionals**: Eliminates the need for extensive error code checking. Exception handlers "
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-051": {
+    "id": "RF-051",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-exception-with-test.md",
+    "title": "Replace Exception With Test",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Improved readability for developers reviewing the code",
+        "Clearer intent: \"A simple conditional can sometimes be more obvious than exception handling code\"",
+        "Better performance: Conditional checks typically execute faster than exception handling"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-052": {
+    "id": "RF-052",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-parameter-with-explicit-methods.md",
+    "title": "Replace Parameter With Explicit Methods",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-06",
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Switch Statements",
+        "Long Method"
+      ],
+      "benefits": [
+        "**Improves readability**: The purpose of `startEngine()` is clearer than `setValue(\"engineEnabled\", "
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-053": {
+    "id": "RF-053",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-parameter-with-method-call.md",
+    "title": "Replace Parameter With Method Call",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Eliminates unnecessary parameters and streamlines method calls",
+        "Removes parameters often added speculatively for future needs that may never materialize"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-054": {
+    "id": "RF-054",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/separate-query-from-modifier.md",
+    "title": "Separate Query From Modifier",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "RF-007",
+        "RF-044"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Reduced bugs:** Eliminates surprise state changes from seemingly harmless data access",
+        "**Clearer intent:** Method names explicitly communicate whether they retrieve or modify data",
+        "**Predictable queries:** You can invoke a query method multiple times without worrying about uninten"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-055": {
+    "id": "RF-055",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/collapse-hierarchy.md",
+    "title": "Collapse Hierarchy",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-L"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Improved Navigation**: \"methods are defined in one class early. You don't need to comb through the",
+        "**Reduced Complexity**: Fewer classes means less cognitive overhead and fewer potential failure poin"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-056": {
+    "id": "RF-056",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/extract-interface.md",
+    "title": "Extract Interface",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Duplicate Code"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-057": {
+    "id": "RF-057",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/extract-subclass.md",
+    "title": "Extract Subclass",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-02"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "RF-063",
+        "RF-010",
+        "RF-064",
+        "RF-058"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Large Class"
+      ],
+      "benefits": [
+        "Isolates rarely-used features from the main class",
+        "Allows multiple subclasses when a parent class handles several distinct scenarios",
+        "Enables quick creation of specialized subclasses"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-058": {
+    "id": "RF-058",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/extract-superclass.md",
+    "title": "Extract Superclass",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "RF-056",
+        "RF-057"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Duplicate Code"
+      ],
+      "benefits": [
+        "**Improved Design**: Establishes a clearer class hierarchy",
+        "**Code Deduplication**: Common fields and methods now reside in a single location rather than being ",
+        "**Reduced Maintenance**: Changes to shared functionality require modification in only one place"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-059": {
+    "id": "RF-059",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/form-template-method.md",
+    "title": "Form Template Method",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Duplicate Code"
+      ],
+      "benefits": [
+        "**Supports the Open/Closed Principle**: New algorithm versions require only additional subclasses; e",
+        "**Eliminates higher-level duplication**: This approach addresses duplication beyond simple copy-past"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-060": {
+    "id": "RF-060",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/pull-up-constructor-body.md",
+    "title": "Pull Up Constructor Body",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Duplicate Code"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-061": {
+    "id": "RF-061",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/pull-up-field.md",
+    "title": "Pull Up Field",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Duplicate Code"
+      ],
+      "benefits": [
+        "**Facilitates method consolidation** by preparing the structure for moving duplicate methods from su",
+        "**Eliminates field duplication** across subclasses, reducing code redundancy",
+        "**Improves maintainability** by centralizing shared data definitions"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-062": {
+    "id": "RF-062",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/pull-up-method.md",
+    "title": "Pull Up Method",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "RF-061",
+        "RF-059",
+        "RF-064"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Duplicate Code"
+      ],
+      "benefits": [
+        "**Handles method redefinition**: When subclasses redefine superclass methods while performing essent",
+        "**Eliminates duplication**: Changes to shared functionality only need to be made once rather than ac"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-063": {
+    "id": "RF-063",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/push-down-field.md",
+    "title": "Push Down Field",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Improved class coherency**: Fields are positioned where they are actually used, making the class s",
+        "**Independent development**: When moving fields to multiple subclasses simultaneously, each subclass"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-064": {
+    "id": "RF-064",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/push-down-method.md",
+    "title": "Push Down Method",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Cleaner Hierarchies**: Parent classes contain only truly shared functionality",
+        "**Improved Coherence**: Methods appear in the classes where developers expect to find them",
+        "**Reduced Confusion**: Eliminates misleading inheritance relationships"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-065": {
+    "id": "RF-065",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/replace-delegation-with-inheritance.md",
+    "title": "Replace Delegation With Inheritance",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-L"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "**Eliminates boilerplate**: Removes numerous delegating methods that become unnecessary",
+        "**Cleaner codebase**: Reduces overall code complexity and length"
+      ],
+      "drawbacks": []
+    }
+  },
+  "RF-066": {
+    "id": "RF-066",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/replace-inheritance-with-delegation.md",
+    "title": "Replace Inheritance With Delegation",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-L"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Different implementations can be assigned to the delegate field, effectively implementing the Strate",
+        "The subclass avoids inheriting unwanted methods from the parent class"
+      ],
+      "drawbacks": []
+    }
+  },
+  "LAW-001": {
+    "id": "LAW-001",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/01-conways-law.md",
+    "title": "Conways Law",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "API designs naturally align with team dependencies and reporting lines",
+        "Microservices adoption often requires reorganizing teams from function-based to domain-based structures",
+        "Cross-team collaboration tools and practices directly impact system integration approaches",
+        "Companies restructuring to support cloud-native architectures must also restructure their teams"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-002": {
+    "id": "LAW-002",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/02-brooks-law.md",
+    "title": "Brooks Law",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Project management decisions during delays require caution before adding resources",
+        "Hiring practices should account for ramp-up time and productivity curves",
+        "Crisis staffing often backfires without proper planning and mentorship structure",
+        "Task decomposition strategies are critical for determining parallelizability"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-003": {
+    "id": "LAW-003",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/03-dunbars-number.md",
+    "title": "Dunbars Number",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Startup cultures emphasizing \"everyone knows everyone\" are limited to roughly Dunbar's Number",
+        "Engineering teams typically split or restructure when exceeding 150-200 people",
+        "Large organizations require more formal communication, documentation, and process",
+        "Team scaling strategies should account for cognitive limits and relationship maintenance costs"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-004": {
+    "id": "LAW-004",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/04-ringelmann-effect.md",
+    "title": "Ringelmann Effect",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Code review processes must scale without becoming bottlenecks",
+        "Team size optimization becomes crucial for maintaining velocity",
+        "Decision-making structures should prevent diffusion of responsibility",
+        "Incentive systems should encourage individual accountability within team settings"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-005": {
+    "id": "LAW-005",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/05-prices-law.md",
+    "title": "Prices Law",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Engineering organizations should identify and nurture top performers",
+        "Open-source projects typically have a small core of highly productive contributors",
+        "Compensation and recognition should account for contribution distribution",
+        "Knowledge and decision-making naturally concentrate; processes should acknowledge this"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-006": {
+    "id": "LAW-006",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/06-putts-law.md",
+    "title": "Putts Law",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Technical leadership roles (architect, tech lead) bridge the gap between management and expertise",
+        "Organizations should establish dual-track career paths for technical and managerial advancement",
+        "Decision-making structures should incorporate technical experts in management discussions",
+        "Hiring managers with technical backgrounds improves technical decision-making"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-007": {
+    "id": "LAW-007",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/07-peter-principle.md",
+    "title": "Peter Principle",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Promotion decisions should explicitly evaluate readiness for new roles",
+        "Training and support programs should help people transition between role types",
+        "Organizations should recognize different types of expertise and contribution",
+        "Lateral moves and skill development matter as much as vertical advancement"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-008": {
+    "id": "LAW-008",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/08-bus-factor.md",
+    "title": "Bus Factor",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Code ownership models should avoid single ownership of critical systems",
+        "Documentation and runbooks reduce organizational risk",
+        "Mentorship and knowledge transfer programs improve team resilience",
+        "Organizations should actively increase bus factor through knowledge sharing",
+        "On-call and incident response systems should distribute responsibility"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-009": {
+    "id": "LAW-009",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/09-dilbert-principle.md",
+    "title": "Dilbert Principle",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Alternative career paths prevent forced promotion of people unsuited to management",
+        "Organizations should resist using management as a dumping ground for difficult employees",
+        "Promotion criteria should explicitly evaluate management readiness and people skills",
+        "Performance management systems should assess both technical and interpersonal contributions"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-010": {
+    "id": "LAW-010",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/10-premature-optimization.md",
+    "title": "Premature Optimization",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Code reviews should question optimization that lacks performance profiling evidence",
+        "Profiling tools should be standard in development workflow",
+        "Performance budgets and monitoring guide optimization priorities",
+        "Development should prioritize clarity and correctness before optimization",
+        "Late-stage optimization during load testing is preferable to early guessing"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-011": {
+    "id": "LAW-011",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/11-parkinsons-law.md",
+    "title": "Parkinsons Law",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Agile practices using time-boxed iterations leverage Parkinson's Law positively",
+        "Clear deadlines prevent scope expansion and gold-plating",
+        "Shorter sprint cycles encourage focused work and fast feedback",
+        "Distinguishing between necessary slack and wasted time is important",
+        "Resource allocation should account for this tendency"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-012": {
+    "id": "LAW-012",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/12-ninety-ninety-rule.md",
+    "title": "Ninety Ninety Rule",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Time-boxed development with early testing reduces final-phase surprises",
+        "Testing and quality assurance should begin earlier, not be deferred",
+        "Buffer estimates should be proportional to the type of project",
+        "Project estimates should account for the final 10% expansion explicitly",
+        "Definition of done should be clear and realistic upfront"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-013": {
+    "id": "LAW-013",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/13-hofstadters-law.md",
+    "title": "Hofstadters Law",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Multiply estimates by factors beyond simple buffers; add contingency for unknowns",
+        "Establish empirical velocity metrics from historical data rather than individual estimates",
+        "Track estimation accuracy and adjust planning accordingly",
+        "Use ranges and confidence levels rather than point estimates",
+        "Break tasks into smaller increments to reduce estimation error"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-014": {
+    "id": "LAW-014",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/14-goodharts-law.md",
+    "title": "Goodharts Law",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Distinguish between metrics for measurement versus management",
+        "Monitor for gaming behavior when metrics become targets",
+        "Establish balanced scorecards with multiple perspectives",
+        "Focus on outcomes rather than metrics-based incentives",
+        "Avoid using single metrics for performance evaluation"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-015": {
+    "id": "LAW-015",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/15-gilbs-law.md",
+    "title": "Gilbs Law",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Use metrics to identify problems even if they're not perfectly precise",
+        "Focus on trends and comparisons rather than absolute accuracy",
+        "Start with imperfect metrics rather than delaying for perfect ones",
+        "Refine measurements over time as understanding improves",
+        "Establish baselines for improvement rather than exact truth"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-016": {
+    "id": "LAW-016",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/16-hyrums-law.md",
+    "title": "Hyrums Law",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Internal implementation details should be hidden behind well-defined interfaces",
+        "Documentation should clarify what's guaranteed versus implementation detail",
+        "Version management and deprecation processes are necessary for sustainability",
+        "API design should be intentional about what's observable and documented",
+        "Testing should verify contract compliance, not just functionality"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-017": {
+    "id": "LAW-017",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/17-galls-law.md",
+    "title": "Galls Law",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Start with working systems before adding complexity",
+        "Design should emerge from requirements of working systems",
+        "Incremental improvements to production systems beat complete redesigns",
+        "Favor evolutionary architecture over big-bang redesigns",
+        "Microservices should evolve from monoliths; not the reverse"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-018": {
+    "id": "LAW-018",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/18-law-of-leaky-abstractions.md",
+    "title": "Law Of Leaky Abstractions",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Performance-critical systems require understanding implementation",
+        "Design abstractions acknowledging where they leak",
+        "Provide \"escape hatches\" for cases where abstraction breaks",
+        "Document abstraction limitations and when implementation details matter",
+        "Test abstractions against edge cases where leaks appear"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-019": {
+    "id": "LAW-019",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/19-teslers-law.md",
+    "title": "Teslers Law",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "User-friendly tools often require sophisticated backend systems",
+        "Low-code platforms shift complexity from developers to configuration",
+        "Simplifying interfaces requires robust hidden systems",
+        "Configuration flexibility comes at the cost of user complexity",
+        "Design decisions should explicitly choose complexity location"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-020": {
+    "id": "LAW-020",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/20-cap-theorem.md",
+    "title": "Cap Theorem",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "CP (Consistent, Partition-tolerant) systems: databases prioritizing data accuracy",
+        "AP (Available, Partition-tolerant) systems: caches and read-heavy systems accepting eventual consistency",
+        "Design decisions must align system guarantees with application requirements",
+        "Eventual consistency is often acceptable for specific use cases",
+        "Monitoring and alerting become critical for partition scenarios"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-021": {
+    "id": "LAW-021",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/21-second-system-effect.md",
+    "title": "Second System Effect",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Maintaining the first system's simplicity is an explicit goal for seconds",
+        "Incremental evolution might be preferable to complete replacement",
+        "Feature lists for replacements should be conservative",
+        "Team composition matters; fresh perspectives help combat the effect",
+        "Rewrite decisions should be cautious and deliberate"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-022": {
+    "id": "LAW-022",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/22-fallacies-of-distributed-computing.md",
+    "title": "Fallacies Of Distributed Computing",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Build systems tolerant of topology changes",
+        "Measure and account for latency; design for acceptable performance within constraints",
+        "Implement security at every level; assume network compromise",
+        "Design distributed systems assuming networks fail; implement retry and timeout logic",
+        "Optimize data transfer; avoid unnecessary round trips"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-023": {
+    "id": "LAW-023",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/23-law-of-unintended-consequences.md",
+    "title": "Law Of Unintended Consequences",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Testing should focus on integration and system-level behavior, not just units",
+        "Change management processes should anticipate and watch for surprises",
+        "Large changes should be implemented incrementally with careful monitoring",
+        "Monitoring and observability are essential for detecting unintended effects",
+        "Documentation should capture system interdependencies and potential interactions"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-024": {
+    "id": "LAW-024",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/24-zawinskis-law.md",
+    "title": "Zawinskis Law",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Define and defend core scope to resist uncontrolled expansion",
+        "Architecture should accommodate feature expansion while maintaining clarity",
+        "Modular design enables expansion without complete redesign",
+        "Feature requests should be evaluated for long-term architectural impact",
+        "Monitor feature expansion for architectural strain"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-025": {
+    "id": "LAW-025",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/25-boy-scout-rule.md",
+    "title": "Boy Scout Rule",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Code reviews should encourage Boy Scout improvements",
+        "Measure code quality trends to track the effect of Boy Scout practices",
+        "Developers should allocate time during feature work for small refactoring",
+        "Resist the trap of \"we'll refactor later\"; refactor as you go",
+        "Establish refactoring guidelines: variable renames, extract methods, remove duplication"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-026": {
+    "id": "LAW-026",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/26-murphys-law.md",
+    "title": "Murphys Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Validate inputs; don't assume data is well-formed",
+        "Use fault injection and chaos engineering to find problems before production",
+        "Design for failure: implement timeouts, retries, and fallbacks",
+        "Test edge cases and boundary conditions thoroughly",
+        "Implement monitoring and alerting for potential failures"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-027": {
+    "id": "LAW-027",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/27-postels-law.md",
+    "title": "Postels Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Data parsers should handle variations gracefully without failing",
+        "API design should be strict about response format but lenient about request parsing",
+        "Error handling should be forgiving when possible while logging issues",
+        "Deprecated API versions should be supported for extended periods",
+        "Libraries should accept multiple formats and versions of inputs"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-028": {
+    "id": "LAW-028",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/28-broken-windows-theory.md",
+    "title": "Broken Windows Theory",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Tools and automation should enforce quality standards",
+        "Code reviews should catch and address quality issues promptly",
+        "Team culture should emphasize quality standards",
+        "Refactoring should be regular, not deferred",
+        "Technical debt should be explicitly tracked and addressed"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Law violation indicators present"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-029": {
+    "id": "LAW-029",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/29-technical-debt.md",
+    "title": "Technical Debt",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Distinguish between debt incurred intentionally and debt from mistakes",
+        "Understand that some technical debt is strategic and acceptable",
+        "Refactoring and modernization efforts address debt strategically",
+        "Track technical debt explicitly; don't ignore it",
+        "Allocate time for paying down debt; don't defer indefinitely"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-030": {
+    "id": "LAW-030",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/30-linuss-law.md",
+    "title": "Linuss Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Involve multiple reviewers for critical code",
+        "Encourage open-source contributions to expose code to broader scrutiny",
+        "Implement mandatory code review processes",
+        "Diverse teams catch more bugs than homogeneous teams",
+        "Documentation and clarity enable more effective review"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-031": {
+    "id": "LAW-031",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/31-kernighans-law.md",
+    "title": "Kernighans Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Use meaningful variable and function names",
+        "Avoid overly complex algorithms when simpler alternatives suffice",
+        "Add helpful comments explaining non-obvious logic",
+        "Implement logging and observability for debugging",
+        "Write code for clarity, not cleverness"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-032": {
+    "id": "LAW-032",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/32-testing-pyramid.md",
+    "title": "Testing Pyramid",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Use mocks and stubs to isolate unit tests",
+        "Integration tests should verify boundaries between components",
+        "Maintain fast unit test execution (under a few seconds)",
+        "Organize tests by level: unit, integration, end-to-end",
+        "End-to-end tests should cover critical user paths"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-033": {
+    "id": "LAW-033",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/33-pesticide-paradox.md",
+    "title": "Pesticide Paradox",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Review and update test cases regularly",
+        "Add new tests when bugs are found to prevent regression",
+        "Test coverage should increase as the codebase grows",
+        "Refactor tests alongside code refactoring",
+        "Ensure new features have test coverage"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-034": {
+    "id": "LAW-034",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/34-lehmans-laws.md",
+    "title": "Lehmans Laws",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Monitor development velocity; overloaded systems stabilize at lower velocity",
+        "Maintain architecture; unstructured evolution increases complexity unacceptably",
+        "Invest in quality; systems degrade without active attention",
+        "Budget for maintenance; evolution requires increasing effort",
+        "Plan for continuous evolution; systems are never \"done\""
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-035": {
+    "id": "LAW-035",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/35-sturgeons-law.md",
+    "title": "Sturgeons Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Invest in quality tools and platforms; the best outweigh the cost",
+        "Carefully evaluate libraries and frameworks; most are mediocre",
+        "Develop good taste in code quality and design",
+        "Recognize that creating good software requires more than average effort",
+        "Study good code; learn from the best 10%"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-036": {
+    "id": "LAW-036",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/36-yagni.md",
+    "title": "Yagni",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "When adding a feature seems tempting, ask: \"Will we actually use it?\"",
+        "Resist the temptation to over-engineer for flexibility",
+        "Keep codebases simple; add complexity only when necessary",
+        "Refactor when actual requirements emerge, not speculatively",
+        "Focus development on current requirements, not anticipated future needs"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-037": {
+    "id": "LAW-037",
+    "type": "law",
+    "file_path": "software-engineering/5-scalability/37-amdahls-law.md",
+    "title": "Amdahls Law",
+    "category": "scalability",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Consider whether parallelization effort justifies expected speedup",
+        "Understand that complete parallelization is impossible in real systems",
+        "Use Amdahl's Law to calculate maximum achievable speedup",
+        "Identify serial bottlenecks before parallelizing",
+        "Focus optimization efforts on high-parallelization-potential code"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-038": {
+    "id": "LAW-038",
+    "type": "law",
+    "file_path": "software-engineering/5-scalability/38-gustafsons-law.md",
+    "title": "Gustafsons Law",
+    "category": "scalability",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "High-performance computing uses Gustafson's Law to justify massive parallelization",
+        "Distributed systems handle larger data and workload scales through parallelization",
+        "Consider growth and scaling when designing parallelizable systems",
+        "Cloud computing enables scaling problem size with parallelization",
+        "Scale problem size with available resources for better parallelization"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-039": {
+    "id": "LAW-039",
+    "type": "law",
+    "file_path": "software-engineering/5-scalability/39-metcalfes-law.md",
+    "title": "Metcalfes Law",
+    "category": "scalability",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Platforms should prioritize growth to reach critical mass faster",
+        "Early-stage networks suffer from low value; critical mass is essential",
+        "Understand when products benefit from network effects versus when they don't",
+        "Switching costs and platform lock-in create competitive advantages",
+        "Network effects drive platform strategy and growth prioritization"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-040": {
+    "id": "LAW-040",
+    "type": "law",
+    "file_path": "software-engineering/6-design/40-dry.md",
+    "title": "Dry",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Extract common code into functions and modules",
+        "Configuration should not be duplicated across files",
+        "Use database normalization to eliminate data duplication",
+        "Documentation should reference a single source of truth",
+        "Constants and magic numbers should be defined once"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-041": {
+    "id": "LAW-041",
+    "type": "law",
+    "file_path": "software-engineering/6-design/41-kiss.md",
+    "title": "Kiss",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Refactor for simplicity, not just functionality",
+        "Avoid premature generalization and over-engineering",
+        "Question complexity; ensure it addresses real needs",
+        "Favor straightforward algorithms and approaches",
+        "Remove unnecessary features and code"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-042": {
+    "id": "LAW-042",
+    "type": "law",
+    "file_path": "software-engineering/6-design/42-solid-principles.md",
+    "title": "Solid Principles",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Verify that derived classes can substitute for base classes",
+        "Design classes with single, well-defined responsibilities",
+        "Keep interfaces focused; don't force clients to depend on unused methods",
+        "Use dependency injection to depend on abstractions",
+        "Use inheritance and composition to extend systems without modification"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Law violation indicators present"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-043": {
+    "id": "LAW-043",
+    "type": "law",
+    "file_path": "software-engineering/6-design/43-law-of-demeter.md",
+    "title": "Law Of Demeter",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Service layers decouple layers from internal details",
+        "Dependency injection provides immediate dependencies",
+        "Avoid chaining method calls across multiple objects (a.b.c.d)",
+        "Aggregator objects gather necessary dependencies",
+        "Use facade objects to hide complex internal structures"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Law violation indicators present"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-044": {
+    "id": "LAW-044",
+    "type": "law",
+    "file_path": "software-engineering/6-design/44-principle-of-least-astonishment.md",
+    "title": "Principle Of Least Astonishment",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "System defaults should match user expectations",
+        "API design should follow conventions developers expect",
+        "Error messages should be clear and expected",
+        "Configuration behavior should follow intuitive patterns",
+        "Consistent naming and patterns reduce confusion"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-045": {
+    "id": "LAW-045",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/45-dunning-kruger-effect.md",
+    "title": "Dunning Kruger Effect",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Be cautious of high-confidence estimates from those new to a domain",
+        "Code reviews catch overconfident decisions",
+        "Seek expert opinions; experts express appropriate uncertainty",
+        "Involve experienced people in architecture decisions; don't rely on confident novices",
+        "Training reduces overconfidence by exposing gaps"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-046": {
+    "id": "LAW-046",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/46-hanlons-razor.md",
+    "title": "Hanlons Razor",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Assume good intent in code reviews and team interactions",
+        "Create psychologically safe environments where mistakes are acknowledged",
+        "Focus on systems and processes preventing mistakes, not blaming individuals",
+        "Investigate root causes of failures rather than assigning blame",
+        "Improve systems and training rather than firing people for mistakes"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-047": {
+    "id": "LAW-047",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/47-occams-razor.md",
+    "title": "Occams Razor",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Design systems simply; add complexity only when necessary",
+        "Choose simple solutions unless evidence demands complexity",
+        "Debug assuming simple causes before investigating exotic ones",
+        "YAGNI and KISS principles apply Occam's Razor",
+        "Question elaborate theories; seek simpler explanations"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-048": {
+    "id": "LAW-048",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/48-sunk-cost-fallacy.md",
+    "title": "Sunk Cost Fallacy",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Have explicit criteria for abandoning projects despite sunk costs",
+        "Evaluate technology and approach decisions based on current fit, not past investment",
+        "Rewrite decisions should compare future value, not past effort",
+        "Career decisions should consider future fit, not career investment",
+        "Create environments where admitting mistakes is safe"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-049": {
+    "id": "LAW-049",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/49-map-is-not-territory.md",
+    "title": "Map Is Not Territory",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Models and simulations guide but don't guarantee outcomes",
+        "Design for uncertainty; expect reality to deviate from models",
+        "Validate assumptions about user behavior empirically",
+        "Architecture diagrams simplify reality; systems are more complex",
+        "Recognize that requirements documents don't capture all complexity"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-050": {
+    "id": "LAW-050",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/50-confirmation-bias.md",
+    "title": "Confirmation Bias",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Use metrics and data to overcome intuition-based bias",
+        "Devil's advocate role in design decisions surfaces contradictions",
+        "Pre-mortems imagine failure and challenge assumptions",
+        "Implement code review processes to catch biased decisions",
+        "Actively seek disconfirming evidence; challenge assumptions"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-051": {
+    "id": "LAW-051",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/51-hype-cycle-and-amaras-law.md",
+    "title": "Hype Cycle And Amaras Law",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Evaluate technologies for actual fit, not hype",
+        "Mature technologies are safer but may be aging out",
+        "Early adopters gain advantage if technology survives hype cycle",
+        "Plan for disillusionment; long-term benefits matter",
+        "Avoid adopting every new technology at peak hype"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-052": {
+    "id": "LAW-052",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/52-lindy-effect.md",
+    "title": "Lindy Effect",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Risk new technologies appropriately; they may not survive",
+        "Prefer established technologies over new ones unless clear benefits exist",
+        "Ideas surviving decades are likely valuable long-term",
+        "Long-lived programming languages (C, Lisp, Python) are safe bets",
+        "Evaluate technology maturity; maturity indicates future viability"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-053": {
+    "id": "LAW-053",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/53-first-principles-thinking.md",
+    "title": "First Principles Thinking",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Challenge \"that's how we've always done it\" with first principles",
+        "When solving novel problems, break them into fundamental components",
+        "Design thinking and user research reveal fundamental needs",
+        "Root cause analysis investigates first principles of problems",
+        "Innovation often comes from reconsidering fundamentals"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-054": {
+    "id": "LAW-054",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/54-inversion.md",
+    "title": "Inversion",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Risk analysis inverts goals: what would cause project failure?",
+        "Architecture decisions consider what would break systems",
+        "Security analysis inverts goals: how would systems be breached?",
+        "Pre-mortems imagine project failure; prevent identified causes",
+        "Design reviews identify what makes designs fail"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-055": {
+    "id": "LAW-055",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/55-pareto-principle.md",
+    "title": "Pareto Principle",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Bug fixes: focus on code causing 80% of defects",
+        "Performance: optimize code responsible for 80% of latency",
+        "Technical debt: focus on code causing 80% of maintenance burden",
+        "Customer issues: 20% of issues cause 80% of customer complaints",
+        "Feature development: 20% of features provide 80% of value"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-056": {
+    "id": "LAW-056",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/56-cunninghams-law.md",
+    "title": "Cunninghams Law",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Use code review as learning opportunity; make proposals and learn from feedback",
+        "Frame statements as proposals to invite correction and improvement",
+        "Post uncertain findings for community correction rather than asking open questions",
+        "Create mistakes in code reviews to surface expert knowledge",
+        "Propose solutions, even uncertain ones, to elicit expert feedback"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  }
+}
