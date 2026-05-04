@@ -17,7 +17,7 @@ pub fn cmd_install(
     use std::io::{self, IsTerminal};
 
     // --- Data seeding ---
-    if local {
+    let seeded = if local {
         // --local: try dist/ archive first, fallback to raw/meta/ source tree
         println!("Seeding data (local)...");
         let cwd = std::env::current_dir().map_err(|e| anyhow::anyhow!(e))?;
@@ -36,6 +36,7 @@ pub fn cmd_install(
                 println!("  {msg}");
             }
         }
+        true
     } else if !dry_run {
         // Default: download from GitHub release
         println!("Fetching data from GitHub Releases...");
@@ -46,6 +47,15 @@ pub fn cmd_install(
         {
             println!("  {msg}");
         }
+        true
+    } else {
+        false
+    };
+
+    // --- Build RAG index ---
+    if seeded && !dry_run {
+        println!("\nBuilding RAG index...");
+        super::build::cmd_build(None, false, false, 64, true, false)?;
     }
 
     // --- Tool installation ---

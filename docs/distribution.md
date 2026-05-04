@@ -13,14 +13,14 @@ syntagma dist
 - `meta/`
 - `data/` (if present)
 - `db/syntagma.db` (embedding DB)
-- `meta/syntagma.db` (compatibility copy)
 
 Output archive:
 - `dist/syntagma-data-<version>.tar.gz`
 
 ## Auto-build behavior
 - If `~/.syntagma/db/syntagma.db` is missing, `syntagma dist` automatically runs `syntagma build` first.
-- This makes packaging work on fresh machines without pre-built DBs.
+- The built DB is also copied to the project-local `db/` directory for inclusion in the archive.
+- `syntagma install --local` seeds data from the archive (or source tree fallback) and auto-builds the RAG index to `~/.syntagma/`.
 
 ## Options
 - `--out-dir <DIR>`: output directory (default: `dist`)

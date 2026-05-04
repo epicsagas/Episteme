@@ -121,10 +121,9 @@ cargo test
 # Lint
 cargo clippy -- -D warnings
 
-# Install locally
+# Install locally (seeds data and builds DB automatically)
 cargo install --path .
 syntagma install --local
-syntagma build
 ```
 
 ---
