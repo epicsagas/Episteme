@@ -46,7 +46,7 @@ async fn graph_full(State(mcp): State<Arc<SyntagmaMCP>>) -> Json<serde_json::Val
         }));
 
         for edge in graph.get_all_edges(&id) {
-            if !graph.get_entity(&edge.to_id).is_some() {
+            if graph.get_entity(&edge.to_id).is_none() {
                 continue;
             }
             edges.push(serde_json::json!({
