@@ -7,3 +7,6 @@ dist/
 # re-include src/lib (overrides root gitignore which ignores lib/)
 !src/lib/
 !src/lib/**
+
+# results is a symlink to ../results — track the symlink, not contents
+# (actual JSON files are tracked at benchmarks/results/)
