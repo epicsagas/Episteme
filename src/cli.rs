@@ -144,18 +144,9 @@ pub enum Commands {
         /// Preview without making changes
         #[arg(long)]
         dry_run: bool,
-        /// Seed data from local source tree
-        #[arg(long)]
-        seed: bool,
-        /// Download and seed data from remote tar.gz
-        #[arg(long)]
-        release_url: Option<String>,
-        /// Use local source-tree seeding mode (Python parity alias)
+        /// Seed data from local source (dist/ archive first, then raw/meta/ fallback)
         #[arg(long)]
         local: bool,
-        /// Offline install mode (skips remote download)
-        #[arg(long)]
-        offline: bool,
     },
 }
 

@@ -114,18 +114,12 @@ fn dispatch(cli: Cli) -> Result<()> {
             tools,
             all,
             dry_run,
-            seed,
-            release_url,
             local,
-            offline,
         } => commands::cmd_install(
             &tools,
             all,
             dry_run,
-            seed,
             local,
-            offline,
-            release_url.as_deref(),
         ),
     }
 }
