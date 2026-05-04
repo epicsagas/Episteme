@@ -4,7 +4,7 @@
   import QueryTable from './lib/QueryTable.svelte';
 
   // Load all benchmark result files eagerly
-  const rawFiles = import.meta.glob('../results/*.json', { eager: true });
+  const rawFiles = import.meta.glob('/results/*.json', { eager: true });
 
   function parseTimestamp(filename) {
     // filename: search_benchmark_YYYYMMDD_HHMMSS.json
