@@ -141,6 +141,7 @@ pub fn keyword_search(
     let ids_ref: Vec<&str> = entity_ids.iter().map(|s| s.as_str()).collect();
     let batch = graph.get_entities_batch(&ids_ref);
 
+    // Score = (total_match_count << 8) | title_match_count, so title hits break ties.
     let mut results: Vec<(String, usize)> = Vec::new();
 
     for (id, entity) in &batch {
@@ -150,10 +151,13 @@ pub fn keyword_search(
                 continue;
             }
 
+        let title_lower = entity.title.to_lowercase();
+        let name_lower = entity.name.to_lowercase();
+
         // Build a searchable text from the entity
         let mut text_parts = vec![
-            entity.title.to_lowercase(),
-            entity.name.to_lowercase(),
+            title_lower.clone(),
+            name_lower.clone(),
             entity.r#type.to_lowercase(),
             entity.category.to_lowercase(),
         ];
@@ -168,26 +172,35 @@ pub fn keyword_search(
         }
         let text = text_parts.join(" ");
 
-        let score = terms.iter().filter(|term| text.contains(*term)).count();
-        if score > 0 {
-            results.push((id.clone(), score));
+        let total_matches = terms.iter().filter(|term| text.contains(*term)).count();
+        if total_matches == 0 {
+            continue;
         }
+
+        // Title hits count separately for tie-breaking (shifted into high bits).
+        let title_matches = terms.iter()
+            .filter(|term| title_lower.contains(*term) || name_lower.contains(*term))
+            .count();
+        let composite_score = (total_matches << 8) | title_matches.min(255);
+        results.push((id.clone(), composite_score));
     }
 
-    // Sort by score descending
+    // Sort by composite score descending (higher total matches first, title matches break ties)
     results.sort_by_key(|b| std::cmp::Reverse(b.1));
     results.truncate(limit);
 
     results
         .into_iter()
-        .map(|(id, score)| {
+        .map(|(id, composite_score)| {
             let entity = batch.get(&id);
+            // Recover the original total match count from the composite score.
+            let display_score = composite_score >> 8;
             serde_json::json!({
                 "entity_id": id,
                 "title": entity.map(|e| e.title.as_str()).unwrap_or(""),
                 "type": entity.map(|e| e.r#type.as_str()).unwrap_or(""),
                 "category": entity.map(|e| e.category.as_str()).unwrap_or(""),
-                "score": score,
+                "score": display_score,
             })
         })
         .collect()

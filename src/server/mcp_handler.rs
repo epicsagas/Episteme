@@ -53,6 +53,23 @@ impl SyntagmaMCP {
         if !db_path.exists() {
             return;
         }
+        // Ensure the FTS5 keyword-search index exists.  We open the database
+        // read-write once just to build the index if it is missing, then
+        // re-open read-only for normal operation.
+        if let Ok(rw_conn) = rusqlite::Connection::open(&db_path) {
+            let has_fts: bool = rw_conn
+                .query_row(
+                    "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='chunks_fts'",
+                    [],
+                    |row| row.get(0),
+                )
+                .unwrap_or(0i64) > 0;
+
+            if !has_fts {
+                let _ = crate::adapters::search_engines::build_fts_index(&rw_conn);
+            }
+        }
+
         if let Ok(conn) = rusqlite::Connection::open_with_flags(
             &db_path,
             rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY,
