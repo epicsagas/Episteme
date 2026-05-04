@@ -20,7 +20,8 @@
         "DP-004",
         "DP-005",
         "DP-007",
-        "DP-010"
+        "DP-010",
+        "DP-011"
       ],
       "requires": [],
       "enables": []
@@ -171,7 +172,8 @@
         "DP-008",
         "DP-009",
         "DP-014",
-        "DP-017"
+        "DP-017",
+        "DP-011"
       ],
       "requires": [],
       "enables": []
@@ -279,7 +281,8 @@
         "DP-010",
         "DP-012",
         "DP-019",
-        "DP-020"
+        "DP-020",
+        "LAW-042-I"
       ],
       "requires": [],
       "enables": []
@@ -523,7 +526,10 @@
       ],
       "violates": [],
       "related_to": [
-        "DP-005"
+        "DP-005",
+        "DP-001",
+        "DP-004",
+        "RF-021"
       ],
       "requires": [],
       "enables": []
@@ -984,7 +990,8 @@
       "related_to": [
         "DP-006",
         "DP-014",
-        "DP-021"
+        "DP-021",
+        "RF-037"
       ],
       "requires": [],
       "enables": []
@@ -1225,12 +1232,17 @@
     "category": "composing_methods",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-12",
+        "SMELL-17"
+      ],
       "solved_by": [],
       "enforces": [],
       "violates": [],
       "related_to": [
-        "RF-001"
+        "RF-001",
+        "RF-009",
+        "RF-005"
       ],
       "requires": [],
       "enables": []
@@ -1261,12 +1273,16 @@
     "category": "composing_methods",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-16"
+      ],
       "solved_by": [],
       "enforces": [],
       "violates": [],
       "related_to": [
-        "RF-002"
+        "RF-002",
+        "RF-008",
+        "RF-005"
       ],
       "requires": [],
       "enables": []
@@ -1309,7 +1325,9 @@
       ],
       "violates": [],
       "related_to": [
-        "RF-001"
+        "RF-001",
+        "RF-003",
+        "RF-004"
       ],
       "requires": [],
       "enables": []
@@ -2297,7 +2315,8 @@
       "related_to": [
         "LAW-028",
         "LAW-029",
-        "LAW-040"
+        "LAW-040",
+        "LAW-056"
       ],
       "requires": [],
       "enables": []
@@ -3484,7 +3503,8 @@
       "violates": [],
       "related_to": [
         "LAW-047",
-        "LAW-053"
+        "LAW-053",
+        "LAW-042-D"
       ],
       "requires": [],
       "enables": []
@@ -3522,7 +3542,8 @@
       "related_to": [
         "LAW-005",
         "LAW-039",
-        "LAW-052"
+        "LAW-052",
+        "LAW-056"
       ],
       "requires": [],
       "enables": []
@@ -3560,7 +3581,8 @@
       "related_to": [
         "LAW-025",
         "LAW-030",
-        "LAW-031"
+        "LAW-031",
+        "LAW-055"
       ],
       "requires": [],
       "enables": []
@@ -3685,7 +3707,9 @@
         "LAW-042-S"
       ],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "RF-004"
+      ],
       "requires": [],
       "enables": []
     },
@@ -3726,7 +3750,8 @@
       "violates": [],
       "related_to": [
         "RF-001",
-        "RF-006"
+        "RF-006",
+        "RF-003"
       ],
       "requires": [],
       "enables": []
@@ -3759,7 +3784,8 @@
     "relations": {
       "solves": [
         "SMELL-04",
-        "SMELL-21"
+        "SMELL-21",
+        "SMELL-08"
       ],
       "solved_by": [],
       "enforces": [
@@ -4152,7 +4178,9 @@
         "LAW-043"
       ],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "RF-021"
+      ],
       "requires": [],
       "enables": []
     },
@@ -4221,7 +4249,8 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-13"
+        "SMELL-13",
+        "SMELL-07"
       ],
       "solved_by": [],
       "enforces": [
@@ -4229,7 +4258,9 @@
       ],
       "violates": [],
       "related_to": [
-        "RF-019"
+        "RF-019",
+        "DP-011",
+        "RF-049"
       ],
       "requires": [],
       "enables": []
@@ -4873,14 +4904,18 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-04"
+        "SMELL-04",
+        "SMELL-08",
+        "SMELL-06"
       ],
       "solved_by": [],
       "enforces": [
         "LAW-041"
       ],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "DP-020"
+      ],
       "requires": [],
       "enables": []
     },
@@ -5321,7 +5356,9 @@
     "category": "simplifying_calls",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-23"
+      ],
       "solved_by": [],
       "enforces": [
         "LAW-031",
@@ -5613,7 +5650,8 @@
     "relations": {
       "solves": [
         "SMELL-11",
-        "SMELL-12"
+        "SMELL-12",
+        "SMELL-22"
       ],
       "solved_by": [],
       "enforces": [
@@ -6129,7 +6167,9 @@
         "LAW-042-S",
         "LAW-041"
       ],
-      "related_to": [],
+      "related_to": [
+        "SMELL-16"
+      ],
       "requires": [],
       "enables": []
     },
@@ -6257,7 +6297,10 @@
       "violates": [
         "LAW-042-S"
       ],
-      "related_to": [],
+      "related_to": [
+        "SMELL-08",
+        "SMELL-22"
+      ],
       "requires": [],
       "enables": []
     },
@@ -6336,7 +6379,8 @@
     "relations": {
       "solves": [],
       "solved_by": [
-        "RF-029"
+        "RF-029",
+        "RF-037"
       ],
       "enforces": [],
       "violates": [
@@ -6386,7 +6430,10 @@
       "violates": [
         "LAW-040"
       ],
-      "related_to": [],
+      "related_to": [
+        "SMELL-15",
+        "SMELL-23"
+      ],
       "requires": [],
       "enables": []
     },
@@ -6594,7 +6641,8 @@
       "solves": [],
       "solved_by": [
         "RF-019",
-        "RF-033"
+        "RF-033",
+        "RF-021"
       ],
       "enforces": [],
       "violates": [
@@ -6643,7 +6691,9 @@
       "violates": [
         "LAW-042-S"
       ],
-      "related_to": [],
+      "related_to": [
+        "SMELL-15"
+      ],
       "requires": [],
       "enables": []
     },
@@ -6728,7 +6778,9 @@
       "violates": [
         "LAW-040"
       ],
-      "related_to": [],
+      "related_to": [
+        "SMELL-17"
+      ],
       "requires": [],
       "enables": []
     },
@@ -6765,13 +6817,16 @@
       "solves": [],
       "solved_by": [
         "RF-018",
-        "RF-019"
+        "RF-019",
+        "RF-003"
       ],
       "enforces": [],
       "violates": [
         "LAW-040"
       ],
-      "related_to": [],
+      "related_to": [
+        "SMELL-17"
+      ],
       "requires": [],
       "enables": []
     },
@@ -6854,7 +6909,8 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-042"
+        "LAW-042",
+        "LAW-042-I"
       ],
       "requires": [],
       "enables": [],
@@ -6987,7 +7043,9 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-042"
+        "LAW-042",
+        "LAW-042-S",
+        "DP-006"
       ],
       "requires": [],
       "enables": [],
@@ -7032,7 +7090,8 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-042"
+        "LAW-042",
+        "LAW-054"
       ],
       "requires": [],
       "enables": [],
@@ -7074,13 +7133,16 @@
     "relations": {
       "solves": [],
       "solved_by": [
-        "RF-032"
+        "RF-032",
+        "RF-055"
       ],
       "enforces": [],
       "violates": [
         "LAW-042-L"
       ],
-      "related_to": [],
+      "related_to": [
+        "SMELL-04"
+      ],
       "requires": [],
       "enables": []
     },
@@ -7115,13 +7177,17 @@
     "relations": {
       "solves": [],
       "solved_by": [
-        "RF-032"
+        "RF-032",
+        "RF-037",
+        "RF-010"
       ],
       "enforces": [],
       "violates": [
         "LAW-040"
       ],
-      "related_to": [],
+      "related_to": [
+        "SMELL-04"
+      ],
       "requires": [],
       "enables": []
     },
@@ -7164,7 +7230,10 @@
       "violates": [
         "LAW-042-S"
       ],
-      "related_to": [],
+      "related_to": [
+        "SMELL-09",
+        "SMELL-13"
+      ],
       "requires": [],
       "enables": []
     },
@@ -7201,13 +7270,16 @@
       "solves": [],
       "solved_by": [
         "RF-001",
-        "RF-035"
+        "RF-035",
+        "RF-004"
       ],
       "enforces": [],
       "violates": [
         "LAW-040"
       ],
-      "related_to": [],
+      "related_to": [
+        "SMELL-01"
+      ],
       "requires": [],
       "enables": []
     },
@@ -7243,13 +7315,17 @@
     "relations": {
       "solves": [],
       "solved_by": [
-        "RF-034"
+        "RF-034",
+        "RF-003"
       ],
       "enforces": [],
       "violates": [
         "LAW-040"
       ],
-      "related_to": [],
+      "related_to": [
+        "SMELL-11",
+        "SMELL-12"
+      ],
       "requires": [],
       "enables": []
     },
@@ -7286,13 +7362,16 @@
       "solves": [],
       "solved_by": [
         "RF-001",
-        "RF-049"
+        "RF-049",
+        "RF-048"
       ],
       "enforces": [],
       "violates": [
         "LAW-042-I"
       ],
-      "related_to": [],
+      "related_to": [
+        "SMELL-13"
+      ],
       "requires": [],
       "enables": []
     },
