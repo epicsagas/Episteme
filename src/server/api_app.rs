@@ -43,6 +43,7 @@ pub static START_TIME: std::sync::LazyLock<Instant> = std::sync::LazyLock::new(I
 pub async fn create_app(
     graph: KnowledgeGraph,
     api_keys: Vec<String>,
+    cors_origins: &str,
     redis_host: &str,
     redis_port: u16,
     redis_db: u16,
@@ -126,7 +127,7 @@ pub async fn create_app(
         .layer(Extension(cache))
         .layer(Extension(telemetry))
         .layer(TraceLayer::new_for_http())
-        .layer(cors_layer())
+        .layer(cors_layer(cors_origins))
         .with_state(state)
 }
 

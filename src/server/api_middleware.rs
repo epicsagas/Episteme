@@ -1,6 +1,6 @@
 use axum::{
     extract::Request,
-    http::HeaderValue,
+    http::{HeaderValue, header},
     middleware::Next,
     response::{IntoResponse, Response},
 };
@@ -36,12 +36,44 @@ pub fn global_error_handler(err: Box<dyn std::any::Any + Send + 'static>) -> Res
 #[derive(Clone, Default)]
 pub struct ApiKeys(pub Vec<String>);
 
-/// Build a CORS layer that allows all origins (suitable for development / API usage).
-pub fn cors_layer() -> CorsLayer {
+/// Build a CORS layer.
+///
+/// When `cors_origins` is empty, allows all origins (development mode).
+/// When set to a comma-separated list of origins, restricts to those origins only.
+pub fn cors_layer(cors_origins: &str) -> CorsLayer {
+    if cors_origins.is_empty() {
+        tracing::warn!("CORS: allowing all origins (development mode)");
+        return CorsLayer::new()
+            .allow_origin(Any)
+            .allow_methods(Any)
+            .allow_headers(Any);
+    }
+
+    let origins: Vec<_> = cors_origins
+        .split(',')
+        .filter_map(|o| {
+            let trimmed = o.trim();
+            trimmed.parse::<HeaderValue>().ok()
+        })
+        .collect();
+
+    if origins.is_empty() {
+        tracing::warn!("CORS: no valid origins parsed from SYNTAGMA_CORS_ORIGINS, allowing all");
+        return CorsLayer::new()
+            .allow_origin(Any)
+            .allow_methods(Any)
+            .allow_headers(Any);
+    }
+
+    tracing::info!("CORS: restricting to {} origin(s)", origins.len());
     CorsLayer::new()
-        .allow_origin(Any)
-        .allow_methods(Any)
-        .allow_headers(Any)
+        .allow_origin(origins)
+        .allow_methods([axum::http::Method::GET, axum::http::Method::POST, axum::http::Method::OPTIONS])
+        .allow_headers([
+            header::CONTENT_TYPE,
+            header::AUTHORIZATION,
+            axum::http::header::HeaderName::from_static("x-api-key"),
+        ])
 }
 
 /// Inject a `X-Request-Id` header into the response if one is not already present.

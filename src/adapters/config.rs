@@ -26,6 +26,7 @@ pub struct SyntagmaConfig {
     pub posthog_api_key: String,
     pub posthog_host: String,
     pub sentry_dsn: String,
+    pub cors_origins: String,
 }
 
 impl Default for SyntagmaConfig {
@@ -52,6 +53,7 @@ impl Default for SyntagmaConfig {
             posthog_api_key: String::new(),
             posthog_host: "https://app.posthog.com".into(),
             sentry_dsn: String::new(),
+            cors_origins: String::new(),
         }
     }
 }
@@ -97,6 +99,7 @@ impl SyntagmaConfig {
         config.posthog_api_key = env_or("SYNTAGMA_POSTHOG_API_KEY", &config.posthog_api_key);
         config.posthog_host = env_or("SYNTAGMA_POSTHOG_HOST", &config.posthog_host);
         config.sentry_dsn = env_or("SYNTAGMA_SENTRY_DSN", &config.sentry_dsn);
+        config.cors_origins = env_or("SYNTAGMA_CORS_ORIGINS", &config.cors_origins);
 
         Ok(config)
     }
