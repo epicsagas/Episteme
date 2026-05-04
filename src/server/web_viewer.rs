@@ -1014,7 +1014,13 @@ function initCy(){
     cy.nodes().removeClass('selected');
     e.target.addClass('selected');
   });
-  cy.on('mouseover','edge',function(e){e.target.addClass('hovered');e.target.style('label',e.target.data('label'))});
+  cy.on('mouseover','edge',function(e){
+    var el=e.target;
+    var c=relColor(el.data('label'));
+    el.addClass('hovered');
+    el.style({'label':el.data('label'),'color':c,'font-size':'11px',
+      'text-outline-color':'#0a0b10','text-outline-width':'3px'});
+  });
   cy.on('mouseout','edge',function(e){e.target.removeClass('hovered');e.target.style('label','')});
 }
 
