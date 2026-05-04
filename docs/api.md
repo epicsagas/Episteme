@@ -378,4 +378,4 @@ RUST_LOG=info
 
 ## License
 
-MIT License
+APACHE-2.0 License
