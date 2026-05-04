@@ -714,7 +714,7 @@ svg text{font-family:system-ui,-apple-system,sans-serif}
   <button class="filter-btn active" data-rel="solved_by">solved_by</button>
   <button class="filter-btn active" data-rel="enforces">enforces</button>
   <button class="filter-btn active" data-rel="violates">violates</button>
-  <button class="filter-btn" data-rel="related_to">related_to</button>
+  <button class="filter-btn active" data-rel="related_to">related_to</button>
   <button id="home-btn" class="filter-btn" style="margin-left:4px">Home</button>
   <span id="status">Loading...</span>
 </div>
@@ -735,7 +735,7 @@ var typeColors={pattern:'#4CAF50',refactoring:'#2196F3',law:'#FF9800',smell:'#f4
 var typeColorsDark={pattern:'#2E7D32',refactoring:'#1565C0',law:'#E65100',smell:'#C62828'};
 var typeIcons={pattern:'◆',refactoring:'⟳',law:'§',smell:'⚠'};
 var entityMap={};
-var activeRelFilters=new Set(['solves','solved_by','enforces','violates']);
+var activeRelFilters=new Set(['solves','solved_by','enforces','violates','related_to']);
 var sankeyData=null,treeData=null;
 var cy=null;
 
@@ -828,143 +828,142 @@ function countLeaves(typeNode){
 function el(tag,cls){var e=document.createElement(tag);if(cls)e.className=cls;return e}
 
 // ---- Sankey rendering ----
-// Layout: 3-column flow
-//   Col 1 (left):   smell (top), pattern (bottom)
-//   Col 2 (center): refactoring
-//   Col 3 (right):  law
+// Fixed layout: 3 columns, nodes at predetermined positions.
+// Links always flow left→right: source.right → target.left via bezier.
+// Slots on each node side are pre-counted then distributed evenly.
 function renderSankey(data){
   var svg=document.getElementById('sankey-svg');
   svg.innerHTML='';
   var rect=svg.getBoundingClientRect();
   var W=rect.width||800,H=rect.height||600;
-  if(W<100||H<100)return;
+  if(W<200||H<200)return;
   var nodes=data.nodes;
   if(!nodes.length)return;
 
-  var pad=40,colW=140,colGap=80;
-  var usableW=W-pad*2;
-  // Scale columns to fit
-  if(3*colW+2*colGap>usableW){colW=Math.floor((usableW-2*colGap)/3);colGap=Math.floor((usableW-3*colW)/2)}
+  // Fixed column x positions (3 columns)
+  var NW=Math.min(160,Math.floor((W-80)/4));   // node width
+  var GAP=Math.max(60,Math.floor((W-80-3*NW)/2)); // gap between cols
+  var padL=40;
+  var colX=[padL, padL+NW+GAP, padL+2*(NW+GAP)];
 
-  var maxCount=Math.max.apply(null,nodes.map(function(n){return n.count}));
-  var maxBlockH=Math.min(280,(H-pad*2)*0.7);
+  // Fixed node positions by type
+  var nodeH={smell:Math.min(160,H*0.28), pattern:Math.min(120,H*0.22),
+             refactoring:Math.min(300,H*0.55), law:Math.min(280,H*0.52)};
+  var nodeY={
+    smell:   H*0.12,
+    pattern: H*0.62,
+    refactoring: (H - nodeH.refactoring)/2,
+    law:         (H - nodeH.law)/2
+  };
+  var nodeCol={smell:0, pattern:0, refactoring:1, law:2};
 
-  // Assign columns: smell=0, pattern=0, refactoring=1, law=2
-  var colMap={smell:0,pattern:0,refactoring:1,law:2};
-  // Vertical split for col 0: smell=top half, pattern=bottom half
-  var rowMap={smell:0,pattern:1,refactoring:0,law:0};
-  var nodePositions={};
-  var nodeById={};
-  nodes.forEach(function(n){nodeById[n.id]=n});
-
-  // Count items per (col, row)
-  var colRowCounts={};
-  nodes.forEach(function(n){
-    var k=colMap[n.id]+','+rowMap[n.id];
-    colRowCounts[k]=(colRowCounts[k]||0)+1;
-  });
-
+  // Build position map
+  var pos={};
   nodes.forEach(function(node){
-    var col=colMap[node.id]!=null?colMap[node.id]:0;
-    var row=rowMap[node.id]!=null?rowMap[node.id]:0;
-    var x=pad+col*(colW+colGap);
-    var h=Math.max(60,node.count/maxCount*maxBlockH);
-    // Vertical position: if col 0 with 2 items, split; otherwise center
-    var colKey=col+','+row;
-    var itemsInCol=colRowCounts[colKey]||1;
-    var totalH=H-pad*2;
-    if(col===0&&itemsInCol>1){
-      // Split col 0 vertically
-      var halfH=totalH/2-20;
-      var y=row===0?pad:pad+halfH+40;
-      h=Math.min(h,halfH-20);
-      h=Math.max(h,60);
-    }else{
-      var y=pad+(totalH-h)/2;
-    }
-    nodePositions[node.id]={x:x,y:y,w:colW,h:h,cx:x+colW/2,cy:y+h/2};
+    var col=nodeCol[node.id]!=null?nodeCol[node.id]:1;
+    var x=colX[col];
+    var h=nodeH[node.id]||100;
+    var y=nodeY[node.id]!=null?nodeY[node.id]:(H-h)/2;
+    pos[node.id]={x:x,y:y,w:NW,h:h};
 
+    // Draw node block
     var g=document.createElementNS('http://www.w3.org/2000/svg','g');
-    var r=svgRect(x,y,colW,h,8);
-    r.setAttribute('fill',typeColorsDark[node.id]||'#333');
-    r.setAttribute('opacity','0.3');
-    r.setAttribute('rx','8');
-    g.appendChild(r);
-    var br=svgRect(x,y,colW,h,8);
-    br.setAttribute('fill','none');
-    br.setAttribute('stroke',typeColors[node.id]||'#666');
-    br.setAttribute('stroke-width','1.5');
-    br.setAttribute('rx','8');
-    g.appendChild(br);
-    g.appendChild(svgText(x+colW/2,y+h/2-16,typeIcons[node.id]||'●',20,typeColors[node.id]||'#999'));
-    g.appendChild(svgText(x+colW/2,y+h/2+4,node.label,12,'#e0e0e0'));
-    g.appendChild(svgText(x+colW/2,y+h/2+20,node.count+' entities',10,'#6b7080'));
+    var bg=svgRect(x,y,NW,h,10);
+    bg.setAttribute('fill',typeColorsDark[node.id]||'#222');
+    bg.setAttribute('opacity','0.55');
+    g.appendChild(bg);
+    var border=svgRect(x,y,NW,h,10);
+    border.setAttribute('fill','none');
+    border.setAttribute('stroke',typeColors[node.id]||'#555');
+    border.setAttribute('stroke-width','2');
+    g.appendChild(border);
+    // Icon
+    var mid=y+h/2;
+    g.appendChild(svgText(x+NW/2, mid-18, typeIcons[node.id]||'●', 22, typeColors[node.id]||'#aaa'));
+    g.appendChild(svgText(x+NW/2, mid+2,  node.label, 12, '#e8e8e8'));
+    g.appendChild(svgText(x+NW/2, mid+18, node.count+' entities', 10, '#6b7080'));
     g.style.cursor='pointer';
     g.addEventListener('click',function(){showTypeSubgraph(node.id)});
-    g.addEventListener('mouseenter',function(){r.setAttribute('opacity','0.5')});
-    g.addEventListener('mouseleave',function(){r.setAttribute('opacity','0.3')});
+    g.addEventListener('mouseenter',function(){bg.setAttribute('opacity','0.8')});
+    g.addEventListener('mouseleave',function(){bg.setAttribute('opacity','0.55')});
     svg.appendChild(g);
   });
 
-  // Draw links with proper flow curves
-  var links=data.links.filter(function(l){return activeRelFilters.has(l.relation)});
-  var maxVal=Math.max.apply(null,links.map(function(l){return l.value}).concat([1]));
-  // Sort links by source-target to stack neatly
-  links.sort(function(a,b){return(a.source+a.target).localeCompare(b.source+b.target)});
+  // Filter and sort links (left-col sources first)
+  var links=data.links.filter(function(l){
+    var sp=pos[l.source],tp=pos[l.target];
+    return sp&&tp&&activeRelFilters.has(l.relation)&&sp.x<tp.x;
+  });
+  if(!links.length){svg.appendChild(makeLegend(W,40));return}
 
-  // Track connection offsets per node edge (top/bottom of right/left side)
-  var srcOffsets={},tgtOffsets={};
+  var maxVal=Math.max.apply(null,links.map(function(l){return l.value}));
+
+  // Pre-count slots per node side
+  var srcCount={},tgtCount={};
+  links.forEach(function(l){
+    srcCount[l.source]=(srcCount[l.source]||0)+1;
+    tgtCount[l.target]=(tgtCount[l.target]||0)+1;
+  });
+  var srcUsed={},tgtUsed={};
+
+  // Draw links — links drawn before nodes so nodes appear on top
+  var linkLayer=document.createElementNS('http://www.w3.org/2000/svg','g');
+  linkLayer.setAttribute('opacity','1');
   links.forEach(function(link){
-    var src=nodePositions[link.source],tgt=nodePositions[link.target];
-    if(!src||!tgt)return;
-    var thickness=Math.max(3,link.value/maxVal*50);
-    // Source exit point (right side of source block)
-    var sk=link.source+'_r';
-    if(!srcOffsets[sk])srcOffsets[sk]=0;
-    var sy=src.y+src.h*0.2+srcOffsets[sk];
-    srcOffsets[sk]+=thickness+2;
-    var sx=src.x+src.w;
-    // Target entry point (left side of target block)
-    var tk=link.target+'_l';
-    if(!tgtOffsets[tk])tgtOffsets[tk]=0;
-    var ty=tgt.y+tgt.h*0.2+tgtOffsets[tk];
-    tgtOffsets[tk]+=thickness+2;
-    var tx=tgt.x;
+    var sp=pos[link.source],tp=pos[link.target];
+    var thick=Math.max(3,Math.round(link.value/maxVal*48));
+
+    // Source slot: right edge, distributed over 20%-80% of node height
+    var si=srcUsed[link.source]||0; srcUsed[link.source]=si+1;
+    var sn=srcCount[link.source];
+    var sy=sp.y+sp.h*0.2 + (sp.h*0.6)*(sn>1?si/(sn-1):0.5);
+    var sx=sp.x+sp.w;
+
+    // Target slot: left edge
+    var ti=tgtUsed[link.target]||0; tgtUsed[link.target]=ti+1;
+    var tn=tgtCount[link.target];
+    var ty=tp.y+tp.h*0.2 + (tp.h*0.6)*(tn>1?ti/(tn-1):0.5);
+    var tx=tp.x;
+
+    // Horizontal bezier — control points pulled toward source/target x
+    var cpx1=sx+(tx-sx)*0.42;
+    var cpx2=sx+(tx-sx)*0.58;
+    var color=relColor(link.relation);
 
     var path=document.createElementNS('http://www.w3.org/2000/svg','path');
-    var cpx1=sx+(tx-sx)*0.4;
-    var cpx2=sx+(tx-sx)*0.6;
     path.setAttribute('d','M'+sx+','+sy+' C'+cpx1+','+sy+' '+cpx2+','+ty+' '+tx+','+ty);
     path.setAttribute('fill','none');
-    path.setAttribute('stroke',relColor(link.relation));
-    path.setAttribute('stroke-width',thickness);
-    path.setAttribute('opacity','0.4');
-    path.setAttribute('stroke-linecap','round');
-    path.style.cursor='pointer';
+    path.setAttribute('stroke',color);
+    path.setAttribute('stroke-width',thick);
+    path.setAttribute('opacity','0.38');
+    path.setAttribute('stroke-linecap','butt');
     var title=document.createElementNS('http://www.w3.org/2000/svg','title');
     title.textContent=link.relation+': '+link.value+' ('+link.source+' → '+link.target+')';
     path.appendChild(title);
-    path.addEventListener('mouseenter',function(){this.setAttribute('opacity','0.8');this.setAttribute('stroke-width',thickness+4)});
-    path.addEventListener('mouseleave',function(){this.setAttribute('opacity','0.4');this.setAttribute('stroke-width',thickness)});
-    svg.appendChild(path);
+    path.addEventListener('mouseenter',function(){this.setAttribute('opacity','0.85')});
+    path.addEventListener('mouseleave',function(){this.setAttribute('opacity','0.38')});
+    linkLayer.appendChild(path);
   });
-
-  // Column labels
-  var colLabels=['Source','Transform','Principle'];
-  [0,1,2].forEach(function(col){
-    var x=pad+col*(colW+colGap)+colW/2;
-    svg.appendChild(svgText(x,H-12,colLabels[col],10,'#4a4b55'));
-  });
+  // Insert link layer before first child so nodes render on top
+  svg.insertBefore(linkLayer,svg.firstChild);
 
   // Legend
-  var legend=document.createElementNS('http://www.w3.org/2000/svg','g');
-  var relTypes=['solves','solved_by','enforces','violates'];
+  svg.appendChild(makeLegend(W,40));
+}
+
+function makeLegend(W,topY){
+  var g=document.createElementNS('http://www.w3.org/2000/svg','g');
+  var relTypes=['solves','solved_by','enforces','violates','related_to'];
+  var lx=W-170;
   relTypes.forEach(function(rel,i){
-    var lx=W-160,ly=pad+i*20;
-    legend.appendChild(svgRect(lx,ly,12,12,2,relColor(rel),relColor(rel)));
-    legend.appendChild(svgText(lx+18,ly+10,rel,11,'#8b8fa3'));
+    var ly=topY+i*20;
+    var dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx',lx+5);dot.setAttribute('cy',ly+6);dot.setAttribute('r',5);
+    dot.setAttribute('fill',relColor(rel));dot.setAttribute('opacity','0.8');
+    g.appendChild(dot);
+    g.appendChild(svgText(lx+14,ly+10,rel,11,'#6b7080'));
   });
-  svg.appendChild(legend);
+  return g;
 }
 
 function relColor(rel){
@@ -987,25 +986,36 @@ function svgText(x,y,text,size,fill){
 function initCy(){
   cy=cytoscape({container:document.getElementById('cy'),
     style:[
-      {selector:'node',style:{'label':'data(label)','text-wrap':'wrap','text-max-width':'140px',
+      {selector:'node',style:{
+        'label':'data(label)','text-wrap':'wrap','text-max-width':'120px',
         'background-color':function(ele){return typeColors[ele.data('type')]||'#9E9E9E'},
-        'font-size':'11px','color':'#e0e0e0','text-outline-color':'#0f1117','text-outline-width':'2px',
-        'width':30,'height':30,'border-width':2,'border-color':'#0f1117'}},
+        'font-size':'12px','color':'#e0e0e0',
+        'text-outline-color':'#0a0b10','text-outline-width':'3px',
+        'text-valign':'bottom','text-margin-y':'6px',
+        'width':44,'height':44,
+        'border-width':2,'border-color':'#0f1117',
+        'border-opacity':0.6}},
       {selector:'node:active',style:{'overlay-opacity':0}},
-      {selector:'node.selected',style:{'border-color':'#fff','border-width':3,'width':40,'height':40}},
-      {selector:'edge',style:{'width':2,'line-color':'#3a3b45','target-arrow-color':'#3a3b45',
-        'target-arrow-shape':'triangle','opacity':0.7,'curve-style':'bezier',
-        'label':'data(label)','font-size':'9px','color':'#6b7080','text-outline-color':'#0f1117','text-outline-width':'1px'}},
+      {selector:'node.selected',style:{'border-color':'#ffffff','border-width':3,'border-opacity':1,'width':56,'height':56}},
+      {selector:'edge',style:{
+        'width':2,
+        'line-color':function(ele){return relColor(ele.data('label'))},
+        'target-arrow-color':function(ele){return relColor(ele.data('label'))},
+        'target-arrow-shape':'triangle',
+        'opacity':0.55,'curve-style':'unbundled-bezier',
+        'control-point-distances':30,'control-point-weights':0.5}},
+      {selector:'edge.hovered',style:{'opacity':1,'width':3}},
       {selector:'edge.filtered',style:{'display':'none'}}
     ]
   });
   cy.on('tap','node',function(e){
     var id=e.target.id();
     showDetail(id);
-    // Highlight
     cy.nodes().removeClass('selected');
     e.target.addClass('selected');
   });
+  cy.on('mouseover','edge',function(e){e.target.addClass('hovered');e.target.style('label',e.target.data('label'))});
+  cy.on('mouseout','edge',function(e){e.target.removeClass('hovered');e.target.style('label','')});
 }
 
 function loadSubgraph(entityId,radius){
@@ -1024,7 +1034,14 @@ function loadSubgraph(entityId,radius){
           if(e)n.data('type',e.type);
         }
       });
-      cy.layout({name:'cose',animate:true,padding:30,nodeRepulsion:function(){return 8000}}).run();
+      cy.layout({name:'cose',animate:true,padding:80,
+        nodeRepulsion:function(){return 120000},
+        idealEdgeLength:function(){return 200},
+        nodeOverlap:40,
+        gravity:0.15,
+        numIter:2000,
+        coolingFactor:0.97
+      }).run();
       filterCyEdges();
       setStatus(d.nodes.length+' nodes, '+d.edges.length+' edges');
       // Highlight center
