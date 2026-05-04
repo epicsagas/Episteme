@@ -323,6 +323,7 @@ mod tests {
             id: id.to_owned(),
             r#type: String::new(),
             title: String::new(),
+            description: String::new(),
             name: String::new(),
             category: String::new(),
             tags: vec![],

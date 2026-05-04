@@ -290,6 +290,9 @@ pub struct Entity {
     pub title: String,
 
     #[serde(default)]
+    pub description: String,
+
+    #[serde(default)]
     pub name: String,
 
     #[serde(default)]
