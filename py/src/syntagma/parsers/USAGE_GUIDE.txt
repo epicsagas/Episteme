@@ -1,0 +1,166 @@
+Multi-Language Code Smell Detection - Usage Guide
+==================================================
+
+Location: /Users/hackme/design-patterns/scripts/language_parsers/
+
+Files Created:
+--------------
+1. base.py (605 lines) - Base framework with LanguageParser abstract class
+2. python_parser.py (271 lines) - Python AST-based parser
+3. java_parser.py (247 lines) - Java parser using javalang library
+4. typescript_parser.py (239 lines) - TypeScript/JavaScript regex-based parser
+5. go_parser.py (285 lines) - Go regex-based parser
+6. rust_parser.py (315 lines) - Rust regex-based parser
+7. __init__.py (40 lines) - Module exports and factory function
+
+Supported Languages:
+--------------------
+- Python (.py) - AST-based analysis
+- Java (.java) - javalang library-based analysis
+- TypeScript (.ts, .tsx) - Regex-based analysis
+- JavaScript (.js, .jsx) - Uses TypeScript parser
+- Go (.go) - Regex-based analysis
+- Rust (.rs) - Regex-based analysis
+
+Detected Code Smells:
+---------------------
+Function/Method Level:
+- Long Method (SMELL-01)
+- Long Parameter List (SMELL-02)
+- Feature Envy (SMELL-03) - Python only
+
+Class/Struct Level:
+- Large Class (SMELL-04)
+- Data Class (SMELL-07)
+- Lazy Class (SMELL-11)
+
+Code Metrics Calculated:
+------------------------
+- Lines of Code (LOC)
+- Cyclomatic Complexity (CC)
+- Nesting Depth
+- Parameter Count
+- Local Variables
+- Return Statements
+- Method Count (classes)
+- Field Count (classes)
+- External Calls (Python)
+
+Usage Examples:
+---------------
+
+1. Basic Usage - Single Language:
+
+    from language_parsers import PythonParser
+    
+    parser = PythonParser()
+    detections = parser.parse_file('myfile.py')
+    
+    for smell in detections:
+        print(f"{smell.smell_name} at {smell.location}")
+
+2. Using Factory Pattern:
+
+    from language_parsers import get_parser
+    
+    parser = get_parser('java')
+    detections = parser.parse_code(java_code, 'Example.java')
+
+3. Checking Supported Extensions:
+
+    parser = get_parser('typescript')
+    extensions = parser.get_supported_extensions()
+    # Returns: ['.ts', '.tsx', '.js', '.jsx']
+
+4. Working with Detection Results:
+
+    for detection in detections:
+        print(f"Smell: {detection.smell_name}")
+        print(f"Confidence: {detection.confidence:.2f}")
+        print(f"Location: {detection.location}")
+        print(f"Function: {detection.function_name}")
+        print(f"Metrics: LOC={detection.metrics.loc}, "
+              f"CC={detection.metrics.cyclomatic_complexity}")
+        print(f"Reasons: {', '.join(detection.reasons)}")
+
+Dependencies:
+-------------
+- javalang>=0.13.0 (for Java parsing)
+  Install: pip install javalang
+
+Error Handling:
+---------------
+All parsers handle errors gracefully:
+- Syntax errors → return empty list []
+- File not found → return empty list []
+- Invalid input → return empty list []
+- Unsupported language → raises ValueError
+
+Implementation Details:
+-----------------------
+
+Python Parser:
+- Uses Python's ast module for accurate parsing
+- Visitor pattern for metric calculation
+- Tracks external calls for Feature Envy detection
+
+Java Parser:
+- Uses javalang library for AST parsing
+- Calculates metrics from parsed tree nodes
+- Handles methods, classes, and fields
+
+TypeScript/JavaScript Parser:
+- Regex-based parsing (no dependencies)
+- Supports both TS and JS syntax
+- Handles classes, functions, and arrow functions
+
+Go Parser:
+- Regex-based parsing (no dependencies)
+- Treats structs as classes
+- Counts methods associated with structs via receiver
+
+Rust Parser:
+- Regex-based parsing (no dependencies)
+- Handles impl blocks for method counting
+- Supports generics and lifetimes in patterns
+
+Testing:
+--------
+Run comprehensive test:
+    cd scripts
+    python test_multi_language_parsers.py
+
+Confidence Thresholds:
+----------------------
+Long Method: 0.5+ (requires combination of metrics)
+Long Parameter List: 0.65+ (4+ params), 0.80+ (5+ params), 0.95+ (7+ params)
+Large Class: 0.5+ (requires combination of metrics)
+Data Class: 0.75 (field-to-method ratio >= 2.0 and >= 5 fields)
+Lazy Class: 0.70 (LOC < 20 and methods <= 2)
+Feature Envy: 0.5+ (Python only, external calls > 5)
+
+Metric Thresholds:
+------------------
+Long Method:
+- LOC > 30 (strong), > 50 (very strong)
+- CC > 10 (strong), > 15 (very strong)
+- Nesting > 3 (moderate), > 4 (strong)
+
+Long Parameter List:
+- > 4 parameters (moderate)
+- > 5 parameters (strong)
+- > 7 parameters (very strong)
+
+Large Class:
+- Methods > 15 (moderate), > 20 (strong)
+- Fields > 10 (moderate), > 15 (strong)
+- LOC > 200 (moderate), > 300 (strong)
+
+Notes:
+------
+1. Python parser is most accurate (AST-based)
+2. Java parser requires javalang library
+3. TypeScript, Go, Rust use regex (simpler but functional)
+4. All parsers extend LanguageParser base class
+5. Results include confidence scores (0.0-1.0)
+6. Graceful error handling - never crashes
