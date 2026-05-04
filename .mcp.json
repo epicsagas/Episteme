@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "syntagma": {
+      "command": "syntagma-mcp",
+      "args": [],
+      "description": "Syntagma knowledge graph for software engineering"
+    }
+  }
+}
