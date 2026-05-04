@@ -13,6 +13,7 @@ use super::prelude::*;
 
 pub fn cmd_build(
     data_dir: Option<&str>,
+    raw_dir: Option<&str>,
     gpu: bool,
     no_gpu: bool,
     batch_size: usize,
@@ -22,7 +23,9 @@ pub fn cmd_build(
     let config = SyntagmaConfig::load()?;
 
     let data_dir = resolve_data_dir(data_dir);
-    let raw_dir = syntagma::adapters::paths::raw_dir();
+    let raw_dir = raw_dir
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(syntagma::adapters::paths::raw_dir);
     let db_path = syntagma::adapters::paths::db_path();
 
     // If --rebuild, delete the existing database.
@@ -190,7 +193,17 @@ pub fn cmd_dist(out_dir: &str, no_db: bool, skip_build: bool) -> Result<()> {
         let db_src = syntagma::adapters::paths::db_path();
         if !db_src.exists() && !skip_build {
             println!("Embedding DB not found. Running build...");
-            cmd_build(None, false, false, 64, true, false)?;
+            let project_meta = cwd.join("meta").to_string_lossy().into_owned();
+            let project_raw = cwd.join("raw").to_string_lossy().into_owned();
+            cmd_build(
+                Some(&project_meta),
+                Some(&project_raw),
+                false,
+                false,
+                64,
+                true,
+                false,
+            )?;
         }
         if !db_src.exists() {
             anyhow::bail!(

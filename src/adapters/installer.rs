@@ -122,24 +122,24 @@ pub fn install_gemini(dry_run: bool) -> Result<Vec<String>, String> {
     Ok(vec!["Gemini CLI: MCP config added".to_owned()])
 }
 
-/// Install MCP config for OpenCode (.opencode/mcp.json).
+/// Install MCP config for OpenCode (~/.config/opencode/opencode.json).
 pub fn install_opencode(dry_run: bool) -> Result<Vec<String>, String> {
-    let project_dir = std::env::current_dir().map_err(|e| e.to_string())?;
-    let opencode_dir = project_dir.join(".opencode");
-    let mcp_json = opencode_dir.join("mcp.json");
+    let home = dirs_home();
+    let opencode_dir = home.join(".config").join("opencode");
+    let config_json = opencode_dir.join("opencode.json");
 
     fs::create_dir_all(&opencode_dir).map_err(|e| e.to_string())?;
 
-    let mut config = read_json_file(&mcp_json);
+    let mut config = read_json_file(&config_json);
     let map = config
         .as_object_mut()
         .ok_or("config is not an object")?;
 
     let servers = map
-        .entry("mcpServers")
+        .entry("mcp")
         .or_insert_with(|| json!({}))
         .as_object_mut()
-        .ok_or("mcpServers is not an object")?;
+        .ok_or("mcp is not an object")?;
 
     if servers.contains_key("syntagma") {
         return Ok(vec!["OpenCode: MCP already configured".to_owned()]);
@@ -147,7 +147,7 @@ pub fn install_opencode(dry_run: bool) -> Result<Vec<String>, String> {
 
     servers.insert("syntagma".to_owned(), mcp_server_config());
     if !dry_run {
-        write_json_file(&mcp_json, &config)?;
+        write_json_file(&config_json, &config)?;
     }
 
     Ok(vec!["OpenCode: MCP config added".to_owned()])

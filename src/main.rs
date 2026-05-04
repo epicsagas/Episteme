@@ -88,7 +88,7 @@ fn dispatch(cli: Cli) -> Result<()> {
             batch_size,
             rebuild,
             stats,
-        } => commands::cmd_build(data_dir.as_deref(), gpu, no_gpu, batch_size, rebuild, stats),
+        } => commands::cmd_build(data_dir.as_deref(), None, gpu, no_gpu, batch_size, rebuild, stats),
 
         Commands::Dist {
             out_dir,
