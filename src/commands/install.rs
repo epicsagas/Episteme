@@ -11,29 +11,44 @@ pub fn cmd_install(
     tools: &[String],
     all: bool,
     dry_run: bool,
-    seed: bool,
     local: bool,
-    offline: bool,
-    release_url: Option<&str>,
 ) -> Result<()> {
     use syntagma::adapters::installer;
     use std::io::{self, IsTerminal};
 
-    if seed || local {
-        println!("Seeding data...");
-        for msg in installer::seed_data(dry_run).map_err(|e| anyhow::anyhow!(e))? {
+    // --- Data seeding ---
+    if local {
+        // --local: try dist/ archive first, fallback to raw/meta/ source tree
+        println!("Seeding data (local)...");
+        let cwd = std::env::current_dir().map_err(|e| anyhow::anyhow!(e))?;
+        let dist_archive = find_dist_archive(&cwd);
+
+        if let Some(archive_path) = dist_archive {
+            println!("  Using dist archive: {}", archive_path.display());
+            for msg in installer::seed_data_from_local_archive(&archive_path, dry_run)
+                .map_err(|e| anyhow::anyhow!(e))?
+            {
+                println!("  {msg}");
+            }
+        } else {
+            println!("  No dist archive found, seeding from source tree...");
+            for msg in installer::seed_data(dry_run).map_err(|e| anyhow::anyhow!(e))? {
+                println!("  {msg}");
+            }
+        }
+    } else if !dry_run {
+        // Default: download from GitHub release
+        println!("Fetching data from GitHub Releases...");
+        let url = resolve_release_url().map_err(|e| anyhow::anyhow!(e))?;
+        println!("  Downloading: {url}");
+        for msg in installer::seed_data_from_release(&url, dry_run)
+            .map_err(|e| anyhow::anyhow!(e))?
+        {
             println!("  {msg}");
         }
-    }
-    if let Some(url) = release_url && !offline {
-        println!("Seeding data from release archive...");
-        for msg in installer::seed_data_from_release(url, dry_run).map_err(|e| anyhow::anyhow!(e))? {
-            println!("  {msg}");
-        }
-    } else if release_url.is_some() && offline {
-        println!("Skipping release download (--offline)");
     }
 
+    // --- Tool installation ---
     let mut selected: Vec<String> = if all || tools.iter().any(|t| t == "all") {
         vec!["claude", "cursor", "codex", "gemini", "opencode", "cline"]
             .into_iter()
@@ -103,6 +118,86 @@ pub fn cmd_install(
     syntagma::adapters::telemetry::track_install_completed(selected.len());
 
     Ok(())
+}
+
+/// Find the newest `syntagma-data-*.tar.gz` in `dist/`.
+fn find_dist_archive(cwd: &std::path::Path) -> Option<PathBuf> {
+    let dist_dir = cwd.join("dist");
+    if !dist_dir.is_dir() {
+        return None;
+    }
+    let mut newest: Option<(PathBuf, std::time::SystemTime)> = None;
+    let Ok(entries) = std::fs::read_dir(&dist_dir) else {
+        return None;
+    };
+    for entry in entries.flatten() {
+        let name = entry.file_name();
+        let name_str = name.to_string_lossy();
+        if name_str.starts_with("syntagma-data-") && name_str.ends_with(".tar.gz") {
+            if let Ok(meta) = entry.metadata() {
+                if let Ok(modified) = meta.modified() {
+                    if newest.as_ref().map(|(_, t)| modified > *t).unwrap_or(true) {
+                        newest = Some((entry.path(), modified));
+                    }
+                }
+            }
+        }
+    }
+    newest.map(|(p, _)| p)
+}
+
+/// Resolve the GitHub release download URL for the current version.
+fn resolve_release_url() -> Result<String> {
+    let version = get_package_version();
+    let repo = "epicsagas/Syntagma";
+    let prefix = "syntagma-data-";
+
+    // Try exact version tag first, then latest
+    for endpoint in [
+        format!("https://api.github.com/repos/{repo}/releases/tags/v{version}"),
+        format!("https://api.github.com/repos/{repo}/releases/latest"),
+    ] {
+        if let Ok(url) = fetch_release_asset_url(&endpoint, prefix) {
+            return Ok(url);
+        }
+    }
+
+    anyhow::bail!(
+        "No data asset found for v{version}.\nCheck: https://github.com/{repo}/releases"
+    )
+}
+
+fn get_package_version() -> String {
+    std::env::var("SYNTAGMA_VERSION")
+        .unwrap_or_else(|_| env!("CARGO_PKG_VERSION").to_owned())
+}
+
+fn fetch_release_asset_url(api_url: &str, prefix: &str) -> Result<String> {
+    let output = std::process::Command::new("curl")
+        .args(["-LfsS", "-H", "Accept: application/vnd.github+json", api_url])
+        .output()
+        .map_err(|e| anyhow::anyhow!("curl failed: {e}"))?;
+
+    if !output.status.success() {
+        anyhow::bail!("curl returned non-zero");
+    }
+
+    let json_str = String::from_utf8_lossy(&output.stdout);
+    let val: serde_json::Value = serde_json::from_str(&json_str)
+        .map_err(|e| anyhow::anyhow!("JSON parse: {e}"))?;
+
+    if let Some(assets) = val.get("assets").and_then(|a| a.as_array()) {
+        for asset in assets {
+            let name = asset.get("name").and_then(|n| n.as_str()).unwrap_or("");
+            if name.starts_with(prefix) && name.ends_with(".tar.gz") {
+                if let Some(url) = asset.get("browser_download_url").and_then(|u| u.as_str()) {
+                    return Ok(url.to_owned());
+                }
+            }
+        }
+    }
+
+    anyhow::bail!("no matching asset in release")
 }
 
 pub fn detect_installed_tools() -> std::collections::HashSet<&'static str> {
