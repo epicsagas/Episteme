@@ -159,6 +159,7 @@ mod tests {
             id: "DP-005".to_owned(),
             r#type: "pattern".to_owned(),
             title: "Singleton".to_owned(),
+            description: String::new(),
             name: "Singleton".to_owned(),
             category: "creational".to_owned(),
             tags: vec![],

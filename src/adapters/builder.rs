@@ -80,6 +80,7 @@ pub fn build(
                 id: entity_id.clone(),
                 r#type: "unknown".to_owned(),
                 title: String::new(),
+                description: String::new(),
                 name: String::new(),
                 category: String::new(),
                 tags: Vec::new(),

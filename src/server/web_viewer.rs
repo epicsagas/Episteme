@@ -350,7 +350,8 @@ async fn graph_tree(State(mcp): State<Arc<SyntagmaMCP>>) -> Json<serde_json::Val
                     let leaf_children: Vec<serde_json::Value> = items
                         .iter()
                         .map(|(id, title)| {
-                            serde_json::json!({"id": id, "title": title})
+                            let desc = graph.get_entity(id).map(|e| e.description.clone()).unwrap_or_default();
+                            serde_json::json!({"id": id, "title": title, "description": desc})
                         })
                         .collect();
 
@@ -404,6 +405,7 @@ mod tests {
             id: id.to_owned(),
             r#type: r#type.to_owned(),
             title: title.to_owned(),
+            description: String::new(),
             name: String::new(),
             category: category.to_owned(),
             tags: vec![],
@@ -764,7 +766,7 @@ function loadAll(){
     var full=results[2];
     full.nodes.forEach(function(n){
       var d=n.data;
-      entityMap[d.id]={id:d.id,title:d.label,type:d.type,category:d.category||''};
+      entityMap[d.id]={id:d.id,title:d.label,description:d.description||'',type:d.type,category:d.category||''};
     });
     // Store edges for detail panel
     full.edges.forEach(function(e){
@@ -1096,6 +1098,9 @@ function highlightLeaf(id){
 }
 
 // ---- Detail panel ----
+function escapeHtml(text){
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 function showDetail(id){
   var panel=document.getElementById('detail');
   var content=document.getElementById('detail-content');
@@ -1108,6 +1113,11 @@ function showDetail(id){
   html+='<span class="detail-badge" style="border-color:'+color+'40;color:'+color+'">'+entity.type+'</span>';
   if(entity.category)html+='<span class="detail-badge">'+entity.category+'</span>';
   html+='</div>';
+  if(entity.description){
+    html+='<div class="detail-section"><h3>Description</h3>';
+    html+='<p style="font-size:13px;line-height:1.5;color:#c0c4d8">'+escapeHtml(entity.description)+'</p>';
+    html+='</div>';
+  }
   // Relations
   var rels=entity._rels||[];
   var byType={};
