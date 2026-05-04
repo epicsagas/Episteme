@@ -143,14 +143,13 @@ fn find_dist_archive(cwd: &std::path::Path) -> Option<PathBuf> {
     for entry in entries.flatten() {
         let name = entry.file_name();
         let name_str = name.to_string_lossy();
-        if name_str.starts_with("syntagma-data-") && name_str.ends_with(".tar.gz") {
-            if let Ok(meta) = entry.metadata() {
-                if let Ok(modified) = meta.modified() {
-                    if newest.as_ref().map(|(_, t)| modified > *t).unwrap_or(true) {
-                        newest = Some((entry.path(), modified));
-                    }
-                }
-            }
+        if name_str.starts_with("syntagma-data-")
+            && name_str.ends_with(".tar.gz")
+            && let Ok(meta) = entry.metadata()
+            && let Ok(modified) = meta.modified()
+            && newest.as_ref().map(|(_, t)| modified > *t).unwrap_or(true)
+        {
+            newest = Some((entry.path(), modified));
         }
     }
     newest.map(|(p, _)| p)
@@ -199,10 +198,11 @@ fn fetch_release_asset_url(api_url: &str, prefix: &str) -> Result<String> {
     if let Some(assets) = val.get("assets").and_then(|a| a.as_array()) {
         for asset in assets {
             let name = asset.get("name").and_then(|n| n.as_str()).unwrap_or("");
-            if name.starts_with(prefix) && name.ends_with(".tar.gz") {
-                if let Some(url) = asset.get("browser_download_url").and_then(|u| u.as_str()) {
-                    return Ok(url.to_owned());
-                }
+            if name.starts_with(prefix)
+                && name.ends_with(".tar.gz")
+                && let Some(url) = asset.get("browser_download_url").and_then(|u| u.as_str())
+            {
+                return Ok(url.to_owned());
             }
         }
     }
