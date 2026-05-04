@@ -1,0 +1,6827 @@
+{
+  "version": "2.2.0",
+  "description": "Enriched relational mapping with bidirectional links and code smells",
+  "last_updated": "2026-04-29",
+  "DP-001": {
+    "id": "DP-001",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/abstract-factory.md",
+    "title": "Abstract Factory",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-002",
+        "DP-003",
+        "DP-004",
+        "DP-005",
+        "DP-007",
+        "DP-010"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Code must work with various product families"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Eliminates tight coupling between",
+        "Guarantees compatible products from the same factory"
+      ],
+      "drawbacks": [
+        "Introduces additional interfaces and classes, increasing code complexity",
+        "May be unnecessarily elaborate for simpler scenarios"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-002": {
+    "id": "DP-002",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/builder.md",
+    "title": "Builder",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-001",
+        "DP-003",
+        "DP-004",
+        "DP-005",
+        "DP-007",
+        "DP-008"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "**"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Step-by-step"
+      ],
+      "drawbacks": [
+        "Increased overall code complexity through multiple new classes"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-003": {
+    "id": "DP-003",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/factory-method.md",
+    "title": "Factory Method",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-D"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-001",
+        "DP-002",
+        "DP-004",
+        "DP-015",
+        "DP-021"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "**"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-004": {
+    "id": "DP-004",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/prototype.md",
+    "title": "Prototype",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-001",
+        "DP-002",
+        "DP-003",
+        "DP-005",
+        "DP-008",
+        "DP-009",
+        "DP-014",
+        "DP-017"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Code shouldn't depend on concrete object classes"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Decouples code from"
+      ],
+      "drawbacks": [
+        "Cloning objects with circular references becomes complicated"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-005": {
+    "id": "DP-005",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/singleton.md",
+    "title": "Singleton",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [
+        "LAW-042-S"
+      ],
+      "related_to": [
+        "DP-001",
+        "DP-002",
+        "DP-004",
+        "DP-010",
+        "DP-011"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- A class should have only one instance accessible to all clients (e.g., shared database objects)"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Provides global access to that instance",
+        "Guarantees single class instance existence",
+        "Lazy initialization—objects are created only when first requested"
+      ],
+      "drawbacks": [
+        "Complicates unit testing due to private constructors and static method overriding limitations",
+        "Violates the Single Responsibility Principle (solves two problems simultaneously)",
+        "Requires special multithreaded handling to prevent multiple instances",
+        "Can mask poor design patterns and excessive component interdependence"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-006": {
+    "id": "DP-006",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/adapter.md",
+    "title": "Adapter",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-L"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-007",
+        "DP-009",
+        "DP-010",
+        "DP-012",
+        "DP-019",
+        "DP-020"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Existing classes have incompatible interfaces requiring integration"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Separates interface/data"
+      ],
+      "drawbacks": [
+        "Sometimes simpler to modify the service class directly",
+        "Increases overall code complexity through additional interfaces and classes"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-007": {
+    "id": "DP-007",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/bridge.md",
+    "title": "Bridge",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-001",
+        "DP-002",
+        "DP-006"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Dividing monolithic classes with multiple functionality variants"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-008": {
+    "id": "DP-008",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/composite.md",
+    "title": "Composite",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "DP-002",
+        "DP-004",
+        "DP-015"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Your application models tree-like structures"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Simplifies handling complex tree structures through polymorphism",
+        "Follows Open/Closed Principle—new element types integrate without breaking existing code"
+      ],
+      "drawbacks": [
+        "Can complicate the interface unnecessarily",
+        "Creating unified interfaces for dissimilar functionality may require overgeneralization"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-009": {
+    "id": "DP-009",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/decorator.md",
+    "title": "Decorator",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-004",
+        "DP-006"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Assigning extra behaviors at runtime without breaking existing code"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Supports Single Responsibility Principle",
+        "Combine multiple behaviors through wrapping",
+        "Extend objects without subclassing",
+        "Add/remove responsibilities at runtime"
+      ],
+      "drawbacks": [
+        "Initial configuration code can appear complex",
+        "Behavior may depend on decorator order",
+        "Difficult removing specific wrappers from stack"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-010": {
+    "id": "DP-010",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/facade.md",
+    "title": "Facade",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-001",
+        "DP-005",
+        "DP-006",
+        "DP-012",
+        "DP-016"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- You need straightforward access to complex subsystems"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Isolates client code from subsystem complexity"
+      ],
+      "drawbacks": [
+        "Facades can become \"god objects\" tightly coupled to numerous application classes"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-011": {
+    "id": "DP-011",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/flyweight.md",
+    "title": "Flyweight",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-005"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Applications spawn huge numbers of similar objects"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Significant RAM savings with numerous similar objects"
+      ],
+      "drawbacks": [
+        "May trade memory for CPU cycles during recalculation of context data",
+        "Increased code complexity confuses team members about state separation"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-012": {
+    "id": "DP-012",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/proxy.md",
+    "title": "Proxy",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-006",
+        "DP-010"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        ""
+      ],
+      "drawbacks": [
+        "Potential response delays from service",
+        "Increased code complexity from additional classes"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-013": {
+    "id": "DP-013",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/chain-of-responsibility.md",
+    "title": "Chain Of Responsibility",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O",
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-014",
+        "DP-016"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Processing different request types in various ways with unknown sequences beforehand"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        ""
+      ],
+      "drawbacks": [
+        "Requests may reach the chain's end unhandled"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-014": {
+    "id": "DP-014",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/command.md",
+    "title": "Command",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O",
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-004",
+        "DP-013",
+        "DP-016",
+        "DP-017",
+        "DP-019",
+        "DP-020",
+        "DP-022"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "**"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-015": {
+    "id": "DP-015",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/iterator.md",
+    "title": "Iterator",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-003",
+        "DP-008",
+        "DP-017",
+        "DP-019",
+        "DP-022"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "**"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Enables parallel iteration over the same collection",
+        "Allows delayed and resumable iteration",
+        "Supports Open/Closed Principle for new collection and iterator types",
+        "Upholds Single Responsibility Principle by extracting traversal logic"
+      ],
+      "drawbacks": [
+        "May be excessive for simple collections",
+        "Potentially less efficient than direct element access in specialized collections"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-016": {
+    "id": "DP-016",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/mediator.md",
+    "title": "Mediator",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-010",
+        "DP-013",
+        "DP-014",
+        "DP-018"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "**"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Supports Open/Closed Principle through new mediator implementations",
+        "Reduces component coupling",
+        "Enhances component reusability",
+        "Improves Single Responsibility: \"extract the communications between various components into a single"
+      ],
+      "drawbacks": [
+        "Mediators can evolve into \"God Objects\" over time, accumulating excessive responsibilities"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-017": {
+    "id": "DP-017",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/memento.md",
+    "title": "Memento",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-004",
+        "DP-014",
+        "DP-015",
+        "DP-019"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "you need to:"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Simplifies originator code by delegating history management",
+        "Maintains encapsulation during state capture"
+      ],
+      "drawbacks": [
+        "Caretakers must track originator lifecycle to dispose obsolete mementos",
+        "Dynamic languages (PHP, Python, JavaScript) cannot guarantee memento immutability",
+        "Excessive RAM consumption from frequent memento creation"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-018": {
+    "id": "DP-018",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/observer.md",
+    "title": "Observer",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-016"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- State changes in one object require updating others with an unknown or dynamic set"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Follows Open/Closed Principle—new subscribers integrate without modifying publisher code",
+        "Runtime relationship establishment between objects"
+      ],
+      "drawbacks": [
+        "Subscribers receive notifications in random order"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-019": {
+    "id": "DP-019",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/state.md",
+    "title": "State",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O",
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-006",
+        "DP-014",
+        "DP-015",
+        "DP-017"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Objects behave differently based on internal state"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Eliminates bulky",
+        "Adheres to Single Responsibility Principle",
+        "Supports Open/Closed Principle for adding new states"
+      ],
+      "drawbacks": [
+        "Can be excessive for simple state machines with few states"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-020": {
+    "id": "DP-020",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/strategy.md",
+    "title": "Strategy",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-006",
+        "DP-014",
+        "DP-021"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "you need to:"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Runtime algorithm swapping capability",
+        "Open/Closed Principle compliance—add strategies without modifying",
+        "Composition replaces inheritance",
+        "Implementation isolation from usage code"
+      ],
+      "drawbacks": [
+        "Unnecessary complexity for simple, stable algorithms",
+        "Modern languages with functional support may eliminate the need for extra classes",
+        "Clients must understand strategy differences to select appropriately"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-021": {
+    "id": "DP-021",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/template-method.md",
+    "title": "Template Method",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-042-L"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-003",
+        "DP-020"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "you want clients extending only specific algorithm steps while preserving overall structure. It's particularly valuable "
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Shared implementations",
+        "Clients override only necessary algorithm portions, minimizing impact from other modifications"
+      ],
+      "drawbacks": [
+        "Risk of violating the Liskov Substitution Principle through step suppression",
+        "Limited client flexibility constrained by provided algorithm skeletons",
+        "Maintenance complexity increases with additional template steps"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "DP-022": {
+    "id": "DP-022",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/visitor.md",
+    "title": "Visitor",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O"
+      ],
+      "violates": [],
+      "related_to": [
+        "DP-014",
+        "DP-015"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "- Performing operations on all elements of complex structures (object trees)"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [
+        "Follows Open/Closed Principle—add behaviors without modifying classes",
+        "Visitors can accumulate information while traversing complex structures",
+        "Follows Single Responsibility—group related behaviors in visitor classes"
+      ],
+      "drawbacks": [
+        "Visitors may lack access to private fields and methods",
+        "Must update all visitors when adding/removing element classes"
+      ]
+    },
+    "source": {
+      "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+      "authors": [
+        "Erich Gamma",
+        "Richard Helm",
+        "Ralph Johnson",
+        "John Vlissides"
+      ],
+      "year": 1994,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/design-patterns-elements/0201633612/"
+    }
+  },
+  "RF-001": {
+    "id": "RF-001",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/extract-method.md",
+    "title": "Extract Method",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01",
+        "SMELL-13",
+        "SMELL-18"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-041",
+        "LAW-042-S",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-002",
+        "RF-003",
+        "RF-005"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Long Method",
+        "Duplicate Code",
+        "Feature Envy"
+      ],
+      "benefits": [
+        "evident",
+        "Improved Readability:",
+        "Reduced Duplication:",
+        "Better Error Isolation:"
+      ],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-002": {
+    "id": "RF-002",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/extract-variable.md",
+    "title": "Extract Variable",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "RF-001",
+        "RF-004"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-003": {
+    "id": "RF-003",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/inline-method.md",
+    "title": "Inline Method",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "RF-001"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-004": {
+    "id": "RF-004",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/inline-temp.md",
+    "title": "Inline Temp",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "RF-002"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-005": {
+    "id": "RF-005",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/replace-temp-with-query.md",
+    "title": "Replace Temp With Query",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01",
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-041",
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-001"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Long Method",
+        "Duplicate Code"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "LAW-001": {
+    "id": "LAW-001",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/01-conways-law.md",
+    "title": "Conways Law",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-002",
+        "LAW-003",
+        "LAW-004",
+        "LAW-008",
+        "LAW-011"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "API designs naturally align with team dependencies and reporting lines",
+        "Cross-team collaboration tools and practices directly impact system integration approaches",
+        "Microservices adoption often requires reorganizing teams from function-based to domain-based structures",
+        "Companies restructuring to support cloud-native architectures must also restructure their teams"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "How Do Committees Invent?",
+      "authors": [
+        "Melvin Conway"
+      ],
+      "year": 1968,
+      "publisher": "Datamation",
+      "license": "reference",
+      "url": "https://www.melconway.com/Home/Conways_Law.html"
+    }
+  },
+  "LAW-002": {
+    "id": "LAW-002",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/02-brooks-law.md",
+    "title": "Brooks Law",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-001",
+        "LAW-003",
+        "LAW-011",
+        "LAW-013"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Task decomposition strategies are critical for determining parallelizability",
+        "Hiring practices should account for ramp-up time and productivity curves",
+        "Crisis staffing often backfires without proper planning and mentorship structure",
+        "Project management decisions during delays require caution before adding resources"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "The Mythical Man-Month",
+      "authors": [
+        "Fred Brooks"
+      ],
+      "year": 1975,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Brooks%27s_law"
+    }
+  },
+  "LAW-003": {
+    "id": "LAW-003",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/03-dunbars-number.md",
+    "title": "Dunbars Number",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-001",
+        "LAW-004",
+        "LAW-008"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Team scaling strategies should account for cognitive limits and relationship maintenance costs",
+        "Engineering teams typically split or restructure when exceeding 150-200 people",
+        "Startup cultures emphasizing \"everyone knows everyone\" are limited to roughly Dunbar's Number",
+        "Large organizations require more formal communication, documentation, and process"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-004": {
+    "id": "LAW-004",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/04-ringelmann-effect.md",
+    "title": "Ringelmann Effect",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-001",
+        "LAW-002",
+        "LAW-003"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Code review processes must scale without becoming bottlenecks",
+        "Incentive systems should encourage individual accountability within team settings",
+        "Team size optimization becomes crucial for maintaining velocity",
+        "Decision-making structures should prevent diffusion of responsibility"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-005": {
+    "id": "LAW-005",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/05-prices-law.md",
+    "title": "Prices Law",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-003",
+        "LAW-004",
+        "LAW-055"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Compensation and recognition should account for contribution distribution",
+        "Open-source projects typically have a small core of highly productive contributors",
+        "Engineering organizations should identify and nurture top performers",
+        "Knowledge and decision-making naturally concentrate; processes should acknowledge this"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-006": {
+    "id": "LAW-006",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/06-putts-law.md",
+    "title": "Putts Law",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-007",
+        "LAW-009",
+        "LAW-045"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Hiring managers with technical backgrounds improves technical decision-making",
+        "Technical leadership roles (architect, tech lead) bridge the gap between management and expertise",
+        "Organizations should establish dual-track career paths for technical and managerial advancement",
+        "Decision-making structures should incorporate technical experts in management discussions"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-007": {
+    "id": "LAW-007",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/07-peter-principle.md",
+    "title": "Peter Principle",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-006",
+        "LAW-009",
+        "LAW-045"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Promotion decisions should explicitly evaluate readiness for new roles",
+        "Training and support programs should help people transition between role types",
+        "Organizations should recognize different types of expertise and contribution",
+        "Lateral moves and skill development matter as much as vertical advancement"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-008": {
+    "id": "LAW-008",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/08-bus-factor.md",
+    "title": "Bus Factor",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-001",
+        "LAW-002",
+        "LAW-003"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Documentation and runbooks reduce organizational risk",
+        "Mentorship and knowledge transfer programs improve team resilience",
+        "On-call and incident response systems should distribute responsibility",
+        "Organizations should actively increase bus factor through knowledge sharing",
+        "Code ownership models should avoid single ownership of critical systems"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-009": {
+    "id": "LAW-009",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/09-dilbert-principle.md",
+    "title": "Dilbert Principle",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-006",
+        "LAW-007",
+        "LAW-045"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Organizations should resist using management as a dumping ground for difficult employees",
+        "Performance management systems should assess both technical and interpersonal contributions",
+        "Promotion criteria should explicitly evaluate management readiness and people skills",
+        "Alternative career paths prevent forced promotion of people unsuited to management"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-010": {
+    "id": "LAW-010",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/10-premature-optimization.md",
+    "title": "Premature Optimization",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-036",
+        "LAW-037",
+        "LAW-041",
+        "LAW-053"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Performance budgets and monitoring guide optimization priorities",
+        "Development should prioritize clarity and correctness before optimization",
+        "Code reviews should question optimization that lacks performance profiling evidence",
+        "Profiling tools should be standard in development workflow",
+        "Late-stage optimization during load testing is preferable to early guessing"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-011": {
+    "id": "LAW-011",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/11-parkinsons-law.md",
+    "title": "Parkinsons Law",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-002",
+        "LAW-013",
+        "LAW-036"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Agile practices using time-boxed iterations leverage Parkinson's Law positively",
+        "Distinguishing between necessary slack and wasted time is important",
+        "Shorter sprint cycles encourage focused work and fast feedback",
+        "Clear deadlines prevent scope expansion and gold-plating",
+        "Resource allocation should account for this tendency"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-012": {
+    "id": "LAW-012",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/12-ninety-ninety-rule.md",
+    "title": "Ninety Ninety Rule",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-013",
+        "LAW-015",
+        "LAW-026"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Time-boxed development with early testing reduces final-phase surprises",
+        "Definition of done should be clear and realistic upfront",
+        "Buffer estimates should be proportional to the type of project",
+        "Testing and quality assurance should begin earlier, not be deferred",
+        "Project estimates should account for the final 10% expansion explicitly"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-013": {
+    "id": "LAW-013",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/13-hofstadters-law.md",
+    "title": "Hofstadters Law",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-002",
+        "LAW-011",
+        "LAW-012"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Track estimation accuracy and adjust planning accordingly",
+        "Establish empirical velocity metrics from historical data rather than individual estimates",
+        "Break tasks into smaller increments to reduce estimation error",
+        "Multiply estimates by factors beyond simple buffers; add contingency for unknowns",
+        "Use ranges and confidence levels rather than point estimates"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-014": {
+    "id": "LAW-014",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/14-goodharts-law.md",
+    "title": "Goodharts Law",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-023",
+        "LAW-047",
+        "LAW-053"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Monitor for gaming behavior when metrics become targets",
+        "Establish balanced scorecards with multiple perspectives",
+        "Distinguish between metrics for measurement versus management",
+        "Avoid using single metrics for performance evaluation",
+        "Focus on outcomes rather than metrics-based incentives"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-015": {
+    "id": "LAW-015",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/15-gilbs-law.md",
+    "title": "Gilbs Law",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-012",
+        "LAW-014",
+        "LAW-032"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Establish baselines for improvement rather than exact truth",
+        "Start with imperfect metrics rather than delaying for perfect ones",
+        "Focus on trends and comparisons rather than absolute accuracy",
+        "Use metrics to identify problems even if they're not perfectly precise",
+        "Refine measurements over time as understanding improves"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-016": {
+    "id": "LAW-016",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/16-hyrums-law.md",
+    "title": "Hyrums Law",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-018",
+        "LAW-027",
+        "LAW-044"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Version management and deprecation processes are necessary for sustainability",
+        "Documentation should clarify what's guaranteed versus implementation detail",
+        "Internal implementation details should be hidden behind well-defined interfaces",
+        "API design should be intentional about what's observable and documented",
+        "Testing should verify contract compliance, not just functionality"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Hyrum's Law",
+      "authors": [
+        "Hyrum Wright"
+      ],
+      "license": "reference",
+      "url": "https://www.hyrumslaw.com/"
+    }
+  },
+  "LAW-017": {
+    "id": "LAW-017",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/17-galls-law.md",
+    "title": "Galls Law",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-018",
+        "LAW-036",
+        "LAW-041"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Design should emerge from requirements of working systems",
+        "Incremental improvements to production systems beat complete redesigns",
+        "Microservices should evolve from monoliths; not the reverse",
+        "Start with working systems before adding complexity",
+        "Favor evolutionary architecture over big-bang redesigns"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Systemantics: How Systems Work and Especially How They Fail",
+      "authors": [
+        "John Gall"
+      ],
+      "year": 1975,
+      "publisher": "Quadrangle",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/John_Gall_(author)#Gall%27s_law"
+    }
+  },
+  "LAW-018": {
+    "id": "LAW-018",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/18-law-of-leaky-abstractions.md",
+    "title": "Law Of Leaky Abstractions",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-016",
+        "LAW-017",
+        "LAW-036",
+        "LAW-043"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Performance-critical systems require understanding implementation",
+        "Provide \"escape hatches\" for cases where abstraction breaks",
+        "Test abstractions against edge cases where leaks appear",
+        "Document abstraction limitations and when implementation details matter",
+        "Design abstractions acknowledging where they leak"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "The Law of Leaky Abstractions",
+      "authors": [
+        "Joel Spolsky"
+      ],
+      "year": 2002,
+      "license": "reference",
+      "url": "https://www.joelonsoftware.com/2002/11/11/the-law-of-leaky-abstractions/"
+    }
+  },
+  "LAW-019": {
+    "id": "LAW-019",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/19-teslers-law.md",
+    "title": "Teslers Law",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-027",
+        "LAW-041",
+        "LAW-044"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Low-code platforms shift complexity from developers to configuration",
+        "Configuration flexibility comes at the cost of user complexity",
+        "Simplifying interfaces requires robust hidden systems",
+        "User-friendly tools often require sophisticated backend systems",
+        "Design decisions should explicitly choose complexity location"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Tesler's Law (Law of Conservation of Complexity)",
+      "authors": [
+        "Larry Tesler"
+      ],
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Law_of_conservation_of_complexity"
+    }
+  },
+  "LAW-020": {
+    "id": "LAW-020",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/20-cap-theorem.md",
+    "title": "Cap Theorem",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-022",
+        "LAW-037",
+        "LAW-038"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Design decisions must align system guarantees with application requirements",
+        "Eventual consistency is often acceptable for specific use cases",
+        "Monitoring and alerting become critical for partition scenarios",
+        "AP (Available, Partition-tolerant) systems: caches and read-heavy systems accepting eventual consistency",
+        "CP (Consistent, Partition-tolerant) systems: databases prioritizing data accuracy"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-021": {
+    "id": "LAW-021",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/21-second-system-effect.md",
+    "title": "Second System Effect",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-002",
+        "LAW-026",
+        "LAW-035"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Team composition matters; fresh perspectives help combat the effect",
+        "Rewrite decisions should be cautious and deliberate",
+        "Incremental evolution might be preferable to complete replacement",
+        "Maintaining the first system's simplicity is an explicit goal for seconds",
+        "Feature lists for replacements should be conservative"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-022": {
+    "id": "LAW-022",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/22-fallacies-of-distributed-computing.md",
+    "title": "Fallacies Of Distributed Computing",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-017",
+        "LAW-020",
+        "LAW-023"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Measure and account for latency; design for acceptable performance within constraints",
+        "Design distributed systems assuming networks fail; implement retry and timeout logic",
+        "Build systems tolerant of topology changes",
+        "Implement security at every level; assume network compromise",
+        "Optimize data transfer; avoid unnecessary round trips"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-023": {
+    "id": "LAW-023",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/23-law-of-unintended-consequences.md",
+    "title": "Law Of Unintended Consequences",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-014",
+        "LAW-026",
+        "LAW-028"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Monitoring and observability are essential for detecting unintended effects",
+        "Change management processes should anticipate and watch for surprises",
+        "Testing should focus on integration and system-level behavior, not just units",
+        "Documentation should capture system interdependencies and potential interactions",
+        "Large changes should be implemented incrementally with careful monitoring"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-024": {
+    "id": "LAW-024",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/24-zawinskis-law.md",
+    "title": "Zawinskis Law",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-017",
+        "LAW-019",
+        "LAW-036"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Monitor feature expansion for architectural strain",
+        "Feature requests should be evaluated for long-term architectural impact",
+        "Architecture should accommodate feature expansion while maintaining clarity",
+        "Modular design enables expansion without complete redesign",
+        "Define and defend core scope to resist uncontrolled expansion"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Zawinski's Law",
+      "authors": [
+        "Jamie Zawinski"
+      ],
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Jamie_Zawinski#Zawinski's_law"
+    }
+  },
+  "LAW-025": {
+    "id": "LAW-025",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/25-boy-scout-rule.md",
+    "title": "Boy Scout Rule",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-028",
+        "LAW-029"
+      ],
+      "violates": [],
+      "related_to": [
+        "LAW-028",
+        "LAW-029",
+        "LAW-040"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Code reviews should encourage Boy Scout improvements",
+        "Developers should allocate time during feature work for small refactoring",
+        "Establish refactoring guidelines: variable renames, extract methods, remove duplication",
+        "Measure code quality trends to track the effect of Boy Scout practices",
+        "Resist the trap of \"we'll refactor later\"; refactor as you go"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Clean Code",
+      "authors": [
+        "Robert C. Martin"
+      ],
+      "year": 2008,
+      "publisher": "Prentice Hall",
+      "license": "reference",
+      "url": "https://www.oreilly.com/library/view/clean-code-a/9780136083238/"
+    }
+  },
+  "LAW-026": {
+    "id": "LAW-026",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/26-murphys-law.md",
+    "title": "Murphys Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-012",
+        "LAW-013",
+        "LAW-021",
+        "LAW-023",
+        "LAW-035"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Use fault injection and chaos engineering to find problems before production",
+        "Implement monitoring and alerting for potential failures",
+        "Design for failure: implement timeouts, retries, and fallbacks",
+        "Test edge cases and boundary conditions thoroughly",
+        "Validate inputs; don't assume data is well-formed"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-027": {
+    "id": "LAW-027",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/27-postels-law.md",
+    "title": "Postels Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-016",
+        "LAW-019",
+        "LAW-044"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Error handling should be forgiving when possible while logging issues",
+        "Libraries should accept multiple formats and versions of inputs",
+        "Data parsers should handle variations gracefully without failing",
+        "API design should be strict about response format but lenient about request parsing",
+        "Deprecated API versions should be supported for extended periods"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-028": {
+    "id": "LAW-028",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/28-broken-windows-theory.md",
+    "title": "Broken Windows Theory",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-023",
+        "LAW-025",
+        "LAW-029"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Refactoring should be regular, not deferred",
+        "Tools and automation should enforce quality standards",
+        "Team culture should emphasize quality standards",
+        "Technical debt should be explicitly tracked and addressed",
+        "Code reviews should catch and address quality issues promptly"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Law violation indicators present"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-029": {
+    "id": "LAW-029",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/29-technical-debt.md",
+    "title": "Technical Debt",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-025",
+        "LAW-028",
+        "LAW-034"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Distinguish between debt incurred intentionally and debt from mistakes",
+        "Track technical debt explicitly; don't ignore it",
+        "Refactoring and modernization efforts address debt strategically",
+        "Allocate time for paying down debt; don't defer indefinitely",
+        "Understand that some technical debt is strategic and acceptable"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "TechnicalDebt",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "license": "reference",
+      "url": "https://martinfowler.com/bliki/TechnicalDebt.html"
+    }
+  },
+  "LAW-030": {
+    "id": "LAW-030",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/30-linuss-law.md",
+    "title": "Linuss Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-025",
+        "LAW-031",
+        "LAW-033"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Implement mandatory code review processes",
+        "Documentation and clarity enable more effective review",
+        "Encourage open-source contributions to expose code to broader scrutiny",
+        "Involve multiple reviewers for critical code",
+        "Diverse teams catch more bugs than homogeneous teams"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-031": {
+    "id": "LAW-031",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/31-kernighans-law.md",
+    "title": "Kernighans Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-030",
+        "LAW-040",
+        "LAW-041"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Add helpful comments explaining non-obvious logic",
+        "Write code for clarity, not cleverness",
+        "Implement logging and observability for debugging",
+        "Avoid overly complex algorithms when simpler alternatives suffice",
+        "Use meaningful variable and function names"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "The Elements of Programming Style",
+      "authors": [
+        "Brian Kernighan",
+        "P.J. Plauger"
+      ],
+      "year": 1974,
+      "publisher": "McGraw-Hill",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Kernighan%27s_law"
+    }
+  },
+  "LAW-032": {
+    "id": "LAW-032",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/32-testing-pyramid.md",
+    "title": "Testing Pyramid",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-030",
+        "LAW-033"
+      ],
+      "violates": [],
+      "related_to": [
+        "LAW-015",
+        "LAW-030",
+        "LAW-033"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "End-to-end tests should cover critical user paths",
+        "Organize tests by level: unit, integration, end-to-end",
+        "Maintain fast unit test execution (under a few seconds)",
+        "Integration tests should verify boundaries between components",
+        "Use mocks and stubs to isolate unit tests"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-033": {
+    "id": "LAW-033",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/33-pesticide-paradox.md",
+    "title": "Pesticide Paradox",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-015",
+        "LAW-030",
+        "LAW-032"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Refactor tests alongside code refactoring",
+        "Test coverage should increase as the codebase grows",
+        "Ensure new features have test coverage",
+        "Review and update test cases regularly",
+        "Add new tests when bugs are found to prevent regression"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-034": {
+    "id": "LAW-034",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/34-lehmans-laws.md",
+    "title": "Lehmans Laws",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-016",
+        "LAW-017",
+        "LAW-029"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Budget for maintenance; evolution requires increasing effort",
+        "Maintain architecture; unstructured evolution increases complexity unacceptably",
+        "Plan for continuous evolution; systems are never \"done\"",
+        "Invest in quality; systems degrade without active attention",
+        "Monitor development velocity; overloaded systems stabilize at lower velocity"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Laws of Software Evolution Revisited",
+      "authors": [
+        "Meir M. Lehman"
+      ],
+      "year": 1996,
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Lehman%27s_laws_of_software_evolution"
+    }
+  },
+  "LAW-035": {
+    "id": "LAW-035",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/35-sturgeons-law.md",
+    "title": "Sturgeons Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-021",
+        "LAW-026",
+        "LAW-030"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Carefully evaluate libraries and frameworks; most are mediocre",
+        "Study good code; learn from the best 10%",
+        "Invest in quality tools and platforms; the best outweigh the cost",
+        "Develop good taste in code quality and design",
+        "Recognize that creating good software requires more than average effort"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-036": {
+    "id": "LAW-036",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/36-yagni.md",
+    "title": "Yagni",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-017",
+        "LAW-024",
+        "LAW-041",
+        "LAW-053"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Refactor when actual requirements emerge, not speculatively",
+        "When adding a feature seems tempting, ask: \"Will we actually use it?\"",
+        "Resist the temptation to over-engineer for flexibility",
+        "Keep codebases simple; add complexity only when necessary",
+        "Focus development on current requirements, not anticipated future needs"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-037": {
+    "id": "LAW-037",
+    "type": "law",
+    "file_path": "software-engineering/5-scalability/37-amdahls-law.md",
+    "title": "Amdahls Law",
+    "category": "scalability",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-010",
+        "LAW-020",
+        "LAW-038"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Understand that complete parallelization is impossible in real systems",
+        "Identify serial bottlenecks before parallelizing",
+        "Focus optimization efforts on high-parallelization-potential code",
+        "Use Amdahl's Law to calculate maximum achievable speedup",
+        "Consider whether parallelization effort justifies expected speedup"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Validity of the Single Processor Approach to Achieving Large-Scale Computing Capabilities",
+      "authors": [
+        "Gene Amdahl"
+      ],
+      "year": 1967,
+      "publisher": "AFIPS Conference Proceedings",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Amdahl%27s_law"
+    }
+  },
+  "LAW-038": {
+    "id": "LAW-038",
+    "type": "law",
+    "file_path": "software-engineering/5-scalability/38-gustafsons-law.md",
+    "title": "Gustafsons Law",
+    "category": "scalability",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-020",
+        "LAW-037"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Cloud computing enables scaling problem size with parallelization",
+        "Distributed systems handle larger data and workload scales through parallelization",
+        "High-performance computing uses Gustafson's Law to justify massive parallelization",
+        "Consider growth and scaling when designing parallelizable systems",
+        "Scale problem size with available resources for better parallelization"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Reevaluating Amdahl's Law",
+      "authors": [
+        "John L. Gustafson"
+      ],
+      "year": 1988,
+      "publisher": "Communications of the ACM",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Gustafson%27s_law"
+    }
+  },
+  "LAW-039": {
+    "id": "LAW-039",
+    "type": "law",
+    "file_path": "software-engineering/5-scalability/39-metcalfes-law.md",
+    "title": "Metcalfes Law",
+    "category": "scalability",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-020",
+        "LAW-037",
+        "LAW-055"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Switching costs and platform lock-in create competitive advantages",
+        "Network effects drive platform strategy and growth prioritization",
+        "Early-stage networks suffer from low value; critical mass is essential",
+        "Understand when products benefit from network effects versus when they don't",
+        "Platforms should prioritize growth to reach critical mass faster"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Metcalfe's Law",
+      "authors": [
+        "Robert Metcalfe"
+      ],
+      "year": 1980,
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Metcalfe%27s_law"
+    }
+  },
+  "LAW-040": {
+    "id": "LAW-040",
+    "type": "law",
+    "file_path": "software-engineering/6-design/40-dry.md",
+    "title": "Dry",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-001",
+        "RF-046"
+      ],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-041",
+        "LAW-042",
+        "LAW-043"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Constants and magic numbers should be defined once",
+        "Use database normalization to eliminate data duplication",
+        "Configuration should not be duplicated across files",
+        "Extract common code into functions and modules",
+        "Documentation should reference a single source of truth"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "The Pragmatic Programmer",
+      "authors": [
+        "Andrew Hunt",
+        "David Thomas"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/"
+    }
+  },
+  "LAW-041": {
+    "id": "LAW-041",
+    "type": "law",
+    "file_path": "software-engineering/6-design/41-kiss.md",
+    "title": "Kiss",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-001"
+      ],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-036",
+        "LAW-040",
+        "LAW-042"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Remove unnecessary features and code",
+        "Favor straightforward algorithms and approaches",
+        "Refactor for simplicity, not just functionality",
+        "Question complexity; ensure it addresses real needs",
+        "Avoid premature generalization and over-engineering"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-042": {
+    "id": "LAW-042",
+    "type": "law",
+    "file_path": "software-engineering/6-design/42-solid-principles.md",
+    "title": "Solid Principles",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-041",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [
+        "LAW-040",
+        "LAW-041",
+        "LAW-043"
+      ],
+      "requires": [],
+      "enables": [],
+      "violated_by": []
+    },
+    "context": {
+      "when_to_use": [
+        "Keep interfaces focused; don't force clients to depend on unused methods",
+        "Use inheritance and composition to extend systems without modification",
+        "Verify that derived classes can substitute for base classes",
+        "Design classes with single, well-defined responsibilities",
+        "Use dependency injection to depend on abstractions"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Law violation indicators present"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Agile Software Development: Principles, Patterns, and Practices",
+      "authors": [
+        "Robert C. Martin"
+      ],
+      "year": 2002,
+      "publisher": "Prentice Hall",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/SOLID"
+    }
+  },
+  "LAW-043": {
+    "id": "LAW-043",
+    "type": "law",
+    "file_path": "software-engineering/6-design/43-law-of-demeter.md",
+    "title": "Law Of Demeter",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-018",
+        "LAW-040",
+        "LAW-042"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Service layers decouple layers from internal details",
+        "Aggregator objects gather necessary dependencies",
+        "Dependency injection provides immediate dependencies",
+        "Avoid chaining method calls across multiple objects (a.b.c.d)",
+        "Use facade objects to hide complex internal structures"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Law violation indicators present"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Law of Demeter",
+      "authors": [
+        "Karl Lieberherr",
+        "Ian Holland"
+      ],
+      "year": 1987,
+      "publisher": "OOPSLA",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Law_of_Demeter"
+    }
+  },
+  "LAW-044": {
+    "id": "LAW-044",
+    "type": "law",
+    "file_path": "software-engineering/6-design/44-principle-of-least-astonishment.md",
+    "title": "Principle Of Least Astonishment",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-016",
+        "LAW-019",
+        "LAW-027",
+        "LAW-041"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "System defaults should match user expectations",
+        "Configuration behavior should follow intuitive patterns",
+        "Error messages should be clear and expected",
+        "Consistent naming and patterns reduce confusion",
+        "API design should follow conventions developers expect"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-045": {
+    "id": "LAW-045",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/45-dunning-kruger-effect.md",
+    "title": "Dunning Kruger Effect",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-006",
+        "LAW-046",
+        "LAW-050"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Involve experienced people in architecture decisions; don't rely on confident novices",
+        "Be cautious of high-confidence estimates from those new to a domain",
+        "Training reduces overconfidence by exposing gaps",
+        "Code reviews catch overconfident decisions",
+        "Seek expert opinions; experts express appropriate uncertainty"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-046": {
+    "id": "LAW-046",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/46-hanlons-razor.md",
+    "title": "Hanlons Razor",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-023",
+        "LAW-045",
+        "LAW-047"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Create psychologically safe environments where mistakes are acknowledged",
+        "Investigate root causes of failures rather than assigning blame",
+        "Assume good intent in code reviews and team interactions",
+        "Focus on systems and processes preventing mistakes, not blaming individuals",
+        "Improve systems and training rather than firing people for mistakes"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-047": {
+    "id": "LAW-047",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/47-occams-razor.md",
+    "title": "Occams Razor",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-036",
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "LAW-036",
+        "LAW-041",
+        "LAW-046"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Question elaborate theories; seek simpler explanations",
+        "Design systems simply; add complexity only when necessary",
+        "Choose simple solutions unless evidence demands complexity",
+        "YAGNI and KISS principles apply Occam's Razor",
+        "Debug assuming simple causes before investigating exotic ones"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-048": {
+    "id": "LAW-048",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/48-sunk-cost-fallacy.md",
+    "title": "Sunk Cost Fallacy",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-023",
+        "LAW-029",
+        "LAW-049"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Career decisions should consider future fit, not career investment",
+        "Evaluate technology and approach decisions based on current fit, not past investment",
+        "Rewrite decisions should compare future value, not past effort",
+        "Have explicit criteria for abandoning projects despite sunk costs",
+        "Create environments where admitting mistakes is safe"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-049": {
+    "id": "LAW-049",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/49-map-is-not-territory.md",
+    "title": "Map Is Not Territory",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-014",
+        "LAW-047",
+        "LAW-048"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Validate assumptions about user behavior empirically",
+        "Recognize that requirements documents don't capture all complexity",
+        "Design for uncertainty; expect reality to deviate from models",
+        "Models and simulations guide but don't guarantee outcomes",
+        "Architecture diagrams simplify reality; systems are more complex"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-050": {
+    "id": "LAW-050",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/50-confirmation-bias.md",
+    "title": "Confirmation Bias",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-014",
+        "LAW-045",
+        "LAW-046"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Devil's advocate role in design decisions surfaces contradictions",
+        "Use metrics and data to overcome intuition-based bias",
+        "Actively seek disconfirming evidence; challenge assumptions",
+        "Implement code review processes to catch biased decisions",
+        "Pre-mortems imagine failure and challenge assumptions"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-051": {
+    "id": "LAW-051",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/51-hype-cycle-and-amaras-law.md",
+    "title": "Hype Cycle And Amaras Law",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-026",
+        "LAW-045",
+        "LAW-052"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Evaluate technologies for actual fit, not hype",
+        "Early adopters gain advantage if technology survives hype cycle",
+        "Avoid adopting every new technology at peak hype",
+        "Plan for disillusionment; long-term benefits matter",
+        "Mature technologies are safer but may be aging out"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-052": {
+    "id": "LAW-052",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/52-lindy-effect.md",
+    "title": "Lindy Effect",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-051",
+        "LAW-055"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Ideas surviving decades are likely valuable long-term",
+        "Evaluate technology maturity; maturity indicates future viability",
+        "Prefer established technologies over new ones unless clear benefits exist",
+        "Risk new technologies appropriately; they may not survive",
+        "Long-lived programming languages (C, Lisp, Python) are safe bets"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-053": {
+    "id": "LAW-053",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/53-first-principles-thinking.md",
+    "title": "First Principles Thinking",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-036",
+        "LAW-047"
+      ],
+      "violates": [],
+      "related_to": [
+        "LAW-036",
+        "LAW-047",
+        "LAW-054"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "When solving novel problems, break them into fundamental components",
+        "Design thinking and user research reveal fundamental needs",
+        "Root cause analysis investigates first principles of problems",
+        "Innovation often comes from reconsidering fundamentals",
+        "Challenge \"that's how we've always done it\" with first principles"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-054": {
+    "id": "LAW-054",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/54-inversion.md",
+    "title": "Inversion",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-047",
+        "LAW-053"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Risk analysis inverts goals: what would cause project failure?",
+        "Security analysis inverts goals: how would systems be breached?",
+        "Architecture decisions consider what would break systems",
+        "Design reviews identify what makes designs fail",
+        "Pre-mortems imagine project failure; prevent identified causes"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-055": {
+    "id": "LAW-055",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/55-pareto-principle.md",
+    "title": "Pareto Principle",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-005",
+        "LAW-039",
+        "LAW-052"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Technical debt: focus on code causing 80% of maintenance burden",
+        "Performance: optimize code responsible for 80% of latency",
+        "Feature development: 20% of features provide 80% of value",
+        "Bug fixes: focus on code causing 80% of defects",
+        "Customer issues: 20% of issues cause 80% of customer complaints"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "LAW-056": {
+    "id": "LAW-056",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/56-cunninghams-law.md",
+    "title": "Cunninghams Law",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [
+        "LAW-025",
+        "LAW-030",
+        "LAW-031"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [
+        "Frame statements as proposals to invite correction and improvement",
+        "Propose solutions, even uncertain ones, to elicit expert feedback",
+        "Use code review as learning opportunity; make proposals and learn from feedback",
+        "Post uncertain findings for community correction rather than asking open questions",
+        "Create mistakes in code reviews to surface expert knowledge"
+      ],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "license": "public-domain",
+      "note": "Named law or principle in the public domain; curated summary."
+    }
+  },
+  "RF-006": {
+    "id": "RF-006",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/replace-method-with-method-object.md",
+    "title": "Replace Method With Method Object",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01",
+        "SMELL-21"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041",
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-001",
+        "RF-010"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-007": {
+    "id": "RF-007",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/replace-temp-with-query.md",
+    "title": "Replace Temp With Query",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-001",
+        "RF-005"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-008": {
+    "id": "RF-008",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/split-temporary-variable.md",
+    "title": "Split Temporary Variable",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041",
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-009": {
+    "id": "RF-009",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/substitute-algorithm.md",
+    "title": "Substitute Algorithm",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-031",
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-001",
+        "RF-006"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-010": {
+    "id": "RF-010",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/extract-class.md",
+    "title": "Extract Class",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-04",
+        "SMELL-21"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-001",
+        "RF-056",
+        "RF-057",
+        "RF-058"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-011": {
+    "id": "RF-011",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/hide-delegate.md",
+    "title": "Hide Delegate",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-14",
+        "SMELL-20"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-017",
+        "RF-023"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-012": {
+    "id": "RF-012",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/inline-class.md",
+    "title": "Inline Class",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-11"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-010",
+        "RF-017"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-013": {
+    "id": "RF-013",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/introduce-foreign-method.md",
+    "title": "Introduce Foreign Method",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-04"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-014",
+        "RF-016"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-014": {
+    "id": "RF-014",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/introduce-local-extension.md",
+    "title": "Introduce Local Extension",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-04"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-013"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-015": {
+    "id": "RF-015",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/move-field.md",
+    "title": "Move Field",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-09",
+        "SMELL-10",
+        "SMELL-18"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-016",
+        "RF-019"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-016": {
+    "id": "RF-016",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/move-method.md",
+    "title": "Move Method",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-09",
+        "SMELL-10",
+        "SMELL-18"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-013",
+        "RF-015"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-017": {
+    "id": "RF-017",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/remove-middle-man.md",
+    "title": "Remove Middle Man",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-14",
+        "SMELL-20"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-011",
+        "RF-012"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-018": {
+    "id": "RF-018",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/change-bidirectional-association-to-unidirectional.md",
+    "title": "Change Bidirectional Association To Unidirectional",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-19"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-015",
+        "RF-020"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-019": {
+    "id": "RF-019",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/change-reference-to-value.md",
+    "title": "Change Reference To Value",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13",
+        "SMELL-18",
+        "SMELL-21"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-042-S",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-020": {
+    "id": "RF-020",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/change-unidirectional-association-to-bidirectional.md",
+    "title": "Change Unidirectional Association To Bidirectional",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-19"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-021": {
+    "id": "RF-021",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/change-value-to-reference.md",
+    "title": "Change Value To Reference",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-019"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-022": {
+    "id": "RF-022",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/duplicate-observed-data.md",
+    "title": "Duplicate Observed Data",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13",
+        "SMELL-19"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-015",
+        "RF-019"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-023": {
+    "id": "RF-023",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/encapsulate-collection.md",
+    "title": "Encapsulate Collection",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-20"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-024": {
+    "id": "RF-024",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/encapsulate-field.md",
+    "title": "Encapsulate Field",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-02"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-025": {
+    "id": "RF-025",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-array-with-object.md",
+    "title": "Replace Array With Object",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-03",
+        "SMELL-05"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-026",
+        "RF-032"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-026": {
+    "id": "RF-026",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-data-value-with-object.md",
+    "title": "Replace Data Value With Object",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-03"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-027": {
+    "id": "RF-027",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-magic-number-with-symbolic-constant.md",
+    "title": "Replace Magic Number With Symbolic Constant",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-001",
+        "RF-026"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-028": {
+    "id": "RF-028",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-subclass-with-fields.md",
+    "title": "Replace Subclass With Fields",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-12"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-031",
+        "RF-057"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-029": {
+    "id": "RF-029",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-type-code-with-class.md",
+    "title": "Replace Type Code With Class",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-06"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-030": {
+    "id": "RF-030",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-type-code-with-state-strategy.md",
+    "title": "Replace Type Code With State Strategy",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-06"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O",
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-029",
+        "RF-031"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-031": {
+    "id": "RF-031",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-type-code-with-subclasses.md",
+    "title": "Replace Type Code With Subclasses",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-06"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-O"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-029",
+        "RF-030"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-032": {
+    "id": "RF-032",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/self-encapsulate-field.md",
+    "title": "Self Encapsulate Field",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-02",
+        "SMELL-05",
+        "SMELL-19",
+        "SMELL-22"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-042-S",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-033": {
+    "id": "RF-033",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/consolidate-conditional-expression.md",
+    "title": "Consolidate Conditional Expression",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-21"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-034": {
+    "id": "RF-034",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/consolidate-duplicate-conditional-fragments.md",
+    "title": "Consolidate Duplicate Conditional Fragments",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01",
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-033",
+        "RF-035"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-035": {
+    "id": "RF-035",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/decompose-conditional.md",
+    "title": "Decompose Conditional",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01",
+        "SMELL-21"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041",
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-033",
+        "RF-034",
+        "RF-040"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-036": {
+    "id": "RF-036",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/introduce-assertion.md",
+    "title": "Introduce Assertion",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-025",
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-051"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-037": {
+    "id": "RF-037",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/introduce-null-object.md",
+    "title": "Introduce Null Object",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-04"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-038": {
+    "id": "RF-038",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/remove-control-flag.md",
+    "title": "Remove Control Flag",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-035",
+        "RF-040"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-039": {
+    "id": "RF-039",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/replace-conditional-with-polymorphism.md",
+    "title": "Replace Conditional With Polymorphism",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-04",
+        "SMELL-05"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-040": {
+    "id": "RF-040",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/replace-nested-conditional-with-guard-clauses.md",
+    "title": "Replace Nested Conditional With Guard Clauses",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01",
+        "SMELL-21"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041",
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-035",
+        "RF-038"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-041": {
+    "id": "RF-041",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/add-parameter.md",
+    "title": "Add Parameter",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-043",
+        "RF-044",
+        "RF-046"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-042": {
+    "id": "RF-042",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/hide-method.md",
+    "title": "Hide Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-12"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-024",
+        "RF-032"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-043": {
+    "id": "RF-043",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/introduce-parameter-object.md",
+    "title": "Introduce Parameter Object",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-02",
+        "SMELL-05"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-025",
+        "RF-044",
+        "RF-045"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-044": {
+    "id": "RF-044",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/parameterize-method.md",
+    "title": "Parameterize Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-042-O"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-043",
+        "RF-052"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-045": {
+    "id": "RF-045",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/preserve-whole-object.md",
+    "title": "Preserve Whole Object",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-02"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-043"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-046": {
+    "id": "RF-046",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/remove-parameter.md",
+    "title": "Remove Parameter",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040"
+      ],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-047": {
+    "id": "RF-047",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/remove-setting-method.md",
+    "title": "Remove Setting Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-07"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-024",
+        "RF-042"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-048": {
+    "id": "RF-048",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/rename-method.md",
+    "title": "Rename Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [
+        "LAW-031",
+        "LAW-044"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-041",
+        "RF-046"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-049": {
+    "id": "RF-049",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-constructor-with-factory-method.md",
+    "title": "Replace Constructor With Factory Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-21"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-D"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-010",
+        "RF-056"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-050": {
+    "id": "RF-050",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-error-code-with-exception.md",
+    "title": "Replace Error Code With Exception",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-027",
+        "LAW-044"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-051"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-051": {
+    "id": "RF-051",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-exception-with-test.md",
+    "title": "Replace Exception With Test",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-036",
+        "RF-050"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-052": {
+    "id": "RF-052",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-parameter-with-explicit-methods.md",
+    "title": "Replace Parameter With Explicit Methods",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041",
+        "LAW-044"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-044",
+        "RF-053"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-053": {
+    "id": "RF-053",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-parameter-with-method-call.md",
+    "title": "Replace Parameter With Method Call",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-02"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-045",
+        "RF-052"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-054": {
+    "id": "RF-054",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/separate-query-from-modifier.md",
+    "title": "Separate Query From Modifier",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-01",
+        "SMELL-21"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S",
+        "LAW-044"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-001",
+        "RF-042"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-055": {
+    "id": "RF-055",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/collapse-hierarchy.md",
+    "title": "Collapse Hierarchy",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-11",
+        "SMELL-12"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-041"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-012",
+        "RF-057",
+        "RF-058"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-056": {
+    "id": "RF-056",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/extract-interface.md",
+    "title": "Extract Interface",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-09",
+        "SMELL-21"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-D",
+        "LAW-042-I"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-010",
+        "RF-057",
+        "RF-058"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-057": {
+    "id": "RF-057",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/extract-subclass.md",
+    "title": "Extract Subclass",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-04",
+        "SMELL-12"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-L",
+        "LAW-042-O"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-010",
+        "RF-056",
+        "RF-058"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-058": {
+    "id": "RF-058",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/extract-superclass.md",
+    "title": "Extract Superclass",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-04",
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-042-L"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-056",
+        "RF-057",
+        "RF-061"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-059": {
+    "id": "RF-059",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/form-template-method.md",
+    "title": "Form Template Method",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-042-L"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-058",
+        "RF-062"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-060": {
+    "id": "RF-060",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/pull-up-constructor-body.md",
+    "title": "Pull Up Constructor Body",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-058",
+        "RF-061",
+        "RF-062"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-061": {
+    "id": "RF-061",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/pull-up-field.md",
+    "title": "Pull Up Field",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-058",
+        "RF-060",
+        "RF-062"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-062": {
+    "id": "RF-062",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/pull-up-method.md",
+    "title": "Pull Up Method",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-13"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-040",
+        "LAW-042-L"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-059",
+        "RF-060",
+        "RF-061"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-063": {
+    "id": "RF-063",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/push-down-field.md",
+    "title": "Push Down Field",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-04"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-061",
+        "RF-064"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-064": {
+    "id": "RF-064",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/push-down-method.md",
+    "title": "Push Down Method",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-04"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-062",
+        "RF-063"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-065": {
+    "id": "RF-065",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/replace-delegation-with-inheritance.md",
+    "title": "Replace Delegation With Inheritance",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-14"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-L"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-011",
+        "RF-066"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "RF-066": {
+    "id": "RF-066",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/replace-inheritance-with-delegation.md",
+    "title": "Replace Inheritance With Delegation",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [
+        "SMELL-19"
+      ],
+      "solved_by": [],
+      "enforces": [
+        "LAW-042-S",
+        "LAW-043"
+      ],
+      "violates": [],
+      "related_to": [
+        "RF-011",
+        "RF-065"
+      ],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://refactoring.com/"
+    }
+  },
+  "SMELL-01": {
+    "id": "SMELL-01",
+    "type": "smell",
+    "title": "Long Method",
+    "category": "bloater",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-001",
+        "RF-008"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-042-S",
+        "LAW-041"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Method exceeds 20-30 lines",
+        "Multiple levels of nesting",
+        "Requires inline comments to explain sections"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-02": {
+    "id": "SMELL-02",
+    "type": "smell",
+    "title": "Long Parameter List",
+    "category": "bloater",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-039",
+        "RF-037"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-041"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Method has more than 3-4 parameters",
+        "Parameter list keeps growing",
+        "Parameters form natural groups"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-03": {
+    "id": "SMELL-03",
+    "type": "smell",
+    "title": "Primitive Obsession",
+    "category": "bloater",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-026"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-040"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Using primitives for domain concepts",
+        "Simulation of types via constants",
+        "Type code as field names"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-04": {
+    "id": "SMELL-04",
+    "type": "smell",
+    "title": "Large Class",
+    "category": "bloater",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-032",
+        "RF-024"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-042-S"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Class exceeds 200-300 lines",
+        "Multiple unrelated responsibilities",
+        "High instance variable count"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-05": {
+    "id": "SMELL-05",
+    "type": "smell",
+    "title": "Data Clumps",
+    "category": "bloater",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-032",
+        "RF-039"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-040"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Same group of parameters in multiple methods",
+        "Same fields in multiple classes",
+        "Grouped data used together"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-06": {
+    "id": "SMELL-06",
+    "type": "smell",
+    "title": "Switch Statements",
+    "category": "oo-abuser",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-029"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-042-O"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Switch on type code",
+        "Same switch duplicated across methods",
+        "New cases require modification"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-13": {
+    "id": "SMELL-13",
+    "type": "smell",
+    "title": "Duplicate Code",
+    "category": "dispensable",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-001",
+        "RF-019",
+        "RF-046"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-040"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Identical expressions in multiple methods",
+        "Similar code in sibling subclasses",
+        "Copied and pasted code"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-18": {
+    "id": "SMELL-18",
+    "type": "smell",
+    "title": "Feature Envy",
+    "category": "coupler",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-001",
+        "RF-019"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-043"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Method uses many getters from another class",
+        "Method is more interested in other class than its own",
+        "Method manipulates foreign data"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-19": {
+    "id": "SMELL-19",
+    "type": "smell",
+    "title": "Inappropriate Intimacy",
+    "category": "coupler",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-020",
+        "RF-032"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-043"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Classes access each other's private fields/methods",
+        "Bidirectional dependencies",
+        "Excessive coupling"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-20": {
+    "id": "SMELL-20",
+    "type": "smell",
+    "title": "Message Chains",
+    "category": "coupler",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-023"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-043"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Long chains like a.getB().getC().getD()",
+        "Client depends on navigation structure",
+        "Changes ripple through chain"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-21": {
+    "id": "SMELL-21",
+    "type": "smell",
+    "title": "God Object",
+    "category": "bloater",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-032",
+        "RF-024"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-042-S"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Class has excessive methods and fields",
+        "Class knows about or does everything",
+        "Changes always touch this class"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-07": {
+    "id": "SMELL-07",
+    "type": "smell",
+    "title": "Data Class",
+    "category": "dispensable",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-019",
+        "RF-033"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-042-S"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Class has only fields and getters/setters",
+        "No behavior methods",
+        "Other classes manipulate its data"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-09": {
+    "id": "SMELL-09",
+    "type": "smell",
+    "title": "Shotgun Surgery",
+    "category": "change-preventer",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-019",
+        "RF-033"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-042-S"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "One change affects many classes",
+        "Related functionality scattered",
+        "Hard to find all places to change"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-10": {
+    "id": "SMELL-10",
+    "type": "smell",
+    "title": "Divergent Change",
+    "category": "change-preventer",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-032"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-042-S"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Class changes for multiple reasons",
+        "Different methods change for different features",
+        "Multiple responsibilities"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-11": {
+    "id": "SMELL-11",
+    "type": "smell",
+    "title": "Lazy Class",
+    "category": "dispensable",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-018",
+        "RF-019"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-040"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Class does too little",
+        "Thin wrapper with minimal logic",
+        "Added for future use but never grown"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-12": {
+    "id": "SMELL-12",
+    "type": "smell",
+    "title": "Speculative Generality",
+    "category": "dispensable",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-018",
+        "RF-019"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-040"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Abstract class with only one subclass",
+        "Unused parameters or hooks",
+        "Methods named to future-proof code"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  },
+  "SMELL-14": {
+    "id": "SMELL-14",
+    "type": "smell",
+    "title": "Middle Man",
+    "category": "coupler",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [
+        "RF-022",
+        "RF-023"
+      ],
+      "enforces": [],
+      "violates": [
+        "LAW-042-S"
+      ],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [
+        "Most methods delegate to another class",
+        "Class adds no behavior of its own",
+        "Thin pass-through wrapper"
+      ],
+      "benefits": [],
+      "drawbacks": []
+    },
+    "source": {
+      "title": "Refactoring: Improving the Design of Existing Code",
+      "authors": [
+        "Martin Fowler"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://martinfowler.com/books/refactoring.html"
+    }
+  }
+}

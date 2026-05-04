@@ -1,0 +1,3461 @@
+{
+  "version": "0.0.1",
+  "description": "Auto-generated relational mapping for Syntagma RAG knowledge graph",
+  "last_updated": "2026-04-28",
+  "DP-001": {
+    "id": "DP-001",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/abstract-factory.md",
+    "title": "Abstract Factory",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-002": {
+    "id": "DP-002",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/builder.md",
+    "title": "Builder",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-003": {
+    "id": "DP-003",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/factory-method.md",
+    "title": "Factory Method",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-004": {
+    "id": "DP-004",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/prototype.md",
+    "title": "Prototype",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-005": {
+    "id": "DP-005",
+    "type": "pattern",
+    "file_path": "design-patterns/creational/singleton.md",
+    "title": "Singleton",
+    "category": "creational",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-006": {
+    "id": "DP-006",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/adapter.md",
+    "title": "Adapter",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-007": {
+    "id": "DP-007",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/bridge.md",
+    "title": "Bridge",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-008": {
+    "id": "DP-008",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/composite.md",
+    "title": "Composite",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-009": {
+    "id": "DP-009",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/decorator.md",
+    "title": "Decorator",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-010": {
+    "id": "DP-010",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/facade.md",
+    "title": "Facade",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-011": {
+    "id": "DP-011",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/flyweight.md",
+    "title": "Flyweight",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-012": {
+    "id": "DP-012",
+    "type": "pattern",
+    "file_path": "design-patterns/structural/proxy.md",
+    "title": "Proxy",
+    "category": "structural",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-013": {
+    "id": "DP-013",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/chain-of-responsibility.md",
+    "title": "Chain Of Responsibility",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-014": {
+    "id": "DP-014",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/command.md",
+    "title": "Command",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-015": {
+    "id": "DP-015",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/iterator.md",
+    "title": "Iterator",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-016": {
+    "id": "DP-016",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/mediator.md",
+    "title": "Mediator",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-017": {
+    "id": "DP-017",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/memento.md",
+    "title": "Memento",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-018": {
+    "id": "DP-018",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/observer.md",
+    "title": "Observer",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-019": {
+    "id": "DP-019",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/state.md",
+    "title": "State",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-020": {
+    "id": "DP-020",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/strategy.md",
+    "title": "Strategy",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-021": {
+    "id": "DP-021",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/template-method.md",
+    "title": "Template Method",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "DP-022": {
+    "id": "DP-022",
+    "type": "pattern",
+    "file_path": "design-patterns/behavioral/visitor.md",
+    "title": "Visitor",
+    "category": "behavioral",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-001": {
+    "id": "RF-001",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/extract-method.md",
+    "title": "Extract Method",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-002": {
+    "id": "RF-002",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/extract-variable.md",
+    "title": "Extract Variable",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-003": {
+    "id": "RF-003",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/inline-method.md",
+    "title": "Inline Method",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-004": {
+    "id": "RF-004",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/inline-temp.md",
+    "title": "Inline Temp",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-005": {
+    "id": "RF-005",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/remove-assignments-to-parameters.md",
+    "title": "Remove Assignments To Parameters",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-006": {
+    "id": "RF-006",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/replace-method-with-method-object.md",
+    "title": "Replace Method With Method Object",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-007": {
+    "id": "RF-007",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/replace-temp-with-query.md",
+    "title": "Replace Temp With Query",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-008": {
+    "id": "RF-008",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/split-temporary-variable.md",
+    "title": "Split Temporary Variable",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-009": {
+    "id": "RF-009",
+    "type": "refactoring",
+    "file_path": "refactoring/composing-methods/substitute-algorithm.md",
+    "title": "Substitute Algorithm",
+    "category": "composing_methods",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-010": {
+    "id": "RF-010",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/extract-class.md",
+    "title": "Extract Class",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-011": {
+    "id": "RF-011",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/hide-delegate.md",
+    "title": "Hide Delegate",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-012": {
+    "id": "RF-012",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/inline-class.md",
+    "title": "Inline Class",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-013": {
+    "id": "RF-013",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/introduce-foreign-method.md",
+    "title": "Introduce Foreign Method",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-014": {
+    "id": "RF-014",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/introduce-local-extension.md",
+    "title": "Introduce Local Extension",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-015": {
+    "id": "RF-015",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/move-field.md",
+    "title": "Move Field",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-016": {
+    "id": "RF-016",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/move-method.md",
+    "title": "Move Method",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-017": {
+    "id": "RF-017",
+    "type": "refactoring",
+    "file_path": "refactoring/moving-features/remove-middle-man.md",
+    "title": "Remove Middle Man",
+    "category": "moving_features",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-018": {
+    "id": "RF-018",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/change-bidirectional-association-to-unidirectional.md",
+    "title": "Change Bidirectional Association To Unidirectional",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-019": {
+    "id": "RF-019",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/change-reference-to-value.md",
+    "title": "Change Reference To Value",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-020": {
+    "id": "RF-020",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/change-unidirectional-association-to-bidirectional.md",
+    "title": "Change Unidirectional Association To Bidirectional",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-021": {
+    "id": "RF-021",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/change-value-to-reference.md",
+    "title": "Change Value To Reference",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-022": {
+    "id": "RF-022",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/duplicate-observed-data.md",
+    "title": "Duplicate Observed Data",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-023": {
+    "id": "RF-023",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/encapsulate-collection.md",
+    "title": "Encapsulate Collection",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-024": {
+    "id": "RF-024",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/encapsulate-field.md",
+    "title": "Encapsulate Field",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-025": {
+    "id": "RF-025",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-array-with-object.md",
+    "title": "Replace Array With Object",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-026": {
+    "id": "RF-026",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-data-value-with-object.md",
+    "title": "Replace Data Value With Object",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-027": {
+    "id": "RF-027",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-magic-number-with-symbolic-constant.md",
+    "title": "Replace Magic Number With Symbolic Constant",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-028": {
+    "id": "RF-028",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-subclass-with-fields.md",
+    "title": "Replace Subclass With Fields",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-029": {
+    "id": "RF-029",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-type-code-with-class.md",
+    "title": "Replace Type Code With Class",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-030": {
+    "id": "RF-030",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-type-code-with-state-strategy.md",
+    "title": "Replace Type Code With State Strategy",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-031": {
+    "id": "RF-031",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/replace-type-code-with-subclasses.md",
+    "title": "Replace Type Code With Subclasses",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-032": {
+    "id": "RF-032",
+    "type": "refactoring",
+    "file_path": "refactoring/organizing-data/self-encapsulate-field.md",
+    "title": "Self Encapsulate Field",
+    "category": "organizing_data",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-033": {
+    "id": "RF-033",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/consolidate-conditional-expression.md",
+    "title": "Consolidate Conditional Expression",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-034": {
+    "id": "RF-034",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/consolidate-duplicate-conditional-fragments.md",
+    "title": "Consolidate Duplicate Conditional Fragments",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-035": {
+    "id": "RF-035",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/decompose-conditional.md",
+    "title": "Decompose Conditional",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-036": {
+    "id": "RF-036",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/introduce-assertion.md",
+    "title": "Introduce Assertion",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-037": {
+    "id": "RF-037",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/introduce-null-object.md",
+    "title": "Introduce Null Object",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-038": {
+    "id": "RF-038",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/remove-control-flag.md",
+    "title": "Remove Control Flag",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-039": {
+    "id": "RF-039",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/replace-conditional-with-polymorphism.md",
+    "title": "Replace Conditional With Polymorphism",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-040": {
+    "id": "RF-040",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-conditionals/replace-nested-conditional-with-guard-clauses.md",
+    "title": "Replace Nested Conditional With Guard Clauses",
+    "category": "simplifying_conditionals",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-041": {
+    "id": "RF-041",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/add-parameter.md",
+    "title": "Add Parameter",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-042": {
+    "id": "RF-042",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/hide-method.md",
+    "title": "Hide Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-043": {
+    "id": "RF-043",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/introduce-parameter-object.md",
+    "title": "Introduce Parameter Object",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-044": {
+    "id": "RF-044",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/parameterize-method.md",
+    "title": "Parameterize Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-045": {
+    "id": "RF-045",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/preserve-whole-object.md",
+    "title": "Preserve Whole Object",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-046": {
+    "id": "RF-046",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/remove-parameter.md",
+    "title": "Remove Parameter",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-047": {
+    "id": "RF-047",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/remove-setting-method.md",
+    "title": "Remove Setting Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-048": {
+    "id": "RF-048",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/rename-method.md",
+    "title": "Rename Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-049": {
+    "id": "RF-049",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-constructor-with-factory-method.md",
+    "title": "Replace Constructor With Factory Method",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-050": {
+    "id": "RF-050",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-error-code-with-exception.md",
+    "title": "Replace Error Code With Exception",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-051": {
+    "id": "RF-051",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-exception-with-test.md",
+    "title": "Replace Exception With Test",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-052": {
+    "id": "RF-052",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-parameter-with-explicit-methods.md",
+    "title": "Replace Parameter With Explicit Methods",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-053": {
+    "id": "RF-053",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/replace-parameter-with-method-call.md",
+    "title": "Replace Parameter With Method Call",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-054": {
+    "id": "RF-054",
+    "type": "refactoring",
+    "file_path": "refactoring/simplifying-calls/separate-query-from-modifier.md",
+    "title": "Separate Query From Modifier",
+    "category": "simplifying_calls",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-055": {
+    "id": "RF-055",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/collapse-hierarchy.md",
+    "title": "Collapse Hierarchy",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-056": {
+    "id": "RF-056",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/extract-interface.md",
+    "title": "Extract Interface",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-057": {
+    "id": "RF-057",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/extract-subclass.md",
+    "title": "Extract Subclass",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-058": {
+    "id": "RF-058",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/extract-superclass.md",
+    "title": "Extract Superclass",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-059": {
+    "id": "RF-059",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/form-template-method.md",
+    "title": "Form Template Method",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-060": {
+    "id": "RF-060",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/pull-up-constructor-body.md",
+    "title": "Pull Up Constructor Body",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-061": {
+    "id": "RF-061",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/pull-up-field.md",
+    "title": "Pull Up Field",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-062": {
+    "id": "RF-062",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/pull-up-method.md",
+    "title": "Pull Up Method",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-063": {
+    "id": "RF-063",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/push-down-field.md",
+    "title": "Push Down Field",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-064": {
+    "id": "RF-064",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/push-down-method.md",
+    "title": "Push Down Method",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-065": {
+    "id": "RF-065",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/replace-delegation-with-inheritance.md",
+    "title": "Replace Delegation With Inheritance",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "RF-066": {
+    "id": "RF-066",
+    "type": "refactoring",
+    "file_path": "refactoring/generalization/replace-inheritance-with-delegation.md",
+    "title": "Replace Inheritance With Delegation",
+    "category": "generalization",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-001": {
+    "id": "LAW-001",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/01-conways-law.md",
+    "title": "Conways Law",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-002": {
+    "id": "LAW-002",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/02-brooks-law.md",
+    "title": "Brooks Law",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-003": {
+    "id": "LAW-003",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/03-dunbars-number.md",
+    "title": "Dunbars Number",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-004": {
+    "id": "LAW-004",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/04-ringelmann-effect.md",
+    "title": "Ringelmann Effect",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-005": {
+    "id": "LAW-005",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/05-prices-law.md",
+    "title": "Prices Law",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-006": {
+    "id": "LAW-006",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/06-putts-law.md",
+    "title": "Putts Law",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-007": {
+    "id": "LAW-007",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/07-peter-principle.md",
+    "title": "Peter Principle",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-008": {
+    "id": "LAW-008",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/08-bus-factor.md",
+    "title": "Bus Factor",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-009": {
+    "id": "LAW-009",
+    "type": "law",
+    "file_path": "software-engineering/1-teams/09-dilbert-principle.md",
+    "title": "Dilbert Principle",
+    "category": "teams",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-010": {
+    "id": "LAW-010",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/10-premature-optimization.md",
+    "title": "Premature Optimization",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-011": {
+    "id": "LAW-011",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/11-parkinsons-law.md",
+    "title": "Parkinsons Law",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-012": {
+    "id": "LAW-012",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/12-ninety-ninety-rule.md",
+    "title": "Ninety Ninety Rule",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-013": {
+    "id": "LAW-013",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/13-hofstadters-law.md",
+    "title": "Hofstadters Law",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-014": {
+    "id": "LAW-014",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/14-goodharts-law.md",
+    "title": "Goodharts Law",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-015": {
+    "id": "LAW-015",
+    "type": "law",
+    "file_path": "software-engineering/2-planning/15-gilbs-law.md",
+    "title": "Gilbs Law",
+    "category": "planning",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-016": {
+    "id": "LAW-016",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/16-hyrums-law.md",
+    "title": "Hyrums Law",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-017": {
+    "id": "LAW-017",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/17-galls-law.md",
+    "title": "Galls Law",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-018": {
+    "id": "LAW-018",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/18-law-of-leaky-abstractions.md",
+    "title": "Law Of Leaky Abstractions",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-019": {
+    "id": "LAW-019",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/19-teslers-law.md",
+    "title": "Teslers Law",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-020": {
+    "id": "LAW-020",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/20-cap-theorem.md",
+    "title": "Cap Theorem",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-021": {
+    "id": "LAW-021",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/21-second-system-effect.md",
+    "title": "Second System Effect",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-022": {
+    "id": "LAW-022",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/22-fallacies-of-distributed-computing.md",
+    "title": "Fallacies Of Distributed Computing",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-023": {
+    "id": "LAW-023",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/23-law-of-unintended-consequences.md",
+    "title": "Law Of Unintended Consequences",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-024": {
+    "id": "LAW-024",
+    "type": "law",
+    "file_path": "software-engineering/3-architecture/24-zawinskis-law.md",
+    "title": "Zawinskis Law",
+    "category": "architecture",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-025": {
+    "id": "LAW-025",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/25-boy-scout-rule.md",
+    "title": "Boy Scout Rule",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-026": {
+    "id": "LAW-026",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/26-murphys-law.md",
+    "title": "Murphys Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-027": {
+    "id": "LAW-027",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/27-postels-law.md",
+    "title": "Postels Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-028": {
+    "id": "LAW-028",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/28-broken-windows-theory.md",
+    "title": "Broken Windows Theory",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-029": {
+    "id": "LAW-029",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/29-technical-debt.md",
+    "title": "Technical Debt",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-030": {
+    "id": "LAW-030",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/30-linuss-law.md",
+    "title": "Linuss Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-031": {
+    "id": "LAW-031",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/31-kernighans-law.md",
+    "title": "Kernighans Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-032": {
+    "id": "LAW-032",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/32-testing-pyramid.md",
+    "title": "Testing Pyramid",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-033": {
+    "id": "LAW-033",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/33-pesticide-paradox.md",
+    "title": "Pesticide Paradox",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-034": {
+    "id": "LAW-034",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/34-lehmans-laws.md",
+    "title": "Lehmans Laws",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-035": {
+    "id": "LAW-035",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/35-sturgeons-law.md",
+    "title": "Sturgeons Law",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-036": {
+    "id": "LAW-036",
+    "type": "law",
+    "file_path": "software-engineering/4-quality/36-yagni.md",
+    "title": "Yagni",
+    "category": "quality",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-037": {
+    "id": "LAW-037",
+    "type": "law",
+    "file_path": "software-engineering/5-scalability/37-amdahls-law.md",
+    "title": "Amdahls Law",
+    "category": "scalability",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-038": {
+    "id": "LAW-038",
+    "type": "law",
+    "file_path": "software-engineering/5-scalability/38-gustafsons-law.md",
+    "title": "Gustafsons Law",
+    "category": "scalability",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-039": {
+    "id": "LAW-039",
+    "type": "law",
+    "file_path": "software-engineering/5-scalability/39-metcalfes-law.md",
+    "title": "Metcalfes Law",
+    "category": "scalability",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-040": {
+    "id": "LAW-040",
+    "type": "law",
+    "file_path": "software-engineering/6-design/40-dry.md",
+    "title": "Dry",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-041": {
+    "id": "LAW-041",
+    "type": "law",
+    "file_path": "software-engineering/6-design/41-kiss.md",
+    "title": "Kiss",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-042": {
+    "id": "LAW-042",
+    "type": "law",
+    "file_path": "software-engineering/6-design/42-solid-principles.md",
+    "title": "Solid Principles",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-043": {
+    "id": "LAW-043",
+    "type": "law",
+    "file_path": "software-engineering/6-design/43-law-of-demeter.md",
+    "title": "Law Of Demeter",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-044": {
+    "id": "LAW-044",
+    "type": "law",
+    "file_path": "software-engineering/6-design/44-principle-of-least-astonishment.md",
+    "title": "Principle Of Least Astonishment",
+    "category": "design",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-045": {
+    "id": "LAW-045",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/45-dunning-kruger-effect.md",
+    "title": "Dunning Kruger Effect",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-046": {
+    "id": "LAW-046",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/46-hanlons-razor.md",
+    "title": "Hanlons Razor",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-047": {
+    "id": "LAW-047",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/47-occams-razor.md",
+    "title": "Occams Razor",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-048": {
+    "id": "LAW-048",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/48-sunk-cost-fallacy.md",
+    "title": "Sunk Cost Fallacy",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-049": {
+    "id": "LAW-049",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/49-map-is-not-territory.md",
+    "title": "Map Is Not Territory",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-050": {
+    "id": "LAW-050",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/50-confirmation-bias.md",
+    "title": "Confirmation Bias",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-051": {
+    "id": "LAW-051",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/51-hype-cycle-and-amaras-law.md",
+    "title": "Hype Cycle And Amaras Law",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-052": {
+    "id": "LAW-052",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/52-lindy-effect.md",
+    "title": "Lindy Effect",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-053": {
+    "id": "LAW-053",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/53-first-principles-thinking.md",
+    "title": "First Principles Thinking",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-054": {
+    "id": "LAW-054",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/54-inversion.md",
+    "title": "Inversion",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-055": {
+    "id": "LAW-055",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/55-pareto-principle.md",
+    "title": "Pareto Principle",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  },
+  "LAW-056": {
+    "id": "LAW-056",
+    "type": "law",
+    "file_path": "software-engineering/7-decisions/56-cunninghams-law.md",
+    "title": "Cunninghams Law",
+    "category": "decisions",
+    "tags": [],
+    "relations": {
+      "solves": [],
+      "solved_by": [],
+      "enforces": [],
+      "violates": [],
+      "related_to": [],
+      "requires": [],
+      "enables": []
+    },
+    "context": {
+      "when_to_use": [],
+      "when_not_to_use": [],
+      "symptoms": [],
+      "benefits": [],
+      "drawbacks": []
+    }
+  }
+}
