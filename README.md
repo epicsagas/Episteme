@@ -8,7 +8,7 @@ Written in **Rust** for performance, safety, and single-binary deployment.
 
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/epicsagas/Syntagma)
 [![Rust](https://img.shields.io/badge/rust-1.82+-orange.svg)](https://www.rust-lang.org/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 ---
 
@@ -282,4 +282,4 @@ Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-MIT License - See [LICENSE](LICENSE) for details.
+APACHE-2.0 License - See [LICENSE](LICENSE) for details.

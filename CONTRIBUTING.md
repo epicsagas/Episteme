@@ -333,7 +333,7 @@ Include:
 
 ## 📄 License
 
-By contributing to Syntagma, you agree that your contributions will be licensed under the MIT License.
+By contributing to Syntagma, you agree that your contributions will be licensed under the Apache-2 License.
 
 ---
 
