@@ -1,0 +1,95 @@
+[package]
+name = "syntagma"
+description = "Software engineering knowledge graph — hexagonal architecture"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+default-run = "syntagma"
+repository = "https://github.com/epicsagas/Syntagma"
+
+[[bin]]
+name = "syntagma"
+path = "src/main.rs"
+
+[[bin]]
+name = "syntagma-mcp"
+path = "src/bin/syntagma-mcp.rs"
+
+[dependencies]
+# Serialization
+serde = { version = "1", features = ["derive"] }
+
+# Unix APIs
+libc = "0.2"
+serde_json = "1"
+serde_yaml = "0.9"
+
+# Async
+tokio = { version = "1", features = ["full"] }
+
+# Web
+axum = "0.8"
+tower-http = { version = "0.6", features = ["cors", "trace", "catch-panic"] }
+tower = "0.5"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Database
+rusqlite = { version = "0.39", features = ["bundled"] }
+
+# Regex
+regex = "1"
+
+# Numerics
+ndarray = "0.17"
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# System information
+sysinfo = "0.38"
+
+# Metrics
+metrics = "0.24"
+metrics-exporter-prometheus = "0.18"
+
+# Progress
+indicatif = "0.18"
+
+# REPL
+rustyline = "18"
+
+# HTTP client
+reqwest = { version = "0.13", features = ["json", "blocking", "native-tls"] }
+
+# Redis (optional, for response caching)
+redis = { version = "1.2", features = ["tokio-comp"], optional = true }
+deadpool-redis = { version = "0.23", optional = true }
+md-5 = "0.11"
+
+# UUID
+uuid = { version = "1", features = ["v4"] }
+
+# Archive extraction for installer
+flate2 = "1"
+tar = "0.4"
+rustpython-parser = "0.4"
+fxhash = "0.2"
+fastembed = { version = "5.13.4", default-features = false, features = ["hf-hub-native-tls", "ort-download-binaries-native-tls"] }
+crossterm = "0.29.0"
+
+[dev-dependencies]
+tempfile = "3"
+proptest = "1"
+
+[features]
+default = []
+openai-embeddings = []
+redis-cache = ["dep:redis", "dep:deadpool-redis"]
+redis-pool = ["dep:deadpool-redis"]
