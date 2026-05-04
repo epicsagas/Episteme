@@ -42,6 +42,7 @@ async fn graph_full(State(mcp): State<Arc<SyntagmaMCP>>) -> Json<serde_json::Val
             "data": {
                 "id": id,
                 "label": entity.title,
+                "description": entity.description,
                 "type": entity.r#type,
                 "category": entity.category,
             }
