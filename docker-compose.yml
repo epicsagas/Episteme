@@ -1,0 +1,23 @@
+services:
+  syntagma-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: syntagma-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ~/.syntagma:/root/.syntagma:ro
+    environment:
+      - SYNTAGMA_API_KEYS=${SYNTAGMA_API_KEYS:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+networks:
+  default:
+    name: syntagma-network

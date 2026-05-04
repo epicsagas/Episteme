@@ -1,0 +1,66 @@
+global:
+  resolve_timeout: 5m
+  # Slack webhook for team notifications
+  # slack_api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+
+route:
+  group_by: ['alertname', 'severity']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+  receiver: 'team-platform'
+
+  routes:
+    # Route banned pattern alerts to quality team
+    - match:
+        alertname: BannedPatternUsed
+      receiver: 'team-quality'
+      continue: true
+
+    # Route code health alerts to all teams
+    - match:
+        severity: warning
+      receiver: 'team-platform'
+
+    # Route critical issues to oncall
+    - match:
+        severity: critical
+      receiver: 'oncall'
+
+receivers:
+  - name: 'team-platform'
+    slack_configs:
+      - channel: '#platform-alerts'
+        title: 'Syntagma Alert'
+        text: |
+          {{ range .Alerts }}
+          *Alert:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Alcove Ref:* {{ .Annotations.alcove_ref }}
+          *Severity:* {{ .Labels.severity }}
+          {{ end }}
+
+  - name: 'team-quality'
+    slack_configs:
+      - channel: '#code-quality'
+        title: 'Code Quality Alert'
+        text: |
+          {{ range .Alerts }}
+          *Alert:* {{ .Annotations.summary }}
+          *Pattern:* {{ .Labels.entity_id }}
+          *Context:* {{ .Labels.context }}
+          *Team Decision:* {{ .Annotations.alcove_ref }}
+          {{ end }}
+
+  - name: 'oncall'
+    pagerduty_configs:
+      - service_key: 'YOUR_PAGERDUTY_SERVICE_KEY'
+        description: '{{ .GroupLabels.alertname }}: {{ .Annotations.summary }}'
+
+inhibit_rules:
+  # Inhibit warning if critical alert is firing
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname']

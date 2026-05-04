@@ -1,0 +1,410 @@
+{
+  "dashboard": {
+    "title": "Syntagma Pattern & Code Quality Metrics",
+    "uid": "syntagma-overview",
+    "version": 1,
+    "editable": true,
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "tags": ["syntagma", "code-quality", "patterns"],
+    "panels": [
+      {
+        "id": 1,
+        "title": "Top 10 Patterns (Last 30 Days)",
+        "type": "bargauge",
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "topk(10, increase(syntagma_pattern_applied_total[30d]))",
+            "legendFormat": "{{entity_id}}: {{entity_type}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "orientation": "horizontal",
+          "displayMode": "gradient",
+          "showUnfilled": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 100, "color": "yellow"},
+                {"value": 500, "color": "red"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Pattern Usage Rate (5m)",
+        "type": "timeseries",
+        "gridPos": {
+          "x": 12,
+          "y": 0,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "sum by (entity_id) (rate(syntagma_pattern_applied_total[5m]))",
+            "legendFormat": "{{entity_id}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops",
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "smooth",
+              "fillOpacity": 10
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Code Health Score",
+        "type": "gauge",
+        "gridPos": {
+          "x": 0,
+          "y": 8,
+          "w": 6,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "100 - (rate(syntagma_smell_detected_total[1h]) * 10)",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 50, "color": "yellow"},
+                {"value": 80, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Smell Detection by Severity",
+        "type": "piechart",
+        "gridPos": {
+          "x": 6,
+          "y": 8,
+          "w": 6,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "sum by (severity) (increase(syntagma_smell_detected_total[24h]))",
+            "legendFormat": "{{severity}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "table",
+            "placement": "right",
+            "values": ["value", "percent"]
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Pattern Usage by Context",
+        "type": "table",
+        "gridPos": {
+          "x": 12,
+          "y": 8,
+          "w": 12,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "sort_desc(sum by (entity_id, context) (increase(syntagma_pattern_applied_total[7d])))",
+            "format": "table",
+            "instant": true,
+            "refId": "A"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": true
+              },
+              "renameByName": {
+                "entity_id": "Pattern",
+                "context": "Context",
+                "Value": "Usage (7d)"
+              }
+            }
+          }
+        ],
+        "options": {
+          "showHeader": true,
+          "sortBy": [
+            {
+              "displayName": "Usage (7d)",
+              "desc": true
+            }
+          ]
+        }
+      },
+      {
+        "id": 6,
+        "title": "Banned Pattern Alert",
+        "type": "stat",
+        "gridPos": {
+          "x": 0,
+          "y": 14,
+          "w": 6,
+          "h": 4
+        },
+        "targets": [
+          {
+            "expr": "increase(syntagma_pattern_applied_total{entity_id=\"DP-006\"}[1h])",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 1, "color": "red"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "textMode": "value_and_name",
+          "colorMode": "background"
+        },
+        "description": "Singleton (DP-006) usage - banned per DR-091"
+      },
+      {
+        "id": 7,
+        "title": "Refactoring Acceptance Rate",
+        "type": "stat",
+        "gridPos": {
+          "x": 6,
+          "y": 14,
+          "w": 6,
+          "h": 4
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(syntagma_refactoring_applied_total[1h])) / sum(rate(syntagma_refactoring_suggested_total[1h])) * 100",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 30, "color": "yellow"},
+                {"value": 60, "color": "green"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "textMode": "value_and_name",
+          "colorMode": "value"
+        }
+      },
+      {
+        "id": 8,
+        "title": "API Latency (p95/p99)",
+        "type": "timeseries",
+        "gridPos": {
+          "x": 12,
+          "y": 14,
+          "w": 12,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(syntagma_api_duration_seconds_bucket[5m]))",
+            "legendFormat": "p95",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(syntagma_api_duration_seconds_bucket[5m]))",
+            "legendFormat": "p99",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "custom": {
+              "drawStyle": "line",
+              "lineWidth": 2
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "p99"},
+              "properties": [
+                {"id": "color", "value": {"mode": "fixed", "fixedColor": "red"}}
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 9,
+        "title": "Top Smells Detected (24h)",
+        "type": "table",
+        "gridPos": {
+          "x": 0,
+          "y": 18,
+          "w": 12,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "topk(10, increase(syntagma_smell_detected_total[24h]))",
+            "format": "table",
+            "instant": true,
+            "refId": "A"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": true,
+                "__name__": true
+              },
+              "renameByName": {
+                "smell_id": "Smell ID",
+                "smell_name": "Name",
+                "severity": "Severity",
+                "Value": "Count (24h)"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Pattern Diversity by Service",
+        "type": "timeseries",
+        "gridPos": {
+          "x": 12,
+          "y": 18,
+          "w": 12,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "count by (service) (syntagma_pattern_applied_total)",
+            "legendFormat": "{{service}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "custom": {
+              "drawStyle": "bars",
+              "fillOpacity": 50
+            }
+          }
+        },
+        "description": "Number of unique patterns used per service"
+      },
+      {
+        "id": 11,
+        "title": "Alcove Document References",
+        "type": "table",
+        "gridPos": {
+          "x": 0,
+          "y": 24,
+          "w": 24,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "sum by (entity_id, alcove_doc) (increase(syntagma_pattern_applied_total[30d]))",
+            "format": "table",
+            "instant": true,
+            "refId": "A"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "renameByName": {
+                "entity_id": "Syntagma Entity",
+                "alcove_doc": "Alcove Reference",
+                "Value": "Usage (30d)"
+              }
+            }
+          }
+        ],
+        "description": "Pattern usage with corresponding Alcove document references (DR-XXX)"
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "changes(syntagma_build_info[5m]) > 0",
+          "iconColor": "blue",
+          "tagKeys": "version"
+        },
+        {
+          "name": "Alcove Doc Updates",
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "changes(alcove_doc_updated_timestamp[1h]) > 0",
+          "iconColor": "green",
+          "tagKeys": "doc_name"
+        }
+      ]
+    }
+  }
+}
