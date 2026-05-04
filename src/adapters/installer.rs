@@ -257,13 +257,16 @@ pub fn seed_data_from_release(url: &str, dry_run: bool) -> Result<Vec<String>, S
         if !root.is_dir() {
             continue;
         }
-        for dir in ["raw", "data", "meta"] {
+        for dir in ["raw", "data", "meta", "db"] {
             let src = root.join(dir);
             if src.exists() && src.is_dir() {
-                let target = if dir == "raw" {
-                    crate::adapters::paths::raw_dir()
-                } else {
-                    crate::adapters::paths::data_dir()
+                let target = match dir {
+                    "raw" => crate::adapters::paths::raw_dir(),
+                    "db" => crate::adapters::paths::db_path()
+                        .parent()
+                        .map(|p| p.to_path_buf())
+                        .unwrap_or_else(|| crate::adapters::paths::syntagma_home().join("db")),
+                    _ => crate::adapters::paths::data_dir(),
                 };
                 fs::create_dir_all(&target).map_err(|e| e.to_string())?;
                 copy_dir_recursive(&src, &target)?;
@@ -273,7 +276,7 @@ pub fn seed_data_from_release(url: &str, dry_run: bool) -> Result<Vec<String>, S
         }
     }
     if !copied {
-        messages.push("Archive extracted but no raw/data/meta directories found".to_owned());
+        messages.push("Archive extracted but no raw/data/meta/db directories found".to_owned());
     }
     Ok(messages)
 }
@@ -306,13 +309,16 @@ pub fn seed_data_from_local_archive(path: &Path, dry_run: bool) -> Result<Vec<St
         if !root.is_dir() {
             continue;
         }
-        for dir in ["raw", "data", "meta"] {
+        for dir in ["raw", "data", "meta", "db"] {
             let src = root.join(dir);
             if src.exists() && src.is_dir() {
-                let target = if dir == "raw" {
-                    crate::adapters::paths::raw_dir()
-                } else {
-                    crate::adapters::paths::data_dir()
+                let target = match dir {
+                    "raw" => crate::adapters::paths::raw_dir(),
+                    "db" => crate::adapters::paths::db_path()
+                        .parent()
+                        .map(|p| p.to_path_buf())
+                        .unwrap_or_else(|| crate::adapters::paths::syntagma_home().join("db")),
+                    _ => crate::adapters::paths::data_dir(),
                 };
                 fs::create_dir_all(&target).map_err(|e| e.to_string())?;
                 copy_dir_recursive(&src, &target)?;
