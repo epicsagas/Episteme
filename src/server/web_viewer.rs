@@ -717,23 +717,24 @@ function initCy(){
   cy=cytoscape({container:document.getElementById('cy'),
     style:[
       {selector:'node',style:{
-        'label':'data(label)','text-wrap':'wrap','text-max-width':'120px',
+        'label':'data(label)','text-wrap':'wrap','text-max-width':'140px',
         'background-color':function(ele){return typeColors[ele.data('type')]||'#9E9E9E'},
         'font-size':'12px','color':'#e0e0e0',
         'text-outline-color':'#0a0b10','text-outline-width':'3px',
-        'text-valign':'bottom','text-margin-y':'6px',
-        'width':44,'height':44,
+        'text-valign':'bottom','text-margin-y':'8px',
+        'width':56,'height':56,
         'border-width':2,'border-color':'#0f1117',
         'border-opacity':0.6}},
       {selector:'node:active',style:{'overlay-opacity':0}},
-      {selector:'node.selected',style:{'border-color':'#ffffff','border-width':3,'border-opacity':1,'width':56,'height':56}},
+      {selector:'node.selected',style:{'border-color':'#ffffff','border-width':3,'border-opacity':1,'width':70,'height':70}},
       {selector:'edge',style:{
         'width':2,
         'line-color':function(ele){return relColor(ele.data('label'))},
         'target-arrow-color':function(ele){return relColor(ele.data('label'))},
         'target-arrow-shape':'triangle',
-        'opacity':0.55,'curve-style':'unbundled-bezier',
-        'control-point-distances':30,'control-point-weights':0.5}},
+        'label':'',
+        'opacity':0.6,'curve-style':'unbundled-bezier',
+        'control-point-distances':40,'control-point-weights':0.5}},
       {selector:'edge.hovered',style:{'opacity':1,'width':3}},
       {selector:'edge.filtered',style:{'display':'none'}}
     ]
@@ -746,12 +747,9 @@ function initCy(){
   });
   cy.on('mouseover','edge',function(e){
     var el=e.target;
-    var c=relColor(el.data('label'));
     el.addClass('hovered');
-    el.style({'label':el.data('label'),'color':c,'font-size':'11px',
-      'text-outline-color':'#0a0b10','text-outline-width':'3px'});
   });
-  cy.on('mouseout','edge',function(e){e.target.removeClass('hovered');e.target.style('label','')});
+  cy.on('mouseout','edge',function(e){e.target.removeClass('hovered')});
 }
 
 function loadSubgraph(entityId,radius){
