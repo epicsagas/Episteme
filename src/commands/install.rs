@@ -55,7 +55,7 @@ pub fn cmd_install(
     // --- Build RAG index ---
     if seeded && !dry_run {
         println!("\nBuilding RAG index...");
-        super::build::cmd_build(None, false, false, 64, true, false)?;
+        super::build::cmd_build(None, None, false, false, 64, true, false)?;
     }
 
     // --- Tool installation ---
