@@ -62,34 +62,28 @@ impl SyntagmaMCP {
             // Prefer OpenAI provider when configured and key is present.
             #[cfg(feature = "openai-embeddings")]
             {
-                let cfg = crate::adapters::config::SyntagmaConfig::load().ok();
-                let provider_pref = cfg
-                    .as_ref()
-                    .map(|c| c.embedding_provider.to_lowercase())
-                    .unwrap_or_else(|| "local".to_owned());
+                let cfg = crate::adapters::config::SyntagmaConfig::load()
+                    .unwrap_or_default();
+                let provider_pref = cfg.embedding_provider.to_lowercase();
                 let key = std::env::var("SYNTAGMA_OPENAI_API_KEY")
                     .ok()
                     .filter(|k| !k.is_empty())
                     .or_else(|| {
-                        cfg.as_ref().and_then(|c| {
-                            if c.openai_api_key.is_empty() {
-                                None
-                            } else {
-                                Some(c.openai_api_key.clone())
-                            }
-                        })
+                        if cfg.openai_api_key.is_empty() {
+                            None
+                        } else {
+                            Some(cfg.openai_api_key.clone())
+                        }
                     });
                 if provider_pref == "openai" && let Some(key) = key {
                     let model = std::env::var("SYNTAGMA_OPENAI_EMBED_MODEL")
                         .ok()
                         .filter(|m| !m.is_empty())
-                        .or_else(|| cfg.as_ref().map(|c| c.openai_embed_model.clone()))
-                        .unwrap_or_else(|| "text-embedding-3-small".to_owned());
+                        .unwrap_or_else(|| cfg.openai_embed_model.clone());
                     let dim: usize = std::env::var("SYNTAGMA_OPENAI_EMBED_DIM")
                         .ok()
                         .and_then(|s| s.parse().ok())
-                        .or_else(|| cfg.as_ref().map(|c| c.openai_embed_dim))
-                        .unwrap_or(EMBEDDING_DIMENSIONS);
+                        .unwrap_or(cfg.openai_embed_dim);
                     self.embedding_provider = Some(Box::new(
                         crate::adapters::openai_embeddings::OpenAIEmbeddingProvider::new(
                             key, model, dim,
