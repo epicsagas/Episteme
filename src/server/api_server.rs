@@ -17,9 +17,15 @@ pub async fn run(config: &SyntagmaConfig, graph: KnowledgeGraph) -> Result<()> {
         .map_err(|e| anyhow::anyhow!("invalid bind address: {e}"))?;
 
     let api_keys = parse_api_keys(&config.api_keys);
+    if api_keys.is_empty() {
+        tracing::warn!("SYNTAGMA_API_KEYS is not set — authentication is disabled (all endpoints open)");
+    } else {
+        tracing::info!("Authentication enabled with {} API key(s)", api_keys.len());
+    }
     let app = create_app(
         graph,
         api_keys,
+        &config.cors_origins,
         &config.redis_host,
         config.redis_port,
         config.redis_db,
