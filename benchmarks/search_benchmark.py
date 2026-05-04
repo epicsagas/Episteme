@@ -61,7 +61,20 @@ def ndcg_at_k(top_ids: list[str], relevant: set[str], k: int) -> float:
     return dcg / idcg if idcg > 0 else 0.0
 
 
-def run_query(bin_path: Path, query: str, top_k: int) -> tuple[float, int, list[str], str]:
+def dedup_ids(ids: list[str]) -> list[str]:
+    """Remove duplicate entity IDs while preserving rank order (first occurrence wins)."""
+    seen: set[str] = set()
+    result: list[str] = []
+    for doc_id in ids:
+        if doc_id not in seen:
+            seen.add(doc_id)
+            result.append(doc_id)
+    return result
+
+
+def run_query(
+    bin_path: Path, query: str, top_k: int
+) -> tuple[float, int, list[str], str]:
     start = time.perf_counter()
     proc = subprocess.run(
         [str(bin_path), "explore", query, "--limit", str(top_k)],
@@ -70,12 +83,15 @@ def run_query(bin_path: Path, query: str, top_k: int) -> tuple[float, int, list[
         check=False,
     )
     elapsed_ms = (time.perf_counter() - start) * 1000
-    ids = parse_ids(proc.stdout)
+    # Deduplicate entity IDs so the same entity cannot inflate NDCG/MRR.
+    ids = dedup_ids(parse_ids(proc.stdout))
     return elapsed_ms, proc.returncode, ids, proc.stdout
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Benchmark search quality/latency for syntagma")
+    parser = argparse.ArgumentParser(
+        description="Benchmark search quality/latency for syntagma"
+    )
     parser.add_argument(
         "--eval-set",
         default="benchmarks/search_eval_set.json",
@@ -213,7 +229,9 @@ def main() -> int:
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_path = out_dir / f"search_benchmark_{ts}.json"
 
-    output_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    output_path.write_text(
+        json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     print(f"\nSaved: {output_path}")

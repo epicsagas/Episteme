@@ -118,6 +118,22 @@ static TYPE_QUERY_SIGNALS: &[(&str, &[&str])] = &[
             "large class",
             "duplicate",
             "coupling",
+            "shotgun",
+            "surgery",
+            "feature envy",
+            "god object",
+            "god class",
+            "data clump",
+            "primitive obsession",
+            "divergent change",
+            "parallel inheritance",
+            "lazy class",
+            "speculative",
+            "temporary field",
+            "message chain",
+            "middle man",
+            "inappropriate intimacy",
+            "alternative classes",
         ],
     ),
     (
@@ -203,10 +219,13 @@ pub fn title_match_boost(title: &str, query_lower: &str) -> f64 {
     // Partial match: moderate boost.
     if matching == significant_tokens.len() {
         // All significant query tokens appear in the title — this is a
-        // near-exact name hit.
-        1.15
+        // near-exact name hit.  Use a stronger multiplier so that FTS5's
+        // top-1 keyword result (e.g. "Shotgun Surgery" for query
+        // "shotgun surgery smell") wins over semantic results that lack
+        // these specific terms in their title.
+        1.35
     } else if matching > 0 {
-        1.06
+        1.10
     } else {
         1.0
     }
@@ -625,7 +644,8 @@ pub fn hybrid_search(
     for (rank_idx, kr) in keyword_results.into_iter().enumerate() {
         let rank = rank_idx + 1; // 1-based
         let t_boost = title_match_boost(&kr.title, &query_lower_rrf);
-        let rrf_score = KEYWORD_WEIGHT / (RRF_K as f64 + rank as f64) * t_boost;
+        let s_boost = section_boost(&kr.section);
+        let rrf_score = KEYWORD_WEIGHT / (RRF_K as f64 + rank as f64) * t_boost * s_boost;
         chunk_scores.insert(
             kr.chunk_id.clone(),
             SearchResult {
@@ -656,8 +676,14 @@ pub fn hybrid_search(
         }
     }
 
+    // Sort chunks by score, then entity-level dedup: keep best chunk per entity.
+    // This prevents entities with many chunks from unfairly crowding out entities
+    // whose best chunk is more relevant (e.g. a single high-scoring chunk for a
+    // specific smell beats many medium-scoring chunks for a generic one).
     let mut ranked: Vec<SearchResult> = chunk_scores.into_values().collect();
     ranked.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+    let mut seen_entities = std::collections::HashSet::new();
+    ranked.retain(|r| seen_entities.insert(r.entity_id.clone()));
     ranked.truncate(limit);
     Ok(ranked)
 }
