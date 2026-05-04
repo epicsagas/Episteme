@@ -73,42 +73,24 @@ jobs:
           path: dist/${{ matrix.artifact }}.tar.gz
 
   # ---------------------------------------------------------------------------
-  # 2. Build knowledge data archive
+  # 2. Upload pre-built knowledge data archive (built locally, committed to repo)
   # ---------------------------------------------------------------------------
   build-data:
-    name: Build knowledge data archive
+    name: Upload knowledge data archive
     runs-on: ubuntu-latest
     needs: build-binaries
-    outputs:
-      archive-name: ${{ steps.pack.outputs.archive-name }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache Cargo
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: x86_64-linux-cargo-${{ hashFiles('Cargo.lock') }}
-          restore-keys: x86_64-linux-cargo-
-
-      - name: Build syntagma binary
-        run: cargo build --release
-
-      - name: Extract version from tag
-        id: version
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
-
-      - name: Package data archive
-        id: pack
+      - name: Verify data archive exists
         run: |
-          ./target/release/syntagma dist --out-dir dist/
-          ARCHIVE=$(ls dist/syntagma-data-*.tar.gz 2>/dev/null || echo "syntagma-data-${{ steps.version.outputs.version }}.tar.gz")
-          echo "archive-name=$(basename $ARCHIVE)" >> "$GITHUB_OUTPUT"
+          ARCHIVE=$(ls dist/syntagma-data-*.tar.gz 2>/dev/null | head -1)
+          if [ -z "$ARCHIVE" ]; then
+            echo "ERROR: dist/syntagma-data-*.tar.gz not found in repo."
+            echo "Run 'syntagma dist' locally and commit the archive before tagging."
+            exit 1
+          fi
+          echo "Found: $ARCHIVE ($(du -sh $ARCHIVE | cut -f1))"
 
       - name: Upload data artifact
         uses: actions/upload-artifact@v4

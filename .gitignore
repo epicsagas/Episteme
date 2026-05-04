@@ -379,6 +379,5 @@ models/
 .fastembed_cache/
 
 .claude/worktrees/
-dist/
 .claude/settings.local.json
 src/syntagma/_keys.py
