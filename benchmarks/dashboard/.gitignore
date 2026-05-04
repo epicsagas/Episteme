@@ -1,0 +1,9 @@
+# deps
+node_modules/
+
+# build output
+dist/
+
+# re-include src/lib (overrides root gitignore which ignores lib/)
+!src/lib/
+!src/lib/**
