@@ -212,7 +212,7 @@ cd Syntagma
 cargo build --release
 
 # Binary at target/release/syntagma
-./target/release/syntagma install --local
+./target/release/syntagma install --local   # seeds data and builds DB automatically
 ```
 
 ### Option 2: Docker

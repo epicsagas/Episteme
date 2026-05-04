@@ -371,8 +371,7 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,dotenv,visualstudiocode,intellij+all,dotenv,rust,python
 
 ### Project ###
-meta/embeddings.db
-meta/syntagma.db
+*.db
 .cache/
 models/
 .fastembed_cache/

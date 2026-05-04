@@ -33,14 +33,13 @@ Note:
 ### 1. Install Syntagma
 
 ```bash
-# Install globally
-uv tool install syntagma
+# Install from source
+git clone https://github.com/epicsagas/Syntagma.git
+cd Syntagma && cargo build --release
 
 # Install agents and MCP server into Claude Code
-syntagma install claude
-
-# Build knowledge database (one-time setup)
-syntagma build
+# (seeds data and builds knowledge DB automatically)
+./target/release/syntagma install claude
 ```
 
 ### 2. Verify Installation

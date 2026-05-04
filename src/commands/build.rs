@@ -189,28 +189,27 @@ pub fn cmd_dist(out_dir: &str, no_db: bool, skip_build: bool) -> Result<()> {
     if !no_db {
         let db_src = syntagma::adapters::paths::db_path();
         if !db_src.exists() && !skip_build {
-            println!(
-                "Embedding DB not found at {}. Running `syntagma build` first...",
-                db_src.display()
-            );
-            cmd_build(None, false, false, 64, false, false)?;
+            println!("Embedding DB not found. Running build...");
+            cmd_build(None, false, false, 64, true, false)?;
         }
         if !db_src.exists() {
             anyhow::bail!(
-                "embedding db not found at {} (auto-build skipped/failed; rerun without --skip-build or use --no-db)",
+                "embedding db not found at {} (build failed or --skip-build set)",
                 db_src.display()
             );
         }
+        // Copy DB to project-local db/ for inclusion in archive
+        let project_db_dir = cwd.join("db");
+        std::fs::create_dir_all(&project_db_dir)?;
+        let project_db = project_db_dir.join("syntagma.db");
+        std::fs::copy(&db_src, &project_db)
+            .with_context(|| format!("failed to copy db to {}", project_db.display()))?;
+        println!("  db: copied to {}", project_db.display());
+
         let db_dst_dir = package_root.join("db");
         std::fs::create_dir_all(&db_dst_dir)?;
         std::fs::copy(&db_src, db_dst_dir.join("syntagma.db"))
             .with_context(|| format!("failed to copy db from {}", db_src.display()))?;
-
-        // Compatibility with older package expectations.
-        let meta_dir = package_root.join("meta");
-        std::fs::create_dir_all(&meta_dir)?;
-        std::fs::copy(&db_src, meta_dir.join("syntagma.db"))
-            .with_context(|| format!("failed to copy db into {}", meta_dir.display()))?;
     }
 
     let archive_path = out_dir.join(format!("{package_name}.tar.gz"));

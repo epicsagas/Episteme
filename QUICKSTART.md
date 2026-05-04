@@ -53,9 +53,8 @@ cd Syntagma
 # Build
 cargo build --release
 
-# Seed data and build vector DB
+# Seed data and build vector DB (build runs automatically)
 ./target/release/syntagma install --local
-./target/release/syntagma build
 ```
 
 **Expected output:**
@@ -115,7 +114,7 @@ syntagma dist --out-dir release
 ```bash
 syntagma install claude   # re-download data archive
 # or
-syntagma install --local && syntagma build
+syntagma install --local
 ```
 
 ### "Port already in use"
