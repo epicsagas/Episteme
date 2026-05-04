@@ -48,8 +48,10 @@ static SECTION_BOOST: &[(&str, f64)] = &[
     ("description", 1.05),
     // Pattern-specific
     ("applicability", 1.08),
+    ("essence", 1.08),   // State, Command, etc. use "Essence" as the primary section
     ("structure", 1.04),
     // Law/principle-specific
+    ("statement", 1.10), // DRY, KISS, and many laws use "Statement" as the primary section
     ("implications", 1.06),
     ("origin", 1.03),
 ];
@@ -161,6 +163,53 @@ pub fn section_boost(section: &str) -> f64 {
         }
     }
     1.0
+}
+
+/// Boost when a significant query word is an exact substring of the entity title.
+///
+/// For example, "state pattern" matches a title of "State", and "kiss principle"
+/// matches a title of "Kiss".  This separates tied candidates that are scored
+/// equally on cosine similarity alone.
+///
+/// Boosts are graduated:
+///  - All non-stop-word query tokens appear in title → strongest boost (full title match)
+///  - At least one non-stop-word query token appears → moderate boost
+///  - No match → no boost
+pub fn title_match_boost(title: &str, query_lower: &str) -> f64 {
+    let title_lower = title.to_lowercase();
+    // Generic words that are shared across many similar titles should not count
+    // toward boosting (e.g. "extract" appears in Extract Method, Extract Class,
+    // Extract Superclass…).  We use them only for counting, but require at least
+    // one *specific* token to earn a boost.
+    const STOP_WORDS: &[&str] = &["pattern", "principle", "smell", "refactoring", "law", "code"];
+
+    let query_tokens: Vec<&str> = query_lower.split_whitespace().collect();
+    let significant_tokens: Vec<&str> = query_tokens
+        .iter()
+        .filter(|t| !STOP_WORDS.contains(t))
+        .copied()
+        .collect();
+
+    if significant_tokens.is_empty() {
+        return 1.0;
+    }
+
+    let matching = significant_tokens
+        .iter()
+        .filter(|t| title_lower.contains(*t))
+        .count();
+
+    // Full title match (all significant tokens hit): strongest boost.
+    // Partial match: moderate boost.
+    if matching == significant_tokens.len() {
+        // All significant query tokens appear in the title — this is a
+        // near-exact name hit.
+        1.15
+    } else if matching > 0 {
+        1.06
+    } else {
+        1.0
+    }
 }
 
 /// Return boost multiplier when the query signals a specific entity type.
@@ -277,7 +326,9 @@ pub fn semantic_search(
         let similarity = cosine_similarity(query_embedding, &embedding);
         let sec_boost = section_boost(&section);
         let t_boost = type_boost(&entity_type, &query_lower);
-        let score = similarity * sec_boost * t_boost;
+        // Extra boost when query terms appear directly in the title (e.g. "state pattern" → title "State").
+        let title_boost = title_match_boost(&title, &query_lower);
+        let score = similarity * sec_boost * t_boost * title_boost;
 
         results.push(SearchResult {
             chunk_id,
@@ -442,6 +493,18 @@ pub fn keyword_search(
         }
     }
 
+    // Re-rank: apply title match boost so that results whose title contains
+    // the query's significant tokens rank higher than results that only matched
+    // in body text.  FTS5 BM25 scores are negative (lower = better), so we
+    // scale them into positive territory and then apply the boost multiplier.
+    let query_lower = query.to_lowercase();
+    for r in &mut results {
+        let boost = title_match_boost(&r.title, &query_lower);
+        // BM25 rank is negative; abs converts it to a positive relevance magnitude.
+        r.score = r.score.abs() * boost;
+    }
+    results.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+
     Ok(results)
 }
 
@@ -477,8 +540,8 @@ fn read_search_row(row: &rusqlite::Row<'_>) -> std::result::Result<SearchResult,
 // ---------------------------------------------------------------------------
 
 const RRF_K: usize = 20;
-const KEYWORD_WEIGHT: f64 = 0.4;
-const SEMANTIC_WEIGHT: f64 = 0.6;
+const KEYWORD_WEIGHT: f64 = 0.45;
+const SEMANTIC_WEIGHT: f64 = 0.55;
 
 // ---------------------------------------------------------------------------
 // Hybrid search
@@ -552,12 +615,17 @@ pub fn hybrid_search(
     }
 
     // --- RRF fusion ---
+    let query_lower_rrf = query.to_lowercase();
     let mut chunk_scores: HashMap<String, SearchResult> = HashMap::new();
 
     // Score keyword results.
+    // Apply an additional title-match multiplier inside the RRF formula so
+    // that exact-name matches (e.g. "Dry" for query "dry principle") rank
+    // ahead of partial-body matches even after semantic fusion.
     for (rank_idx, kr) in keyword_results.into_iter().enumerate() {
         let rank = rank_idx + 1; // 1-based
-        let rrf_score = KEYWORD_WEIGHT / (RRF_K as f64 + rank as f64);
+        let t_boost = title_match_boost(&kr.title, &query_lower_rrf);
+        let rrf_score = KEYWORD_WEIGHT / (RRF_K as f64 + rank as f64) * t_boost;
         chunk_scores.insert(
             kr.chunk_id.clone(),
             SearchResult {

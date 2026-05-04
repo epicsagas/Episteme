@@ -1,0 +1,914 @@
+{
+  "summary": {
+    "timestamp_utc": "2026-05-04T10:54:59.509516+00:00",
+    "queries": 40,
+    "repeats": 5,
+    "top_k": 5,
+    "latency_ms": {
+      "mean": 28.149,
+      "p50": 27.936,
+      "p95": 29.455,
+      "p99": 32.611,
+      "min": 27.35,
+      "max": 33.161
+    },
+    "quality": {
+      "hit@1": 0.925,
+      "hit@3": 0.95,
+      "hit@5": 0.95,
+      "mrr@5": 0.933333,
+      "ndcg@5": 0.846861
+    }
+  },
+  "per_query": [
+    {
+      "query": "strategy pattern",
+      "relevant_ids": [
+        "DP-020"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.391,
+      "latency_p95_ms": 28.693,
+      "top_ids": [
+        "DP-020",
+        "DP-018",
+        "DP-009",
+        "DP-015",
+        "DP-001"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'strategy pattern':\n\n  [DP-020] Strategy (pattern)\n    Category: behavioral\n    Relevance score: 2\n\n  [DP-018] Observer (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-009] Decorator (pattern)\n    Category: structural\n    Relevance score: 1\n\n  [DP-015] Iterator (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-001] Abstract Factory (pattern)\n    Category: creational\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "factory method pattern",
+      "relevant_ids": [
+        "DP-003"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.345,
+      "latency_p95_ms": 29.264,
+      "top_ids": [
+        "DP-003",
+        "DP-001",
+        "DP-021",
+        "DP-005",
+        "DP-022"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'factory method pattern':\n\n  [DP-003] Factory Method (pattern)\n    Category: creational\n    Relevance score: 3\n\n  [DP-001] Abstract Factory (pattern)\n    Category: creational\n    Relevance score: 2\n\n  [DP-021] Template Method (pattern)\n    Category: behavioral\n    Relevance score: 2\n\n  [DP-005] Singleton (pattern)\n    Category: creational\n    Relevance score: 2\n\n  [DP-022] Visitor (pattern)\n    Category: behavioral\n    Relevance score: 2\n\n"
+    },
+    {
+      "query": "abstract factory",
+      "relevant_ids": [
+        "DP-001"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 32.669,
+      "latency_p95_ms": 33.161,
+      "top_ids": [
+        "DP-001",
+        "DP-003"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 2 result(s) for 'abstract factory':\n\n  [DP-001] Abstract Factory (pattern)\n    Category: creational\n    Relevance score: 2\n\n  [DP-003] Factory Method (pattern)\n    Category: creational\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "builder pattern",
+      "relevant_ids": [
+        "DP-002"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.81,
+      "latency_p95_ms": 31.814,
+      "top_ids": [
+        "DP-002",
+        "DP-015",
+        "DP-012",
+        "DP-001",
+        "DP-017"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'builder pattern':\n\n  [DP-002] Builder (pattern)\n    Category: creational\n    Relevance score: 2\n\n  [DP-015] Iterator (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-012] Proxy (pattern)\n    Category: structural\n    Relevance score: 1\n\n  [DP-001] Abstract Factory (pattern)\n    Category: creational\n    Relevance score: 1\n\n  [DP-017] Memento (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "singleton pattern",
+      "relevant_ids": [
+        "DP-005"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.778,
+      "latency_p95_ms": 28.038,
+      "top_ids": [
+        "DP-005",
+        "DP-004",
+        "DP-013",
+        "DP-015",
+        "DP-016"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'singleton pattern':\n\n  [DP-005] Singleton (pattern)\n    Category: creational\n    Relevance score: 2\n\n  [DP-004] Prototype (pattern)\n    Category: creational\n    Relevance score: 1\n\n  [DP-013] Chain Of Responsibility (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-015] Iterator (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-016] Mediator (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "adapter pattern",
+      "relevant_ids": [
+        "DP-006"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.698,
+      "latency_p95_ms": 28.008,
+      "top_ids": [
+        "DP-006",
+        "DP-012",
+        "DP-013",
+        "DP-010",
+        "DP-009"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'adapter pattern':\n\n  [DP-006] Adapter (pattern)\n    Category: structural\n    Relevance score: 2\n\n  [DP-012] Proxy (pattern)\n    Category: structural\n    Relevance score: 1\n\n  [DP-013] Chain Of Responsibility (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-010] Facade (pattern)\n    Category: structural\n    Relevance score: 1\n\n  [DP-009] Decorator (pattern)\n    Category: structural\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "bridge pattern",
+      "relevant_ids": [
+        "DP-007"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.591,
+      "latency_p95_ms": 27.82,
+      "top_ids": [
+        "DP-007",
+        "DP-021",
+        "DP-020",
+        "DP-019",
+        "DP-009"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'bridge pattern':\n\n  [DP-007] Bridge (pattern)\n    Category: structural\n    Relevance score: 2\n\n  [DP-021] Template Method (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-020] Strategy (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-019] State (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-009] Decorator (pattern)\n    Category: structural\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "composite pattern",
+      "relevant_ids": [
+        "DP-008"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.629,
+      "latency_p95_ms": 27.787,
+      "top_ids": [
+        "DP-008",
+        "DP-016",
+        "DP-021",
+        "DP-020",
+        "DP-007"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'composite pattern':\n\n  [DP-008] Composite (pattern)\n    Category: structural\n    Relevance score: 2\n\n  [DP-016] Mediator (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-021] Template Method (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-020] Strategy (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-007] Bridge (pattern)\n    Category: structural\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "decorator pattern",
+      "relevant_ids": [
+        "DP-009"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.711,
+      "latency_p95_ms": 27.821,
+      "top_ids": [
+        "DP-009",
+        "DP-010",
+        "DP-019",
+        "DP-013",
+        "DP-001"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'decorator pattern':\n\n  [DP-009] Decorator (pattern)\n    Category: structural\n    Relevance score: 2\n\n  [DP-010] Facade (pattern)\n    Category: structural\n    Relevance score: 1\n\n  [DP-019] State (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-013] Chain Of Responsibility (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-001] Abstract Factory (pattern)\n    Category: creational\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "facade pattern",
+      "relevant_ids": [
+        "DP-010"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.151,
+      "latency_p95_ms": 28.249,
+      "top_ids": [
+        "DP-010",
+        "DP-001",
+        "DP-018",
+        "DP-008",
+        "DP-012"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'facade pattern':\n\n  [DP-010] Facade (pattern)\n    Category: structural\n    Relevance score: 2\n\n  [DP-001] Abstract Factory (pattern)\n    Category: creational\n    Relevance score: 1\n\n  [DP-018] Observer (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-008] Composite (pattern)\n    Category: structural\n    Relevance score: 1\n\n  [DP-012] Proxy (pattern)\n    Category: structural\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "flyweight pattern",
+      "relevant_ids": [
+        "DP-011"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.324,
+      "latency_p95_ms": 29.198,
+      "top_ids": [
+        "DP-011",
+        "DP-002",
+        "DP-003",
+        "DP-013",
+        "DP-001"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'flyweight pattern':\n\n  [DP-011] Flyweight (pattern)\n    Category: structural\n    Relevance score: 2\n\n  [DP-002] Builder (pattern)\n    Category: creational\n    Relevance score: 1\n\n  [DP-003] Factory Method (pattern)\n    Category: creational\n    Relevance score: 1\n\n  [DP-013] Chain Of Responsibility (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-001] Abstract Factory (pattern)\n    Category: creational\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "proxy pattern",
+      "relevant_ids": [
+        "DP-012"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.07,
+      "latency_p95_ms": 28.257,
+      "top_ids": [
+        "DP-012",
+        "DP-014",
+        "DP-020",
+        "DP-019",
+        "DP-004"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'proxy pattern':\n\n  [DP-012] Proxy (pattern)\n    Category: structural\n    Relevance score: 2\n\n  [DP-014] Command (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-020] Strategy (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-019] State (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n  [DP-004] Prototype (pattern)\n    Category: creational\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "observer pattern",
+      "relevant_ids": [
+        "DP-018"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.763,
+      "latency_p95_ms": 28.504,
+      "top_ids": [
+        "DP-018",
+        "DP-002",
+        "DP-007",
+        "DP-004",
+        "DP-019"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'observer pattern':\n\n  [DP-018] Observer (pattern)\n    Category: behavioral\n    Relevance score: 2\n\n  [DP-002] Builder (pattern)\n    Category: creational\n    Relevance score: 1\n\n  [DP-007] Bridge (pattern)\n    Category: structural\n    Relevance score: 1\n\n  [DP-004] Prototype (pattern)\n    Category: creational\n    Relevance score: 1\n\n  [DP-019] State (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "state pattern",
+      "relevant_ids": [
+        "DP-019"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.867,
+      "latency_p95_ms": 28.275,
+      "top_ids": [
+        "DP-019",
+        "DP-018",
+        "DP-011",
+        "DP-017",
+        "DP-004"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'state pattern':\n\n  [DP-019] State (pattern)\n    Category: behavioral\n    Relevance score: 2\n\n  [DP-018] Observer (pattern)\n    Category: behavioral\n    Relevance score: 2\n\n  [DP-011] Flyweight (pattern)\n    Category: structural\n    Relevance score: 2\n\n  [DP-017] Memento (pattern)\n    Category: behavioral\n    Relevance score: 2\n\n  [DP-004] Prototype (pattern)\n    Category: creational\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "template method pattern",
+      "relevant_ids": [
+        "DP-021"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.601,
+      "latency_p95_ms": 27.861,
+      "top_ids": [
+        "DP-021",
+        "DP-003",
+        "DP-005",
+        "DP-022",
+        "DP-018"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'template method pattern':\n\n  [DP-021] Template Method (pattern)\n    Category: behavioral\n    Relevance score: 3\n\n  [DP-003] Factory Method (pattern)\n    Category: creational\n    Relevance score: 2\n\n  [DP-005] Singleton (pattern)\n    Category: creational\n    Relevance score: 2\n\n  [DP-022] Visitor (pattern)\n    Category: behavioral\n    Relevance score: 2\n\n  [DP-018] Observer (pattern)\n    Category: behavioral\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "visitor pattern",
+      "relevant_ids": [
+        "DP-022"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.493,
+      "latency_p95_ms": 27.555,
+      "top_ids": [
+        "DP-022",
+        "DP-007",
+        "DP-008",
+        "DP-009",
+        "DP-001"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'visitor pattern':\n\n  [DP-022] Visitor (pattern)\n    Category: behavioral\n    Relevance score: 2\n\n  [DP-007] Bridge (pattern)\n    Category: structural\n    Relevance score: 1\n\n  [DP-008] Composite (pattern)\n    Category: structural\n    Relevance score: 1\n\n  [DP-009] Decorator (pattern)\n    Category: structural\n    Relevance score: 1\n\n  [DP-001] Abstract Factory (pattern)\n    Category: creational\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "long method smell",
+      "relevant_ids": [
+        "RF-001",
+        "SMELL-01"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.591,
+      "latency_p95_ms": 27.654,
+      "top_ids": [
+        "SMELL-01",
+        "SMELL-02",
+        "SMELL-12",
+        "SMELL-18",
+        "SMELL-20"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 0.613147,
+      "raw_stdout": "Found 5 result(s) for 'long method smell':\n\n  [SMELL-01] Long Method (smell)\n    Category: bloater\n    Relevance score: 3\n\n  [SMELL-02] Long Parameter List (smell)\n    Category: bloater\n    Relevance score: 3\n\n  [SMELL-12] Speculative Generality (smell)\n    Category: dispensable\n    Relevance score: 2\n\n  [SMELL-18] Feature Envy (smell)\n    Category: coupler\n    Relevance score: 2\n\n  [SMELL-20] Message Chains (smell)\n    Category: coupler\n    Relevance score: 2\n\n"
+    },
+    {
+      "query": "large class smell",
+      "relevant_ids": [
+        "RF-010",
+        "SMELL-04"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.753,
+      "latency_p95_ms": 28.054,
+      "top_ids": [
+        "SMELL-04",
+        "SMELL-11",
+        "SMELL-07",
+        "SMELL-23",
+        "SMELL-05"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 0.613147,
+      "raw_stdout": "Found 5 result(s) for 'large class smell':\n\n  [SMELL-04] Large Class (smell)\n    Category: bloater\n    Relevance score: 3\n\n  [SMELL-11] Lazy Class (smell)\n    Category: dispensable\n    Relevance score: 2\n\n  [SMELL-07] Data Class (smell)\n    Category: dispensable\n    Relevance score: 2\n\n  [SMELL-23] Alternative Classes with Different Interfaces (smell)\n    Category: oo-abuser\n    Relevance score: 2\n\n  [SMELL-05] Data Clumps (smell)\n    Category: bloater\n    Relevance score: 2\n\n"
+    },
+    {
+      "query": "god object smell",
+      "relevant_ids": [
+        "RF-010",
+        "RF-016",
+        "SMELL-21"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.742,
+      "latency_p95_ms": 28.172,
+      "top_ids": [
+        "SMELL-21",
+        "SMELL-07",
+        "SMELL-20",
+        "SMELL-16",
+        "SMELL-10"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 0.469279,
+      "raw_stdout": "Found 5 result(s) for 'god object smell':\n\n  [SMELL-21] God Object (smell)\n    Category: bloater\n    Relevance score: 3\n\n  [SMELL-07] Data Class (smell)\n    Category: dispensable\n    Relevance score: 1\n\n  [SMELL-20] Message Chains (smell)\n    Category: coupler\n    Relevance score: 1\n\n  [SMELL-16] Comments (smell)\n    Category: dispensable\n    Relevance score: 1\n\n  [SMELL-10] Divergent Change (smell)\n    Category: change-preventer\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "long parameter list",
+      "relevant_ids": [
+        "RF-043",
+        "SMELL-02"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 29.215,
+      "latency_p95_ms": 29.681,
+      "top_ids": [
+        "SMELL-02",
+        "RF-052",
+        "RF-041",
+        "RF-044",
+        "RF-046"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 0.613147,
+      "raw_stdout": "Found 5 result(s) for 'long parameter list':\n\n  [SMELL-02] Long Parameter List (smell)\n    Category: bloater\n    Relevance score: 3\n\n  [RF-052] Replace Parameter With Explicit Methods (refactoring)\n    Category: simplifying_calls\n    Relevance score: 1\n\n  [RF-041] Add Parameter (refactoring)\n    Category: simplifying_calls\n    Relevance score: 1\n\n  [RF-044] Parameterize Method (refactoring)\n    Category: simplifying_calls\n    Relevance score: 1\n\n  [RF-046] Remove Parameter (refactoring)\n    Category: simplifying_calls\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "switch statement smell",
+      "relevant_ids": [
+        "RF-039",
+        "SMELL-06"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.258,
+      "latency_p95_ms": 29.037,
+      "top_ids": [
+        "SMELL-06",
+        "SMELL-18",
+        "SMELL-23",
+        "SMELL-22",
+        "SMELL-07"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 0.613147,
+      "raw_stdout": "Found 5 result(s) for 'switch statement smell':\n\n  [SMELL-06] Switch Statements (smell)\n    Category: oo-abuser\n    Relevance score: 3\n\n  [SMELL-18] Feature Envy (smell)\n    Category: coupler\n    Relevance score: 1\n\n  [SMELL-23] Alternative Classes with Different Interfaces (smell)\n    Category: oo-abuser\n    Relevance score: 1\n\n  [SMELL-22] Refused Bequest (smell)\n    Category: inheritance\n    Relevance score: 1\n\n  [SMELL-07] Data Class (smell)\n    Category: dispensable\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "duplicate code smell",
+      "relevant_ids": [
+        "RF-001",
+        "SMELL-13"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.82,
+      "latency_p95_ms": 28.2,
+      "top_ids": [
+        "SMELL-13",
+        "SMELL-06",
+        "SMELL-17",
+        "SMELL-12",
+        "SMELL-16"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 0.613147,
+      "raw_stdout": "Found 5 result(s) for 'duplicate code smell':\n\n  [SMELL-13] Duplicate Code (smell)\n    Category: dispensable\n    Relevance score: 3\n\n  [SMELL-06] Switch Statements (smell)\n    Category: oo-abuser\n    Relevance score: 3\n\n  [SMELL-17] Dead Code (smell)\n    Category: dispensable\n    Relevance score: 2\n\n  [SMELL-12] Speculative Generality (smell)\n    Category: dispensable\n    Relevance score: 2\n\n  [SMELL-16] Comments (smell)\n    Category: dispensable\n    Relevance score: 2\n\n"
+    },
+    {
+      "query": "feature envy smell",
+      "relevant_ids": [
+        "RF-016",
+        "SMELL-18"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.784,
+      "latency_p95_ms": 28.256,
+      "top_ids": [
+        "SMELL-18",
+        "SMELL-10",
+        "SMELL-14",
+        "SMELL-23",
+        "SMELL-03"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 0.613147,
+      "raw_stdout": "Found 5 result(s) for 'feature envy smell':\n\n  [SMELL-18] Feature Envy (smell)\n    Category: coupler\n    Relevance score: 3\n\n  [SMELL-10] Divergent Change (smell)\n    Category: change-preventer\n    Relevance score: 2\n\n  [SMELL-14] Middle Man (smell)\n    Category: coupler\n    Relevance score: 1\n\n  [SMELL-23] Alternative Classes with Different Interfaces (smell)\n    Category: oo-abuser\n    Relevance score: 1\n\n  [SMELL-03] Primitive Obsession (smell)\n    Category: bloater\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "message chains smell",
+      "relevant_ids": [
+        "RF-011",
+        "SMELL-20"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.604,
+      "latency_p95_ms": 28.221,
+      "top_ids": [
+        "SMELL-20",
+        "SMELL-10",
+        "SMELL-08",
+        "SMELL-07",
+        "SMELL-06"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 0.613147,
+      "raw_stdout": "Found 5 result(s) for 'message chains smell':\n\n  [SMELL-20] Message Chains (smell)\n    Category: coupler\n    Relevance score: 3\n\n  [SMELL-10] Divergent Change (smell)\n    Category: change-preventer\n    Relevance score: 1\n\n  [SMELL-08] Temporary Field (smell)\n    Category: oo-abuser\n    Relevance score: 1\n\n  [SMELL-07] Data Class (smell)\n    Category: dispensable\n    Relevance score: 1\n\n  [SMELL-06] Switch Statements (smell)\n    Category: oo-abuser\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "shotgun surgery smell",
+      "relevant_ids": [
+        "RF-016",
+        "SMELL-09"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.68,
+      "latency_p95_ms": 27.864,
+      "top_ids": [
+        "SMELL-09",
+        "SMELL-17",
+        "SMELL-16",
+        "SMELL-23",
+        "SMELL-08"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 0.613147,
+      "raw_stdout": "Found 5 result(s) for 'shotgun surgery smell':\n\n  [SMELL-09] Shotgun Surgery (smell)\n    Category: change-preventer\n    Relevance score: 3\n\n  [SMELL-17] Dead Code (smell)\n    Category: dispensable\n    Relevance score: 1\n\n  [SMELL-16] Comments (smell)\n    Category: dispensable\n    Relevance score: 1\n\n  [SMELL-23] Alternative Classes with Different Interfaces (smell)\n    Category: oo-abuser\n    Relevance score: 1\n\n  [SMELL-08] Temporary Field (smell)\n    Category: oo-abuser\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "extract method",
+      "relevant_ids": [
+        "RF-001"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.714,
+      "latency_p95_ms": 27.775,
+      "top_ids": [
+        "RF-001",
+        "RF-002",
+        "RF-064",
+        "RF-059",
+        "RF-052"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'extract method':\n\n  [RF-001] Extract Method (refactoring)\n    Category: composing_methods\n    Relevance score: 2\n\n  [RF-002] Extract Variable (refactoring)\n    Category: composing_methods\n    Relevance score: 2\n\n  [RF-064] Push Down Method (refactoring)\n    Category: generalization\n    Relevance score: 1\n\n  [RF-059] Form Template Method (refactoring)\n    Category: generalization\n    Relevance score: 1\n\n  [RF-052] Replace Parameter With Explicit Methods (refactoring)\n    Category: simplifying_calls\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "move method",
+      "relevant_ids": [
+        "RF-016"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.721,
+      "latency_p95_ms": 27.826,
+      "top_ids": [
+        "RF-016",
+        "RF-047",
+        "RF-038",
+        "RF-062",
+        "RF-013"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'move method':\n\n  [RF-016] Move Method (refactoring)\n    Category: moving_features\n    Relevance score: 2\n\n  [RF-047] Remove Setting Method (refactoring)\n    Category: simplifying_calls\n    Relevance score: 2\n\n  [RF-038] Remove Control Flag (refactoring)\n    Category: simplifying_conditionals\n    Relevance score: 1\n\n  [RF-062] Pull Up Method (refactoring)\n    Category: generalization\n    Relevance score: 1\n\n  [RF-013] Introduce Foreign Method (refactoring)\n    Category: moving_features\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "extract class",
+      "relevant_ids": [
+        "RF-010"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.969,
+      "latency_p95_ms": 28.425,
+      "top_ids": [
+        "RF-058",
+        "RF-057",
+        "RF-010",
+        "RF-028",
+        "RF-002"
+      ],
+      "hit@1": 0,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 0.333333,
+      "ndcg@5": 0.5,
+      "raw_stdout": "Found 5 result(s) for 'extract class':\n\n  [RF-058] Extract Superclass (refactoring)\n    Category: generalization\n    Relevance score: 2\n\n  [RF-057] Extract Subclass (refactoring)\n    Category: generalization\n    Relevance score: 2\n\n  [RF-010] Extract Class (refactoring)\n    Category: moving_features\n    Relevance score: 2\n\n  [RF-028] Replace Subclass With Fields (refactoring)\n    Category: organizing_data\n    Relevance score: 1\n\n  [RF-002] Extract Variable (refactoring)\n    Category: composing_methods\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "replace conditional with polymorphism",
+      "relevant_ids": [
+        "RF-039"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.367,
+      "latency_p95_ms": 28.501,
+      "top_ids": [
+        "RF-039",
+        "RF-040",
+        "RF-005",
+        "RF-049",
+        "RF-027"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'replace conditional with polymorphism':\n\n  [RF-039] Replace Conditional With Polymorphism (refactoring)\n    Category: simplifying_conditionals\n    Relevance score: 4\n\n  [RF-040] Replace Nested Conditional With Guard Clauses (refactoring)\n    Category: simplifying_conditionals\n    Relevance score: 3\n\n  [RF-005] Replace Temp With Query (refactoring)\n    Category: composing_methods\n    Relevance score: 2\n\n  [RF-049] Replace Constructor With Factory Method (refactoring)\n    Category: simplifying_calls\n    Relevance score: 2\n\n  [RF-027] Replace Magic Number With Symbolic Constant (refactoring)\n    Category: organizing_data\n    Relevance score: 2\n\n"
+    },
+    {
+      "query": "introduce parameter object",
+      "relevant_ids": [
+        "RF-043"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 29.139,
+      "latency_p95_ms": 29.907,
+      "top_ids": [
+        "RF-043",
+        "RF-037",
+        "RF-053",
+        "RF-044",
+        "RF-045"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'introduce parameter object':\n\n  [RF-043] Introduce Parameter Object (refactoring)\n    Category: simplifying_calls\n    Relevance score: 3\n\n  [RF-037] Introduce Null Object (refactoring)\n    Category: simplifying_conditionals\n    Relevance score: 2\n\n  [RF-053] Replace Parameter With Method Call (refactoring)\n    Category: simplifying_calls\n    Relevance score: 1\n\n  [RF-044] Parameterize Method (refactoring)\n    Category: simplifying_calls\n    Relevance score: 1\n\n  [RF-045] Preserve Whole Object (refactoring)\n    Category: simplifying_calls\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "single responsibility principle",
+      "relevant_ids": [
+        "LAW-042",
+        "LAW-042-S"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.412,
+      "latency_p95_ms": 28.897,
+      "top_ids": [
+        "LAW-042-S",
+        "LAW-042",
+        "LAW-008",
+        "LAW-007",
+        "LAW-055"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'single responsibility principle':\n\n  [LAW-042-S] Single Responsibility Principle (law)\n    Category: design\n    Relevance score: 3\n\n  [LAW-042] Solid Principles (law)\n    Category: design\n    Relevance score: 2\n\n  [LAW-008] Bus Factor (law)\n    Category: teams\n    Relevance score: 2\n\n  [LAW-007] Peter Principle (law)\n    Category: teams\n    Relevance score: 1\n\n  [LAW-055] Pareto Principle (law)\n    Category: decisions\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "open closed principle",
+      "relevant_ids": [
+        "LAW-042",
+        "LAW-042-O"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.243,
+      "latency_p95_ms": 28.421,
+      "top_ids": [
+        "LAW-042-O",
+        "LAW-042",
+        "LAW-042-L",
+        "LAW-044",
+        "LAW-055"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'open closed principle':\n\n  [LAW-042-O] Open/Closed Principle (law)\n    Category: design\n    Relevance score: 3\n\n  [LAW-042] Solid Principles (law)\n    Category: design\n    Relevance score: 1\n\n  [LAW-042-L] Liskov Substitution Principle (law)\n    Category: design\n    Relevance score: 1\n\n  [LAW-044] Principle Of Least Astonishment (law)\n    Category: design\n    Relevance score: 1\n\n  [LAW-055] Pareto Principle (law)\n    Category: decisions\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "dependency inversion principle",
+      "relevant_ids": [
+        "LAW-042",
+        "LAW-042-D"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.075,
+      "latency_p95_ms": 28.331,
+      "top_ids": [
+        "LAW-042-D",
+        "LAW-042",
+        "LAW-042-I",
+        "LAW-042-L",
+        "LAW-044"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'dependency inversion principle':\n\n  [LAW-042-D] Dependency Inversion Principle (law)\n    Category: design\n    Relevance score: 3\n\n  [LAW-042] Solid Principles (law)\n    Category: design\n    Relevance score: 2\n\n  [LAW-042-I] Interface Segregation Principle (law)\n    Category: design\n    Relevance score: 1\n\n  [LAW-042-L] Liskov Substitution Principle (law)\n    Category: design\n    Relevance score: 1\n\n  [LAW-044] Principle Of Least Astonishment (law)\n    Category: design\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "law of demeter",
+      "relevant_ids": [
+        "LAW-043"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.236,
+      "latency_p95_ms": 29.867,
+      "top_ids": [
+        "LAW-043",
+        "LAW-013",
+        "LAW-023",
+        "LAW-018",
+        "LAW-017"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'law of demeter':\n\n  [LAW-043] Law Of Demeter (law)\n    Category: design\n    Relevance score: 3\n\n  [LAW-013] Hofstadters Law (law)\n    Category: planning\n    Relevance score: 2\n\n  [LAW-023] Law Of Unintended Consequences (law)\n    Category: architecture\n    Relevance score: 2\n\n  [LAW-018] Law Of Leaky Abstractions (law)\n    Category: architecture\n    Relevance score: 2\n\n  [LAW-017] Galls Law (law)\n    Category: architecture\n    Relevance score: 2\n\n"
+    },
+    {
+      "query": "dry principle",
+      "relevant_ids": [
+        "LAW-040"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 27.839,
+      "latency_p95_ms": 27.955,
+      "top_ids": [
+        "LAW-042-S",
+        "LAW-044",
+        "LAW-042-L",
+        "LAW-042-I",
+        "LAW-007"
+      ],
+      "hit@1": 0,
+      "hit@3": 0,
+      "hit@5": 0,
+      "rr@5": 0.0,
+      "ndcg@5": 0.0,
+      "raw_stdout": "Found 5 result(s) for 'dry principle':\n\n  [LAW-042-S] Single Responsibility Principle (law)\n    Category: design\n    Relevance score: 1\n\n  [LAW-044] Principle Of Least Astonishment (law)\n    Category: design\n    Relevance score: 1\n\n  [LAW-042-L] Liskov Substitution Principle (law)\n    Category: design\n    Relevance score: 1\n\n  [LAW-042-I] Interface Segregation Principle (law)\n    Category: design\n    Relevance score: 1\n\n  [LAW-007] Peter Principle (law)\n    Category: teams\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "kiss principle",
+      "relevant_ids": [
+        "LAW-041"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.006,
+      "latency_p95_ms": 28.308,
+      "top_ids": [
+        "LAW-047",
+        "LAW-055",
+        "LAW-053",
+        "LAW-042",
+        "LAW-042-I"
+      ],
+      "hit@1": 0,
+      "hit@3": 0,
+      "hit@5": 0,
+      "rr@5": 0.0,
+      "ndcg@5": 0.0,
+      "raw_stdout": "Found 5 result(s) for 'kiss principle':\n\n  [LAW-047] Occams Razor (law)\n    Category: decisions\n    Relevance score: 2\n\n  [LAW-055] Pareto Principle (law)\n    Category: decisions\n    Relevance score: 1\n\n  [LAW-053] First Principles Thinking (law)\n    Category: decisions\n    Relevance score: 1\n\n  [LAW-042] Solid Principles (law)\n    Category: design\n    Relevance score: 1\n\n  [LAW-042-I] Interface Segregation Principle (law)\n    Category: design\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "conways law",
+      "relevant_ids": [
+        "LAW-001"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.003,
+      "latency_p95_ms": 28.145,
+      "top_ids": [
+        "LAW-001",
+        "LAW-014",
+        "LAW-035",
+        "LAW-019",
+        "LAW-018"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'conways law':\n\n  [LAW-001] Conways Law (law)\n    Category: teams\n    Relevance score: 2\n\n  [LAW-014] Goodharts Law (law)\n    Category: planning\n    Relevance score: 1\n\n  [LAW-035] Sturgeons Law (law)\n    Category: quality\n    Relevance score: 1\n\n  [LAW-019] Teslers Law (law)\n    Category: architecture\n    Relevance score: 1\n\n  [LAW-018] Law Of Leaky Abstractions (law)\n    Category: architecture\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "cap theorem",
+      "relevant_ids": [
+        "LAW-020"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.014,
+      "latency_p95_ms": 28.362,
+      "top_ids": [
+        "LAW-020",
+        "LAW-018",
+        "LAW-049",
+        "LAW-023"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 4 result(s) for 'cap theorem':\n\n  [LAW-020] Cap Theorem (law)\n    Category: architecture\n    Relevance score: 2\n\n  [LAW-018] Law Of Leaky Abstractions (law)\n    Category: architecture\n    Relevance score: 1\n\n  [LAW-049] Map Is Not Territory (law)\n    Category: decisions\n    Relevance score: 1\n\n  [LAW-023] Law Of Unintended Consequences (law)\n    Category: architecture\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "brooks law",
+      "relevant_ids": [
+        "LAW-002"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.44,
+      "latency_p95_ms": 28.952,
+      "top_ids": [
+        "LAW-002",
+        "LAW-039",
+        "LAW-011",
+        "LAW-034",
+        "LAW-001"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'brooks law':\n\n  [LAW-002] Brooks Law (law)\n    Category: teams\n    Relevance score: 2\n\n  [LAW-039] Metcalfes Law (law)\n    Category: scalability\n    Relevance score: 1\n\n  [LAW-011] Parkinsons Law (law)\n    Category: planning\n    Relevance score: 1\n\n  [LAW-034] Lehmans Laws (law)\n    Category: quality\n    Relevance score: 1\n\n  [LAW-001] Conways Law (law)\n    Category: teams\n    Relevance score: 1\n\n"
+    },
+    {
+      "query": "goodharts law",
+      "relevant_ids": [
+        "LAW-014"
+      ],
+      "return_code": 0,
+      "latency_mean_ms": 28.435,
+      "latency_p95_ms": 28.766,
+      "top_ids": [
+        "LAW-014",
+        "LAW-056",
+        "LAW-018",
+        "LAW-002",
+        "LAW-034"
+      ],
+      "hit@1": 1,
+      "hit@3": 1,
+      "hit@5": 1,
+      "rr@5": 1.0,
+      "ndcg@5": 1.0,
+      "raw_stdout": "Found 5 result(s) for 'goodharts law':\n\n  [LAW-014] Goodharts Law (law)\n    Category: planning\n    Relevance score: 2\n\n  [LAW-056] Cunninghams Law (law)\n    Category: decisions\n    Relevance score: 1\n\n  [LAW-018] Law Of Leaky Abstractions (law)\n    Category: architecture\n    Relevance score: 1\n\n  [LAW-002] Brooks Law (law)\n    Category: teams\n    Relevance score: 1\n\n  [LAW-034] Lehmans Laws (law)\n    Category: quality\n    Relevance score: 1\n\n"
+    }
+  ]
+}

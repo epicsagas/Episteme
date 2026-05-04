@@ -21,7 +21,10 @@ pub fn cmd_explore(
     let graph = load_graph()?;
 
     // Use the MCP server's keyword search to find matching entities.
-    let mcp = SyntagmaMCP::new(graph);
+    // Attach the RAG database (FTS5 + embeddings) when available for
+    // higher-quality hybrid search results.
+    let mut mcp = SyntagmaMCP::new(graph);
+    mcp.try_attach_rag();
     let result = mcp.search_knowledge(&query, Some(limit), entity_type);
 
     let results = result
@@ -29,7 +32,7 @@ pub fn cmd_explore(
         .and_then(|v| v.as_array())
         .cloned()
         .unwrap_or_default();
-    let count = result
+    let _count = result
         .get("count")
         .and_then(as_u64_or_zero)
         .unwrap_or(0);
@@ -39,9 +42,19 @@ pub fn cmd_explore(
         return Ok(());
     }
 
-    println!("Found {} result(s) for '{}':", count, query);
+    // Deduplicate by entity_id (RAG returns chunk-level results).
+    let mut seen_ids = std::collections::HashSet::new();
+    let deduped: Vec<_> = results
+        .iter()
+        .filter(|e| {
+            let id = e.get("entity_id").and_then(|v| v.as_str()).unwrap_or("?");
+            seen_ids.insert(id.to_owned())
+        })
+        .collect();
+
+    println!("Found {} result(s) for '{}':", deduped.len(), query);
     println!();
-    for entry in &results {
+    for entry in &deduped {
         let id = entry.get("entity_id").and_then(|v| v.as_str()).unwrap_or("?");
         let title = entry.get("title").and_then(|v| v.as_str()).unwrap_or("");
         let etype = entry.get("type").and_then(|v| v.as_str()).unwrap_or("");
@@ -49,16 +62,19 @@ pub fn cmd_explore(
             .get("category")
             .and_then(|v| v.as_str())
             .unwrap_or("");
-        let score = entry
-            .get("score")
-            .and_then(|v| v.as_u64())
-            .unwrap_or(0);
+        // Score may be an integer (keyword fallback) or a float string (RAG hybrid).
+        let score_display = match entry.get("score") {
+            Some(v) if v.is_u64() => v.as_u64().unwrap_or(0).to_string(),
+            Some(v) if v.is_f64() => format!("{:.4}", v.as_f64().unwrap_or(0.0)),
+            Some(v) => v.as_str().unwrap_or("0").to_owned(),
+            None => "0".to_owned(),
+        };
 
         println!("  [{}] {} ({})", id, title, etype);
         if !category.is_empty() {
             println!("    Category: {}", category);
         }
-        println!("    Relevance score: {}", score);
+        println!("    Relevance score: {}", score_display);
         println!();
     }
 
@@ -68,7 +84,8 @@ pub fn cmd_explore(
 /// Interactive REPL for exploring the knowledge graph.
 fn cmd_explore_repl(limit: usize, entity_type: Option<&str>) -> Result<()> {
     let graph = load_graph()?;
-    let mcp = SyntagmaMCP::new(graph);
+    let mut mcp = SyntagmaMCP::new(graph);
+    mcp.try_attach_rag();
     let mut rl = rustyline::DefaultEditor::new()?;
 
     println!("syntagma interactive explorer");
@@ -213,7 +230,7 @@ pub fn print_search_results(query: &str, result: &serde_json::Value) {
         .and_then(|v| v.as_array())
         .cloned()
         .unwrap_or_default();
-    let count = result
+    let _count = result
         .get("count")
         .and_then(as_u64_or_zero)
         .unwrap_or(0);
@@ -223,8 +240,18 @@ pub fn print_search_results(query: &str, result: &serde_json::Value) {
         return;
     }
 
-    println!("Found {} result(s) for '{}':", count, query);
-    for entry in &results {
+    // Deduplicate by entity_id (RAG returns chunk-level results).
+    let mut seen_ids = std::collections::HashSet::new();
+    let deduped: Vec<_> = results
+        .iter()
+        .filter(|e| {
+            let id = e.get("entity_id").and_then(|v| v.as_str()).unwrap_or("?");
+            seen_ids.insert(id.to_owned())
+        })
+        .collect();
+
+    println!("Found {} result(s) for '{}':", deduped.len(), query);
+    for entry in &deduped {
         let id = entry.get("entity_id").and_then(|v| v.as_str()).unwrap_or("?");
         let title = entry.get("title").and_then(|v| v.as_str()).unwrap_or("");
         let etype = entry.get("type").and_then(|v| v.as_str()).unwrap_or("");
