@@ -62,14 +62,12 @@ pub fn search_knowledge(
                     }
                 }
                 if !merged.is_empty() {
-                    // Deduplicate by chunk_id and re-rank by score
-                    let mut seen = std::collections::HashSet::new();
+                    // Sort by score, then deduplicate: keep best-scoring chunk per entity_id.
                     merged.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
-                    merged.retain(|r| seen.insert(r.chunk_id.clone()));
-                    merged.truncate(limit);
+                    let deduped = entity_dedup(merged, limit);
                     return serde_json::json!({
-                        "results": rag_results_to_json(graph, &merged),
-                        "count": merged.len(),
+                        "results": rag_results_to_json(graph, &deduped),
+                        "count": deduped.len(),
                     });
                 }
             } else {
@@ -84,9 +82,13 @@ pub fn search_knowledge(
                     None,
                 )
                     && !rag_results.is_empty() {
+                        // Sort by score, then deduplicate: keep best-scoring chunk per entity_id.
+                        let mut sorted = rag_results;
+                        sorted.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+                        let deduped = entity_dedup(sorted, limit);
                         return serde_json::json!({
-                            "results": rag_results_to_json(graph, &rag_results),
-                            "count": rag_results.len(),
+                            "results": rag_results_to_json(graph, &deduped),
+                            "count": deduped.len(),
                         });
                     }
             }
@@ -203,5 +205,18 @@ pub fn keyword_search(
                 "score": display_score,
             })
         })
+        .collect()
+}
+
+/// Deduplicate RAG results by entity_id, keeping the highest-scoring chunk
+/// per entity, then truncate to `limit`.
+///
+/// Assumes `results` is already sorted by score descending.
+fn entity_dedup(results: Vec<SearchResult>, limit: usize) -> Vec<SearchResult> {
+    let mut seen = std::collections::HashSet::new();
+    results
+        .into_iter()
+        .filter(|r| seen.insert(r.entity_id.clone()))
+        .take(limit)
         .collect()
 }
