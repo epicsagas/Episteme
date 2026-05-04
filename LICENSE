@@ -1,0 +1,158 @@
+# Syntagma Dual License
+
+This project uses a dual-licensing model:
+
+---
+
+## Part 1: Source Code (MIT License)
+
+**Applies to:** All source code, scripts, tests, API implementations, parsers, CLI tools, and MCP server implementations in the following directories:
+- `src/`
+- `tests/`
+- `scripts/`
+- `benchmarks/`
+- `docker/`
+- Configuration files (`pyproject.toml`, `docker-compose.yml`, etc.)
+
+MIT License
+
+Copyright (c) 2026 EpicSagas Research Team
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Part 2: Knowledge Graph Data (Restricted Use)
+
+**Applies to:** All knowledge graph content in the following directories:
+- `raw/` (design patterns, refactoring techniques, software engineering laws)
+- `meta/` (relations, taxonomy, database)
+
+The knowledge graph data is derived from external sources with specific license restrictions:
+
+### 2.1 Design Patterns & Refactoring Techniques
+
+**Source:** Refactoring.Guru (https://refactoring.guru)
+**Copyright:** © 2014-2026 Refactoring.Guru
+**License:** Proprietary - All rights reserved
+**Content Usage Policy:** https://refactoring.guru/content-usage-policy
+
+**Restrictions:**
+- Educational and research use permitted with attribution
+- Commercial use requires explicit permission from Refactoring.Guru
+- Contact: support@refactoring.guru
+
+**Files affected:**
+- `raw/design-patterns/` (22 GoF design patterns)
+- `raw/refactoring/` (66 refactoring techniques)
+
+### 2.2 Software Engineering Laws & Principles
+
+**Source:** Laws of Software Engineering (https://lawsofsoftwareengineering.com)
+**Author:** Dr. Milan Milanović
+**License:** Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)
+**License URL:** https://creativecommons.org/licenses/by-nc-nd/4.0/
+
+**Restrictions under CC BY-NC-ND 4.0:**
+- ✅ **Attribution (BY):** Must give appropriate credit to Dr. Milan Milanović
+- ❌ **NonCommercial (NC):** May not use for commercial purposes
+- ❌ **NoDerivatives (ND):** May not distribute modified versions
+- ✅ **Sharing:** May copy and redistribute in any medium or format under these terms
+
+**Files affected:**
+- `raw/software-engineering/` (56 software engineering laws and principles)
+
+### 2.3 Usage Guidelines
+
+**For Non-Commercial Use (Research, Education, Personal Projects):**
+✅ You may use this knowledge graph data freely with proper attribution
+
+**For Commercial Use:**
+⚠️ You MUST obtain explicit permission from the original content authors:
+1. Contact Refactoring.Guru at support@refactoring.guru for design patterns & refactoring content
+2. Contact Dr. Milan Milanović for software engineering laws content, or restrict use to non-commercial applications
+
+**Attribution Requirements:**
+When using this knowledge graph data, you must:
+1. Maintain all existing source attributions in data files
+2. Include a link to the original sources (Refactoring.Guru and lawsofsoftwareengineering.com)
+3. State if changes were made (for sources where derivatives are permitted)
+
+---
+
+## Part 3: Combined Use
+
+If you use this project in its entirety (both code and data):
+
+- The **code** is available under the MIT License (permissive, commercial use allowed)
+- The **data** remains subject to the restrictions above (non-commercial for CC BY-NC-ND portions)
+- Your overall usage rights are limited by the most restrictive license component (the data)
+
+**Practical Implications:**
+- ✅ **Open Source Projects:** Fully compatible (non-commercial)
+- ✅ **Research & Education:** Fully compatible
+- ⚠️ **Commercial Products:** Code is freely usable (MIT), but data requires permission from original authors
+- ⚠️ **SaaS Applications:** Requires permission if monetized; free for non-commercial services
+
+---
+
+## Part 4: How to Comply
+
+### If You Want to Use This Project Non-Commercially:
+1. Keep all attribution notices intact
+2. Do not remove source links from data files
+3. Include this LICENSE file in redistributions
+4. Comply with CC BY-NC-ND 4.0 terms for software engineering laws data
+
+### If You Want to Use This Project Commercially:
+1. The **code** is freely available under MIT (no permission needed)
+2. For the **data**, you must either:
+   - **Option A:** Replace restricted data with your own or public domain sources
+   - **Option B:** Obtain commercial licenses from:
+     - Refactoring.Guru (support@refactoring.guru)
+     - Dr. Milan Milanović (via lawsofsoftwareengineering.com)
+3. Document which data sources you have permission to use commercially
+
+### If You Want to Contribute:
+- Code contributions: Licensed under MIT (you retain copyright, grant MIT license)
+- Data contributions: Must be compatible with existing licenses or public domain
+- By contributing, you agree your contributions follow the same dual-license model
+
+---
+
+## Part 5: Disclaimer
+
+THE KNOWLEDGE GRAPH DATA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE DATA SOURCES, AUTHORS, OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM THE USE OF THE DATA.
+
+The maintainers of this project have made reasonable efforts to comply with all applicable licenses and usage policies. If you believe any content infringes your rights, please contact hello@epiccounty.com immediately.
+
+---
+
+## Part 6: Questions?
+
+For licensing questions:
+- **Code licensing:** hello@epiccounty.com
+- **Refactoring.Guru content:** support@refactoring.guru
+- **Laws of Software Engineering content:** Contact via lawsofsoftwareengineering.com
+- **General inquiries:** https://github.com/epicsagas/Syntagma/issues
+
+---
+
+**Last Updated:** 2026-04-29
+**Maintainer:** EpicSagas Research Team (hello@epiccounty.com)
