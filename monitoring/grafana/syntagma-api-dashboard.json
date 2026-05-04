@@ -1,0 +1,315 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "syntagma-api",
+    "title": "Syntagma API Monitoring",
+    "tags": ["syntagma", "api", "fastapi"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+        "type": "graph",
+        "title": "Request Rate (req/s)",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{job=\"syntagma-api\"}[5m])",
+            "legendFormat": "{{method}} {{endpoint}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "reqps", "label": "Requests/sec" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "nullPointMode": "null",
+        "tooltip": { "shared": true, "sort": 2, "value_type": "individual" },
+        "legend": { "show": true, "values": false, "alignAsTable": true }
+      },
+      {
+        "id": 2,
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+        "type": "graph",
+        "title": "Request Latency (Percentiles)",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "legendFormat": "p50",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.90, rate(http_request_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "legendFormat": "p90",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "legendFormat": "p95",
+            "refId": "C"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "legendFormat": "p99",
+            "refId": "D"
+          }
+        ],
+        "yaxes": [
+          { "format": "s", "label": "Duration" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 0,
+        "linewidth": 2,
+        "nullPointMode": "null",
+        "tooltip": { "shared": true, "sort": 0 },
+        "legend": { "show": true, "alignAsTable": true, "values": true, "current": true, "max": true }
+      },
+      {
+        "id": 3,
+        "gridPos": { "x": 0, "y": 8, "w": 8, "h": 6 },
+        "type": "graph",
+        "title": "Error Rate (4xx/5xx)",
+        "targets": [
+          {
+            "expr": "rate(http_request_errors_4xx_total{job=\"syntagma-api\"}[5m])",
+            "legendFormat": "4xx - {{endpoint}}",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(http_request_errors_5xx_total{job=\"syntagma-api\"}[5m])",
+            "legendFormat": "5xx - {{endpoint}}",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          { "format": "reqps", "label": "Errors/sec" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 2,
+        "linewidth": 2,
+        "nullPointMode": "null as zero",
+        "tooltip": { "shared": true },
+        "legend": { "show": true, "alignAsTable": true },
+        "alert": {
+          "name": "High 5xx Error Rate",
+          "conditions": [
+            {
+              "evaluator": { "params": [0.1], "type": "gt" },
+              "operator": { "type": "and" },
+              "query": { "params": ["B", "5m", "now"] },
+              "reducer": { "type": "avg" },
+              "type": "query"
+            }
+          ],
+          "frequency": "1m",
+          "handler": 1,
+          "message": "5xx error rate is above 0.1 req/s",
+          "noDataState": "no_data",
+          "executionErrorState": "alerting"
+        }
+      },
+      {
+        "id": 4,
+        "gridPos": { "x": 8, "y": 8, "w": 8, "h": 6 },
+        "type": "graph",
+        "title": "Active Requests",
+        "targets": [
+          {
+            "expr": "http_requests_inprogress{job=\"syntagma-api\"}",
+            "legendFormat": "{{method}} {{handler}}",
+            "refId": "A"
+          }
+          ],
+        "yaxes": [
+          { "format": "short", "label": "Requests" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "nullPointMode": "null as zero",
+        "tooltip": { "shared": true },
+        "legend": { "show": true }
+      },
+      {
+        "id": 5,
+        "gridPos": { "x": 16, "y": 8, "w": 8, "h": 6 },
+        "type": "stat",
+        "title": "Component Status",
+        "targets": [
+          {
+            "expr": "syntagma_component_status{job=\"syntagma-api\"}",
+            "legendFormat": "{{component}}",
+            "refId": "A",
+            "instant": true
+          }
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "value",
+          "graphMode": "none"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              { "type": "value", "value": "0", "text": "Unhealthy", "color": "red" },
+              { "type": "value", "value": "1", "text": "Healthy", "color": "green" }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "red" },
+                { "value": 1, "color": "green" }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "gridPos": { "x": 0, "y": 14, "w": 12, "h": 8 },
+        "type": "graph",
+        "title": "Code Smells Detected Over Time",
+        "targets": [
+          {
+            "expr": "rate(syntagma_smells_detected_total{job=\"syntagma-api\"}[5m])",
+            "legendFormat": "{{smell_name}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "short", "label": "Detections/sec" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "bars": false,
+        "fill": 1,
+        "linewidth": 2,
+        "nullPointMode": "null as zero",
+        "tooltip": { "shared": true, "sort": 2 },
+        "legend": { "show": true, "alignAsTable": true, "values": true, "current": true, "total": true }
+      },
+      {
+        "id": 7,
+        "gridPos": { "x": 12, "y": 14, "w": 12, "h": 8 },
+        "type": "graph",
+        "title": "Semantic Search Rate",
+        "targets": [
+          {
+            "expr": "rate(syntagma_searches_total{job=\"syntagma-api\"}[5m])",
+            "legendFormat": "{{entity_type}} (filter={{has_filter}})",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "reqps", "label": "Searches/sec" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "nullPointMode": "null as zero",
+        "tooltip": { "shared": true },
+        "legend": { "show": true, "alignAsTable": true }
+      },
+      {
+        "id": 8,
+        "gridPos": { "x": 0, "y": 22, "w": 8, "h": 6 },
+        "type": "graph",
+        "title": "Analysis Duration",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(syntagma_analysis_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "legendFormat": "p95",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(syntagma_analysis_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "legendFormat": "p99",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          { "format": "s", "label": "Duration" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 0,
+        "linewidth": 2
+      },
+      {
+        "id": 9,
+        "gridPos": { "x": 8, "y": 22, "w": 8, "h": 6 },
+        "type": "graph",
+        "title": "Search Duration",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(syntagma_search_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "legendFormat": "p95",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(syntagma_search_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "legendFormat": "p99",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          { "format": "s", "label": "Duration" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 0,
+        "linewidth": 2
+      },
+      {
+        "id": 10,
+        "gridPos": { "x": 16, "y": 22, "w": 8, "h": 6 },
+        "type": "graph",
+        "title": "Memory Usage",
+        "targets": [
+          {
+            "expr": "syntagma_memory_usage_bytes{job=\"syntagma-api\"}",
+            "legendFormat": "RSS Memory",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "bytes", "label": "Memory" },
+          { "format": "short" }
+        ],
+        "lines": true,
+        "fill": 2,
+        "linewidth": 2,
+        "nullPointMode": "connected"
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"]
+    },
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": []
+    }
+  },
+  "overwrite": true,
+  "folderId": 0
+}
