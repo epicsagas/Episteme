@@ -136,6 +136,63 @@ static PROBLEM_KEYWORDS: &[(&str, &[&str])] = &[
     ),
 ];
 
+// ---------------------------------------------------------------------------
+// Intent-to-entity synonym expansion (R3)
+// Maps abstract intent phrases to entity IDs that should be boosted in results.
+// ---------------------------------------------------------------------------
+
+static INTENT_SYNONYMS: &[(&str, &[&str])] = &[
+    ("flexible", &["DP-020", "LAW-042"]),
+    ("extensible", &["DP-020", "LAW-042"]),
+    ("pluggable", &["DP-020", "DP-010"]),
+    ("undo", &["DP-014", "DP-017"]),
+    ("redo", &["DP-014", "DP-017"]),
+    ("create objects", &["DP-001", "DP-003", "DP-002"]),
+    (
+        "creational",
+        &["DP-001", "DP-002", "DP-003", "DP-004", "DP-005"],
+    ),
+    ("decouple", &["DP-006", "DP-007", "DP-010", "DP-015"]),
+    (
+        "loose coupling",
+        &["DP-006", "DP-007", "DP-010", "LAW-043"],
+    ),
+    (
+        "tight coupling",
+        &["SMELL-19", "SMELL-20", "DP-006", "LAW-043"],
+    ),
+    (
+        "too many responsibilities",
+        &["SMELL-21", "SMELL-04", "RF-010", "LAW-042"],
+    ),
+    ("too many parameters", &["SMELL-02", "RF-043"]),
+    (
+        "nested conditionals",
+        &["SMELL-06", "RF-040", "RF-033", "RF-035"],
+    ),
+    ("breaking changes", &["LAW-042", "SMELL-15"]),
+    ("fear of refactoring", &["LAW-008"]),
+];
+
+/// Look up entity IDs whose content matches the intent expressed in `query`.
+///
+/// The query is lowercased and scanned for known intent phrases. All matching
+/// entity IDs are collected and deduplicated before being returned.
+pub fn lookup_intent_synonyms(query: &str) -> Vec<String> {
+    let text = query.to_lowercase();
+    let mut seen = std::collections::HashSet::new();
+    for (phrase, entity_ids) in INTENT_SYNONYMS {
+        if text.contains(phrase) {
+            for id in *entity_ids {
+                seen.insert(id.to_string());
+            }
+        }
+    }
+    let mut result: Vec<String> = seen.into_iter().collect();
+    result.sort();
+    result
+}
+
 static ENTITY_TYPE_KEYWORDS: &[(&str, &[&str])] = &[
     (
         "pattern",
@@ -303,5 +360,31 @@ mod tests {
         let approach = suggest_search_approach("something totally unrelated xyz");
         assert_eq!(approach.strategy, "semantic");
         assert_eq!(approach.confidence, 0.0);
+    }
+
+    // --- Intent synonym expansion tests (R3) ---
+
+    #[test]
+    fn intent_synonyms_flexible() {
+        let ids = lookup_intent_synonyms("flexible code");
+        assert_eq!(ids, vec!["DP-020", "LAW-042"]);
+    }
+
+    #[test]
+    fn intent_synonyms_undo_and_redo_deduplicates() {
+        let ids = lookup_intent_synonyms("undo and redo");
+        assert_eq!(ids, vec!["DP-014", "DP-017"]);
+    }
+
+    #[test]
+    fn intent_synonyms_unrelated_returns_empty() {
+        let ids = lookup_intent_synonyms("something unrelated");
+        assert!(ids.is_empty());
+    }
+
+    #[test]
+    fn intent_synonyms_nested_conditionals() {
+        let ids = lookup_intent_synonyms("nested conditionals");
+        assert_eq!(ids, vec!["RF-033", "RF-035", "RF-040", "SMELL-06"]);
     }
 }

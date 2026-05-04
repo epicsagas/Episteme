@@ -242,6 +242,49 @@ pub fn type_boost(entity_type: &str, query_lower: &str) -> f64 {
 }
 
 // ---------------------------------------------------------------------------
+// Sparse entity title boost
+// ---------------------------------------------------------------------------
+
+/// Count how many chunks each entity has in the database.
+fn count_chunks_per_entity(conn: &Connection) -> HashMap<String, usize> {
+    let mut map = HashMap::new();
+    let mut stmt = match conn.prepare("SELECT entity_id, COUNT(*) as cnt FROM chunks GROUP BY entity_id") {
+        Ok(s) => s,
+        Err(_) => return map,
+    };
+    let rows = match stmt.query_map([], |row| {
+        let entity_id: String = row.get(0)?;
+        let cnt: i64 = row.get(1)?;
+        let cnt: usize = cnt as usize;
+        Ok((entity_id, cnt))
+    }) {
+        Ok(r) => r,
+        Err(_) => return map,
+    };
+    for row in rows {
+        if let Ok((eid, cnt)) = row {
+            map.insert(eid, cnt);
+        }
+    }
+    map
+}
+
+/// Return a boost multiplier for entities with very few indexed chunks.
+///
+/// Entities like "God Object" or "Shotgun Surgery" have brief overview
+/// sections, resulting in only 1-2 chunks and depressed BM25 scores.  This
+/// multiplier compensates so that their title matches are not unfairly
+/// outranked by entities with many chunks.
+pub fn sparse_entity_boost(conn: &Connection, entity_id: &str) -> f64 {
+    let counts = count_chunks_per_entity(conn);
+    match counts.get(entity_id) {
+        Some(&cnt) if cnt <= 2 => 1.3,
+        Some(&cnt) if cnt <= 4 => 1.15,
+        _ => 1.0,
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Cosine similarity
 // ---------------------------------------------------------------------------
 
@@ -519,8 +562,9 @@ pub fn keyword_search(
     let query_lower = query.to_lowercase();
     for r in &mut results {
         let boost = title_match_boost(&r.title, &query_lower);
+        let sparse_boost = sparse_entity_boost(conn, &r.entity_id);
         // BM25 rank is negative; abs converts it to a positive relevance magnitude.
-        r.score = r.score.abs() * boost;
+        r.score = r.score.abs() * boost * sparse_boost;
     }
     results.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
 
@@ -645,7 +689,8 @@ pub fn hybrid_search(
         let rank = rank_idx + 1; // 1-based
         let t_boost = title_match_boost(&kr.title, &query_lower_rrf);
         let s_boost = section_boost(&kr.section);
-        let rrf_score = KEYWORD_WEIGHT / (RRF_K as f64 + rank as f64) * t_boost * s_boost;
+        let sparse_boost = sparse_entity_boost(conn, &kr.entity_id);
+        let rrf_score = KEYWORD_WEIGHT / (RRF_K as f64 + rank as f64) * t_boost * s_boost * sparse_boost;
         chunk_scores.insert(
             kr.chunk_id.clone(),
             SearchResult {
@@ -686,4 +731,128 @@ pub fn hybrid_search(
     ranked.retain(|r| seen_entities.insert(r.entity_id.clone()));
     ranked.truncate(limit);
     Ok(ranked)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn setup_test_db() -> Connection {
+        let conn = Connection::open_in_memory().unwrap();
+        conn.execute_batch(
+            "
+            CREATE TABLE chunks (
+                id TEXT PRIMARY KEY,
+                text TEXT NOT NULL,
+                entity_id TEXT NOT NULL,
+                entity_type TEXT NOT NULL,
+                title TEXT NOT NULL,
+                section TEXT NOT NULL,
+                metadata TEXT NOT NULL DEFAULT '{}'
+            );
+            ",
+        )
+        .unwrap();
+        conn
+    }
+
+    fn insert_chunk(conn: &Connection, id: &str, entity_id: &str, title: &str, text: &str) {
+        conn.execute(
+            "INSERT INTO chunks (id, text, entity_id, entity_type, title, section) VALUES (?1, ?2, ?3, 'pattern', ?4, 'overview')",
+            params![id, text, entity_id, title],
+        )
+        .unwrap();
+    }
+
+    #[test]
+    fn count_chunks_per_entity_basic() {
+        let conn = setup_test_db();
+        insert_chunk(&conn, "c1", "god_object", "God Object", "A god object...");
+        insert_chunk(&conn, "c2", "god_object", "God Object", "Second chunk...");
+        insert_chunk(&conn, "c3", "strategy", "Strategy", "Strategy pattern...");
+        insert_chunk(&conn, "c4", "strategy", "Strategy", "Another...");
+        insert_chunk(&conn, "c5", "strategy", "Strategy", "Third...");
+        insert_chunk(&conn, "c6", "observer", "Observer", "Observer...");
+
+        let counts = count_chunks_per_entity(&conn);
+        assert_eq!(counts.get("god_object"), Some(&2));
+        assert_eq!(counts.get("strategy"), Some(&3));
+        assert_eq!(counts.get("observer"), Some(&1));
+    }
+
+    #[test]
+    fn count_chunks_per_entity_empty_db() {
+        let conn = setup_test_db();
+        let counts = count_chunks_per_entity(&conn);
+        assert!(counts.is_empty());
+    }
+
+    #[test]
+    fn sparse_boost_tier_1_or_2_chunks() {
+        let conn = setup_test_db();
+        insert_chunk(&conn, "c1", "god_object", "God Object", "A god object...");
+        insert_chunk(&conn, "c2", "god_object", "God Object", "Second chunk...");
+
+        let boost = sparse_entity_boost(&conn, "god_object");
+        assert!((boost - 1.3).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn sparse_boost_tier_single_chunk() {
+        let conn = setup_test_db();
+        insert_chunk(&conn, "c1", "shotgun", "Shotgun Surgery", "Shotgun surgery...");
+
+        let boost = sparse_entity_boost(&conn, "shotgun");
+        assert!((boost - 1.3).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn sparse_boost_tier_3_to_4_chunks() {
+        let conn = setup_test_db();
+        insert_chunk(&conn, "c1", "strategy", "Strategy", "one");
+        insert_chunk(&conn, "c2", "strategy", "Strategy", "two");
+        insert_chunk(&conn, "c3", "strategy", "Strategy", "three");
+
+        let boost = sparse_entity_boost(&conn, "strategy");
+        assert!((boost - 1.15).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn sparse_boost_tier_4_chunks() {
+        let conn = setup_test_db();
+        insert_chunk(&conn, "c1", "observer", "Observer", "one");
+        insert_chunk(&conn, "c2", "observer", "Observer", "two");
+        insert_chunk(&conn, "c3", "observer", "Observer", "three");
+        insert_chunk(&conn, "c4", "observer", "Observer", "four");
+
+        let boost = sparse_entity_boost(&conn, "observer");
+        assert!((boost - 1.15).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn sparse_boost_tier_5_plus_chunks() {
+        let conn = setup_test_db();
+        for i in 0..6 {
+            insert_chunk(
+                &conn,
+                &format!("c{i}"),
+                "factory",
+                "Factory",
+                "chunk",
+            );
+        }
+
+        let boost = sparse_entity_boost(&conn, "factory");
+        assert!((boost - 1.0).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn sparse_boost_unknown_entity() {
+        let conn = setup_test_db();
+        insert_chunk(&conn, "c1", "strategy", "Strategy", "chunk");
+
+        // Entity not in the DB at all should get 1.0
+        let boost = sparse_entity_boost(&conn, "nonexistent");
+        assert!((boost - 1.0).abs() < f64::EPSILON);
+    }
 }
