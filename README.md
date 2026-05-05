@@ -170,14 +170,18 @@ syntagma dist --out-dir release/
 | **`analyze_code`** | Detect code smells via regex/AST analysis | "Review this payment validation code" |
 | **`suggest_refactorings`** | Ranked refactoring suggestions | "What should I refactor in this class?" |
 
-### 4 Specialized Agents
+### 4 Specialized Agents (Connected Network)
 
-| Agent | When to Use | Example Prompt |
-|-------|-------------|----------------|
-| **`syntagma-advisor`** | Engineering decisions, pattern selection | "Should I use Singleton for ConfigManager?" |
-| **`syntagma-researcher`** | Explore knowledge graph relationships | "What laws does Observer Pattern enforce?" |
-| **`code-reviewer`** | Review code for smells and SOLID violations | "Review this authentication module" |
-| **`architecture-analyst`** | Evaluate architecture against laws/patterns | "Is this microservices design following Conway's Law?" |
+Agents work together — each analysis ends with **Next Steps** options that hand off to other agents.
+
+| Agent | When to Use | Key Capability | Hands off to |
+|-------|-------------|----------------|--------------|
+| **`code-reviewer`** | Code smells, SOLID violations | Causation analysis (root cause → downstream symptoms) | advisor, architecture-analyst, refactoring-expert |
+| **`syntagma-advisor`** | Engineering decisions, trade-offs | Multi-entity trade-off chains with action plans | code-reviewer, architecture-analyst, researcher |
+| **`syntagma-researcher`** | Knowledge graph exploration | Connection maps between patterns, laws, smells | advisor, code-reviewer |
+| **`architecture-analyst`** | Architecture evaluation against laws | Compliance scoring with risk-weighted assessment | advisor, code-reviewer, researcher |
+
+**Workflow example**: `code-reviewer` detects God Object → traces causation to 3 downstream smells → offers "Apply RF-018" (→ refactoring-expert) or "Deep dive root cause" (→ syntagma-advisor) or "Architecture check" (→ architecture-analyst).
 
 [Full MCP Integration Guide](docs/mcp-integration-guide.md)
 
@@ -194,9 +198,11 @@ syntagma dist --out-dir release/
 
 ### AI-First Design
 - **MCP Integration** - 6 specialized tools for high-fidelity AI agent interaction
+- **4 Connected Agents** - Causation analysis, interactive follow-ups, and cross-agent handoffs
 - **10 Language Support** - Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin
 - **Deterministic Analysis** - AST-based Python detection + regex-based multi-language support
 - **Citable Knowledge** - Every finding links to explicit entity IDs (e.g., `RF-001`, `LAW-021`)
+- **Workflow Chains** - Multi-step pipelines: Code Review → Causation Analysis → Refactoring → Verification
 
 ### Production Ready
 - **REST API** - 17 endpoints with authentication and rate limiting
