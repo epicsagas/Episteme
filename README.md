@@ -1,7 +1,5 @@
 <h1 align="center">Syntagma</h1>
 
----
-
 <p align="center"><b>Knowledge Graph for Software Engineering</b></p>
 
 <blockquote><p align="center">Syntagma (συν ταγμα) - Greek for "organized system" or "discernment"</p></blockquote>
@@ -10,15 +8,13 @@
 
 <p align="center">Written in Rust for performance, safety, and single-binary deployment.</p>
 
----
-
 <p align="center">
-    <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.82+-orange.svg" alt="rust-lang" /></a>
+    <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.85+-orange.svg" alt="rust-lang" /></a>
     <a href="https://crates.io/crates/Syntagma"><img src="https://img.shields.io/crates/v/Syntagma.svg" alt="crates.io" /></a>
     <a href="https://crates.io/crates/Syntagma"><img src="https://img.shields.io/crates/d/Syntagma.svg" alt="Downloads" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
     <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
-</p
+</p>
 
 ---
 
@@ -76,104 +72,57 @@ Cloud-based LLMs and analysis tools require sending your codebase to external se
 
 ---
 
-## Quick Start for AI Agents
+## Prerequisites
 
-### Option 1: MCP Integration (Recommended)
+**Prerequisites:** Rust 1.85+ (edition 2024). Install via [rustup](https://rustup.rs) if needed.
 
-**For Claude Code / Cursor users** — Get software engineering knowledge in 2 commands:
+### Install Rust
 
 ```bash
-# 1. Install Syntagma
-cargo install --git https://github.com/epicsagas/Syntagma
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
 
-# 2. Install into your AI tool
+> For more details, please visit [Rustup](https://rustup.rs)
+
+### Option 1: One Command (Recommended)
+
+```bash
+cargo install --git https://github.com/epicsagas/Syntagma
 syntagma install claude    # or: cursor, codex, gemini
 ```
 
-**That's it!** Restart Claude Code and you now have:
-
-- 6 MCP tools (search, analyze code, suggest refactorings, etc.)
-- 4 specialized agents (advisor, researcher, code-reviewer, architecture-analyst)
-- Access to 22 patterns, 66 refactorings, 56 laws, 17 code smells
-- Pre-built vector database — no `syntagma build` required
-
-**Try it:**
-```
-User: "What's the best way to fix a God Object smell?"
-
-Claude (using Syntagma MCP tools):
-"The God Object anti-pattern (SMELL-03) violates Single Responsibility
-Principle (LAW-001). Best refactorings:
-
-1. Extract Class (RF-018) - Move related methods to new class
-   Priority: 0.89 | Effort: Medium
-
-2. Move Method (RF-023) - Relocate methods to appropriate classes
-   Priority: 0.76 | Effort: Low
-
-Start with Move Method for quick wins, then Extract Class for design."
-```
-
-[Full MCP Integration Guide](docs/mcp-integration-guide.md)
-
----
-
-### Option 2: REST API
-
-**For custom integrations** — Access via HTTP:
+### Option 2: From Source
 
 ```bash
-# Start API server
-syntagma api
-
-# Search knowledge
-curl http://localhost:8000/search?q=strategy+pattern&top_k=3
-
-# Analyze code
-curl -X POST http://localhost:8000/analyze \
-  -F "file=@my_code.py" \
-  -F "language=python"
-
-# Get refactoring suggestions
-curl http://localhost:8000/refactor/SMELL-01
+git clone https://github.com/epicsagas/Syntagma.git
+cd Syntagma && cargo build --release
+./target/release/syntagma install --local
 ```
 
-[API Documentation](docs/api.md)
-
----
-
-### Option 3: Docker
+### Option 3: Docker (No Rust Required)
 
 ```bash
 docker-compose up -d
-
-# API: http://localhost:8000
-# Web: syntagma web --port 8080
 ```
 
----
+For MCP via Docker, add to your config:
+```json
+{
+  "mcpServers": {
+    "syntagma": {
+      "command": "docker",
+      "args": ["exec", "-i", "syntagma-api", "syntagma", "mcp"]
+    }
+  }
+}
+```
 
-## CLI Usage
+### Verify
 
 ```bash
-# Analyze code for smells
-syntagma analyze my_code.py --language python --json
-syntagma infer my_code.py
-
-# Explore the knowledge graph
-syntagma explore "strategy pattern"
-syntagma graph path DP-005 RF-001
-
-# Build the RAG index
-syntagma build
-
-# Start servers
-syntagma api              # REST API on :8000
-syntagma mcp --http       # MCP server on :43175
-syntagma web --port 8080  # Web UI
-
-# Distribution packaging
-syntagma dist --out-dir release/
+syntagma --version
+syntagma stats
+syntagma analyze test.py
 ```
 
 ---
@@ -205,6 +154,31 @@ Agents work together — each analysis ends with **Next Steps** options that han
 **Workflow example**: `code-reviewer` detects God Object → traces causation to 3 downstream smells → offers "Apply RF-018" (→ refactoring-expert) or "Deep dive root cause" (→ syntagma-advisor) or "Architecture check" (→ architecture-analyst).
 
 [Full MCP Integration Guide](docs/mcp-integration-guide.md)
+
+---
+
+## CLI Usage
+
+```bash
+# Analyze code for smells
+syntagma analyze my_code.py --language python --json
+syntagma infer my_code.py
+
+# Explore the knowledge graph
+syntagma explore "strategy pattern"
+syntagma graph path DP-005 RF-001
+
+# Build the RAG index
+syntagma build
+
+# Start servers
+syntagma api              # REST API on :8000
+syntagma mcp --http       # MCP server on :43175
+syntagma web --port 8080  # Web UI
+
+# Distribution packaging
+syntagma dist --out-dir release/
+```
 
 ---
 
@@ -268,37 +242,6 @@ syntagma (CLI binary)
 ```
 
 **Tech Stack:** Rust, axum, rusqlite (SQLite + FTS5), fastembed (ONNX), clap, regex
-
----
-
-## Installation
-
-### Option 1: From Source (Recommended)
-
-```bash
-git clone https://github.com/epicsagas/Syntagma.git
-cd Syntagma
-
-cargo build --release
-
-# Binary at target/release/syntagma
-./target/release/syntagma install --local   # seeds data and builds DB automatically
-```
-
-### Option 2: Docker
-
-```bash
-docker-compose up -d
-```
-
-### Verify Installation
-
-```bash
-syntagma --version              # 0.1.0
-syntagma stats                  # Knowledge graph statistics
-syntagma analyze test.py        # Code smell detection
-syntagma mcp                    # Start MCP server (stdio)
-```
 
 ---
 
