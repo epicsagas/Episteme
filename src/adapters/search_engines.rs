@@ -275,8 +275,7 @@ fn count_chunks_per_entity(conn: &Connection) -> HashMap<String, usize> {
 /// sections, resulting in only 1-2 chunks and depressed BM25 scores.  This
 /// multiplier compensates so that their title matches are not unfairly
 /// outranked by entities with many chunks.
-pub fn sparse_entity_boost(conn: &Connection, entity_id: &str) -> f64 {
-    let counts = count_chunks_per_entity(conn);
+pub fn sparse_entity_boost(counts: &HashMap<String, usize>, entity_id: &str) -> f64 {
     match counts.get(entity_id) {
         Some(&cnt) if cnt <= 2 => 1.3,
         Some(&cnt) if cnt <= 4 => 1.15,
@@ -560,9 +559,10 @@ pub fn keyword_search(
     // in body text.  FTS5 BM25 scores are negative (lower = better), so we
     // scale them into positive territory and then apply the boost multiplier.
     let query_lower = query.to_lowercase();
+    let chunk_counts = count_chunks_per_entity(conn);
     for r in &mut results {
         let boost = title_match_boost(&r.title, &query_lower);
-        let sparse_boost = sparse_entity_boost(conn, &r.entity_id);
+        let sparse_boost = sparse_entity_boost(&chunk_counts, &r.entity_id);
         // BM25 rank is negative; abs converts it to a positive relevance magnitude.
         r.score = r.score.abs() * boost * sparse_boost;
     }
@@ -685,11 +685,12 @@ pub fn hybrid_search(
     // Apply an additional title-match multiplier inside the RRF formula so
     // that exact-name matches (e.g. "Dry" for query "dry principle") rank
     // ahead of partial-body matches even after semantic fusion.
+    let chunk_counts = count_chunks_per_entity(conn);
     for (rank_idx, kr) in keyword_results.into_iter().enumerate() {
         let rank = rank_idx + 1; // 1-based
         let t_boost = title_match_boost(&kr.title, &query_lower_rrf);
         let s_boost = section_boost(&kr.section);
-        let sparse_boost = sparse_entity_boost(conn, &kr.entity_id);
+        let sparse_boost = sparse_entity_boost(&chunk_counts, &kr.entity_id);
         let rrf_score = KEYWORD_WEIGHT / (RRF_K as f64 + rank as f64) * t_boost * s_boost * sparse_boost;
         chunk_scores.insert(
             kr.chunk_id.clone(),
@@ -793,7 +794,8 @@ mod tests {
         insert_chunk(&conn, "c1", "god_object", "God Object", "A god object...");
         insert_chunk(&conn, "c2", "god_object", "God Object", "Second chunk...");
 
-        let boost = sparse_entity_boost(&conn, "god_object");
+        let counts = count_chunks_per_entity(&conn);
+        let boost = sparse_entity_boost(&counts, "god_object");
         assert!((boost - 1.3).abs() < f64::EPSILON);
     }
 
@@ -802,7 +804,8 @@ mod tests {
         let conn = setup_test_db();
         insert_chunk(&conn, "c1", "shotgun", "Shotgun Surgery", "Shotgun surgery...");
 
-        let boost = sparse_entity_boost(&conn, "shotgun");
+        let counts = count_chunks_per_entity(&conn);
+        let boost = sparse_entity_boost(&counts, "shotgun");
         assert!((boost - 1.3).abs() < f64::EPSILON);
     }
 
@@ -813,7 +816,8 @@ mod tests {
         insert_chunk(&conn, "c2", "strategy", "Strategy", "two");
         insert_chunk(&conn, "c3", "strategy", "Strategy", "three");
 
-        let boost = sparse_entity_boost(&conn, "strategy");
+        let counts = count_chunks_per_entity(&conn);
+        let boost = sparse_entity_boost(&counts, "strategy");
         assert!((boost - 1.15).abs() < f64::EPSILON);
     }
 
@@ -825,7 +829,8 @@ mod tests {
         insert_chunk(&conn, "c3", "observer", "Observer", "three");
         insert_chunk(&conn, "c4", "observer", "Observer", "four");
 
-        let boost = sparse_entity_boost(&conn, "observer");
+        let counts = count_chunks_per_entity(&conn);
+        let boost = sparse_entity_boost(&counts, "observer");
         assert!((boost - 1.15).abs() < f64::EPSILON);
     }
 
@@ -842,7 +847,8 @@ mod tests {
             );
         }
 
-        let boost = sparse_entity_boost(&conn, "factory");
+        let counts = count_chunks_per_entity(&conn);
+        let boost = sparse_entity_boost(&counts, "factory");
         assert!((boost - 1.0).abs() < f64::EPSILON);
     }
 
@@ -852,7 +858,8 @@ mod tests {
         insert_chunk(&conn, "c1", "strategy", "Strategy", "chunk");
 
         // Entity not in the DB at all should get 1.0
-        let boost = sparse_entity_boost(&conn, "nonexistent");
+        let counts = count_chunks_per_entity(&conn);
+        let boost = sparse_entity_boost(&counts, "nonexistent");
         assert!((boost - 1.0).abs() < f64::EPSILON);
     }
 }
