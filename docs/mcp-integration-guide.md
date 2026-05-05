@@ -413,72 +413,29 @@ then tackle #1 (Extract Class) for long-term design."
 
 ## AI Agents
 
-Syntagma includes 4 specialized agents for different workflows:
+Syntagma includes 4 specialized agents that work together as a connected system. Each agent uses knowledge graph tools for analysis and presents interactive follow-up options that can hand off to other agents.
 
-### 1. `syntagma-advisor`
+### Agent Network
 
-**When to use**: Making engineering decisions (pattern selection, architecture trade-offs)
-
-**Example Prompt**:
 ```
-"Should I use Singleton for my ConfigManager class?"
+code-reviewer ←→ syntagma-advisor
+      ↕                ↕
+architecture-analyst ←→ syntagma-researcher
+      ↕
+refactoring-expert (external)
 ```
 
-**Agent Response** (uses `get_entity` + `get_neighbors`):
-```
-Singleton Pattern (DP-006) Analysis:
-
-Pros:
-- Global access to config
-- Single instance guarantee
-
-Cons:
-- Violates Dependency Injection principle (DP-018)
-- Difficult to test (hard to mock)
-- Hidden dependencies (breaks Law of Demeter - LAW-023)
-
-Alternative: Dependency Injection (DP-018)
-- Inject ConfigManager via constructor
-- Better testability (easy to mock)
-- Explicit dependencies
-
-Recommendation: Use DI instead of Singleton for ConfigManager.
-Reference: Martin Fowler's "Inversion of Control" pattern.
-```
+Each agent ends its report with **Next Steps** — interactive options that connect to other agents or tools. This creates end-to-end workflows from detection to remediation.
 
 ---
 
-### 2. `syntagma-researcher`
+### 1. `code-reviewer`
 
-**When to use**: Exploring relationships in the knowledge graph
+**When to use**: Reviewing code for smells, SOLID violations, and refactoring priorities
 
-**Example Prompt**:
-```
-"What laws does the Observer Pattern enforce?"
-```
+**What it does differently**: Goes beyond detection — traces causation chains between smells (which smells are root causes vs. downstream symptoms), validates findings against language ecosystem conventions (Rust, Go, etc.), and calibrates severity contextually.
 
-**Agent Response** (uses `get_neighbors` + `find_path`):
-```
-Observer Pattern (DP-012) enforces:
-
-1. Open/Closed Principle (LAW-002)
-   - Open for extension (new observers)
-   - Closed for modification (subject unchanged)
-
-2. Dependency Inversion Principle (LAW-005)
-   - Subject depends on Observer interface, not concrete classes
-
-3. Single Responsibility Principle (LAW-001)
-   - Subject handles state, observers handle reactions
-
-Connection path: DP-012 --enforces--> LAW-002, LAW-005, LAW-001
-```
-
----
-
-### 3. `code-reviewer`
-
-**When to use**: Reviewing code for smells and SOLID violations
+**Tools used**: `analyze_code` → `suggest_refactorings` → `get_entity` → `get_neighbors` → `find_path`
 
 **Example Prompt**:
 ```
@@ -486,35 +443,133 @@ Connection path: DP-012 --enforces--> LAW-002, LAW-005, LAW-001
 [pastes code]
 ```
 
-**Agent Response** (uses `analyze_code` + `suggest_refactorings`):
+**Agent Response**:
 ```
-Code Review: AuthenticationModule
+# Syntagma Code Review
 
-Smells Detected (2):
-1. God Object (SMELL-03) - High confidence
-   - 15 methods, 8 fields
-   - Handles auth + session + logging + validation
-   
-2. Long Method (SMELL-01) - Medium confidence
-   - validateUser() is 42 lines
+## Summary
+AuthenticationModule has a root-cause God Object smell causing 3
+downstream issues. Fixing the root cause will cascade improvements.
 
-SOLID Violations:
-- SRP violated: Multiple responsibilities
-- OCP violated: Must modify class to add auth methods
+## Smell Detections
+| Smell | Location | Severity | Confidence | Related Principle |
+|-------|----------|----------|------------|-------------------|
+| God Object (SMELL-03) | auth.rs:1-420 | Critical | confirmed | LAW-001 (SRP) |
+| Long Method (SMELL-01) | auth.rs:88-142 | High | confirmed | LAW-001 (SRP) |
+| Divergent Change (SMELL-09) | auth.rs:200-380 | Medium | confirmed | LAW-012 (SoC) |
+| Feature Envy (SMELL-15) | auth.rs:290-333 | Medium | confirmed | LAW-003 (LSP) |
 
-Recommended Refactorings:
-1. Extract Class (RF-018) - Create SessionManager
-2. Extract Method (RF-001) - Break up validateUser()
-3. Extract Interface (RF-042) - AuthProvider interface
+## Causation Analysis
+Root causes:
+- SMELL-03 → causes → SMELL-01, SMELL-09
+  (fixing God Object will cascade improvements)
 
-Priority: Start with Extract Class to separate session logic.
+Independent:
+- SMELL-15 — standalone, no downstream impact
+
+## Ranked Refactorings
+1. **Extract Class** (RF-018) — Priority: Critical
+   - Addresses: SMELL-03 (root cause)
+   - Cascade effect: also resolves SMELL-01, SMELL-09
+   - What to do: Extract SessionManager, EmailVerifier classes
+
+## Next Steps
+1. Refactor — Apply RF-018 (Extract Class) → use refactoring-expert agent
+2. Deep dive — Explore root cause chain for SMELL-03 → use syntagma-advisor
+3. Architecture check — Assess structural impact → use architecture-analyst
+4. Learn more — Get full explanation of SMELL-03 → get_entity(detail_level="full")
+```
+
+**Validation**: Before confirming a smell, the agent cross-checks against language idioms (e.g., large structs are normal in Rust), domain context (test files, generated code), and real impact (cosmetic vs. development-blocking).
+
+---
+
+### 2. `syntagma-advisor`
+
+**When to use**: Making engineering decisions (pattern selection, architecture trade-offs, root-cause deep dives)
+
+**Tools used**: `search_knowledge` → `get_entity` → `get_neighbors` → `find_path`
+
+**Example Prompt**:
+```
+"Should I use Singleton for my ConfigManager class?"
+```
+
+**Agent Response**:
+```
+# Advisory: Singleton vs DI for ConfigManager
+
+## Applicable Entities
+### 1. Singleton Pattern (DP-006) - Primary
+- **What it says**: Ensure a class has only one instance
+- **What it means for you**: Global config access but hidden coupling
+- **Recommendation**: Avoid — violates testability
+
+### 2. Dependency Injection (DP-018) - Alternative
+- **What it says**: Inject dependencies via constructor
+- **What it means for you**: Explicit dependencies, easy mocking
+- **Recommendation**: Prefer for ConfigManager
+
+## Trade-offs
+- Singleton (DP-006) offers convenience but violates DI (DP-018)
+- DI adds boilerplate but enables LAW-005 (DIP) compliance
+- Resolution: Use DI with a config provider interface
+
+## Action Plan
+1. Immediate: Inject ConfigManager via constructor
+2. Short-term: Extract ConfigProvider interface
+3. Long-term: Consider environment-specific config strategies
+
+## Next Steps
+1. Implement — Apply DI pattern → use code-reviewer to validate
+2. Explore alternatives — Compare approaches → use syntagma-researcher
+3. Architecture impact — Assess downstream effects → use architecture-analyst
+```
+
+---
+
+### 3. `syntagma-researcher`
+
+**When to use**: Exploring relationships in the knowledge graph, finding alternatives
+
+**Tools used**: `search_knowledge` → `get_entity` → `get_neighbors` → `find_path`
+
+**Example Prompt**:
+```
+"What laws does the Observer Pattern enforce?"
+```
+
+**Agent Response**:
+```
+# Research Report: Observer Pattern Enforced Laws
+
+## Primary Entities
+1. **Observer Pattern** (DP-012) - Behavioral
+   - Definition: Define one-to-many dependency between objects
+   - When change to one object alters others automatically
+
+## Connection Map
+DP-012 --enforces--> LAW-002 (Open/Closed)
+DP-012 --enforces--> LAW-005 (Dependency Inversion)
+DP-012 --enforces--> LAW-001 (Single Responsibility)
+
+## Contradictions & Trade-offs
+- Observer (DP-012) enables loose coupling but can cause unexpected
+  update chains — contrasted with Mediator (DP-014) which centralizes
+
+## Next Steps
+1. Get advice — Turn findings into guidance → use syntagma-advisor
+2. Check code — Detect Observer in your codebase → use code-reviewer
+3. Assess architecture — Evaluate structural fit → use architecture-analyst
 ```
 
 ---
 
 ### 4. `architecture-analyst`
 
-**When to use**: Evaluating system architecture against scalability/laws
+**When to use**: Evaluating system architecture against laws, patterns, and structural risks
+
+**Tools used**: `search_knowledge` → `get_entity` → `get_neighbors` → `find_path`
 
 **Example Prompt**:
 ```
@@ -522,28 +577,80 @@ Priority: Start with Extract Class to separate session logic.
 [describes architecture]
 ```
 
-**Agent Response** (uses `get_entity` for LAW-042 + domain knowledge):
+**Agent Response**:
 ```
-Conway's Law (LAW-042) states: "Organizations design systems 
-that mirror their communication structure."
+# Architectural Analysis: Microservices
 
-Your Architecture:
-- 5 microservices: Auth, Payment, Inventory, Shipping, Analytics
-- 3 teams: Platform, Commerce, Data
+## Law & Principle Compliance
+| Principle | Status | Evidence | Impact |
+|-----------|--------|----------|--------|
+| Conway's Law (LAW-042) | violated | Shipping spans 2 teams | Coordination overhead |
+| SRP (LAW-001) | at risk | Analytics depends on all | Tight coupling |
+| Bounded Context (LAW-031) | violated | No clear domain boundaries | Shared data confusion |
 
-Analysis:
-✅ Auth service = Platform team (aligned)
-✅ Payment + Inventory = Commerce team (aligned)
-❌ Shipping spans Commerce + Platform (misaligned)
-❌ Analytics owned by Data team but depends on all services (tight coupling)
+## Key Tensions
+- Conway's Law (LAW-042) requires team↔service alignment
+  but Shipping service spans Commerce + Platform teams
+- Traced via: LAW-042 → related_to → LAW-001 → enforced_by → DP-026 (Strangler Fig)
 
-Recommendations:
-1. Move Shipping fully to Commerce team
-2. Introduce Event Bus for Analytics (decouple via events)
-3. Apply Bounded Context pattern (DDD) for service boundaries
+## Architectural Recommendations
+1. **Critical**: Move Shipping to Commerce team — LAW-042 predicts coordination failure
+2. **High**: Introduce Event Bus for Analytics — decouple via async events
+3. **Medium**: Define Bounded Contexts — align service boundaries with domain
 
-Result: Better alignment with Conway's Law reduces coordination overhead.
+## Compliance Scores
+- Overall: 5/10 | Structure: 4/10 | Scalability: 6/10 | Maintainability: 5/10
+
+## Next Steps
+1. Get advice — Resolve key tensions → use syntagma-advisor
+2. Check code — Detect structural smells → use code-reviewer
+3. Research alternatives — Find better patterns → use syntagma-researcher
 ```
+
+---
+
+## Workflow Chains
+
+Agents and tools connect into end-to-end pipelines. Each chain produces a report followed by interactive follow-up options.
+
+### Chain 1: Code Review Pipeline
+```
+analyze_code → suggest_refactorings → get_neighbors("solved_by")
+  → find_path(smell_A, smell_B) → Report with causation graph
+  → User chooses: Apply fix / Deep dive / Architecture check / Learn more
+```
+
+### Chain 2: Architecture Review Pipeline
+```
+search_knowledge → get_entity → get_neighbors("enforces")
+  → get_neighbors("violates") → find_path → Compliance report
+  → User chooses: Refactoring plan / Advisory / Research alternatives
+```
+
+### Chain 3: Problem Diagnosis Pipeline
+```
+search_knowledge(symptoms) → get_entity → get_neighbors("solved_by")
+  → Root cause report → User chooses: Apply fix / Advisory / Verify
+```
+
+### Chain 4: Learning Pipeline
+```
+search_knowledge(topic) → get_entity → get_neighbors("related_to")
+  → Concept map → User chooses: Code examples / Apply to code / Compare
+```
+
+### Cross-Tool Chaining Rules
+
+Every tool call naturally leads to the next:
+
+| After calling... | Always follow up with... |
+|-------------------|--------------------------|
+| `analyze_code` | `suggest_refactorings` on detected smells |
+| `suggest_refactorings` | `get_neighbors(smell_id, "solved_by")` for alternatives |
+| `search_knowledge` | `get_entity` on top 1-2 results |
+| `get_entity` (smell) | `get_neighbors(id, "violates")` for impacted principles |
+| `get_entity` (pattern) | `get_neighbors(id, "enforces")` for enforced laws |
+| Multiple smells detected | `find_path(smell_A, smell_B)` for causation mapping |
 
 ---
 
@@ -704,6 +811,135 @@ curl http://localhost:8000/search?q=strategy+pattern
 ```
 
 See [API Documentation](../docs/api.md) for endpoints.
+
+---
+
+## Automatic Triggering (Claude Code)
+
+When you describe a problem in natural language, Claude Code automatically detects the intent and calls the appropriate Syntagma tool — **you don't need to mention Syntagma explicitly**. Below are the exact trigger patterns and examples.
+
+### How It Works
+
+```
+Your natural language input
+    ↓ Claude detects keywords/patterns
+    ↓ Syntagma tool is called automatically
+    ↓ Knowledge graph returns verified data
+    ↓ (Design Patterns · Code Smells · Refactoring Techniques · Engineering Laws)
+    ↓ Claude's response is grounded in evidence
+```
+
+> **Note:** This is prompt-based auto-triggering, not a hard hook. To guarantee a call, use the `/syntagma` skill directly.
+
+### Code Structure Problems
+
+| What you say (examples) | What Syntagma detects | Automatic tool call |
+|-------------------------|-----------------------|---------------------|
+| "This class does too much", "This file is over 300 lines" | God Class, Large Class, Single Responsibility | `search_knowledge("god class large class single responsibility")` |
+| "This function is too long", "Too many lines in this method" | Long Method | `search_knowledge("long method extract method")` |
+| "The code is too complex", "Hard to follow" | Complexity, Cognitive Overload | `search_knowledge("complexity smell cognitive overload")` |
+| "I copy-pasted this everywhere", "There's duplicated logic" | Duplicated Code, Clone | `search_knowledge("duplicated code clone smell")` |
+
+### Coupling & Dependency Problems
+
+| What you say (examples) | What Syntagma detects | Automatic tool call |
+|-------------------------|-----------------------|---------------------|
+| "Business logic calls DB directly" | Coupling, Persistence, Repository | `search_knowledge("coupling persistence repository data access layer")` |
+| "Changing X breaks Y", "Changes ripple everywhere" | Brittle Coupling, Change Propagation | `search_knowledge("brittle coupling change propagation rigidity")` |
+| "Adding a new type means touching everywhere", "switch-case keeps growing" | Open/Closed, Strategy, Polymorphism | `search_knowledge("open closed principle strategy polymorphism")` |
+
+### Testing & Quality Problems
+
+| What you say (examples) | What Syntagma detects | Automatic tool call |
+|-------------------------|-----------------------|---------------------|
+| "This is hard to test", "Can't write unit tests for this" | Testability, Dependency Injection | `search_knowledge("testability dependency injection mockability")` |
+
+### Performance & Concurrency Problems
+
+| What you say (examples) | What Syntagma detects | Automatic tool call |
+|-------------------------|-----------------------|---------------------|
+| "The API is slow", "Response time is too high" | N+1 Query, Lazy Loading, Caching | `search_knowledge("N+1 query lazy loading caching performance")` |
+| "Is this thread-safe?", "Any concurrency issues?" | Thread Safety, Race Condition | `search_knowledge("thread safety race condition shared mutable state")` |
+
+### Code Review & Analysis
+
+| What you say (examples) | Automatic tool call |
+|-------------------------|---------------------|
+| Share a code snippet and ask for review | `analyze_code(code)` → `suggest_refactorings(code)` |
+| "Improve this code", "Refactor this for me" | `suggest_refactorings(code)` |
+
+### Architecture Discussions
+
+| What you say (examples) | Automatic tool call |
+|-------------------------|---------------------|
+| "Microservices vs monolith", "How should we split this?" | `search_knowledge("monolith microservice decomposition bounded context")` |
+| "Is this architecture okay?", "Review this design" | `search_knowledge("layered architecture coupling responsibility")` |
+
+### Real-World Conversation Examples
+
+**Example 1 — Detecting a God Object:**
+
+```
+You: "UserService is getting out of hand. It handles authentication,
+      session management, email verification, and password resets."
+
+Claude (auto-calls search_knowledge):
+  → Detects: God Object / Single Responsibility violation
+  → Returns: SMELL-03 (God Object), LAW-001 (SRP), RF-018 (Extract Class)
+
+Claude: "UserService shows God Object characteristics (SMELL-03).
+  It violates Single Responsibility Principle (LAW-001).
+
+  Recommended refactorings:
+  1. Extract Class (RF-018) — Create SessionManager for session logic
+  2. Move Method (RF-023) — Move email verification to EmailService
+  3. Extract Interface (RF-042) — Define AuthService interface
+
+  Start with #2 for quick wins, then #1 for structural improvement."
+```
+
+**Example 2 — Performance Investigation:**
+
+```
+You: "The product listing API is really slow. It loads fine individually
+      but the list page takes 5+ seconds."
+
+Claude (auto-calls search_knowledge):
+  → Detects: N+1 Query problem
+  → Returns: Performance patterns, Lazy Loading, Caching strategies
+
+Claude: "This sounds like an N+1 query problem — each product triggers
+  individual DB calls instead of a batch query.
+
+  Solutions from the knowledge graph:
+  1. Batch loading / Eager loading — Fetch related data in one query
+  2. Data Mapper (DP-019) — Decouple query logic from domain objects
+  3. Apply Lazy Loading (RF-050) — Load relations on demand only
+
+  Would you like me to check the code for N+1 patterns?"
+```
+
+**Example 3 — Code Review with Snippet:**
+
+```
+You: [pastes Python code]
+     "Can you review this? Something feels off."
+
+Claude (auto-calls analyze_code → suggest_refactorings):
+  → analyze_code detects: Long Method (confidence 0.87), Long Parameter List (0.92)
+  → suggest_refactorings returns ranked suggestions
+
+Claude: "Found 2 code smells:
+
+  1. Long Method (SMELL-01) — 45 lines, cyclomatic complexity 12
+     → Extract Method (RF-001), priority 0.89
+
+  2. Long Parameter List (SMELL-08) — 9 parameters
+     → Introduce Parameter Object (RF-029), priority 0.92
+
+  Start with RF-029 (Parameter Object) — it's the highest priority
+  and makes the subsequent Extract Method easier."
+```
 
 ---
 
