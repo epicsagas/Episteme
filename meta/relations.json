@@ -1356,7 +1356,7 @@
   "LAW-001": {
     "id": "LAW-001",
     "type": "law",
-    "file_path": "software-engineering/1-teams/01-conways-law.md",
+    "file_path": "software-engineering/teams/conways-law.md",
     "title": "Conways Law",
     "category": "teams",
     "tags": [],
@@ -1401,7 +1401,7 @@
   "LAW-002": {
     "id": "LAW-002",
     "type": "law",
-    "file_path": "software-engineering/1-teams/02-brooks-law.md",
+    "file_path": "software-engineering/teams/brooks-law.md",
     "title": "Brooks Law",
     "category": "teams",
     "tags": [],
@@ -1445,7 +1445,7 @@
   "LAW-003": {
     "id": "LAW-003",
     "type": "law",
-    "file_path": "software-engineering/1-teams/03-dunbars-number.md",
+    "file_path": "software-engineering/teams/dunbars-number.md",
     "title": "Dunbars Number",
     "category": "teams",
     "tags": [],
@@ -1482,7 +1482,7 @@
   "LAW-004": {
     "id": "LAW-004",
     "type": "law",
-    "file_path": "software-engineering/1-teams/04-ringelmann-effect.md",
+    "file_path": "software-engineering/teams/ringelmann-effect.md",
     "title": "Ringelmann Effect",
     "category": "teams",
     "tags": [],
@@ -1519,7 +1519,7 @@
   "LAW-005": {
     "id": "LAW-005",
     "type": "law",
-    "file_path": "software-engineering/1-teams/05-prices-law.md",
+    "file_path": "software-engineering/teams/prices-law.md",
     "title": "Prices Law",
     "category": "teams",
     "tags": [],
@@ -1556,7 +1556,7 @@
   "LAW-006": {
     "id": "LAW-006",
     "type": "law",
-    "file_path": "software-engineering/1-teams/06-putts-law.md",
+    "file_path": "software-engineering/teams/putts-law.md",
     "title": "Putts Law",
     "category": "teams",
     "tags": [],
@@ -1593,7 +1593,7 @@
   "LAW-007": {
     "id": "LAW-007",
     "type": "law",
-    "file_path": "software-engineering/1-teams/07-peter-principle.md",
+    "file_path": "software-engineering/teams/peter-principle.md",
     "title": "Peter Principle",
     "category": "teams",
     "tags": [],
@@ -1630,7 +1630,7 @@
   "LAW-008": {
     "id": "LAW-008",
     "type": "law",
-    "file_path": "software-engineering/1-teams/08-bus-factor.md",
+    "file_path": "software-engineering/teams/bus-factor.md",
     "title": "Bus Factor",
     "category": "teams",
     "tags": [],
@@ -1668,7 +1668,7 @@
   "LAW-009": {
     "id": "LAW-009",
     "type": "law",
-    "file_path": "software-engineering/1-teams/09-dilbert-principle.md",
+    "file_path": "software-engineering/teams/dilbert-principle.md",
     "title": "Dilbert Principle",
     "category": "teams",
     "tags": [],
@@ -1705,7 +1705,7 @@
   "LAW-010": {
     "id": "LAW-010",
     "type": "law",
-    "file_path": "software-engineering/2-planning/10-premature-optimization.md",
+    "file_path": "software-engineering/planning/premature-optimization.md",
     "title": "Premature Optimization",
     "category": "planning",
     "tags": [],
@@ -1744,7 +1744,7 @@
   "LAW-011": {
     "id": "LAW-011",
     "type": "law",
-    "file_path": "software-engineering/2-planning/11-parkinsons-law.md",
+    "file_path": "software-engineering/planning/parkinsons-law.md",
     "title": "Parkinsons Law",
     "category": "planning",
     "tags": [],
@@ -1782,7 +1782,7 @@
   "LAW-012": {
     "id": "LAW-012",
     "type": "law",
-    "file_path": "software-engineering/2-planning/12-ninety-ninety-rule.md",
+    "file_path": "software-engineering/planning/ninety-ninety-rule.md",
     "title": "Ninety Ninety Rule",
     "category": "planning",
     "tags": [],
@@ -1820,7 +1820,7 @@
   "LAW-013": {
     "id": "LAW-013",
     "type": "law",
-    "file_path": "software-engineering/2-planning/13-hofstadters-law.md",
+    "file_path": "software-engineering/planning/hofstadters-law.md",
     "title": "Hofstadters Law",
     "category": "planning",
     "tags": [],
@@ -1858,7 +1858,7 @@
   "LAW-014": {
     "id": "LAW-014",
     "type": "law",
-    "file_path": "software-engineering/2-planning/14-goodharts-law.md",
+    "file_path": "software-engineering/planning/goodharts-law.md",
     "title": "Goodharts Law",
     "category": "planning",
     "tags": [],
@@ -1896,7 +1896,7 @@
   "LAW-015": {
     "id": "LAW-015",
     "type": "law",
-    "file_path": "software-engineering/2-planning/15-gilbs-law.md",
+    "file_path": "software-engineering/planning/gilbs-law.md",
     "title": "Gilbs Law",
     "category": "planning",
     "tags": [],
@@ -1934,7 +1934,7 @@
   "LAW-016": {
     "id": "LAW-016",
     "type": "law",
-    "file_path": "software-engineering/3-architecture/16-hyrums-law.md",
+    "file_path": "software-engineering/architecture/hyrums-law.md",
     "title": "Hyrums Law",
     "category": "architecture",
     "tags": [],
@@ -1976,7 +1976,7 @@
   "LAW-017": {
     "id": "LAW-017",
     "type": "law",
-    "file_path": "software-engineering/3-architecture/17-galls-law.md",
+    "file_path": "software-engineering/architecture/galls-law.md",
     "title": "Galls Law",
     "category": "architecture",
     "tags": [],
@@ -2020,7 +2020,7 @@
   "LAW-018": {
     "id": "LAW-018",
     "type": "law",
-    "file_path": "software-engineering/3-architecture/18-law-of-leaky-abstractions.md",
+    "file_path": "software-engineering/architecture/law-of-leaky-abstractions.md",
     "title": "Law Of Leaky Abstractions",
     "category": "architecture",
     "tags": [],
@@ -2064,7 +2064,7 @@
   "LAW-019": {
     "id": "LAW-019",
     "type": "law",
-    "file_path": "software-engineering/3-architecture/19-teslers-law.md",
+    "file_path": "software-engineering/architecture/teslers-law.md",
     "title": "Teslers Law",
     "category": "architecture",
     "tags": [],
@@ -2106,7 +2106,7 @@
   "LAW-020": {
     "id": "LAW-020",
     "type": "law",
-    "file_path": "software-engineering/3-architecture/20-cap-theorem.md",
+    "file_path": "software-engineering/architecture/cap-theorem.md",
     "title": "Cap Theorem",
     "category": "architecture",
     "tags": [],
@@ -2144,7 +2144,7 @@
   "LAW-021": {
     "id": "LAW-021",
     "type": "law",
-    "file_path": "software-engineering/3-architecture/21-second-system-effect.md",
+    "file_path": "software-engineering/architecture/second-system-effect.md",
     "title": "Second System Effect",
     "category": "architecture",
     "tags": [],
@@ -2182,7 +2182,7 @@
   "LAW-022": {
     "id": "LAW-022",
     "type": "law",
-    "file_path": "software-engineering/3-architecture/22-fallacies-of-distributed-computing.md",
+    "file_path": "software-engineering/architecture/fallacies-of-distributed-computing.md",
     "title": "Fallacies Of Distributed Computing",
     "category": "architecture",
     "tags": [],
@@ -2220,7 +2220,7 @@
   "LAW-023": {
     "id": "LAW-023",
     "type": "law",
-    "file_path": "software-engineering/3-architecture/23-law-of-unintended-consequences.md",
+    "file_path": "software-engineering/architecture/law-of-unintended-consequences.md",
     "title": "Law Of Unintended Consequences",
     "category": "architecture",
     "tags": [],
@@ -2258,7 +2258,7 @@
   "LAW-024": {
     "id": "LAW-024",
     "type": "law",
-    "file_path": "software-engineering/3-architecture/24-zawinskis-law.md",
+    "file_path": "software-engineering/architecture/zawinskis-law.md",
     "title": "Zawinskis Law",
     "category": "architecture",
     "tags": [],
@@ -2300,7 +2300,7 @@
   "LAW-025": {
     "id": "LAW-025",
     "type": "law",
-    "file_path": "software-engineering/4-quality/25-boy-scout-rule.md",
+    "file_path": "software-engineering/quality/boy-scout-rule.md",
     "title": "Boy Scout Rule",
     "category": "quality",
     "tags": [],
@@ -2348,7 +2348,7 @@
   "LAW-026": {
     "id": "LAW-026",
     "type": "law",
-    "file_path": "software-engineering/4-quality/26-murphys-law.md",
+    "file_path": "software-engineering/quality/murphys-law.md",
     "title": "Murphys Law",
     "category": "quality",
     "tags": [],
@@ -2388,7 +2388,7 @@
   "LAW-027": {
     "id": "LAW-027",
     "type": "law",
-    "file_path": "software-engineering/4-quality/27-postels-law.md",
+    "file_path": "software-engineering/quality/postels-law.md",
     "title": "Postels Law",
     "category": "quality",
     "tags": [],
@@ -2426,7 +2426,7 @@
   "LAW-028": {
     "id": "LAW-028",
     "type": "law",
-    "file_path": "software-engineering/4-quality/28-broken-windows-theory.md",
+    "file_path": "software-engineering/quality/broken-windows-theory.md",
     "title": "Broken Windows Theory",
     "category": "quality",
     "tags": [],
@@ -2466,7 +2466,7 @@
   "LAW-029": {
     "id": "LAW-029",
     "type": "law",
-    "file_path": "software-engineering/4-quality/29-technical-debt.md",
+    "file_path": "software-engineering/quality/technical-debt.md",
     "title": "Technical Debt",
     "category": "quality",
     "tags": [],
@@ -2508,7 +2508,7 @@
   "LAW-030": {
     "id": "LAW-030",
     "type": "law",
-    "file_path": "software-engineering/4-quality/30-linuss-law.md",
+    "file_path": "software-engineering/quality/linuss-law.md",
     "title": "Linuss Law",
     "category": "quality",
     "tags": [],
@@ -2546,7 +2546,7 @@
   "LAW-031": {
     "id": "LAW-031",
     "type": "law",
-    "file_path": "software-engineering/4-quality/31-kernighans-law.md",
+    "file_path": "software-engineering/quality/kernighans-law.md",
     "title": "Kernighans Law",
     "category": "quality",
     "tags": [],
@@ -2591,7 +2591,7 @@
   "LAW-032": {
     "id": "LAW-032",
     "type": "law",
-    "file_path": "software-engineering/4-quality/32-testing-pyramid.md",
+    "file_path": "software-engineering/quality/testing-pyramid.md",
     "title": "Testing Pyramid",
     "category": "quality",
     "tags": [],
@@ -2632,7 +2632,7 @@
   "LAW-033": {
     "id": "LAW-033",
     "type": "law",
-    "file_path": "software-engineering/4-quality/33-pesticide-paradox.md",
+    "file_path": "software-engineering/quality/pesticide-paradox.md",
     "title": "Pesticide Paradox",
     "category": "quality",
     "tags": [],
@@ -2670,7 +2670,7 @@
   "LAW-034": {
     "id": "LAW-034",
     "type": "law",
-    "file_path": "software-engineering/4-quality/34-lehmans-laws.md",
+    "file_path": "software-engineering/quality/lehmans-laws.md",
     "title": "Lehmans Laws",
     "category": "quality",
     "tags": [],
@@ -2713,7 +2713,7 @@
   "LAW-035": {
     "id": "LAW-035",
     "type": "law",
-    "file_path": "software-engineering/4-quality/35-sturgeons-law.md",
+    "file_path": "software-engineering/quality/sturgeons-law.md",
     "title": "Sturgeons Law",
     "category": "quality",
     "tags": [],
@@ -2751,7 +2751,7 @@
   "LAW-036": {
     "id": "LAW-036",
     "type": "law",
-    "file_path": "software-engineering/4-quality/36-yagni.md",
+    "file_path": "software-engineering/quality/yagni.md",
     "title": "Yagni",
     "category": "quality",
     "tags": [],
@@ -2790,7 +2790,7 @@
   "LAW-037": {
     "id": "LAW-037",
     "type": "law",
-    "file_path": "software-engineering/5-scalability/37-amdahls-law.md",
+    "file_path": "software-engineering/scalability/amdahls-law.md",
     "title": "Amdahls Law",
     "category": "scalability",
     "tags": [],
@@ -2834,7 +2834,7 @@
   "LAW-038": {
     "id": "LAW-038",
     "type": "law",
-    "file_path": "software-engineering/5-scalability/38-gustafsons-law.md",
+    "file_path": "software-engineering/scalability/gustafsons-law.md",
     "title": "Gustafsons Law",
     "category": "scalability",
     "tags": [],
@@ -2877,7 +2877,7 @@
   "LAW-039": {
     "id": "LAW-039",
     "type": "law",
-    "file_path": "software-engineering/5-scalability/39-metcalfes-law.md",
+    "file_path": "software-engineering/scalability/metcalfes-law.md",
     "title": "Metcalfes Law",
     "category": "scalability",
     "tags": [],
@@ -2920,7 +2920,7 @@
   "LAW-040": {
     "id": "LAW-040",
     "type": "law",
-    "file_path": "software-engineering/6-design/40-dry.md",
+    "file_path": "software-engineering/design/dry.md",
     "title": "Dry",
     "category": "design",
     "tags": [],
@@ -2968,7 +2968,7 @@
   "LAW-041": {
     "id": "LAW-041",
     "type": "law",
-    "file_path": "software-engineering/6-design/41-kiss.md",
+    "file_path": "software-engineering/design/kiss.md",
     "title": "Kiss",
     "category": "design",
     "tags": [],
@@ -3008,7 +3008,7 @@
   "LAW-042": {
     "id": "LAW-042",
     "type": "law",
-    "file_path": "software-engineering/6-design/42-solid-principles.md",
+    "file_path": "software-engineering/design/solid-principles.md",
     "title": "Solid Principles",
     "category": "design",
     "tags": [],
@@ -3059,7 +3059,7 @@
   "LAW-043": {
     "id": "LAW-043",
     "type": "law",
-    "file_path": "software-engineering/6-design/43-law-of-demeter.md",
+    "file_path": "software-engineering/design/law-of-demeter.md",
     "title": "Law Of Demeter",
     "category": "design",
     "tags": [],
@@ -3106,7 +3106,7 @@
   "LAW-044": {
     "id": "LAW-044",
     "type": "law",
-    "file_path": "software-engineering/6-design/44-principle-of-least-astonishment.md",
+    "file_path": "software-engineering/design/principle-of-least-astonishment.md",
     "title": "Principle Of Least Astonishment",
     "category": "design",
     "tags": [],
@@ -3145,7 +3145,7 @@
   "LAW-045": {
     "id": "LAW-045",
     "type": "law",
-    "file_path": "software-engineering/7-decisions/45-dunning-kruger-effect.md",
+    "file_path": "software-engineering/decisions/dunning-kruger-effect.md",
     "title": "Dunning Kruger Effect",
     "category": "decisions",
     "tags": [],
@@ -3183,7 +3183,7 @@
   "LAW-046": {
     "id": "LAW-046",
     "type": "law",
-    "file_path": "software-engineering/7-decisions/46-hanlons-razor.md",
+    "file_path": "software-engineering/decisions/hanlons-razor.md",
     "title": "Hanlons Razor",
     "category": "decisions",
     "tags": [],
@@ -3221,7 +3221,7 @@
   "LAW-047": {
     "id": "LAW-047",
     "type": "law",
-    "file_path": "software-engineering/7-decisions/47-occams-razor.md",
+    "file_path": "software-engineering/decisions/occams-razor.md",
     "title": "Occams Razor",
     "category": "decisions",
     "tags": [],
@@ -3262,7 +3262,7 @@
   "LAW-048": {
     "id": "LAW-048",
     "type": "law",
-    "file_path": "software-engineering/7-decisions/48-sunk-cost-fallacy.md",
+    "file_path": "software-engineering/decisions/sunk-cost-fallacy.md",
     "title": "Sunk Cost Fallacy",
     "category": "decisions",
     "tags": [],
@@ -3300,7 +3300,7 @@
   "LAW-049": {
     "id": "LAW-049",
     "type": "law",
-    "file_path": "software-engineering/7-decisions/49-map-is-not-territory.md",
+    "file_path": "software-engineering/decisions/map-is-not-territory.md",
     "title": "Map Is Not Territory",
     "category": "decisions",
     "tags": [],
@@ -3338,7 +3338,7 @@
   "LAW-050": {
     "id": "LAW-050",
     "type": "law",
-    "file_path": "software-engineering/7-decisions/50-confirmation-bias.md",
+    "file_path": "software-engineering/decisions/confirmation-bias.md",
     "title": "Confirmation Bias",
     "category": "decisions",
     "tags": [],
@@ -3376,7 +3376,7 @@
   "LAW-051": {
     "id": "LAW-051",
     "type": "law",
-    "file_path": "software-engineering/7-decisions/51-hype-cycle-and-amaras-law.md",
+    "file_path": "software-engineering/decisions/hype-cycle-and-amaras-law.md",
     "title": "Hype Cycle And Amaras Law",
     "category": "decisions",
     "tags": [],
@@ -3414,7 +3414,7 @@
   "LAW-052": {
     "id": "LAW-052",
     "type": "law",
-    "file_path": "software-engineering/7-decisions/52-lindy-effect.md",
+    "file_path": "software-engineering/decisions/lindy-effect.md",
     "title": "Lindy Effect",
     "category": "decisions",
     "tags": [],
@@ -3451,7 +3451,7 @@
   "LAW-053": {
     "id": "LAW-053",
     "type": "law",
-    "file_path": "software-engineering/7-decisions/53-first-principles-thinking.md",
+    "file_path": "software-engineering/decisions/first-principles-thinking.md",
     "title": "First Principles Thinking",
     "category": "decisions",
     "tags": [],
@@ -3492,7 +3492,7 @@
   "LAW-054": {
     "id": "LAW-054",
     "type": "law",
-    "file_path": "software-engineering/7-decisions/54-inversion.md",
+    "file_path": "software-engineering/decisions/inversion.md",
     "title": "Inversion",
     "category": "decisions",
     "tags": [],
@@ -3530,7 +3530,7 @@
   "LAW-055": {
     "id": "LAW-055",
     "type": "law",
-    "file_path": "software-engineering/7-decisions/55-pareto-principle.md",
+    "file_path": "software-engineering/decisions/pareto-principle.md",
     "title": "Pareto Principle",
     "category": "decisions",
     "tags": [],
@@ -3569,7 +3569,7 @@
   "LAW-056": {
     "id": "LAW-056",
     "type": "law",
-    "file_path": "software-engineering/7-decisions/56-cunninghams-law.md",
+    "file_path": "software-engineering/decisions/cunninghams-law.md",
     "title": "Cunninghams Law",
     "category": "decisions",
     "tags": [],
@@ -6899,7 +6899,7 @@
   "LAW-042-S": {
     "id": "LAW-042-S",
     "type": "law",
-    "file_path": "software-engineering/6-design/42-solid-principles.md",
+    "file_path": "software-engineering/design/solid-principles.md",
     "title": "Single Responsibility Principle",
     "category": "design",
     "tags": [],
@@ -6945,7 +6945,7 @@
   "LAW-042-O": {
     "id": "LAW-042-O",
     "type": "law",
-    "file_path": "software-engineering/6-design/42-solid-principles.md",
+    "file_path": "software-engineering/design/solid-principles.md",
     "title": "Open/Closed Principle",
     "category": "design",
     "tags": [],
@@ -6988,7 +6988,7 @@
   "LAW-042-L": {
     "id": "LAW-042-L",
     "type": "law",
-    "file_path": "software-engineering/6-design/42-solid-principles.md",
+    "file_path": "software-engineering/design/solid-principles.md",
     "title": "Liskov Substitution Principle",
     "category": "design",
     "tags": [],
@@ -7033,7 +7033,7 @@
   "LAW-042-I": {
     "id": "LAW-042-I",
     "type": "law",
-    "file_path": "software-engineering/6-design/42-solid-principles.md",
+    "file_path": "software-engineering/design/solid-principles.md",
     "title": "Interface Segregation Principle",
     "category": "design",
     "tags": [],
@@ -7080,7 +7080,7 @@
   "LAW-042-D": {
     "id": "LAW-042-D",
     "type": "law",
-    "file_path": "software-engineering/6-design/42-solid-principles.md",
+    "file_path": "software-engineering/design/solid-principles.md",
     "title": "Dependency Inversion Principle",
     "category": "design",
     "tags": [],
