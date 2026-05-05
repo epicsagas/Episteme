@@ -51,6 +51,7 @@ Tools like SonarQube detect smells. LLMs can suggest patterns. Syntagma does bot
 | Relationship traversal | One-hop at best, often hallucinated | Multi-hop graph traversal, verified |
 | Proactive detection | Only if the user asks the right question | Auto-triggers on problem descriptions |
 | Cross-referencing | Manual, error-prone | Automated via 201 semantic relations |
+| Token efficiency | Long explanations + multiple follow-up turns | One tool call returns structured result |
 | Offline / Air-gapped | Requires internet for best results | Fully local, single binary |
 
 ---
