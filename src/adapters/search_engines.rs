@@ -250,7 +250,10 @@ fn count_chunks_per_entity(conn: &Connection) -> HashMap<String, usize> {
     let mut map = HashMap::new();
     let mut stmt = match conn.prepare("SELECT entity_id, COUNT(*) as cnt FROM chunks GROUP BY entity_id") {
         Ok(s) => s,
-        Err(_) => return map,
+        Err(e) => {
+            tracing::warn!("count_chunks_per_entity: prepare failed: {e}");
+            return map;
+        }
     };
     let rows = match stmt.query_map([], |row| {
         let entity_id: String = row.get(0)?;
@@ -259,12 +262,13 @@ fn count_chunks_per_entity(conn: &Connection) -> HashMap<String, usize> {
         Ok((entity_id, cnt))
     }) {
         Ok(r) => r,
-        Err(_) => return map,
-    };
-    for row in rows {
-        if let Ok((eid, cnt)) = row {
-            map.insert(eid, cnt);
+        Err(e) => {
+            tracing::warn!("count_chunks_per_entity: query_map failed: {e}");
+            return map;
         }
+    };
+    for (eid, cnt) in rows.flatten() {
+        map.insert(eid, cnt);
     }
     map
 }
@@ -486,6 +490,18 @@ pub fn keyword_search(
     limit: usize,
     entity_type_filter: Option<&str>,
 ) -> Result<Vec<SearchResult>> {
+    keyword_search_with_chunk_counts(conn, query, limit, entity_type_filter, None)
+}
+
+/// Same as `keyword_search` but accepts a pre-computed chunk-count map.
+/// When `chunk_counts` is `None`, it is computed from the database.
+pub fn keyword_search_with_chunk_counts(
+    conn: &Connection,
+    query: &str,
+    limit: usize,
+    entity_type_filter: Option<&str>,
+    chunk_counts: Option<HashMap<String, usize>>,
+) -> Result<Vec<SearchResult>> {
     let fts_query = sanitize_fts_query(query);
 
     let mut results = Vec::new();
@@ -559,7 +575,7 @@ pub fn keyword_search(
     // in body text.  FTS5 BM25 scores are negative (lower = better), so we
     // scale them into positive territory and then apply the boost multiplier.
     let query_lower = query.to_lowercase();
-    let chunk_counts = count_chunks_per_entity(conn);
+    let chunk_counts = chunk_counts.unwrap_or_else(|| count_chunks_per_entity(conn));
     for r in &mut results {
         let boost = title_match_boost(&r.title, &query_lower);
         let sparse_boost = sparse_entity_boost(&chunk_counts, &r.entity_id);
@@ -627,12 +643,16 @@ pub fn hybrid_search(
 ) -> Result<Vec<SearchResult>> {
     let expanded_limit = limit * 2;
 
+    // Compute chunk counts once for both keyword and RRF scoring.
+    let chunk_counts = count_chunks_per_entity(conn);
+
     // --- keyword search (graceful degradation) ---
-    let keyword_results: Vec<SearchResult> = keyword_search(
+    let keyword_results: Vec<SearchResult> = keyword_search_with_chunk_counts(
         conn,
         query,
         expanded_limit,
         entity_type_filter,
+        Some(chunk_counts.clone()),
     ).unwrap_or_default();
 
     // --- semantic search (graceful degradation) ---
@@ -685,7 +705,6 @@ pub fn hybrid_search(
     // Apply an additional title-match multiplier inside the RRF formula so
     // that exact-name matches (e.g. "Dry" for query "dry principle") rank
     // ahead of partial-body matches even after semantic fusion.
-    let chunk_counts = count_chunks_per_entity(conn);
     for (rank_idx, kr) in keyword_results.into_iter().enumerate() {
         let rank = rank_idx + 1; // 1-based
         let t_boost = title_match_boost(&kr.title, &query_lower_rrf);
