@@ -22,29 +22,29 @@ When you ask an LLM "how do I fix a God Object?", it gives you a reasonable answ
 
 ### When is this useful?
 
-**1. When you need consistent, citable engineering advice — not hallucinated recommendations**
-
-Every finding references explicit entity IDs (`DP-005`, `RF-001`, `LAW-021`). Recommendations come with priority scores and effort estimates, not vague "consider using X". The same query always returns the same structured answer, grounded in proven literature.
-
-**2. When isolated pattern knowledge isn't enough — you need the relationships**
-
-Knowing what Extract Method does is table stakes. Knowing that it *solves* Long Method (SMELL-01), which *violates* Single Responsibility (LAW-001), which is *enforced by* Facade Pattern (DP-012) — that's a reasoning chain an LLM can't reliably construct on its own. Syntagma's 201 semantic relations let AI agents traverse these paths deterministically.
-
-**3. When your AI agent should proactively detect problems, not wait to be asked**
+**1. When your AI agent should proactively detect problems, not wait to be asked**
 
 The MCP integration auto-triggers on problem descriptions. When a user says "this class does too much", the agent doesn't need to know to ask about God Object — Syntagma maps the complaint to `SMELL-03`, surfaces ranked refactorings, and traces the violation back to first principles. This turns a vague complaint into a structured remediation plan.
 
-**4. When you're making architecture decisions and need evidence, not opinions**
+**2. When you want to reduce token consumption — not burn it on explanations**
 
-"Should I use microservices?" — an LLM will give you the standard trade-offs. Syntagma connects the question to Conway's Law (LAW-017), the Single Responsibility Principle (LAW-001), and the Strangler Fig pattern (DP-026), then shows how they relate to each other. Decisions become traceable to engineering laws, not blog posts.
+Without Syntagma, an LLM answers "how do I fix a God Object?" by explaining the smell, listing refactorings, describing SOLID principles, and walking through each option — hundreds of tokens per response, and follow-up questions multiply the cost. With Syntagma, one MCP tool call returns `SMELL-03 → RF-018 (0.89) → LAW-001`. Structured results replace long prose. Ranked refactorings eliminate "what should I do next?" turns. The same expertise at a fraction of the token budget.
 
-**5. When you need code analysis connected to remediation — not just detection**
+**3. When you need code analysis connected to remediation — not just detection**
 
 Tools like SonarQube detect smells. LLMs can suggest patterns. Syntagma does both and connects them: detect Long Method → trace to the laws it violates → rank the refactorings that solve it → show what patterns enforce those refactorings. The full loop from detection to principled remediation.
 
-**6. When you want to reduce token consumption — not burn it on explanations**
+**4. When isolated pattern knowledge isn't enough — you need the relationships**
 
-Without Syntagma, an LLM answers "how do I fix a God Object?" by explaining the smell, listing refactorings, describing SOLID principles, and walking through each option — hundreds of tokens per response, and follow-up questions multiply the cost. With Syntagma, one MCP tool call returns `SMELL-03 → RF-018 (0.89) → LAW-001`. Structured results replace long prose. Ranked refactorings eliminate "what should I do next?" turns. The same expertise at a fraction of the token budget.
+Knowing what Extract Method does is table stakes. Knowing that it *solves* Long Method (SMELL-01), which *violates* Single Responsibility (LAW-001), which is *enforced by* Facade Pattern (DP-012) — that's a reasoning chain an LLM can't reliably construct on its own. Syntagma's 201 semantic relations let AI agents traverse these paths deterministically.
+
+**5. When you're making architecture decisions and need evidence, not opinions**
+
+"Should I use microservices?" — an LLM will give you the standard trade-offs. Syntagma connects the question to Conway's Law (LAW-017), the Single Responsibility Principle (LAW-001), and the Strangler Fig pattern (DP-026), then shows how they relate to each other. Decisions become traceable to engineering laws, not blog posts.
+
+**6. When you need consistent, citable engineering advice — not hallucinated recommendations**
+
+Every finding references explicit entity IDs (`DP-005`, `RF-001`, `LAW-021`). Recommendations come with priority scores and effort estimates, not vague "consider using X". The same query always returns the same structured answer, grounded in proven literature.
 
 **7. When you're working in an air-gapped or restricted network — and code can't leave the premise**
 
@@ -54,12 +54,12 @@ Cloud-based LLMs and analysis tools require sending your codebase to external se
 
 | | Well-crafted LLM prompt | Syntagma + LLM |
 |---|---|---|
+| Proactive detection | Only if the user asks the right question | Auto-triggers on problem descriptions |
+| Token efficiency | Long explanations + multiple follow-up turns | One tool call returns structured result |
+| Relationship traversal | One-hop at best, often hallucinated | Multi-hop graph traversal, verified |
+| Cross-referencing | Manual, error-prone | Automated via 201 semantic relations |
 | Consistency | Varies between conversations | Same structured answer every time |
 | Citability | "I think you should use Extract Class" | "Extract Class (RF-018), priority 0.89" |
-| Relationship traversal | One-hop at best, often hallucinated | Multi-hop graph traversal, verified |
-| Proactive detection | Only if the user asks the right question | Auto-triggers on problem descriptions |
-| Cross-referencing | Manual, error-prone | Automated via 201 semantic relations |
-| Token efficiency | Long explanations + multiple follow-up turns | One tool call returns structured result |
 | Offline / Air-gapped | Requires internet for best results | Fully local, single binary |
 
 ---
