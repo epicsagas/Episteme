@@ -4,35 +4,36 @@ Get up and running with Syntagma in under 2 minutes.
 
 ---
 
+## Prerequisites
+
+- **Rust 1.85+** (edition 2024 required) — [Install via rustup](https://rustup.rs)
+- Internet connection (for initial data download)
+
+---
+
 ## Option 1: AI Tool Integration (Recommended)
 
 **Perfect for:** Claude Code, Cursor, Codex, Gemini users
 
 ```bash
-# 1. Build and install from source
-git clone https://github.com/epicsagas/Syntagma.git
-cd Syntagma && cargo build --release
+# 1. Install Syntagma
+cargo install --git https://github.com/epicsagas/Syntagma
 
-# 2. Install into your AI tool
-./target/release/syntagma install claude      # Claude Code
-./target/release/syntagma install cursor      # Cursor
-./target/release/syntagma install codex       # OpenAI Codex
-./target/release/syntagma install gemini      # Gemini CLI
-./target/release/syntagma install all         # All tools at once
+# 2. Install into your AI tool (downloads data, configures MCP, copies agents)
+syntagma install claude      # Claude Code
+syntagma install cursor      # Cursor
+syntagma install codex       # OpenAI Codex
+syntagma install gemini      # Gemini CLI
+syntagma install all         # All tools at once
 ```
 
-`syntagma install` automatically:
-- Downloads the pre-built knowledge database from GitHub Releases
-- Copies agents to `~/.claude/agents/` (or equivalent)
-- Registers the MCP server in your tool's config
+> If `syntagma install claude` fails to download data, use the source install below instead.
 
 **That's it.** Restart your AI tool and Syntagma is active.
 
-> **No `syntagma build` needed.** The pre-built vector DB is bundled in the release archive.
-
 ---
 
-## Option 2: Docker
+## Option 2: Docker (No Rust Required)
 
 ```bash
 docker-compose up -d
@@ -42,9 +43,21 @@ docker-compose up -d
 # Health:    http://localhost:8000/health
 ```
 
+For MCP integration via Docker, add to your MCP config:
+```json
+{
+  "mcpServers": {
+    "syntagma": {
+      "command": "docker",
+      "args": ["exec", "-i", "syntagma-api", "syntagma", "mcp"]
+    }
+  }
+}
+```
+
 ---
 
-## Option 3: Local Development
+## Option 3: From Source
 
 ```bash
 git clone https://github.com/epicsagas/Syntagma.git
@@ -55,13 +68,6 @@ cargo build --release
 
 # Seed data and build vector DB (build runs automatically)
 ./target/release/syntagma install --local
-```
-
-**Expected output:**
-```
-Seeded 161 entities
-Generated embeddings
-Database: ~/.syntagma/db/syntagma.db
 ```
 
 ---

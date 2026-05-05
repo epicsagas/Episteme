@@ -33,14 +33,15 @@ Note:
 ### 1. Install Syntagma
 
 ```bash
-# Install from source
-git clone https://github.com/epicsagas/Syntagma.git
-cd Syntagma && cargo build --release
+# Install (requires Rust 1.85+)
+cargo install --git https://github.com/epicsagas/Syntagma
 
 # Install agents and MCP server into Claude Code
-# (seeds data and builds knowledge DB automatically)
-./target/release/syntagma install claude
+# (seeds data and configures MCP automatically)
+syntagma install claude
 ```
+
+> If the data download fails, use source install: `git clone` → `cargo build --release` → `syntagma install --local`
 
 ### 2. Verify Installation
 
