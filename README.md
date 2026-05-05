@@ -42,6 +42,14 @@ The MCP integration auto-triggers on problem descriptions. When a user says "thi
 
 Tools like SonarQube detect smells. LLMs can suggest patterns. Syntagma does both and connects them: detect Long Method → trace to the laws it violates → rank the refactorings that solve it → show what patterns enforce those refactorings. The full loop from detection to principled remediation.
 
+**6. When you want to reduce token consumption — not burn it on explanations**
+
+Without Syntagma, an LLM answers "how do I fix a God Object?" by explaining the smell, listing refactorings, describing SOLID principles, and walking through each option — hundreds of tokens per response, and follow-up questions multiply the cost. With Syntagma, one MCP tool call returns `SMELL-03 → RF-018 (0.89) → LAW-001`. Structured results replace long prose. Ranked refactorings eliminate "what should I do next?" turns. The same expertise at a fraction of the token budget.
+
+**7. When you're working in an air-gapped or restricted network — and code can't leave the premise**
+
+Cloud-based LLMs and analysis tools require sending your codebase to external servers. In security-sensitive environments — financial institutions, defense contractors, regulated industries — that's a non-starter. Syntagma runs entirely offline: single binary, local SQLite database, local embeddings via fastembed (ONNX Runtime). No telemetry, no phone-home, no external API calls. Your code and analysis results never leave your machine.
+
 ### How is this different from just prompting an LLM well?
 
 | | Well-crafted LLM prompt | Syntagma + LLM |
