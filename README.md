@@ -12,6 +12,49 @@ Written in **Rust** for performance, safety, and single-binary deployment.
 
 ---
 
+## Why Syntagma?
+
+LLMs already know what the Strategy pattern is. They can recite SOLID principles, list GoF patterns, and explain code smells. So why does this project exist?
+
+**The gap isn't knowledge — it's structured, connected reasoning.**
+
+When you ask an LLM "how do I fix a God Object?", it gives you a reasonable answer. But the answer changes between conversations, lacks traceability, and doesn't connect the problem to its root causes or downstream consequences. Syntagma turns isolated facts into a traversable graph where every recommendation is grounded, citable, and connected to the broader design landscape.
+
+### When is this useful?
+
+**1. When you need consistent, citable engineering advice — not hallucinated recommendations**
+
+Every finding references explicit entity IDs (`DP-005`, `RF-001`, `LAW-021`). Recommendations come with priority scores and effort estimates, not vague "consider using X". The same query always returns the same structured answer, grounded in proven literature.
+
+**2. When isolated pattern knowledge isn't enough — you need the relationships**
+
+Knowing what Extract Method does is table stakes. Knowing that it *solves* Long Method (SMELL-01), which *violates* Single Responsibility (LAW-001), which is *enforced by* Facade Pattern (DP-012) — that's a reasoning chain an LLM can't reliably construct on its own. Syntagma's 201 semantic relations let AI agents traverse these paths deterministically.
+
+**3. When your AI agent should proactively detect problems, not wait to be asked**
+
+The MCP integration auto-triggers on problem descriptions. When a user says "this class does too much", the agent doesn't need to know to ask about God Object — Syntagma maps the complaint to `SMELL-03`, surfaces ranked refactorings, and traces the violation back to first principles. This turns a vague complaint into a structured remediation plan.
+
+**4. When you're making architecture decisions and need evidence, not opinions**
+
+"Should I use microservices?" — an LLM will give you the standard trade-offs. Syntagma connects the question to Conway's Law (LAW-017), the Single Responsibility Principle (LAW-001), and the Strangler Fig pattern (DP-026), then shows how they relate to each other. Decisions become traceable to engineering laws, not blog posts.
+
+**5. When you need code analysis connected to remediation — not just detection**
+
+Tools like SonarQube detect smells. LLMs can suggest patterns. Syntagma does both and connects them: detect Long Method → trace to the laws it violates → rank the refactorings that solve it → show what patterns enforce those refactorings. The full loop from detection to principled remediation.
+
+### How is this different from just prompting an LLM well?
+
+| | Well-crafted LLM prompt | Syntagma + LLM |
+|---|---|---|
+| Consistency | Varies between conversations | Same structured answer every time |
+| Citability | "I think you should use Extract Class" | "Extract Class (RF-018), priority 0.89" |
+| Relationship traversal | One-hop at best, often hallucinated | Multi-hop graph traversal, verified |
+| Proactive detection | Only if the user asks the right question | Auto-triggers on problem descriptions |
+| Cross-referencing | Manual, error-prone | Automated via 201 semantic relations |
+| Offline / Air-gapped | Requires internet for best results | Fully local, single binary |
+
+---
+
 ## Quick Start for AI Agents
 
 ### Option 1: MCP Integration (Recommended)
