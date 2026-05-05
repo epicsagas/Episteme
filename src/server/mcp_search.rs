@@ -211,6 +211,12 @@ pub fn keyword_search(
         .collect()
 }
 
+// Injected synonyms rank just below the best organic result so they appear
+// without displacing direct matches.
+const SYNONYM_SCORE_RATIO: f64 = 0.95;
+// Graph-expanded remedies rank just below the lowest smell result.
+const EXPANSION_SCORE_RATIO: f64 = 0.9;
+
 /// Inject entities from intent synonym matching when the query matches
 /// curated abstract intent phrases (e.g. "flexible" -> Strategy pattern).
 fn inject_intent_synonyms(
@@ -249,7 +255,7 @@ fn inject_intent_synonyms(
             section: "Intent Match".to_owned(),
             text: entity.title.clone(),
             metadata_json: String::new(),
-            score: top_score * 0.95,
+            score: top_score * SYNONYM_SCORE_RATIO,
             similarity: 0.0,
             keyword_rank: None,
             semantic_rank: None,
@@ -323,7 +329,7 @@ fn expand_with_related_entities(
                 section: "Related Solution".to_owned(),
                 text: entity.title.clone(),
                 metadata_json: String::new(),
-                score: lowest_smell_score * 0.9,
+                score: lowest_smell_score * EXPANSION_SCORE_RATIO,
                 similarity: 0.0,
                 keyword_rank: None,
                 semantic_rank: None,
@@ -388,7 +394,7 @@ mod tests {
         assert_eq!(expanded.title, "Extract Method");
         assert_eq!(expanded.section, "Related Solution");
         assert_eq!(expanded.chunk_id, "expanded_RF-001");
-        assert!((expanded.score - 0.85 * 0.9).abs() < f64::EPSILON);
+        assert!((expanded.score - 0.85 * EXPANSION_SCORE_RATIO).abs() < f64::EPSILON);
         assert_eq!(expanded.similarity, 0.0);
     }
 
@@ -540,5 +546,126 @@ mod tests {
 
         assert_eq!(results.len(), 2);
         assert!(results.iter().any(|r| r.entity_id == "RF-001"));
+    }
+
+    #[test]
+    fn inject_intent_synonyms_adds_matching_entities() {
+        let mut dp = blank_entity("DP-020");
+        dp.title = "Strategy".to_owned();
+        dp.r#type = "pattern".to_owned();
+
+        let mut law = blank_entity("LAW-042");
+        law.title = "Open/Closed Principle".to_owned();
+        law.r#type = "law".to_owned();
+
+        let graph = build_graph_from_entities(vec![dp, law]);
+
+        let mut results = vec![SearchResult {
+            chunk_id: "c1".to_owned(),
+            text: "Some pattern".to_owned(),
+            entity_id: "DP-001".to_owned(),
+            entity_type: "pattern".to_owned(),
+            title: "Abstract Factory".to_owned(),
+            section: "Overview".to_owned(),
+            metadata_json: String::new(),
+            score: 0.9,
+            similarity: 0.9,
+            keyword_rank: None,
+            semantic_rank: None,
+        }];
+
+        inject_intent_synonyms(&graph, "flexible code", &mut results, 10);
+
+        let injected: Vec<&SearchResult> = results.iter().filter(|r| r.chunk_id.starts_with("synonym_")).collect();
+        assert_eq!(injected.len(), 2);
+        assert_eq!(injected[0].section, "Intent Match");
+        assert!((injected[0].score - 0.9 * SYNONYM_SCORE_RATIO).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn inject_intent_synonyms_caps_at_two() {
+        let mut dp020 = blank_entity("DP-020");
+        dp020.title = "Strategy".to_owned();
+        dp020.r#type = "pattern".to_owned();
+
+        let mut law042 = blank_entity("LAW-042");
+        law042.title = "Open/Closed Principle".to_owned();
+        law042.r#type = "law".to_owned();
+
+        let mut dp010 = blank_entity("DP-010");
+        dp010.title = "Facade".to_owned();
+        dp010.r#type = "pattern".to_owned();
+
+        let graph = build_graph_from_entities(vec![dp020, law042, dp010]);
+
+        // "pluggable" maps to DP-020, DP-010 — only 2 entities so both should inject
+        let mut results = vec![SearchResult {
+            chunk_id: "c1".to_owned(),
+            text: "Some".to_owned(),
+            entity_id: "DP-001".to_owned(),
+            entity_type: "pattern".to_owned(),
+            title: "Abstract Factory".to_owned(),
+            section: "Overview".to_owned(),
+            metadata_json: String::new(),
+            score: 0.9,
+            similarity: 0.9,
+            keyword_rank: None,
+            semantic_rank: None,
+        }];
+
+        inject_intent_synonyms(&graph, "pluggable", &mut results, 10);
+
+        let injected = results.iter().filter(|r| r.chunk_id.starts_with("synonym_")).count();
+        assert_eq!(injected, 2, "should inject at most 2 synonym results");
+    }
+
+    #[test]
+    fn inject_intent_synonyms_skips_already_present() {
+        let mut dp = blank_entity("DP-020");
+        dp.title = "Strategy".to_owned();
+        dp.r#type = "pattern".to_owned();
+
+        let graph = build_graph_from_entities(vec![dp]);
+
+        let mut results = vec![SearchResult {
+            chunk_id: "c1".to_owned(),
+            text: "Strategy pattern".to_owned(),
+            entity_id: "DP-020".to_owned(),
+            entity_type: "pattern".to_owned(),
+            title: "Strategy".to_owned(),
+            section: "Overview".to_owned(),
+            metadata_json: String::new(),
+            score: 0.9,
+            similarity: 0.9,
+            keyword_rank: None,
+            semantic_rank: None,
+        }];
+
+        inject_intent_synonyms(&graph, "flexible code", &mut results, 10);
+
+        assert_eq!(results.len(), 1, "should not add duplicate entity");
+    }
+
+    #[test]
+    fn inject_intent_synonyms_no_match_is_noop() {
+        let graph = build_graph_from_entities(vec![]);
+
+        let mut results = vec![SearchResult {
+            chunk_id: "c1".to_owned(),
+            text: "Some".to_owned(),
+            entity_id: "DP-001".to_owned(),
+            entity_type: "pattern".to_owned(),
+            title: "Abstract Factory".to_owned(),
+            section: "Overview".to_owned(),
+            metadata_json: String::new(),
+            score: 0.9,
+            similarity: 0.9,
+            keyword_rank: None,
+            semantic_rank: None,
+        }];
+
+        inject_intent_synonyms(&graph, "something unrelated", &mut results, 10);
+
+        assert_eq!(results.len(), 1);
     }
 }

@@ -176,13 +176,22 @@ static INTENT_SYNONYMS: &[(&str, &[&str])] = &[
 
 /// Look up entity IDs whose content matches the intent expressed in `query`.
 ///
-/// The query is lowercased and scanned for known intent phrases. All matching
-/// entity IDs are collected and deduplicated before being returned.
+/// The query is lowercased and scanned for known intent phrases. Single-word
+/// phrases are matched against word boundaries to avoid false hits (e.g.
+/// "undo" inside "fundamental"). Multi-word phrases use substring matching
+/// since they are already specific enough. All matching entity IDs are
+/// collected and deduplicated before being returned.
 pub fn lookup_intent_synonyms(query: &str) -> Vec<String> {
     let text = query.to_lowercase();
+    let words: std::collections::HashSet<&str> = text.split_whitespace().collect();
     let mut seen = std::collections::HashSet::new();
     for (phrase, entity_ids) in INTENT_SYNONYMS {
-        if text.contains(phrase) {
+        let matched = if phrase.contains(' ') {
+            text.contains(phrase)
+        } else {
+            words.contains(phrase)
+        };
+        if matched {
             for id in *entity_ids {
                 seen.insert(id.to_string());
             }
@@ -380,6 +389,13 @@ mod tests {
     fn intent_synonyms_unrelated_returns_empty() {
         let ids = lookup_intent_synonyms("something unrelated");
         assert!(ids.is_empty());
+    }
+
+    #[test]
+    fn intent_synonyms_word_boundary_no_false_match() {
+        // "undo" must not match inside "fundamental"
+        let ids = lookup_intent_synonyms("fundamental principle");
+        assert!(ids.is_empty(), "should not match 'undo' inside 'fundamental'");
     }
 
     #[test]
