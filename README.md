@@ -1,16 +1,28 @@
-# Syntagma: Knowledge Graph for Software Engineering
-
-> Syntagma (συν ταγμα) - Greek for "organized system" or "discernment"
-
-A production-ready knowledge graph system for software engineering that connects design patterns, refactoring techniques, and software laws through semantic relationships. **Built for AI agents first** — integrate software engineering expertise directly into Claude Code, Cursor, and other MCP-compatible tools.
-
-Written in **Rust** for performance, safety, and single-binary deployment.
-
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/epicsagas/Syntagma)
-[![Rust](https://img.shields.io/badge/rust-1.82+-orange.svg)](https://www.rust-lang.org/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+<h1 align="center">Syntagma</h1>
 
 ---
+
+<p align="center"><b>Knowledge Graph for Software Engineering</b></p>
+
+<blockquote><p align="center">Syntagma (συν ταγμα) - Greek for "organized system" or "discernment"</p></blockquote>
+
+<p align="center">A production-ready knowledge graph system for software engineering that connects design patterns, refactoring techniques, and software laws through semantic relationships. **Built for AI agents first** — integrate software engineering expertise directly into Claude Code, Cursor, and other MCP-compatible tools.</p>
+
+<p align="center">Written in Rust for performance, safety, and single-binary deployment.</p>
+
+---
+
+<p align="center">
+    <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.82+-orange.svg" alt="rust-lang" /></a>
+    <a href="https://crates.io/crates/Syntagma"><img src="https://img.shields.io/crates/v/Syntagma.svg" alt="crates.io" /></a>
+    <a href="https://crates.io/crates/Syntagma"><img src="https://img.shields.io/crates/d/Syntagma.svg" alt="Downloads" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
+    <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
+</p
+
+---
+
+<img src="docs/assets/features.png" align="center" width="100%" src="Features" />
 
 ## Why Syntagma?
 
