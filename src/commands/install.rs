@@ -77,28 +77,22 @@ pub fn cmd_install(
             }
         };
 
-        println!();
-        println!("Step 2/3 \u{00b7} Environment \u{00b7} Redis cache");
-        if prompt_yes_no("Configure Redis now? [Y/n]: ", true)? {
-            let cfg = SyntagmaConfig::load().unwrap_or_default();
-            let redis_enabled = prompt_bool_with_default(
-                "  Redis enabled (true/false)",
-                cfg.redis_enabled,
-            )?;
-            let redis_host = prompt_with_default("  host", &cfg.redis_host)?;
-            let redis_port = prompt_u16_with_default("  port", cfg.redis_port)?;
-            let redis_db = prompt_u16_with_default("  db", cfg.redis_db)?;
-            let redis_ttl = prompt_u64_with_default("  ttl (seconds)", cfg.redis_ttl)?;
-            upsert_config_yaml(redis_enabled, &redis_host, redis_port, redis_db, redis_ttl)?;
-            println!("  Saved: ~/.syntagma/config.yaml");
-        } else {
-            println!("  Skipped - existing defaults are preserved.");
+        let cfg = SyntagmaConfig::load().unwrap_or_default();
+        if let Some(redis) = syntagma::adapters::install_wizard::configure_redis_tui(
+            syntagma::adapters::install_wizard::RedisConfig {
+                enabled: cfg.redis_enabled,
+                host: cfg.redis_host.clone(),
+                port: cfg.redis_port,
+                db: cfg.redis_db,
+                ttl: cfg.redis_ttl,
+            },
+        ).map_err(|e| anyhow::anyhow!(e))? {
+            upsert_config_yaml(redis.enabled, &redis.host, redis.port, redis.db, redis.ttl)?;
         }
 
-        println!();
-        println!("Step 3/3 \u{00b7} Telemetry");
-        let enabled = syntagma::adapters::telemetry::prompt_consent_interactive();
-        syntagma::adapters::telemetry::write_consent(enabled).map_err(|e| anyhow::anyhow!(e))?;
+        let telemetry_enabled = syntagma::adapters::install_wizard::configure_telemetry_tui()
+            .map_err(|e| anyhow::anyhow!(e))?;
+        syntagma::adapters::telemetry::write_consent(telemetry_enabled).map_err(|e| anyhow::anyhow!(e))?;
 
         selected
     } else {

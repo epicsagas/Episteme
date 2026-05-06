@@ -80,24 +80,8 @@ fn run_transport_tui() -> io::Result<ClaudeTransport> {
 
 fn draw_transport(w: &mut impl Write, options: &[(&str, &str)], cursor: usize) -> io::Result<()> {
     queue!(w, MoveTo(0, 0), Clear(ClearType::All))?;
-    queue!(
-        w,
-        SetForegroundColor(ACCENT),
-        SetAttribute(Attribute::Bold),
-        Print(" ╭────────────────────────────────────────────────────────────────────────╮\r\n"),
-        Print(" │ "),
-        ResetColor,
-        SetForegroundColor(ACCENT),
-        SetAttribute(Attribute::Bold),
-        Print("Syntagma"),
-        ResetColor,
-        Print("  ·  MCP transport for Claude Code"),
-        SetForegroundColor(ACCENT),
-        Print("                                    │\r\n"),
-        Print(" ╰────────────────────────────────────────────────────────────────────────╯\r\n"),
-        ResetColor,
-        Print("\r\n"),
-    )?;
+    tui_header(w, "MCP transport for Claude Code")?;
+    queue!(w, Print("\r\n"))?;
 
     for (i, (name, desc)) in options.iter().enumerate() {
         let row_hi = i == cursor;
@@ -150,81 +134,7 @@ fn draw_transport(w: &mut impl Write, options: &[(&str, &str)], cursor: usize) -
 }
 
 fn prompt_port_tui(default: u16) -> io::Result<u16> {
-    enable_raw_mode()?;
-    let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen, Hide, MoveTo(0, 0), Clear(ClearType::All))?;
-
-    struct RawGuard;
-    impl Drop for RawGuard {
-        fn drop(&mut self) {
-            let _ = execute!(io::stdout(), LeaveAlternateScreen, Show);
-            let _ = disable_raw_mode();
-        }
-    }
-    let _guard = RawGuard;
-
-    let mut input = String::new();
-
-    loop {
-        queue!(stdout, MoveTo(0, 0), Clear(ClearType::All))?;
-        queue!(
-            stdout,
-            SetForegroundColor(ACCENT),
-            SetAttribute(Attribute::Bold),
-            Print(" ╭────────────────────────────────────────────────────────────────────────╮\r\n"),
-            Print(" │ "),
-            ResetColor,
-            SetForegroundColor(ACCENT),
-            SetAttribute(Attribute::Bold),
-            Print("Syntagma"),
-            ResetColor,
-            Print("  ·  MCP HTTP port"),
-            SetForegroundColor(ACCENT),
-            Print("                                                 │\r\n"),
-            Print(" ╰────────────────────────────────────────────────────────────────────────╯\r\n"),
-            ResetColor,
-            Print("\r\n"),
-        )?;
-
-        let display = if input.is_empty() {
-            format!(" › Port: {default}_")
-        } else {
-            format!(" › Port: {input}_")
-        };
-        queue!(
-            stdout,
-            SetForegroundColor(HI),
-            SetAttribute(Attribute::Bold),
-            Print(&display),
-            ResetColor,
-            Print("\r\n\r\n"),
-            SetForegroundColor(DIM),
-            Print(" ────────────────────────────────────────────────────────────────────────\r\n"),
-            Print("  Type a port number · Enter to confirm\r\n"),
-            ResetColor,
-        )?;
-        stdout.flush()?;
-
-        let ev = event::read()?;
-        let Event::Key(key) = ev else { continue };
-        if key.kind != KeyEventKind::Press { continue }
-
-        match key.code {
-            KeyCode::Enter => {
-                let port = input.trim().parse::<u16>().unwrap_or(default);
-                return Ok(port);
-            }
-            KeyCode::Backspace => { input.pop(); }
-            KeyCode::Char(c) if c.is_ascii_digit() => {
-                if input.len() < 5 { input.push(c); }
-            }
-            KeyCode::Esc => return Ok(default),
-            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => {
-                return Ok(default);
-            }
-            _ => {}
-        }
-    }
+    prompt_numeric_tui("MCP HTTP port", "port", default)
 }
 
 const ACCENT: crossterm::style::Color = crossterm::style::Color::Cyan;
@@ -438,6 +348,206 @@ fn truncate_desc(s: &str, max_chars: usize) -> String {
     }
     let take = max_chars.saturating_sub(1);
     s.chars().take(take).chain(std::iter::once('…')).collect()
+}
+
+// ---------------------------------------------------------------------------
+// Redis config TUI
+// ---------------------------------------------------------------------------
+
+pub struct RedisConfig {
+    pub enabled: bool,
+    pub host: String,
+    pub port: u16,
+    pub db: u16,
+    pub ttl: u64,
+}
+
+/// Interactive Redis config screen. Returns None if user skips.
+pub fn configure_redis_tui(current: RedisConfig) -> io::Result<Option<RedisConfig>> {
+    if !io::stdin().is_terminal() {
+        return Ok(None);
+    }
+
+    // Ask enable/skip first
+    let enable = run_yes_no_tui("Redis cache", "Configure Redis now?", true)?;
+    if !enable {
+        return Ok(None);
+    }
+
+    // Field editing: host, port, db, ttl
+    let host = prompt_field_tui("Redis cache", "host", &current.host)?;
+    let port = prompt_numeric_tui::<u16>("Redis cache", "port", current.port)?;
+    let db   = prompt_numeric_tui::<u16>("Redis cache", "db",   current.db)?;
+    let ttl  = prompt_numeric_tui::<u64>("Redis cache", "ttl (seconds)", current.ttl)?;
+
+    Ok(Some(RedisConfig { enabled: true, host, port, db, ttl }))
+}
+
+/// Interactive telemetry consent screen. Returns true if user consents.
+pub fn configure_telemetry_tui() -> io::Result<bool> {
+    if !io::stdin().is_terminal() {
+        return Ok(false);
+    }
+    run_yes_no_tui("Telemetry", "Share anonymous usage data to improve Syntagma?", false)
+}
+
+fn run_yes_no_tui(title: &str, question: &str, default_yes: bool) -> io::Result<bool> {
+    let options = if default_yes {
+        vec![("Yes", true), ("No", false)]
+    } else {
+        vec![("No", false), ("Yes", true)]
+    };
+    let mut cursor = 0usize;
+
+    enable_raw_mode()?;
+    let mut stdout = io::stdout();
+    execute!(stdout, EnterAlternateScreen, Hide, MoveTo(0, 0), Clear(ClearType::All))?;
+
+    struct RawGuard;
+    impl Drop for RawGuard {
+        fn drop(&mut self) {
+            let _ = execute!(io::stdout(), LeaveAlternateScreen, Show);
+            let _ = disable_raw_mode();
+        }
+    }
+    let _guard = RawGuard;
+
+    loop {
+        queue!(stdout, MoveTo(0, 0), Clear(ClearType::All))?;
+        tui_header(&mut stdout, title)?;
+        queue!(
+            stdout,
+            Print("\r\n"),
+            SetForegroundColor(HI),
+            Print(format!("  {question}\r\n")),
+            ResetColor,
+            Print("\r\n"),
+        )?;
+
+        for (i, (label, _)) in options.iter().enumerate() {
+            let row_hi = i == cursor;
+            if row_hi {
+                queue!(stdout,
+                    SetForegroundColor(HI), SetAttribute(Attribute::Bold),
+                    Print(format!(" › [•]  {label}\r\n")),
+                    ResetColor,
+                )?;
+            } else {
+                queue!(stdout,
+                    SetForegroundColor(DIM),
+                    Print(format!("   [ ]  {label}\r\n")),
+                    ResetColor,
+                )?;
+            }
+        }
+
+        queue!(stdout,
+            Print("\r\n"),
+            SetForegroundColor(DIM),
+            Print(" ────────────────────────────────────────────────────────────────────────\r\n"),
+            Print("  ↑/↓ Move   Enter Confirm\r\n"),
+            ResetColor,
+        )?;
+        stdout.flush()?;
+
+        let ev = event::read()?;
+        let Event::Key(key) = ev else { continue };
+        if key.kind != KeyEventKind::Press { continue }
+
+        match key.code {
+            KeyCode::Up | KeyCode::Char('k') => cursor = cursor.saturating_sub(1),
+            KeyCode::Down | KeyCode::Char('j') => cursor = (cursor + 1).min(options.len() - 1),
+            KeyCode::Enter => return Ok(options[cursor].1),
+            KeyCode::Esc | KeyCode::Char('q') => return Ok(!default_yes),
+            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => return Ok(!default_yes),
+            _ => {}
+        }
+    }
+}
+
+fn prompt_field_tui(title: &str, label: &str, default: &str) -> io::Result<String> {
+    enable_raw_mode()?;
+    let mut stdout = io::stdout();
+    execute!(stdout, EnterAlternateScreen, Hide, MoveTo(0, 0), Clear(ClearType::All))?;
+
+    struct RawGuard;
+    impl Drop for RawGuard {
+        fn drop(&mut self) {
+            let _ = execute!(io::stdout(), LeaveAlternateScreen, Show);
+            let _ = disable_raw_mode();
+        }
+    }
+    let _guard = RawGuard;
+
+    let mut input = String::new();
+
+    loop {
+        queue!(stdout, MoveTo(0, 0), Clear(ClearType::All))?;
+        tui_header(&mut stdout, title)?;
+
+        let display = if input.is_empty() {
+            format!(" › {label}: {default}_")
+        } else {
+            format!(" › {label}: {input}_")
+        };
+        queue!(stdout,
+            Print("\r\n"),
+            SetForegroundColor(HI), SetAttribute(Attribute::Bold),
+            Print(&display),
+            ResetColor,
+            Print("\r\n\r\n"),
+            SetForegroundColor(DIM),
+            Print(" ────────────────────────────────────────────────────────────────────────\r\n"),
+            Print("  Type value · Enter to confirm · Esc to keep default\r\n"),
+            ResetColor,
+        )?;
+        stdout.flush()?;
+
+        let ev = event::read()?;
+        let Event::Key(key) = ev else { continue };
+        if key.kind != KeyEventKind::Press { continue }
+
+        match key.code {
+            KeyCode::Enter => {
+                return Ok(if input.is_empty() { default.to_owned() } else { input });
+            }
+            KeyCode::Backspace => { input.pop(); }
+            KeyCode::Char(c) if !key.modifiers.contains(KeyModifiers::CONTROL) => {
+                input.push(c);
+            }
+            KeyCode::Esc => return Ok(default.to_owned()),
+            _ => {}
+        }
+    }
+}
+
+fn prompt_numeric_tui<T>(title: &str, label: &str, default: T) -> io::Result<T>
+where
+    T: std::str::FromStr + std::fmt::Display + Copy,
+{
+    let default_str = default.to_string();
+    let raw = prompt_field_tui(title, label, &default_str)?;
+    Ok(raw.parse::<T>().unwrap_or(default))
+}
+
+fn tui_header(w: &mut impl Write, subtitle: &str) -> io::Result<()> {
+    let right_pad = 72usize.saturating_sub(12 + subtitle.len());
+    let pad = " ".repeat(right_pad);
+    queue!(w,
+        SetForegroundColor(ACCENT), SetAttribute(Attribute::Bold),
+        Print(" ╭────────────────────────────────────────────────────────────────────────╮\r\n"),
+        Print(" │ "),
+        ResetColor,
+        SetForegroundColor(ACCENT), SetAttribute(Attribute::Bold),
+        Print("Syntagma"),
+        ResetColor,
+        Print(format!("  ·  {subtitle}")),
+        SetForegroundColor(ACCENT),
+        Print(format!("{pad}│\r\n")),
+        Print(" ╰────────────────────────────────────────────────────────────────────────╯\r\n"),
+        ResetColor,
+    )?;
+    Ok(())
 }
 
 /// Non-TTY (CI, pipes): comma-separated indices or `a` / `all` for everything.
