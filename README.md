@@ -24,28 +24,37 @@
 
 ## Quick Start
 
-> **Prerequisites:** Rust 1.95+ — install via [rustup](https://rustup.rs) if needed.
+> **Prerequisites:** Rust 1.95+ via [rustup](https://rustup.rs) · **No Rust?** See [Docker](#option-3-docker-no-rust-required) or [pre-built binaries](#option-4-pre-built-binaries-no-rust-required).
+
+**1. Install Rust (if not already installed)**
+
+| OS | Command |
+|----|---------|
+| **macOS / Linux** | `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \| sh` |
+| **Windows** | Download and run [`rustup-init.exe`](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe) |
+
+After installing, open a **new terminal** (or run `source "$HOME/.cargo/env"` on macOS/Linux).
+
+**2. Install Syntagma (first build takes 3–5 min)**
 
 ```bash
-# Install Rust toolchain (if not already installed)
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-rustup toolchain install stable
-rustup default stable
-
-# Install (first build takes 3–5 minutes)
 cargo install --git https://github.com/epicsagas/Syntagma
+```
 
-# Seed data + wire up your AI tool (MCP config + agents)
+**3. Seed data + wire up your AI tool**
+
+```bash
 syntagma install claude    # or: cursor, codex, gemini
+```
 
-# Verify
+**4. Verify**
+
+```bash
 syntagma --version
 syntagma stats
 ```
 
 That's it. Restart Claude Code and Syntagma tools are ready.
-
-> **No Rust?** Use Docker instead — see [Docker install](#option-3-docker-no-rust-required) below.
 
 ### Try it in 30 seconds
 
@@ -161,8 +170,14 @@ syntagma install claude    # seeds data + wires up MCP + installs agents
 ```bash
 git clone https://github.com/epicsagas/Syntagma.git
 cd Syntagma && cargo build --release
-./target/release/syntagma install --local claude    # or: cursor, codex, gemini
 ```
+
+Then run the binary for your platform:
+
+| Platform | Command |
+|----------|---------|
+| **macOS / Linux** | `./target/release/syntagma install --local claude` |
+| **Windows** | `.\target\release\syntagma.exe install --local claude` |
 
 ### Option 3: Docker (No Rust Required)
 
@@ -187,6 +202,31 @@ Add to your MCP config file:
     }
   }
 }
+```
+
+### Option 4: Pre-built Binaries (No Rust Required)
+
+Download the latest binary for your platform from [GitHub Releases](https://github.com/epicsagas/Syntagma/releases):
+
+| Platform | File |
+|----------|------|
+| **macOS** (Apple Silicon) | `syntagma-aarch64-apple-darwin.tar.gz` |
+| **macOS** (Intel) | `syntagma-x86_64-apple-darwin.tar.gz` |
+| **Linux** (x86_64) | `syntagma-x86_64-unknown-linux-gnu.tar.gz` |
+| **Linux** (ARM64) | `syntagma-aarch64-unknown-linux-gnu.tar.gz` |
+| **Windows** (x86_64) | `syntagma-x86_64-pc-windows-msvc.zip` |
+
+```bash
+# macOS / Linux
+tar xzf syntagma-*.tar.gz
+sudo mv syntagma /usr/local/bin/
+
+# Windows — extract the zip and add syntagma.exe to your PATH
+```
+
+Then install:
+```bash
+syntagma install claude    # or: cursor, codex, gemini
 ```
 
 ### Verify
@@ -322,11 +362,11 @@ SYNTAGMA_MCP_PORT=43175
 ## Troubleshooting
 
 **`syntagma` command not found after install**
-```bash
-# Add cargo bin to PATH
-export PATH="$HOME/.cargo/bin:$PATH"
-# Add to ~/.bashrc or ~/.zshrc to persist
-```
+
+| Platform | Fix |
+|----------|-----|
+| **macOS / Linux** | `export PATH="$HOME/.cargo/bin:$PATH"` — add to `~/.bashrc` or `~/.zshrc` to persist |
+| **Windows** | Add `%USERPROFILE%\.cargo\bin` to your system PATH, or open a new terminal |
 
 **MCP tools not appearing in Claude Code / Cursor**
 
