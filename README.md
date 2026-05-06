@@ -262,7 +262,7 @@ syntagma dist --out-dir release/
 - **22 GoF Design Patterns** — Complete catalog with real-world examples
 - **66 Refactoring Techniques** — From Fowler's catalog with code samples
 - **56 Software Laws & Principles** — SOLID, Conway's Law, CAP Theorem, etc.
-- **17 Code Smell Types** — Long Method, God Object, Feature Envy, etc.
+- **17 Code Smell Types** — Long Method, God Object, Feature Envy, etc. ¹
 - **201 Semantic Relations** — "solves", "enforces", "violates", "relates_to"
 
 ### AI-First Design
@@ -281,6 +281,8 @@ syntagma dist --out-dir release/
 - **Docker Support** — Multi-stage build with health checks
 - **Monitoring** — Prometheus metrics endpoint
 
+> ¹ Duplicate Code (SMELL-13) and Shotgun Surgery (SMELL-09) require multi-file context and are skipped in single-file mode.
+
 ---
 
 ## Documentation
@@ -292,6 +294,7 @@ syntagma dist --out-dir release/
 | [API Reference](docs/api.md) | REST endpoints, authentication, examples |
 | [Distribution](docs/distribution.md) | Release packaging and deployment |
 | [Development & Contributing](DEVELOPMENT.md) | Architecture, how to contribute |
+| [Changelog](CHANGELOG.md) | Release history and version notes |
 
 ---
 
