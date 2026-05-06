@@ -8,12 +8,27 @@
 
 <p align="center">Written in Rust · Single binary · Fully offline</p>
 
+---
+
 <p align="center">
     <a href="https://github.com/epicsagas/Syntagma/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Syntagma/ci.yml?branch=main&label=CI" alt="CI" /></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.95+-orange.svg" alt="rust-lang" /></a>
     <a href="https://crates.io/crates/syntagma"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
     <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
+</p>
+
+<p align="center">
+  English |
+  <a href="docs/i18n/README.ja.md">日本語</a> |
+  <a href="docs/i18n/README.ko.md">한국어</a> |
+  <a href="docs/i18n/README.de.md">Deutsch</a> |
+  <a href="docs/i18n/README.fr.md">Français</a> |
+  <a href="docs/i18n/README.zh-CN.md">简体中文</a> |
+  <a href="docs/i18n/README.zh-TW.md">繁體中文</a> |
+  <a href="docs/i18n/README.pt.md">Português</a> |
+  <a href="docs/i18n/README.es.md">Español</a> |
+  <a href="docs/i18n/README.hi.md">हिन्दी</a>
 </p>
 
 ---
