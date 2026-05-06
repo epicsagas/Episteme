@@ -127,6 +127,14 @@ pub fn cmd_install(
 
     syntagma::adapters::telemetry::track_install_completed(selected.len());
 
+    // Pre-load the embedding model so the first MCP tool call is instant.
+    if !dry_run {
+        print!("\nWarm up embedding model (one-time, ~30s)... ");
+        std::io::stdout().flush().ok();
+        syntagma::adapters::local_embeddings::LocalEmbeddingProvider::warmup();
+        println!("done.");
+    }
+
     Ok(())
 }
 

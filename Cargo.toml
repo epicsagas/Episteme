@@ -1,5 +1,5 @@
 [package]
-name = "syntagma-engine"
+name = "syntagma"
 description = "Software engineering knowledge graph — design patterns, refactorings, and laws for AI agents"
 version = "0.1.0"
 edition = "2024"

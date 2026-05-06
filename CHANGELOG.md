@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ChromaDB dependency
 - tree-sitter dependency
 - PyPI publishing workflow
+- `syntagma-hook` standalone binary (was Python-only PyPI entry point) — use `syntagma hooks ground|sniff|audit` instead
 
 ## [0.0.5] - 2026-04-30
 
