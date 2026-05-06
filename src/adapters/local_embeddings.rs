@@ -17,8 +17,13 @@ static MODEL: OnceLock<Mutex<Option<TextEmbedding>>> = OnceLock::new();
 
 fn model() -> &'static Mutex<Option<TextEmbedding>> {
     MODEL.get_or_init(|| {
+        // Pin the cache to ~/.syntagma/models so the model is found regardless
+        // of the process working directory (e.g. when spawned by Claude Code).
+        let cache_dir = crate::adapters::paths::syntagma_home().join("models");
         let inner = match TextEmbedding::try_new(
-            TextInitOptions::new(EmbeddingModel::AllMiniLML6V2).with_show_download_progress(false),
+            TextInitOptions::new(EmbeddingModel::AllMiniLML6V2)
+                .with_show_download_progress(false)
+                .with_cache_dir(cache_dir),
         ) {
             Ok(m) => Some(m),
             Err(err) => {

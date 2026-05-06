@@ -111,13 +111,15 @@ impl SyntagmaMCP {
                 }
             }
 
-            // Fallback: local provider (deterministic CPU embeddings).
+            // Fallback: local provider — instantiate now (cheap), model loads on first embed() call.
             self.embedding_provider = Some(
                 Box::new(crate::adapters::local_embeddings::LocalEmbeddingProvider::new(
                     EMBEDDING_DIMENSIONS,
                 )),
             );
             self.db = Some(Mutex::new(conn));
+            // Do NOT call warmup() here — let the first search request trigger model load
+            // so MCP server startup is instant for the user.
         }
     }
 
