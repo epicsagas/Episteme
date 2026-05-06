@@ -2,23 +2,81 @@
 
 <p align="center"><b>Knowledge Graph for Software Engineering</b></p>
 
-<blockquote><p align="center">Syntagma (συν ταγμα) - Greek for "organized system" or "discernment"</p></blockquote>
+<p align="center"><sub>Syntagma (συν ταγμα) — Greek for "organized system" or "discernment"</sub></p>
 
-<p align="center">A production-ready knowledge graph system for software engineering that connects design patterns, refactoring techniques, and software laws through semantic relationships. **Built for AI agents first** — integrate software engineering expertise directly into Claude Code, Cursor, and other MCP-compatible tools.</p>
+<p align="center">An offline-first, single-binary knowledge graph that connects design patterns, refactoring techniques, and software laws through semantic relationships.<br><b>Built for AI agents first</b> — integrate software engineering expertise directly into Claude Code, Cursor, and other MCP-compatible tools.</p>
 
-<p align="center">Written in Rust for performance, safety, and single-binary deployment.</p>
+<p align="center">Written in Rust · Single binary · Fully offline</p>
 
 <p align="center">
+    <a href="https://github.com/epicsagas/Syntagma/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Syntagma/ci.yml?branch=main&label=CI" alt="CI" /></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.85+-orange.svg" alt="rust-lang" /></a>
-    <a href="https://crates.io/crates/Syntagma"><img src="https://img.shields.io/crates/v/Syntagma.svg" alt="crates.io" /></a>
-    <a href="https://crates.io/crates/Syntagma"><img src="https://img.shields.io/crates/d/Syntagma.svg" alt="Downloads" /></a>
+    <a href="https://crates.io/crates/syntagma-engine"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
     <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
 </p>
 
 ---
 
-<img src="docs/assets/features.png" align="center" width="100%" src="Features" />
+<img src="docs/assets/features.png" align="center" width="100%" alt="Syntagma Features Overview" />
+
+---
+
+## Quick Start
+
+> **Prerequisites:** Rust 1.85+ — install via [rustup](https://rustup.rs) if needed.
+
+```bash
+# Install Rust toolchain (if not already installed)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+rustup toolchain install stable
+rustup default stable
+
+# Install (first build takes 3–5 minutes)
+cargo install --git https://github.com/epicsagas/Syntagma
+
+# Wire up your AI tool
+syntagma install claude    # or: cursor, codex, gemini
+
+# Verify
+syntagma --version
+syntagma stats
+```
+
+That's it. Restart Claude Code and Syntagma tools are ready.
+
+> **No Rust?** Use Docker instead — see [Docker install](#option-3-docker-no-rust-required) below.
+
+### Try it in 30 seconds
+
+**Option A — CLI:** Point it at any file in your project.
+
+```bash
+syntagma analyze src/domain/engine.rs
+```
+
+```
+✓ 2 smells detected in src/domain/engine.rs
+
+  SMELL-07 (Large Class) — RefactoringRanker, 743 lines
+  → RF-018 Extract Class          priority 0.89  effort: medium
+  → RF-001 Extract Method         priority 0.76  effort: small
+  → Violates: LAW-001 Single Responsibility Principle
+
+  SMELL-01 (Long Method) — rank_refactorings(), 58 lines
+  → RF-001 Extract Method         priority 0.92  effort: small
+  → Violates: LAW-001 SRP, LAW-004 DRY
+```
+
+**Option B — Claude Code:** Open any file in your project and ask naturally.
+
+```
+Find code smells in this project and suggest refactorings.
+```
+
+Syntagma auto-triggers — no special syntax needed. It maps your description to the knowledge graph and returns ranked, citable results.
+
+---
 
 ## Why Syntagma?
 
@@ -27,36 +85,6 @@ LLMs already know what the Strategy pattern is. They can recite SOLID principles
 **The gap isn't knowledge — it's structured, connected reasoning.**
 
 When you ask an LLM "how do I fix a God Object?", it gives you a reasonable answer. But the answer changes between conversations, lacks traceability, and doesn't connect the problem to its root causes or downstream consequences. Syntagma turns isolated facts into a traversable graph where every recommendation is grounded, citable, and connected to the broader design landscape.
-
-### When is this useful?
-
-**1. When your AI agent should proactively detect problems, not wait to be asked**
-
-The MCP integration auto-triggers on problem descriptions. When a user says "this class does too much", the agent doesn't need to know to ask about God Object — Syntagma maps the complaint to `SMELL-03`, surfaces ranked refactorings, and traces the violation back to first principles. This turns a vague complaint into a structured remediation plan.
-
-**2. When you want to reduce token consumption — not burn it on explanations**
-
-Without Syntagma, an LLM answers "how do I fix a God Object?" by explaining the smell, listing refactorings, describing SOLID principles, and walking through each option — hundreds of tokens per response, and follow-up questions multiply the cost. With Syntagma, one MCP tool call returns `SMELL-03 → RF-018 (0.89) → LAW-001`. Structured results replace long prose. Ranked refactorings eliminate "what should I do next?" turns. The same expertise at a fraction of the token budget.
-
-**3. When you need code analysis connected to remediation — not just detection**
-
-Tools like SonarQube detect smells. LLMs can suggest patterns. Syntagma does both and connects them: detect Long Method → trace to the laws it violates → rank the refactorings that solve it → show what patterns enforce those refactorings. The full loop from detection to principled remediation.
-
-**4. When isolated pattern knowledge isn't enough — you need the relationships**
-
-Knowing what Extract Method does is table stakes. Knowing that it *solves* Long Method (SMELL-01), which *violates* Single Responsibility (LAW-001), which is *enforced by* Facade Pattern (DP-012) — that's a reasoning chain an LLM can't reliably construct on its own. Syntagma's 201 semantic relations let AI agents traverse these paths deterministically.
-
-**5. When you're making architecture decisions and need evidence, not opinions**
-
-"Should I use microservices?" — an LLM will give you the standard trade-offs. Syntagma connects the question to Conway's Law (LAW-017), the Single Responsibility Principle (LAW-001), and the Strangler Fig pattern (DP-026), then shows how they relate to each other. Decisions become traceable to engineering laws, not blog posts.
-
-**6. When you need consistent, citable engineering advice — not hallucinated recommendations**
-
-Every finding references explicit entity IDs (`DP-005`, `RF-001`, `LAW-021`). Recommendations come with priority scores and effort estimates, not vague "consider using X". The same query always returns the same structured answer, grounded in proven literature.
-
-**7. When you're working in an air-gapped or restricted network — and code can't leave the premise**
-
-Cloud-based LLMs and analysis tools require sending your codebase to external servers. In security-sensitive environments — financial institutions, defense contractors, regulated industries — that's a non-starter. Syntagma runs entirely offline: single binary, local SQLite database, local embeddings via fastembed (ONNX Runtime). No telemetry, no phone-home, no external API calls. Your code and analysis results never leave your machine.
 
 ### How is this different from just prompting an LLM well?
 
@@ -70,26 +98,63 @@ Cloud-based LLMs and analysis tools require sending your codebase to external se
 | Citability | "I think you should use Extract Class" | "Extract Class (RF-018), priority 0.89" |
 | Offline / Air-gapped | Requires internet for best results | Fully local, single binary |
 
+### When is this useful?
+
+<details>
+<summary><b>1. When your AI agent should proactively detect problems, not wait to be asked</b></summary>
+
+The MCP integration auto-triggers on problem descriptions. When a user says "this class does too much", the agent doesn't need to know to ask about God Object — Syntagma maps the complaint to `SMELL-03`, surfaces ranked refactorings, and traces the violation back to first principles. This turns a vague complaint into a structured remediation plan.
+</details>
+
+<details>
+<summary><b>2. When you want to reduce token consumption — not burn it on explanations</b></summary>
+
+Without Syntagma, an LLM answers "how do I fix a God Object?" by explaining the smell, listing refactorings, describing SOLID principles, and walking through each option — hundreds of tokens per response. With Syntagma, one MCP tool call returns `SMELL-03 → RF-018 (0.89) → LAW-001`. Same expertise at a fraction of the token budget.
+</details>
+
+<details>
+<summary><b>3. When you need code analysis connected to remediation — not just detection</b></summary>
+
+Tools like SonarQube detect smells. LLMs can suggest patterns. Syntagma does both and connects them: detect Long Method → trace to the laws it violates → rank the refactorings that solve it → show what patterns enforce those refactorings.
+</details>
+
+<details>
+<summary><b>4. When isolated pattern knowledge isn't enough — you need the relationships</b></summary>
+
+Knowing what Extract Method does is table stakes. Knowing that it *solves* Long Method (SMELL-01), which *violates* Single Responsibility (LAW-001), which is *enforced by* Facade Pattern (DP-012) — that's a reasoning chain an LLM can't reliably construct on its own. Syntagma's 201 semantic relations let AI agents traverse these paths deterministically.
+</details>
+
+<details>
+<summary><b>5. When you're making architecture decisions and need evidence, not opinions</b></summary>
+
+"Should I use microservices?" — Syntagma connects the question to Conway's Law (LAW-017), SRP (LAW-001), and the Strangler Fig pattern (DP-026), then shows how they relate. Decisions become traceable to engineering laws, not blog posts.
+</details>
+
+<details>
+<summary><b>6. When you need consistent, citable engineering advice — not hallucinated recommendations</b></summary>
+
+Every finding references explicit entity IDs (`DP-005`, `RF-001`, `LAW-021`). Recommendations come with priority scores and effort estimates. The same query always returns the same structured answer.
+</details>
+
+<details>
+<summary><b>7. When you're working in an air-gapped or restricted network</b></summary>
+
+Syntagma runs entirely offline: single binary, local SQLite database, local embeddings via fastembed (ONNX Runtime). No telemetry, no phone-home, no external API calls. Your code and analysis results never leave your machine.
+</details>
+
 ---
 
-## Prerequisites
-
-**Prerequisites:** Rust 1.85+ (edition 2024). Install via [rustup](https://rustup.rs) if needed.
-
-### Install Rust
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-
-> For more details, please visit [Rustup](https://rustup.rs)
+## Installation
 
 ### Option 1: One Command (Recommended)
 
 ```bash
+# First build takes 3–5 minutes — this is normal
 cargo install --git https://github.com/epicsagas/Syntagma
 syntagma install claude    # or: cursor, codex, gemini
 ```
+
+> After `syntagma install claude`, **restart Claude Code** for the MCP tools to appear.
 
 ### Option 2: From Source
 
@@ -105,7 +170,14 @@ cd Syntagma && cargo build --release
 docker-compose up -d
 ```
 
-For MCP via Docker, add to your config:
+Add to your MCP config file:
+
+| Tool | Config file path |
+|------|-----------------|
+| Claude Code | `~/.claude.json` |
+| Cursor | `.cursor/mcp.json` |
+| VS Code (Copilot) | `.vscode/mcp.json` |
+
 ```json
 {
   "mcpServers": {
@@ -122,12 +194,14 @@ For MCP via Docker, add to your config:
 ```bash
 syntagma --version
 syntagma stats
-syntagma analyze test.py
+syntagma explore "strategy pattern"    # explore the knowledge graph
 ```
 
 ---
 
 ## MCP Tools & Agents
+
+> **What is MCP?** The [Model Context Protocol](https://modelcontextprotocol.io) is an open standard that lets AI tools call external services. Syntagma exposes its knowledge graph as MCP tools that Claude Code, Cursor, and other compatible editors can call automatically.
 
 ### 6 MCP Tools
 
@@ -166,7 +240,7 @@ syntagma infer my_code.py
 
 # Explore the knowledge graph
 syntagma explore "strategy pattern"
-syntagma graph path DP-005 RF-001
+syntagma graph path DP-005 RF-001   # e.g. Factory Method → Extract Method
 
 # Build the RAG index
 syntagma build
@@ -174,7 +248,7 @@ syntagma build
 # Start servers
 syntagma api              # REST API on :8000
 syntagma mcp --http       # MCP server on :43175
-syntagma web --port 8080  # Web UI
+syntagma web --port 8080  # Web UI (interactive graph explorer)
 
 # Distribution packaging
 syntagma dist --out-dir release/
@@ -185,63 +259,27 @@ syntagma dist --out-dir release/
 ## Features
 
 ### Knowledge Base
-- **22 GoF Design Patterns** - Complete catalog with real-world examples
-- **66 Refactoring Techniques** - From Fowler's catalog with code samples
-- **56 Software Laws & Principles** - SOLID, Conway's Law, CAP Theorem, etc.
-- **17 Code Smell Types** - Long Method, God Object, Feature Envy, etc.
-- **201 Semantic Relations** - "solves", "enforces", "violates", "relates_to"
+- **22 GoF Design Patterns** — Complete catalog with real-world examples
+- **66 Refactoring Techniques** — From Fowler's catalog with code samples
+- **56 Software Laws & Principles** — SOLID, Conway's Law, CAP Theorem, etc.
+- **17 Code Smell Types** — Long Method, God Object, Feature Envy, etc.
+- **201 Semantic Relations** — "solves", "enforces", "violates", "relates_to"
 
 ### AI-First Design
-- **MCP Integration** - 6 specialized tools for high-fidelity AI agent interaction
-- **4 Connected Agents** - Causation analysis, interactive follow-ups, and cross-agent handoffs
-- **10 Language Support** - Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin
-- **Deterministic Analysis** - AST-based Python detection + regex-based multi-language support
-- **Citable Knowledge** - Every finding links to explicit entity IDs (e.g., `RF-001`, `LAW-021`)
-- **Workflow Chains** - Multi-step pipelines: Code Review → Causation Analysis → Refactoring → Verification
+- **MCP Integration** — 6 specialized tools for high-fidelity AI agent interaction
+- **4 Connected Agents** — Causation analysis, interactive follow-ups, and cross-agent handoffs
+- **10 Language Support** — Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin
+- **Deterministic Analysis** — AST-based Python detection + regex-based multi-language support
+- **Citable Knowledge** — Every finding links to explicit entity IDs (e.g., `RF-001`, `LAW-021`)
+- **Workflow Chains** — Multi-step pipelines: Code Review → Causation Analysis → Refactoring → Verification
 
 ### Production Ready
-- **REST API** - 17 endpoints with authentication and rate limiting
-- **Single Binary** - No runtime dependencies, cross-platform
-- **Local Embeddings** - fastembed (ONNX Runtime) for zero-config semantic search
-- **Interactive Visualization** - Web-based graph explorer (`syntagma web`)
-- **Docker Support** - Multi-stage build with health checks
-- **Monitoring** - Prometheus metrics endpoint
-
----
-
-## Architecture
-
-```
-syntagma (CLI binary)
-├── src/
-│   ├── commands/          # CLI subcommand handlers
-│   │   ├── analysis.rs    # analyze, infer
-│   │   ├── build.rs       # build (RAG pipeline)
-│   │   ├── explore.rs     # explore (search/REPL)
-│   │   ├── graph.rs       # graph queries
-│   │   ├── install.rs     # install wizard
-│   │   ├── service.rs     # MCP service management
-│   │   └── other.rs       # api, mcp, web, telemetry, hooks
-│   ├── adapters/          # Infrastructure layer
-│   │   ├── regex_parsers.rs   # GenericParser (10 languages)
-│   │   ├── search_engines.rs  # FTS5 + cosine similarity
-│   │   ├── service.rs         # MCP HTTP daemon
-│   │   └── ...
-│   ├── domain/            # Business logic
-│   │   ├── graph.rs       # KnowledgeGraph (BFS, subgraph, contradictions)
-│   │   ├── detectors.rs   # 16 smell detectors
-│   │   ├── engine.rs      # RefactoringInferenceEngine
-│   │   └── summarizer.rs  # Detail-level response optimization
-│   ├── server/            # HTTP layer (axum)
-│   │   ├── api_routes.rs  # 17 REST endpoints
-│   │   ├── mcp_handler.rs # MCP facade
-│   │   ├── mcp_search.rs  # Search service
-│   │   ├── mcp_graph.rs   # Graph service
-│   │   └── mcp_analysis.rs # Code analysis service
-│   └── ports/             # Traits (hexagonal boundaries)
-```
-
-**Tech Stack:** Rust, axum, rusqlite (SQLite + FTS5), fastembed (ONNX), clap, regex
+- **REST API** — 17 endpoints with authentication and rate limiting
+- **Single Binary** — No runtime dependencies, cross-platform
+- **Local Embeddings** — fastembed (ONNX Runtime) for zero-config semantic search
+- **Interactive Visualization** — Web-based graph explorer (`syntagma web`)
+- **Docker Support** — Multi-stage build with health checks
+- **Monitoring** — Prometheus metrics endpoint
 
 ---
 
@@ -249,10 +287,11 @@ syntagma (CLI binary)
 
 | Document | Description |
 |----------|-------------|
+| [Quick Start](QUICKSTART.md) | Step-by-step setup, first run, troubleshooting |
 | [MCP Integration Guide](docs/mcp-integration-guide.md) | Tool reference, agent examples, conversation flows |
 | [API Reference](docs/api.md) | REST endpoints, authentication, examples |
 | [Distribution](docs/distribution.md) | Release packaging and deployment |
-| [Development](DEVELOPMENT.md) | Architecture, contributing guide |
+| [Development & Contributing](DEVELOPMENT.md) | Architecture, how to contribute |
 
 ---
 
@@ -277,22 +316,72 @@ SYNTAGMA_MCP_PORT=43175
 
 ---
 
+## Troubleshooting
+
+**`syntagma` command not found after install**
+```bash
+# Add cargo bin to PATH
+export PATH="$HOME/.cargo/bin:$PATH"
+# Add to ~/.bashrc or ~/.zshrc to persist
+```
+
+**MCP tools not appearing in Claude Code / Cursor**
+
+Restart the editor after running `syntagma install`. If still missing, check the config was written:
+```bash
+cat ~/.claude.json   # Claude Code
+```
+
+**Port already in use**
+```bash
+syntagma mcp --http --port 43176   # use a different port
+```
+
+**Slow first startup**
+
+Syntagma builds a local embedding index on first run. This takes 30–60 seconds and is a one-time cost. Subsequent starts are instant.
+
+**Compilation errors during `cargo install`**
+
+Ensure Rust 1.85+ is installed:
+```bash
+rustup update stable
+rustup show   # confirm active toolchain
+```
+
+> More help: [QUICKSTART.md troubleshooting section](QUICKSTART.md#troubleshooting) · [Open an issue](https://github.com/epicsagas/Syntagma/issues)
+
+---
+
 ## Roadmap
 
-- [ ] **Interactive Tutorials** - In-app guided tours for MCP tools
-- [ ] **Team Metrics** - Aggregate pattern usage across organization
-- [ ] **Custom Entities** - Add team-specific patterns/smells
-- [ ] **IDE Plugins** - VSCode, IntelliJ native integrations
-- [ ] **Multilingual Docs** - Knowledge base in Korean, Japanese, Chinese
+- [ ] **Interactive Tutorials** — In-app guided tours for MCP tools
+- [ ] **Team Metrics** — Aggregate pattern usage across organization
+- [ ] **Custom Entities** — Add team-specific patterns/smells
+- [ ] **IDE Plugins** — VSCode, IntelliJ native integrations
+- [ ] **Multilingual Docs** — Knowledge base in Korean, Japanese, Chinese
 
 ---
 
 ## Contributing
 
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
+Contributions welcome! See [DEVELOPMENT.md](DEVELOPMENT.md) for the architecture overview and contribution guide.
+
+```bash
+# Run tests
+cargo test
+
+# Lint
+cargo clippy -- -D warnings
+
+# Format
+cargo fmt
+```
+
+Questions? [Open a discussion](https://github.com/epicsagas/Syntagma/discussions) or [file an issue](https://github.com/epicsagas/Syntagma/issues).
 
 ---
 
 ## License
 
-APACHE-2.0 License - See [LICENSE](LICENSE) for details.
+Apache 2.0 — see [LICENSE](LICENSE) for details.
