@@ -22,33 +22,209 @@ pub fn select_claude_transport() -> io::Result<ClaudeTransport> {
             port: DEFAULT_MCP_PORT,
         });
     }
+    run_transport_tui()
+}
 
-    println!();
-    println!("MCP transport for Claude Code:");
-    println!("  [1] HTTP  (recommended — persistent server, instant tool calls)");
-    println!("  [2] stdio (spawns a new process per tool call)");
-    print!("Choice [1]: ");
-    io::stdout().flush()?;
+fn run_transport_tui() -> io::Result<ClaudeTransport> {
+    let options: &[(&str, &str)] = &[
+        ("HTTP", "recommended — persistent server, instant tool calls"),
+        ("stdio", "spawns a new process per tool call"),
+    ];
+    let mut cursor = 0usize;
 
-    let mut line = String::new();
-    io::stdin().read_line(&mut line)?;
-    let trimmed = line.trim();
+    enable_raw_mode()?;
+    let mut stdout = io::stdout();
+    execute!(stdout, EnterAlternateScreen, Hide, MoveTo(0, 0), Clear(ClearType::All))?;
 
-    if trimmed == "2" {
-        return Ok(ClaudeTransport::Stdio);
+    struct RawGuard;
+    impl Drop for RawGuard {
+        fn drop(&mut self) {
+            let _ = execute!(io::stdout(), LeaveAlternateScreen, Show);
+            let _ = disable_raw_mode();
+        }
+    }
+    let _guard = RawGuard;
+
+    let transport = loop {
+        draw_transport(&mut stdout, options, cursor)?;
+        stdout.flush()?;
+
+        let ev = event::read()?;
+        let Event::Key(key) = ev else { continue };
+        if key.kind != KeyEventKind::Press { continue }
+
+        match key.code {
+            KeyCode::Up | KeyCode::Char('k') | KeyCode::Char('K') => {
+                cursor = cursor.saturating_sub(1);
+            }
+            KeyCode::Down | KeyCode::Char('j') | KeyCode::Char('J') => {
+                cursor = (cursor + 1).min(options.len() - 1);
+            }
+            KeyCode::Enter => break cursor,
+            KeyCode::Esc | KeyCode::Char('q') | KeyCode::Char('Q') => break 0,
+            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => break 0,
+            _ => {}
+        }
+    };
+
+    drop(_guard);
+
+    if transport == 0 {
+        // HTTP selected — prompt for port in same style
+        let port = prompt_port_tui(DEFAULT_MCP_PORT)?;
+        Ok(ClaudeTransport::Http { port })
+    } else {
+        Ok(ClaudeTransport::Stdio)
+    }
+}
+
+fn draw_transport(w: &mut impl Write, options: &[(&str, &str)], cursor: usize) -> io::Result<()> {
+    queue!(w, MoveTo(0, 0), Clear(ClearType::All))?;
+    queue!(
+        w,
+        SetForegroundColor(ACCENT),
+        SetAttribute(Attribute::Bold),
+        Print(" ╭────────────────────────────────────────────────────────────────────────╮\r\n"),
+        Print(" │ "),
+        ResetColor,
+        SetForegroundColor(ACCENT),
+        SetAttribute(Attribute::Bold),
+        Print("Syntagma"),
+        ResetColor,
+        Print("  ·  MCP transport for Claude Code"),
+        SetForegroundColor(ACCENT),
+        Print("                                    │\r\n"),
+        Print(" ╰────────────────────────────────────────────────────────────────────────╯\r\n"),
+        ResetColor,
+        Print("\r\n"),
+    )?;
+
+    for (i, (name, desc)) in options.iter().enumerate() {
+        let row_hi = i == cursor;
+        let mark = if row_hi { "[•]" } else { "[ ]" };
+        let prefix = if row_hi { " › " } else { "   " };
+
+        if row_hi {
+            queue!(
+                w,
+                SetForegroundColor(HI),
+                SetAttribute(Attribute::Bold),
+                Print(prefix),
+                Print(mark),
+                Print("  "),
+                Print(format!("{name:<8}")),
+                ResetColor,
+                SetForegroundColor(DIM),
+                Print("  "),
+                Print(truncate_desc(desc, 48)),
+                ResetColor,
+                Print("\r\n"),
+            )?;
+        } else {
+            queue!(
+                w,
+                Print(prefix),
+                SetForegroundColor(DIM),
+                Print(mark),
+                ResetColor,
+                Print("  "),
+                Print(format!("{name:<8}")),
+                SetForegroundColor(DIM),
+                Print("  "),
+                Print(truncate_desc(desc, 48)),
+                ResetColor,
+                Print("\r\n"),
+            )?;
+        }
     }
 
-    // 1, Enter, or anything else → HTTP
-    print!("Port [{DEFAULT_MCP_PORT}]: ");
-    io::stdout().flush()?;
-    let mut port_line = String::new();
-    io::stdin().read_line(&mut port_line)?;
-    let port = port_line
-        .trim()
-        .parse::<u16>()
-        .unwrap_or(DEFAULT_MCP_PORT);
+    queue!(
+        w,
+        Print("\r\n"),
+        SetForegroundColor(DIM),
+        Print(" ────────────────────────────────────────────────────────────────────────\r\n"),
+        Print("  ↑/↓ Move   Enter Confirm   Esc/Q Quit\r\n"),
+        ResetColor,
+    )?;
+    Ok(())
+}
 
-    Ok(ClaudeTransport::Http { port })
+fn prompt_port_tui(default: u16) -> io::Result<u16> {
+    enable_raw_mode()?;
+    let mut stdout = io::stdout();
+    execute!(stdout, EnterAlternateScreen, Hide, MoveTo(0, 0), Clear(ClearType::All))?;
+
+    struct RawGuard;
+    impl Drop for RawGuard {
+        fn drop(&mut self) {
+            let _ = execute!(io::stdout(), LeaveAlternateScreen, Show);
+            let _ = disable_raw_mode();
+        }
+    }
+    let _guard = RawGuard;
+
+    let mut input = String::new();
+
+    loop {
+        queue!(stdout, MoveTo(0, 0), Clear(ClearType::All))?;
+        queue!(
+            stdout,
+            SetForegroundColor(ACCENT),
+            SetAttribute(Attribute::Bold),
+            Print(" ╭────────────────────────────────────────────────────────────────────────╮\r\n"),
+            Print(" │ "),
+            ResetColor,
+            SetForegroundColor(ACCENT),
+            SetAttribute(Attribute::Bold),
+            Print("Syntagma"),
+            ResetColor,
+            Print("  ·  MCP HTTP port"),
+            SetForegroundColor(ACCENT),
+            Print("                                                 │\r\n"),
+            Print(" ╰────────────────────────────────────────────────────────────────────────╯\r\n"),
+            ResetColor,
+            Print("\r\n"),
+        )?;
+
+        let display = if input.is_empty() {
+            format!(" › Port: {default}_")
+        } else {
+            format!(" › Port: {input}_")
+        };
+        queue!(
+            stdout,
+            SetForegroundColor(HI),
+            SetAttribute(Attribute::Bold),
+            Print(&display),
+            ResetColor,
+            Print("\r\n\r\n"),
+            SetForegroundColor(DIM),
+            Print(" ────────────────────────────────────────────────────────────────────────\r\n"),
+            Print("  Type a port number · Enter to confirm\r\n"),
+            ResetColor,
+        )?;
+        stdout.flush()?;
+
+        let ev = event::read()?;
+        let Event::Key(key) = ev else { continue };
+        if key.kind != KeyEventKind::Press { continue }
+
+        match key.code {
+            KeyCode::Enter => {
+                let port = input.trim().parse::<u16>().unwrap_or(default);
+                return Ok(port);
+            }
+            KeyCode::Backspace => { input.pop(); }
+            KeyCode::Char(c) if c.is_ascii_digit() => {
+                if input.len() < 5 { input.push(c); }
+            }
+            KeyCode::Esc => return Ok(default),
+            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                return Ok(default);
+            }
+            _ => {}
+        }
+    }
 }
 
 const ACCENT: crossterm::style::Color = crossterm::style::Color::Cyan;
