@@ -11,6 +11,7 @@ WORKDIR /usr/src/syntagma
 RUN apt-get update && apt-get install -y \
     pkg-config \
     libssl-dev \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 COPY Cargo.toml Cargo.lock ./
@@ -21,7 +22,7 @@ RUN cargo build --release
 # ---------------------------------------------------------------------------
 # Runtime stage
 # ---------------------------------------------------------------------------
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 RUN apt-get update && apt-get install -y \
     ca-certificates \

@@ -1,0 +1,445 @@
+<h1 align="center">Syntagma</h1>
+
+<p align="center"><b>सॉफ्टवेयर इंजीनियरिंग के लिए ज्ञान ग्राफ</b></p>
+
+<p align="center"><sub>Syntagma (συν ταγμα) — यूनानी भाषा में "संगठित प्रणाली" या "विवेक" का अर्थ</sub></p>
+
+<p align="center">एक ऑफलाइन-फर्स्ट, सिंगल-बाइनरी ज्ञान ग्राफ जो डिज़ाइन पैटर्न, रिफैक्टरिंग तकनीकों और सॉफ्टवेयर नियमों को semantic संबंधों के माध्यम से जोड़ता है।<br><b>AI एजेंट्स के लिए सर्वप्रथम बनाया गया</b> — सॉफ्टवेयर इंजीनियरिंग विशेषज्ञता को सीधे Claude Code, Cursor और अन्य MCP-संगत उपकरणों में एकीकृत करें।</p>
+
+<p align="center">Rust में लिखा गया · सिंगल बाइनरी · पूरी तरह ऑफलाइन</p>
+
+<p align="center">
+    <a href="https://github.com/epicsagas/Syntagma/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Syntagma/ci.yml?branch=main&label=CI" alt="CI" /></a>
+    <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.95+-orange.svg" alt="rust-lang" /></a>
+    <a href="https://crates.io/crates/syntagma"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
+    <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
+</p>
+
+<p align="center">
+  <a href="../../README.md">English</a> |
+  <a href="README.ja.md">日本語</a> |
+  <a href="README.ko.md">한국어</a> |
+  <a href="README.de.md">Deutsch</a> |
+  <a href="README.fr.md">Français</a> |
+  <a href="README.zh-CN.md">简体中文</a> |
+  <a href="README.zh-TW.md">繁體中文</a> |
+  <a href="README.pt.md">Português</a> |
+  <a href="README.es.md">Español</a> |
+  हिन्दी
+</p>
+
+
+
+---
+
+<img src="../assets/features.png" align="center" width="100%" alt="Syntagma Features Overview" />
+
+---
+
+## त्वरित शुरुआत
+
+> **पूर्वापेक्षाएँ:** [rustup](https://rustup.rs) के माध्यम से Rust 1.95+ · **Rust नहीं है?** [Docker](#विकल्प-3-docker-rust-की-आवश्यकता-नहीं) या [प्री-बिल्ट बाइनरीज़](#विकल्प-4-प्री-बिल्ट-बाइनरीज़-rust-की-आवश्यकता-नहीं) देखें।
+
+**1. Rust इंस्टॉल करें (यदि पहले से इंस्टॉल नहीं है)**
+
+| ऑपरेटिंग सिस्टम | कमांड |
+|----|---------|
+| **macOS / Linux** | `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \| sh` |
+| **Windows** | [`rustup-init.exe`](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe) डाउनलोड करें और चलाएँ |
+
+इंस्टॉल करने के बाद, एक **नया टर्मिनल** खोलें (या macOS/Linux पर `source "$HOME/.cargo/env"` चलाएँ)।
+
+**2. Syntagma इंस्टॉल करें (पहली बिल्ड में 3–5 मिनट लगते हैं)**
+
+```bash
+cargo install --git https://github.com/epicsagas/Syntagma
+```
+
+**3. डेटा सीड करें + अपने AI टूल को कनेक्ट करें**
+
+```bash
+syntagma install claude    # या: cursor, codex, gemini
+```
+
+**4. सत्यापित करें**
+
+```bash
+syntagma --version
+syntagma stats
+```
+
+बस। Claude Code को पुनः आरंभ करें और Syntagma टूल्स तैयार हैं।
+
+### 30 सेकंड में आज़माएँ
+
+**विकल्प A — CLI:** इसे अपने प्रोजेक्ट की किसी भी फ़ाइल पर चलाएँ।
+
+```bash
+syntagma analyze src/domain/engine.rs
+```
+
+```
+✓ 2 smells detected in src/domain/engine.rs
+
+  SMELL-07 (Large Class) — RefactoringRanker, 743 lines
+  → RF-018 Extract Class          priority 0.89  effort: medium
+  → RF-001 Extract Method         priority 0.76  effort: small
+  → Violates: LAW-001 Single Responsibility Principle
+
+  SMELL-01 (Long Method) — rank_refactorings(), 58 lines
+  → RF-001 Extract Method         priority 0.92  effort: small
+  → Violates: LAW-001 SRP, LAW-004 DRY
+```
+
+**विकल्प B — Claude Code:** अपने प्रोजेक्ट की कोई भी फ़ाइल खोलें और स्वाभाविक रूप से पूछें।
+
+```
+Find code smells in this project and suggest refactorings.
+```
+
+Syntagma स्वचालित रूप से सक्रिय होता है — किसी विशेष सिंटैक्स की आवश्यकता नहीं है। यह आपके विवरण को ज्ञान ग्राफ से मैप करता है और रैंक किए गए, उद्धृत करने योग्य परिणाम लौटाता है।
+
+---
+
+## Syntagma क्यों?
+
+LLM पहले से ही जानते हैं कि Strategy पैटर्न क्या है। वे SOLID सिद्धांतों को दोहरा सकते हैं, GoF पैटर्न्स की सूची बना सकते हैं, और कोड स्मेल्स को समझा सकते हैं। तो यह प्रोजेक्ट क्यों मौजूद है?
+
+**अंतर ज्ञान नहीं है — यह संरचित, जुड़ी हुई तर्कशक्ति है।**
+
+जब आप एक LLM से पूछते हैं "मैं God Object को कैसे ठीक करूँ?", तो यह एक उचित उत्तर देता है। लेकिन वह उत्तर वार्तालापों के बीच बदलता है, इसमें ट्रेसेबिलिटी की कमी होती है, और यह समस्या को उसके मूल कारणों या दीर्घकालिक प्रभावों से नहीं जोड़ता है। Syntagma पृथक तथ्यों को एक ट्रैवर्सेबल ग्राफ में बदल देता है जहाँ हर सिफारिश आधारित, उद्धृत करने योग्य, और व्यापक डिज़ाइन परिदृश्य से जुड़ी हुई है।
+
+### केवल LLM को अच्छी तरह प्रॉम्प्ट करने से यह कैसे भिन्न है?
+
+| | अच्छी तरह से तैयार किया गया LLM प्रॉम्प्ट | Syntagma + LLM |
+|---|---|---|
+| सक्रिय पहचान | केवल तभी जब उपयोगकर्ता सही प्रश्न पूछे | समस्या विवरणों पर स्वचालित रूप से सक्रिय होता है |
+| टोकन दक्षता | लंबे स्पष्टीकरण + कई फॉलो-अप राउंड | एक टूल कॉल संरचित परिणाम लौटाता है |
+| संबंध ट्रैवर्सल | अधिकतम एक हॉप, अक्सर काल्पनिक | बहु-हॉप ग्राफ ट्रैवर्सल, सत्यापित |
+| क्रॉस-रेफरेंसिंग | मैन्युअल, त्रुटि-प्रवण | 201 semantic संबंधों के माध्यम से स्वचालित |
+| संगतता | वार्तालापों के बीच भिन्न | हर बार समान संरचित उत्तर |
+| उद्धरणीयता | "मुझे लगता है कि आपको Extract Class उपयोग करना चाहिए" | "Extract Class (RF-018), प्राथमिकता 0.89" |
+| ऑफलाइन / एयर-गैप्ड | सर्वोत्तम परिणामों के लिए इंटरनेट आवश्यक | पूरी तरह स्थानीय, सिंगल बाइनरी |
+
+### यह कब उपयोगी है?
+
+<details>
+<summary><b>1. जब आपका AI एजेंट समस्याओं की सक्रिय पहचान करे, पूछे जाने का इंतज़ार न करे</b></summary>
+
+MCP एकीकरण समस्या विवरणों पर स्वचालित रूप से सक्रिय होता है। जब एक उपयोगकर्ता कहता है "यह क्लास बहुत कुछ करती है", तो एजेंट को God Object के बारे में पूछने की ज़रूरत नहीं है — Syntagma शिकायत को `SMELL-03` से मैप करता है, रैंक किए गए रिफैक्टरिंग्स प्रस्तुत करता है, और उल्लंघन को मूल सिद्धांतों तक ट्रेस करता है। यह एक अस्पष्ट शिकायत को एक संरचित सुधार योजना में बदल देता है।
+</details>
+
+<details>
+<summary><b>2. जब आप टोकन खपत कम करना चाहते हैं — स्पष्टीकरण पर नहीं खर्च करना चाहते</b></summary>
+
+Syntagma के बिना, एक LLM "मैं God Object को कैसे ठीक करूँ?" का उत्तर स्मेल को समझाकर, रिफैक्टरिंग्स की सूची बनाकर, SOLID सिद्धांतों का वर्णन करके, और प्रत्येक विकल्प से गुज़रकर देता है — प्रति उत्तर सैकड़ों टोकन। Syntagma के साथ, एक MCP टूल कॉल `SMELL-03 → RF-018 (0.89) → LAW-001` लौटाता है। समान विशेषज्ञता टोकन बजट के एक अंश में।
+</details>
+
+<details>
+<summary><b>3. जब आपको कोड विश्लेषण सुधार से जुड़ा हुआ चाहिए — केवल पहचान नहीं</b></summary>
+
+SonarQube जैसे उपकरण स्मेल्स की पहचान करते हैं। LLM पैटर्न्स सुझा सकते हैं। Syntagma दोनों करता है और उन्हें जोड़ता है: Long Method की पहचान करें → यह जो नियम तोड़ता है उन्हें ट्रेस करें → उन रिफैक्टरिंग्स को रैंक करें जो इसे हल करते हैं → दिखाएँ कि कौन से पैटर्न्स उन रिफैक्टरिंग्स को लागू करते हैं।
+</details>
+
+<details>
+<summary><b>4. जब पृथक पैटर्न ज्ञान पर्याप्त नहीं है — आपको संबंधों की आवश्यकता है</b></summary>
+
+Extract Method क्या करता है, यह जानना आधारभूत बात है। यह जानना कि यह Long Method (SMELL-01) को *हल करता है*, जो Single Responsibility (LAW-001) का *उल्लंघन करता है*, जिसे Facade Pattern (DP-012) *लागू करता है* — यह एक तर्क श्रृंखला है जिसे एक LLM स्वतंत्र रूप से विश्वसनीय ढंग से नहीं बना सकता। Syntagma के 201 semantic संबंध AI एजेंट्स को इन पथों को नियतात्मक रूप से ट्रैवर्स करने देते हैं।
+</details>
+
+<details>
+<summary><b>5. जब आप आर्किटेक्चर निर्णय ले रहे हैं और राय नहीं, साक्ष्य चाहिए</b></summary>
+
+"क्या मुझे माइक्रोसर्विसेज़ का उपयोग करना चाहिए?" — Syntagma प्रश्न को Conway's Law (LAW-017), SRP (LAW-001), और Strangler Fig पैटर्न (DP-026) से जोड़ता है, फिर दिखाता है कि वे कैसे संबंधित हैं। निर्णय इंजीनियरिंग नियमों तक ट्रेसेबल हो जाते हैं, ब्लॉग पोस्ट तक नहीं।
+</details>
+
+<details>
+<summary><b>6. जब आपको संगत, उद्धृत करने योग्य इंजीनियरिंग सलाह चाहिए — काल्पनिक सिफारिशें नहीं</b></summary>
+
+हर निष्कर्ष स्पष्ट एंटिटी IDs (`DP-005`, `RF-001`, `LAW-021`) को संदर्भित करता है। सिफारिशें प्राथमिकता स्कोर और प्रयास अनुमानों के साथ आती हैं। समान क्वेरी हमेशा समान संरचित उत्तर लौटाती है।
+</details>
+
+<details>
+<summary><b>7. जब आप एक एयर-गैप्ड या प्रतिबंधित नेटवर्क में काम कर रहे हैं</b></summary>
+
+Syntagma पूरी तरह से ऑफलाइन चलता है: सिंगल बाइनरी, स्थानीय SQLite डेटाबेस, fastembed (ONNX Runtime) के माध्यम से स्थानीय एम्बेडिंग्स। कोई टेलीमेट्री नहीं, कोई फ़ोन-होम नहीं, कोई बाहरी API कॉल नहीं। आपका कोड और विश्लेषण परिणाम कभी भी आपकी मशीन से बाहर नहीं जाते।
+</details>
+
+---
+
+## इंस्टॉलेशन
+
+### विकल्प 1: एक कमांड (अनुशंसित)
+
+```bash
+# पहली बिल्ड में 3–5 मिनट लगते हैं — यह सामान्य है
+cargo install --git https://github.com/epicsagas/Syntagma
+syntagma install claude    # डेटा सीड करता है + MCP कनेक्ट करता है + एजेंट्स इंस्टॉल करता है
+```
+
+> `syntagma install claude` के बाद, MCP टूल्स और एजेंट्स के दिखने के लिए **Claude Code को पुनः आरंभ करें**।
+
+### विकल्प 2: सोर्स से
+
+```bash
+git clone https://github.com/epicsagas/Syntagma.git
+cd Syntagma && cargo build --release
+```
+
+फिर अपने प्लेटफ़ॉर्म के लिए बाइनरी चलाएँ:
+
+| प्लेटफ़ॉर्म | कमांड |
+|----------|---------|
+| **macOS / Linux** | `./target/release/syntagma install --local claude` |
+| **Windows** | `.\target\release\syntagma.exe install --local claude` |
+
+### विकल्प 3: Docker (Rust की आवश्यकता नहीं)
+
+```bash
+docker-compose up -d
+```
+
+अपने MCP कॉन्फ़िग फ़ाइल में जोड़ें:
+
+| टूल | कॉन्फ़िग फ़ाइल पथ |
+|------|-----------------|
+| Claude Code | `~/.claude.json` |
+| Cursor | `.cursor/mcp.json` |
+| VS Code (Copilot) | `.vscode/mcp.json` |
+
+```json
+{
+  "mcpServers": {
+    "syntagma": {
+      "command": "docker",
+      "args": ["exec", "-i", "syntagma-api", "syntagma", "mcp"]
+    }
+  }
+}
+```
+
+### विकल्प 4: प्री-बिल्ट बाइनरीज़ (Rust की आवश्यकता नहीं)
+
+[GitHub Releases](https://github.com/epicsagas/Syntagma/releases) से अपने प्लेटफ़ॉर्म के लिए नवीनतम बाइनरी डाउनलोड करें:
+
+| प्लेटफ़ॉर्म | फ़ाइल |
+|----------|------|
+| **macOS** (Apple Silicon) | `syntagma-aarch64-apple-darwin.tar.gz` |
+| **macOS** (Intel) | `syntagma-x86_64-apple-darwin.tar.gz` |
+| **Linux** (x86_64) | `syntagma-x86_64-unknown-linux-gnu.tar.gz` |
+| **Linux** (ARM64) | `syntagma-aarch64-unknown-linux-gnu.tar.gz` |
+| **Windows** (x86_64) | `syntagma-x86_64-pc-windows-msvc.zip` |
+
+```bash
+# macOS / Linux
+tar xzf syntagma-*.tar.gz
+sudo mv syntagma /usr/local/bin/
+
+# Windows — ZIP निकालें और syntagma.exe को अपने PATH में जोड़ें
+```
+
+फिर इंस्टॉल करें:
+```bash
+syntagma install claude    # या: cursor, codex, gemini
+```
+
+### सत्यापित करें
+
+```bash
+syntagma --version
+syntagma stats
+syntagma explore "strategy pattern"    # ज्ञान ग्राफ का अन्वेषण करें
+```
+
+---
+
+## MCP टूल्स और एजेंट्स
+
+> **MCP क्या है?** [Model Context Protocol](https://modelcontextprotocol.io) एक खुला मानक है जो AI टूल्स को बाहरी सेवाओं को कॉल करने देता है। Syntagma अपने ज्ञान ग्राफ को MCP टूल्स के रूप में प्रदर्शित करता है जिन्हें Claude Code, Cursor और अन्य संगत एडिटर्स स्वचालित रूप से कॉल कर सकते हैं।
+
+### 6 MCP टूल्स
+
+| टूल | उद्देश्य | उपयोग उदाहरण |
+|------|---------|-------------|
+| **`search_knowledge`** | सभी एंटिटीज़ में semantic खोज | "रिट्री लॉजिक के लिए पैटर्न खोजें" |
+| **`get_entity`** | ID द्वारा विशिष्ट एंटिटी का विवरण प्राप्त करें | "Strategy Pattern (DP-023) समझाएँ" |
+| **`get_neighbors`** | संबंधित एंटिटीज़ का अन्वेषण करें | "कौन सी रिफैक्टरिंग्स Long Method को हल करती हैं?" |
+| **`find_path`** | दो एंटिटीज़ के बीच संबंध खोजें | "SRP, Extract Class से कैसे संबंधित है?" |
+| **`analyze_code`** | regex/AST विश्लेषण द्वारा कोड स्मेल्स की पहचान | "इस पेमेंट वैलिडेशन कोड की समीक्षा करें" |
+| **`suggest_refactorings`** | रैंक किए गए रिफैक्टरिंग सुझाव | "मुझे इस क्लास में क्या रिफैक्टर करना चाहिए?" |
+
+### 4 विशेषज्ञ एजेंट्स (जुड़ा हुआ नेटवर्क)
+
+एजेंट्स एक साथ मिलकर काम करते हैं — प्रत्येक विश्लेषण **अगले चरण** विकल्पों के साथ समाप्त होता है जो अन्य एजेंट्स को हस्तांतरित करते हैं।
+
+| एजेंट | कब उपयोग करें | मुख्य क्षमता | हस्तांतरित करता है |
+|-------|-------------|----------------|--------------|
+| **`code-reviewer`** | कोड स्मेल्स, SOLID उल्लंघन | कॉज़ेशन विश्लेषण (मूल कारण → दीर्घकालिक लक्षण) | advisor, architecture-analyst, refactoring-expert |
+| **`syntagma-advisor`** | इंजीनियरिंग निर्णय, ट्रेड-ऑफ़ | बहु-एंटिटी ट्रेड-ऑफ़ श्रृंखलाएँ कार्य योजनाओं के साथ | code-reviewer, architecture-analyst, researcher |
+| **`syntagma-researcher`** | ज्ञान ग्राफ अन्वेषण | पैटर्न्स, नियमों, स्मेल्स के बीच संबंध मानचित्र | advisor, code-reviewer |
+| **`architecture-analyst`** | नियमों के विरुद्ध आर्किटेक्चर मूल्यांकन | जोखिम-भारित मूल्यांकन के साथ अनुपालन स्कोरिंग | advisor, code-reviewer, researcher |
+
+**वर्कफ़्लो उदाहरण**: `code-reviewer` God Object का पता लगाता है → कॉज़ेशन को 3 दीर्घकालिक स्मेल्स तक ट्रेस करता है → "RF-018 लागू करें" (→ refactoring-expert) या "मूल कारण का गहन विश्लेषण" (→ syntagma-advisor) या "आर्किटेक्चर जाँच" (→ architecture-analyst) प्रस्तुत करता है।
+
+[पूर्ण MCP एकीकरण गाइड](docs/mcp-integration-guide.md)
+
+---
+
+## CLI उपयोग
+
+```bash
+# स्मेल्स के लिए कोड विश्लेषण करें
+syntagma analyze my_code.py --language python --json
+syntagma infer my_code.py
+
+# ज्ञान ग्राफ का अन्वेषण करें
+syntagma explore "strategy pattern"
+syntagma graph path DP-005 RF-001   # उदाहरण: Factory Method → Extract Method
+
+# RAG इंडेक्स बनाएँ
+syntagma build
+
+# सर्वर प्रारंभ करें
+syntagma api              # :8000 पर REST API
+syntagma mcp --http       # :43175 पर MCP सर्वर
+syntagma web --port 8080  # Web UI (इंटरैक्टिव ग्राफ एक्सप्लोरर)
+
+# वितरण पैकेजिंग
+syntagma dist --out-dir release/
+```
+
+---
+
+## सुविधाएँ
+
+### ज्ञान आधार
+- **22 GoF डिज़ाइन पैटर्न्स** — वास्तविक दुनिया के उदाहरणों के साथ पूर्ण सूचीपत्र
+- **66 रिफैक्टरिंग तकनीकें** — Fowler की सूची से कोड नमूनों के साथ
+- **56 सॉफ्टवेयर नियम और सिद्धांत** — SOLID, Conway's Law, CAP प्रमेय, आदि
+- **17 कोड स्मेल प्रकार** — Long Method, God Object, Feature Envy, आदि ¹
+- **201 Semantic संबंध** — "हल करता है", "लागू करता है", "उल्लंघन करता है", "संबंधित है"
+
+### AI-प्रथम डिज़ाइन
+- **MCP एकीकरण** — उच्च-निष्ठा AI एजेंट इंटरैक्शन के लिए 6 विशेष टूल्स
+- **4 जुड़े हुए एजेंट्स** — कॉज़ेशन विश्लेषण, इंटरैक्टिव फॉलो-अप्स, और क्रॉस-एजेंट हैंडऑफ़
+- **10 भाषा समर्थन** — Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin
+- **नियतात्मक विश्लेषण** — AST-आधारित Python पहचान + regex-आधारित बहु-भाषा समर्थन
+- **उद्धृत करने योग्य ज्ञान** — हर निष्कर्ष स्पष्ट एंटिटी IDs (जैसे, `RF-001`, `LAW-021`) से जुड़ा है
+- **वर्कफ़्लो श्रृंखलाएँ** — बहु-चरण पाइपलाइन: कोड समीक्षा → कॉज़ेशन विश्लेषण → रिफैक्टरिंग → सत्यापन
+
+### प्रोडक्शन तैयार
+- **REST API** — प्रमाणीकरण और रेट लिमिटिंग के साथ 17 एंडपॉइंट्स
+- **सिंगल बाइनरी** — कोई रनटाइम निर्भरता नहीं, क्रॉस-प्लेटफ़ॉर्म
+- **स्थानीय एम्बेडिंग्स** — शून्य-कॉन्फ़िगरेशन semantic खोज के लिए fastembed (ONNX Runtime)
+- **इंटरैक्टिव विज़ुअलाइज़ेशन** — Web-आधारित ग्राफ एक्सप्लोरर (`syntagma web`)
+- **Docker समर्थन** — हेल्थ चेक्स के साथ मल्टी-स्टेज बिल्ड
+- **मॉनिटरिंग** — Prometheus मेट्रिक्स एंडपॉइंट
+
+> ¹ Duplicate Code (SMELL-13) और Shotgun Surgery (SMELL-09) को बहु-फ़ाइल संदर्भ की आवश्यकता होती है और सिंगल-फ़ाइल मोड में छोड़ दिए जाते हैं।
+
+---
+
+## दस्तावेज़ीकरण
+
+| दस्तावेज़ | विवरण |
+|----------|-------------|
+| [त्वरित शुरुआत](QUICKSTART.md) | चरण-दर-चरण सेटअप, पहला रन, समस्या निवारण |
+| [MCP एकीकरण गाइड](docs/mcp-integration-guide.md) | टूल संदर्भ, एजेंट उदाहरण, वार्तालाप प्रवाह |
+| [API संदर्भ](docs/api.md) | REST एंडपॉइंट्स, प्रमाणीकरण, उदाहरण |
+| [वितरण](docs/distribution.md) | रिलीज़ पैकेजिंग और परिनियोजन |
+| [विकास और योगदान](DEVELOPMENT.md) | आर्किटेक्चर, योगदान कैसे करें |
+| [बदलाव सूची](CHANGELOG.md) | रिलीज़ इतिहास और संस्करण नोट्स |
+
+---
+
+## कॉन्फ़िगरेशन
+
+### पर्यावरण चर
+
+```bash
+# डेटा स्थान
+SYNTAGMA_DATA_DIR=~/.syntagma/data
+SYNTAGMA_DB_PATH=~/.syntagma/db/syntagma.db
+
+# API सर्वर
+SYNTAGMA_API_HOST=0.0.0.0
+SYNTAGMA_API_PORT=8000
+SYNTAGMA_API_KEY=your-secret-key
+
+# MCP सर्वर
+SYNTAGMA_MCP_HOST=127.0.0.1
+SYNTAGMA_MCP_PORT=43175
+```
+
+---
+
+## समस्या निवारण
+
+**इंस्टॉल के बाद `syntagma` कमांड नहीं मिल रहा है**
+
+| प्लेटफ़ॉर्म | समाधान |
+|----------|-----|
+| **macOS / Linux** | `export PATH="$HOME/.cargo/bin:$PATH"` — स्थायी बनाने के लिए `~/.bashrc` या `~/.zshrc` में जोड़ें |
+| **Windows** | `%USERPROFILE%\.cargo\bin` को अपने सिस्टम PATH में जोड़ें, या एक नया टर्मिनल खोलें |
+
+**MCP टूल्स Claude Code / Cursor में नहीं दिख रहे हैं**
+
+`syntagma install` चलाने के बाद एडिटर को पुनः आरंभ करें। यदि अभी भी नहीं दिख रहे हैं, तो जाँचें कि कॉन्फ़िग लिखा गया है:
+```bash
+cat ~/.claude.json   # Claude Code
+```
+
+**पोर्ट पहले से उपयोग में है**
+```bash
+syntagma mcp --http --port 43176   # एक भिन्न पोर्ट का उपयोग करें
+```
+
+**पहली बार शुरू करने में धीमापन**
+
+Syntagma पहली बार चलने पर एक स्थानीय एम्बेडिंग इंडेक्स बनाता है। इसमें 30–60 सेकंड लगते हैं और यह एक बार की लागत है। बाद के शुरू होने तुरंत होते हैं।
+
+**`cargo install` के दौरान संकलन त्रुटियाँ**
+
+सुनिश्चित करें कि Rust 1.95+ इंस्टॉल है:
+```bash
+rustup update stable
+rustup show   # सक्रिय टूलचेन की पुष्टि करें
+```
+
+> अधिक सहायता: [QUICKSTART.md समस्या निवारण अनुभाग](QUICKSTART.md#troubleshooting) · [एक इश्यू खोलें](https://github.com/epicsagas/Syntagma/issues)
+
+---
+
+## रोडमैप
+
+- [ ] **इंटरैक्टिव ट्यूटोरियल** — MCP टूल्स के लिए इन-ऐप गाइडेड टूर
+- [ ] **टीम मेट्रिक्स** — संगठन में पैटर्न उपयोग का समेकन
+- [ ] **कस्टम एंटिटीज़** — टीम-विशिष्ट पैटर्न्स/स्मेल्स जोड़ें
+- [ ] **IDE प्लगइन्स** — VSCode, IntelliJ नेटिव एकीकरण
+- [ ] **बहुभाषी दस्तावेज़** — कोरियाई, जापानी, चीनी में ज्ञान आधार
+
+---
+
+## योगदान
+
+योगदान का स्वागत है! आर्किटेक्चर अवलोकन और योगदान गाइड के लिए [DEVELOPMENT.md](DEVELOPMENT.md) देखें।
+
+```bash
+# टेस्ट चलाएँ
+cargo test
+
+# लिंट
+cargo clippy -- -D warnings
+
+# फ़ॉर्मेट
+cargo fmt
+```
+
+प्रश्न हैं? [एक चर्चा खोलें](https://github.com/epicsagas/Syntagma/discussions) या [एक इश्यू दर्ज करें](https://github.com/epicsagas/Syntagma/issues)।
+
+---
+
+## लाइसेंस
+
+Apache 2.0 — विवरण के लिए [LICENSE](LICENSE) देखें।
