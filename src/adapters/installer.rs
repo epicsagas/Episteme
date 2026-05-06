@@ -4,10 +4,22 @@ use std::process::Command;
 
 use serde_json::{json, Value};
 
+/// stdio config for Cursor, Codex, Gemini, OpenCode, Cline.
 fn mcp_server_config() -> Value {
     json!({
         "command": "syntagma-mcp",
         "args": []
+    })
+}
+
+/// HTTP transport config for Claude Code.
+/// Runs `syntagma mcp --http --port <port>` as a subprocess; Claude Code connects via HTTP.
+/// Port is read from config (default 43175, overridable via SYNTAGMA_MCP_PORT or config.yaml).
+fn claude_mcp_server_config(port: u16) -> Value {
+    json!({
+        "command": "syntagma",
+        "args": ["mcp", "--http", "--port", port.to_string()],
+        "type": "http"
     })
 }
 
@@ -16,6 +28,10 @@ pub fn install_claude(dry_run: bool) -> Result<Vec<String>, String> {
     let home = dirs_home();
     let claude_json = home.join(".claude.json");
     let mut messages = Vec::new();
+
+    let port = crate::adapters::config::SyntagmaConfig::load()
+        .map(|c| c.mcp_port)
+        .unwrap_or(43175);
 
     let mut config = read_json_file(&claude_json);
     let map = config
@@ -31,11 +47,11 @@ pub fn install_claude(dry_run: bool) -> Result<Vec<String>, String> {
     if servers.contains_key("syntagma") {
         messages.push("Claude Code: MCP already configured".to_owned());
     } else {
-        servers.insert("syntagma".to_owned(), mcp_server_config());
+        servers.insert("syntagma".to_owned(), claude_mcp_server_config(port));
         if !dry_run {
             write_json_file(&claude_json, &config)?;
         }
-        messages.push("Claude Code: MCP config added".to_owned());
+        messages.push(format!("Claude Code: MCP config added (HTTP, port {port})"));
     }
 
     Ok(messages)
@@ -412,6 +428,17 @@ mod tests {
     }
 
     #[test]
+    fn claude_mcp_server_config_uses_http_transport() {
+        let config = claude_mcp_server_config(43175);
+        assert_eq!(config["command"], "syntagma");
+        assert_eq!(config["type"], "http");
+        assert_eq!(config["args"][0], "mcp");
+        assert_eq!(config["args"][1], "--http");
+        assert_eq!(config["args"][2], "--port");
+        assert_eq!(config["args"][3], "43175");
+    }
+
+    #[test]
     fn read_json_file_missing_returns_empty_object() {
         let dir = TempDir::new().unwrap();
         let path = dir.path().join("nonexistent.json");
@@ -445,11 +472,12 @@ mod tests {
             .or_insert_with(|| json!({}));
         let servers = mcp_servers.as_object_mut().unwrap();
         assert!(!servers.contains_key("syntagma"));
-        servers.insert("syntagma".to_owned(), mcp_server_config());
+        servers.insert("syntagma".to_owned(), claude_mcp_server_config(43175));
         write_json_file(&path, &config).unwrap();
 
         let reloaded = read_json_file(&path);
-        assert!(reloaded["mcpServers"]["syntagma"]["command"] == "syntagma-mcp");
+        assert_eq!(reloaded["mcpServers"]["syntagma"]["command"], "syntagma");
+        assert_eq!(reloaded["mcpServers"]["syntagma"]["type"], "http");
     }
 
     #[test]
