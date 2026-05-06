@@ -1,6 +1,6 @@
 use crate::ports::embeddings::EmbeddingProvider;
 use fastembed::{EmbeddingModel, TextEmbedding, TextInitOptions};
-use std::sync::Mutex;
+use std::sync::{Mutex, OnceLock};
 use tracing::warn;
 
 /// Lightweight local embedding provider.
@@ -10,29 +10,37 @@ use tracing::warn;
 /// better semantic separation than zero-vectors while remaining dependency-light.
 pub struct LocalEmbeddingProvider {
     dim: usize,
-    backend: LocalBackend,
 }
 
-enum LocalBackend {
-    FastEmbed(Box<Mutex<TextEmbedding>>),
-    HashOnly,
-}
+// Shared model instance — loaded once per process on first embed() call or explicit warmup().
+static MODEL: OnceLock<Mutex<Option<TextEmbedding>>> = OnceLock::new();
 
-impl LocalEmbeddingProvider {
-    pub fn new(dim: usize) -> Self {
-        let dim = dim.max(8);
-        let backend = match TextEmbedding::try_new(
+fn model() -> &'static Mutex<Option<TextEmbedding>> {
+    MODEL.get_or_init(|| {
+        let inner = match TextEmbedding::try_new(
             TextInitOptions::new(EmbeddingModel::AllMiniLML6V2).with_show_download_progress(false),
         ) {
-            Ok(model) => LocalBackend::FastEmbed(Box::new(Mutex::new(model))),
+            Ok(m) => Some(m),
             Err(err) => {
                 warn!(
                     "Failed to initialize local embedding model, falling back to hash embeddings: {err}"
                 );
-                LocalBackend::HashOnly
+                None
             }
         };
-        Self { dim, backend }
+        Mutex::new(inner)
+    })
+}
+
+impl LocalEmbeddingProvider {
+    pub fn new(dim: usize) -> Self {
+        Self { dim: dim.max(8) }
+    }
+
+    /// Pre-load the embedding model. Call once at install/startup so the first
+    /// MCP tool call does not pay the cold-start cost.
+    pub fn warmup() {
+        let _ = model();
     }
 
     fn hash_embed(&self, text: &str) -> Vec<f32> {
@@ -64,14 +72,13 @@ impl LocalEmbeddingProvider {
     }
 
     fn embed_with_fastembed(&self, text: &str) -> Result<Vec<f32>, String> {
-        let mut model = match &self.backend {
-            LocalBackend::FastEmbed(model) => model
-                .lock()
-                .map_err(|_| "local embedding model lock poisoned".to_owned())?,
-            LocalBackend::HashOnly => return Ok(self.hash_embed(text)),
+        let mut guard = model()
+            .lock()
+            .map_err(|_| "local embedding model lock poisoned".to_owned())?;
+        let Some(m) = guard.as_mut() else {
+            return Ok(self.hash_embed(text));
         };
-
-        let vectors = model
+        let vectors = m
             .embed(vec![text], Some(1))
             .map_err(|e| format!("fastembed inference failed: {e}"))?;
         vectors
@@ -98,26 +105,24 @@ impl EmbeddingProvider for LocalEmbeddingProvider {
 
     fn embed_batch(&self, texts: &[&str], batch_size: usize) -> Result<Vec<Vec<f32>>, String> {
         let chunk_size = batch_size.max(1);
-        match &self.backend {
-            LocalBackend::FastEmbed(model) => {
-                let mut model = model
-                    .lock()
-                    .map_err(|_| "local embedding model lock poisoned".to_owned())?;
-                let mut out = Vec::with_capacity(texts.len());
-                for chunk in texts.chunks(chunk_size) {
-                    let vectors = model
-                        .embed(chunk, Some(chunk_size))
-                        .map_err(|e| format!("fastembed inference failed: {e}"))?;
-                    out.extend(vectors);
-                }
-                if out.len() == texts.len() {
-                    Ok(out)
-                } else {
-                    warn!("Falling back to hash embeddings due to fastembed batch size mismatch");
-                    Ok(texts.iter().map(|t| self.hash_embed(t)).collect())
-                }
-            }
-            LocalBackend::HashOnly => Ok(texts.iter().map(|t| self.hash_embed(t)).collect()),
+        let mut guard = model()
+            .lock()
+            .map_err(|_| "local embedding model lock poisoned".to_owned())?;
+        let Some(m) = guard.as_mut() else {
+            return Ok(texts.iter().map(|t| self.hash_embed(t)).collect());
+        };
+        let mut out = Vec::with_capacity(texts.len());
+        for chunk in texts.chunks(chunk_size) {
+            let vectors = m
+                .embed(chunk, Some(chunk_size))
+                .map_err(|e| format!("fastembed inference failed: {e}"))?;
+            out.extend(vectors);
+        }
+        if out.len() == texts.len() {
+            Ok(out)
+        } else {
+            warn!("Falling back to hash embeddings due to fastembed batch size mismatch");
+            Ok(texts.iter().map(|t| self.hash_embed(t)).collect())
         }
     }
 }
