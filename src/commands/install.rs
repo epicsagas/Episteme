@@ -140,7 +140,7 @@ pub fn cmd_install(
         io::stdout().flush().ok();
         let mut line = String::new();
         io::stdin().read_line(&mut line).ok();
-        if line.trim().to_ascii_lowercase() != "n" {
+        if !line.trim().eq_ignore_ascii_case("n") {
             match syntagma::adapters::service::enable_launchd(true) {
                 Ok(msg) => println!("  {msg}"),
                 Err(e) => eprintln!("  Warning: {e}"),
@@ -296,49 +296,6 @@ pub fn detect_installed_tools() -> std::collections::HashSet<&'static str> {
         installed.insert("codex");
     }
     installed
-}
-
-fn prompt_yes_no(prompt: &str, default_yes: bool) -> Result<bool> {
-    print!("{prompt}");
-    std::io::stdout().flush()?;
-    let mut line = String::new();
-    std::io::stdin().read_line(&mut line)?;
-    let answer = line.trim().to_ascii_lowercase();
-    if answer.is_empty() {
-        return Ok(default_yes);
-    }
-    Ok(matches!(answer.as_str(), "y" | "yes"))
-}
-
-fn prompt_with_default(label: &str, default: &str) -> Result<String> {
-    print!("{label} [{default}]: ");
-    std::io::stdout().flush()?;
-    let mut line = String::new();
-    std::io::stdin().read_line(&mut line)?;
-    let value = line.trim();
-    if value.is_empty() {
-        Ok(default.to_owned())
-    } else {
-        Ok(value.to_owned())
-    }
-}
-
-fn prompt_bool_with_default(label: &str, default: bool) -> Result<bool> {
-    let value = prompt_with_default(label, if default { "true" } else { "false" })?;
-    Ok(!matches!(
-        value.trim().to_ascii_lowercase().as_str(),
-        "false" | "0" | "no" | "n"
-    ))
-}
-
-fn prompt_u16_with_default(label: &str, default: u16) -> Result<u16> {
-    let value = prompt_with_default(label, &default.to_string())?;
-    Ok(value.parse::<u16>().unwrap_or(default))
-}
-
-fn prompt_u64_with_default(label: &str, default: u64) -> Result<u64> {
-    let value = prompt_with_default(label, &default.to_string())?;
-    Ok(value.parse::<u64>().unwrap_or(default))
 }
 
 fn upsert_config_yaml(
