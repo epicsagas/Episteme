@@ -59,6 +59,8 @@ pub fn cmd_install(
     }
 
     // --- Tool installation ---
+    use syntagma::adapters::installer::ClaudeTransport;
+
     let mut selected: Vec<String> = if all || tools.iter().any(|t| t == "all") {
         vec!["claude", "cursor", "codex", "gemini", "opencode", "cline"]
             .into_iter()
@@ -105,9 +107,18 @@ pub fn cmd_install(
     selected.sort();
     selected.dedup();
 
+    // --- Claude transport selection (TTY only; non-TTY defaults to HTTP + 43175) ---
+    let claude_transport: ClaudeTransport =
+        if selected.contains(&"claude".to_string()) && io::stdin().is_terminal() {
+            syntagma::adapters::install_wizard::select_claude_transport()
+                .map_err(|e| anyhow::anyhow!(e))?
+        } else {
+            ClaudeTransport::default()
+        };
+
     for tool in &selected {
         let result = match tool.as_str() {
-            "claude" => installer::install_claude(dry_run),
+            "claude" => installer::install_claude(dry_run, &claude_transport),
             "cursor" => installer::install_cursor(dry_run),
             "codex" => installer::install_codex(dry_run),
             "gemini" => installer::install_gemini(dry_run),
@@ -125,15 +136,25 @@ pub fn cmd_install(
         }
     }
 
-    syntagma::adapters::telemetry::track_install_completed(selected.len());
-
-    // Pre-load the embedding model so the first MCP tool call is instant.
-    if !dry_run {
-        print!("\nWarm up embedding model (one-time, ~30s)... ");
-        std::io::stdout().flush().ok();
-        syntagma::adapters::local_embeddings::LocalEmbeddingProvider::warmup();
-        println!("done.");
+    // --- Enable launchd for HTTP transport ---
+    if selected.contains(&"claude".to_string())
+        && matches!(claude_transport, ClaudeTransport::Http { .. })
+        && !dry_run
+        && io::stdin().is_terminal()
+    {
+        print!("\nEnable syntagma MCP as login item and start now? [Y/n]: ");
+        io::stdout().flush().ok();
+        let mut line = String::new();
+        io::stdin().read_line(&mut line).ok();
+        if line.trim().to_ascii_lowercase() != "n" {
+            match syntagma::adapters::service::enable_launchd(true) {
+                Ok(msg) => println!("  {msg}"),
+                Err(e) => eprintln!("  Warning: {e}"),
+            }
+        }
     }
+
+    syntagma::adapters::telemetry::track_install_completed(selected.len());
 
     Ok(())
 }

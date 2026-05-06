@@ -33,7 +33,7 @@ Note:
 ### 1. Install Syntagma
 
 ```bash
-# Install (requires Rust 1.85+)
+# Install (requires Rust 1.95+)
 cargo install --git https://github.com/epicsagas/Syntagma
 
 # Install agents and MCP server into Claude Code

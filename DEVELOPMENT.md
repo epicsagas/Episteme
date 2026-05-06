@@ -110,7 +110,7 @@ src/
 ## Development Setup
 
 ```bash
-# Clone and build (requires Rust 1.85+)
+# Clone and build (requires Rust 1.95+)
 git clone https://github.com/epicsagas/Syntagma.git
 cd Syntagma
 cargo build

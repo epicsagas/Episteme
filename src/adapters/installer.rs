@@ -4,7 +4,32 @@ use std::process::Command;
 
 use serde_json::{json, Value};
 
-/// stdio config for Cursor, Codex, Gemini, OpenCode, Cline.
+/// Transport configuration for Claude Code MCP integration.
+#[derive(Debug, Clone, PartialEq)]
+pub enum ClaudeTransport {
+    Http { port: u16 },
+    Stdio,
+}
+
+impl Default for ClaudeTransport {
+    fn default() -> Self {
+        ClaudeTransport::Http { port: 43175 }
+    }
+}
+
+fn claude_mcp_server_config(transport: &ClaudeTransport) -> Value {
+    match transport {
+        ClaudeTransport::Http { port } => json!({
+            "type": "http",
+            "url": format!("http://127.0.0.1:{port}/mcp")
+        }),
+        ClaudeTransport::Stdio => json!({
+            "command": "syntagma",
+            "args": ["mcp"]
+        }),
+    }
+}
+
 fn mcp_server_config() -> Value {
     json!({
         "command": "syntagma-mcp",
@@ -12,26 +37,11 @@ fn mcp_server_config() -> Value {
     })
 }
 
-/// HTTP transport config for Claude Code.
-/// Runs `syntagma mcp --http --port <port>` as a subprocess; Claude Code connects via HTTP.
-/// Port is read from config (default 43175, overridable via SYNTAGMA_MCP_PORT or config.yaml).
-fn claude_mcp_server_config(port: u16) -> Value {
-    json!({
-        "command": "syntagma",
-        "args": ["mcp", "--http", "--port", port.to_string()],
-        "type": "http"
-    })
-}
-
 /// Install MCP config for Claude Code (~/.claude.json).
-pub fn install_claude(dry_run: bool) -> Result<Vec<String>, String> {
+pub fn install_claude(dry_run: bool, transport: &ClaudeTransport) -> Result<Vec<String>, String> {
     let home = dirs_home();
     let claude_json = home.join(".claude.json");
     let mut messages = Vec::new();
-
-    let port = crate::adapters::config::SyntagmaConfig::load()
-        .map(|c| c.mcp_port)
-        .unwrap_or(43175);
 
     let mut config = read_json_file(&claude_json);
     let map = config
@@ -47,26 +57,28 @@ pub fn install_claude(dry_run: bool) -> Result<Vec<String>, String> {
     if servers.contains_key("syntagma") {
         messages.push("Claude Code: MCP already configured".to_owned());
     } else {
-        servers.insert("syntagma".to_owned(), claude_mcp_server_config(port));
+        servers.insert("syntagma".to_owned(), claude_mcp_server_config(transport));
         if !dry_run {
             write_json_file(&claude_json, &config)?;
         }
-        messages.push(format!("Claude Code: MCP config added (HTTP, port {port})"));
+        let transport_label = match transport {
+            ClaudeTransport::Http { port } => format!("HTTP, port {port}"),
+            ClaudeTransport::Stdio => "stdio".to_owned(),
+        };
+        messages.push(format!("Claude Code: MCP config added ({transport_label})"));
     }
 
     // Install agent prompt files into ~/.claude/agents/
     let agents_src = crate::adapters::paths::syntagma_home()
-        .parent()
-        .map(|h| h.join(".syntagma").join("registry").join("agents"))
-        .unwrap_or_else(|| std::path::PathBuf::from("/tmp"));
+        .join("registry")
+        .join("agents");
     let agents_dst = home.join(".claude").join("agents");
 
     if agents_src.is_dir() && !dry_run {
         fs::create_dir_all(&agents_dst).map_err(|e| e.to_string())?;
         for entry in fs::read_dir(&agents_src).map_err(|e| e.to_string())? {
             let entry = entry.map_err(|e| e.to_string())?;
-            let name = entry.file_name();
-            let dst_file = agents_dst.join(&name);
+            let dst_file = agents_dst.join(entry.file_name());
             fs::copy(entry.path(), &dst_file).map_err(|e| e.to_string())?;
         }
         messages.push(format!(
@@ -387,7 +399,7 @@ pub fn install_all(dry_run: bool) -> Result<Vec<String>, String> {
     let mut messages = Vec::new();
 
     for result in [
-        install_claude(dry_run),
+        install_claude(dry_run, &ClaudeTransport::default()),
         install_cursor(dry_run),
         install_codex(dry_run),
         install_gemini(dry_run),
@@ -460,17 +472,6 @@ mod tests {
     }
 
     #[test]
-    fn claude_mcp_server_config_uses_http_transport() {
-        let config = claude_mcp_server_config(43175);
-        assert_eq!(config["command"], "syntagma");
-        assert_eq!(config["type"], "http");
-        assert_eq!(config["args"][0], "mcp");
-        assert_eq!(config["args"][1], "--http");
-        assert_eq!(config["args"][2], "--port");
-        assert_eq!(config["args"][3], "43175");
-    }
-
-    #[test]
     fn read_json_file_missing_returns_empty_object() {
         let dir = TempDir::new().unwrap();
         let path = dir.path().join("nonexistent.json");
@@ -504,12 +505,11 @@ mod tests {
             .or_insert_with(|| json!({}));
         let servers = mcp_servers.as_object_mut().unwrap();
         assert!(!servers.contains_key("syntagma"));
-        servers.insert("syntagma".to_owned(), claude_mcp_server_config(43175));
+        servers.insert("syntagma".to_owned(), mcp_server_config());
         write_json_file(&path, &config).unwrap();
 
         let reloaded = read_json_file(&path);
-        assert_eq!(reloaded["mcpServers"]["syntagma"]["command"], "syntagma");
-        assert_eq!(reloaded["mcpServers"]["syntagma"]["type"], "http");
+        assert!(reloaded["mcpServers"]["syntagma"]["command"] == "syntagma-mcp");
     }
 
     #[test]
@@ -566,5 +566,78 @@ mod tests {
         assert!(msgs.iter().any(|m| m.contains("No local data found")));
 
         std::env::set_current_dir(original).unwrap();
+    }
+
+    #[test]
+    fn claude_transport_default_is_http_43175() {
+        assert_eq!(
+            ClaudeTransport::default(),
+            ClaudeTransport::Http { port: 43175 }
+        );
+    }
+
+    #[test]
+    fn claude_mcp_server_config_http() {
+        let cfg = claude_mcp_server_config(&ClaudeTransport::Http { port: 8080 });
+        assert_eq!(cfg["type"], "http");
+        assert_eq!(cfg["url"], "http://127.0.0.1:8080/mcp");
+    }
+
+    #[test]
+    fn claude_mcp_server_config_stdio() {
+        let cfg = claude_mcp_server_config(&ClaudeTransport::Stdio);
+        assert_eq!(cfg["command"], "syntagma");
+        assert_eq!(cfg["args"], json!(["mcp"]));
+    }
+
+    #[test]
+    fn install_claude_http_writes_url() {
+        let dir = TempDir::new().unwrap();
+        let path = dir.path().join("claude.json");
+        fs::write(&path, "{}").unwrap();
+
+        let mut config = read_json_file(&path);
+        let map = config.as_object_mut().unwrap();
+        let servers = map
+            .entry("mcpServers")
+            .or_insert_with(|| json!({}))
+            .as_object_mut()
+            .unwrap();
+        servers.insert(
+            "syntagma".to_owned(),
+            claude_mcp_server_config(&ClaudeTransport::Http { port: 43175 }),
+        );
+        write_json_file(&path, &config).unwrap();
+
+        let reloaded = read_json_file(&path);
+        assert_eq!(reloaded["mcpServers"]["syntagma"]["type"], "http");
+        assert_eq!(
+            reloaded["mcpServers"]["syntagma"]["url"],
+            "http://127.0.0.1:43175/mcp"
+        );
+    }
+
+    #[test]
+    fn install_claude_stdio_writes_command() {
+        let dir = TempDir::new().unwrap();
+        let path = dir.path().join("claude.json");
+        fs::write(&path, "{}").unwrap();
+
+        let mut config = read_json_file(&path);
+        let map = config.as_object_mut().unwrap();
+        let servers = map
+            .entry("mcpServers")
+            .or_insert_with(|| json!({}))
+            .as_object_mut()
+            .unwrap();
+        servers.insert(
+            "syntagma".to_owned(),
+            claude_mcp_server_config(&ClaudeTransport::Stdio),
+        );
+        write_json_file(&path, &config).unwrap();
+
+        let reloaded = read_json_file(&path);
+        assert_eq!(reloaded["mcpServers"]["syntagma"]["command"], "syntagma");
+        assert_eq!(reloaded["mcpServers"]["syntagma"]["args"], json!(["mcp"]));
     }
 }

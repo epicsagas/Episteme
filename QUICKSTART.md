@@ -6,7 +6,7 @@ Get up and running with Syntagma in under 2 minutes.
 
 ## Prerequisites
 
-- **Rust 1.85+** (edition 2024 required) — [Install via rustup](https://rustup.rs)
+- **Rust 1.95+** (edition 2024 required) — [Install via rustup](https://rustup.rs)
 - Internet connection (for initial data download)
 
 ---
