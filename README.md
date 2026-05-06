@@ -10,7 +10,7 @@
 
 <p align="center">
     <a href="https://github.com/epicsagas/Syntagma/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Syntagma/ci.yml?branch=main&label=CI" alt="CI" /></a>
-    <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.85+-orange.svg" alt="rust-lang" /></a>
+    <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.95+-orange.svg" alt="rust-lang" /></a>
     <a href="https://crates.io/crates/syntagma"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
     <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
@@ -24,7 +24,7 @@
 
 ## Quick Start
 
-> **Prerequisites:** Rust 1.85+ — install via [rustup](https://rustup.rs) if needed.
+> **Prerequisites:** Rust 1.95+ — install via [rustup](https://rustup.rs) if needed.
 
 ```bash
 # Install Rust toolchain (if not already installed)
@@ -35,7 +35,7 @@ rustup default stable
 # Install (first build takes 3–5 minutes)
 cargo install --git https://github.com/epicsagas/Syntagma
 
-# Wire up your AI tool
+# Seed data + wire up your AI tool (MCP config + agents)
 syntagma install claude    # or: cursor, codex, gemini
 
 # Verify
@@ -151,17 +151,17 @@ Syntagma runs entirely offline: single binary, local SQLite database, local embe
 ```bash
 # First build takes 3–5 minutes — this is normal
 cargo install --git https://github.com/epicsagas/Syntagma
-syntagma install claude    # or: cursor, codex, gemini
+syntagma install claude    # seeds data + wires up MCP + installs agents
 ```
 
-> After `syntagma install claude`, **restart Claude Code** for the MCP tools to appear.
+> After `syntagma install claude`, **restart Claude Code** for the MCP tools and agents to appear.
 
 ### Option 2: From Source
 
 ```bash
 git clone https://github.com/epicsagas/Syntagma.git
 cd Syntagma && cargo build --release
-./target/release/syntagma install --local
+./target/release/syntagma install --local claude    # or: cursor, codex, gemini
 ```
 
 ### Option 3: Docker (No Rust Required)
@@ -346,7 +346,7 @@ Syntagma builds a local embedding index on first run. This takes 30–60 seconds
 
 **Compilation errors during `cargo install`**
 
-Ensure Rust 1.85+ is installed:
+Ensure Rust 1.95+ is installed:
 ```bash
 rustup update stable
 rustup show   # confirm active toolchain
