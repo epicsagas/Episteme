@@ -54,6 +54,27 @@ pub fn install_claude(dry_run: bool) -> Result<Vec<String>, String> {
         messages.push(format!("Claude Code: MCP config added (HTTP, port {port})"));
     }
 
+    // Install agent prompt files into ~/.claude/agents/
+    let agents_src = crate::adapters::paths::syntagma_home()
+        .parent()
+        .map(|h| h.join(".syntagma").join("registry").join("agents"))
+        .unwrap_or_else(|| std::path::PathBuf::from("/tmp"));
+    let agents_dst = home.join(".claude").join("agents");
+
+    if agents_src.is_dir() && !dry_run {
+        fs::create_dir_all(&agents_dst).map_err(|e| e.to_string())?;
+        for entry in fs::read_dir(&agents_src).map_err(|e| e.to_string())? {
+            let entry = entry.map_err(|e| e.to_string())?;
+            let name = entry.file_name();
+            let dst_file = agents_dst.join(&name);
+            fs::copy(entry.path(), &dst_file).map_err(|e| e.to_string())?;
+        }
+        messages.push(format!(
+            "Claude Code: agents installed to {}",
+            agents_dst.display()
+        ));
+    }
+
     Ok(messages)
 }
 
@@ -206,6 +227,15 @@ pub fn seed_data(dry_run: bool) -> Result<Vec<String>, String> {
     let mut messages = Vec::new();
 
     let cwd = std::env::current_dir().map_err(|e| e.to_string())?;
+
+    // Seed registry/ (agent prompts etc.) alongside data.
+    let registry_src = cwd.join("registry");
+    let registry_dst = crate::adapters::paths::syntagma_home().join("registry");
+    if registry_src.exists() && !dry_run {
+        fs::create_dir_all(&registry_dst).map_err(|e| e.to_string())?;
+        copy_dir_recursive(&registry_src, &registry_dst)?;
+    }
+
     let source_dirs: Vec<PathBuf> = vec![
         cwd.join("raw"),
         cwd.join("data"),
@@ -273,7 +303,7 @@ pub fn seed_data_from_release(url: &str, dry_run: bool) -> Result<Vec<String>, S
         if !root.is_dir() {
             continue;
         }
-        for dir in ["raw", "data", "meta", "db"] {
+        for dir in ["raw", "data", "meta", "db", "registry"] {
             let src = root.join(dir);
             if src.exists() && src.is_dir() {
                 let target = match dir {
@@ -282,6 +312,7 @@ pub fn seed_data_from_release(url: &str, dry_run: bool) -> Result<Vec<String>, S
                         .parent()
                         .map(|p| p.to_path_buf())
                         .unwrap_or_else(|| crate::adapters::paths::syntagma_home().join("db")),
+                    "registry" => crate::adapters::paths::syntagma_home().join("registry"),
                     _ => crate::adapters::paths::data_dir(),
                 };
                 fs::create_dir_all(&target).map_err(|e| e.to_string())?;
@@ -325,7 +356,7 @@ pub fn seed_data_from_local_archive(path: &Path, dry_run: bool) -> Result<Vec<St
         if !root.is_dir() {
             continue;
         }
-        for dir in ["raw", "data", "meta", "db"] {
+        for dir in ["raw", "data", "meta", "db", "registry"] {
             let src = root.join(dir);
             if src.exists() && src.is_dir() {
                 let target = match dir {
@@ -334,6 +365,7 @@ pub fn seed_data_from_local_archive(path: &Path, dry_run: bool) -> Result<Vec<St
                         .parent()
                         .map(|p| p.to_path_buf())
                         .unwrap_or_else(|| crate::adapters::paths::syntagma_home().join("db")),
+                    "registry" => crate::adapters::paths::syntagma_home().join("registry"),
                     _ => crate::adapters::paths::data_dir(),
                 };
                 fs::create_dir_all(&target).map_err(|e| e.to_string())?;
