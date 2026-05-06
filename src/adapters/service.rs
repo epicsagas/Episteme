@@ -328,28 +328,20 @@ pub fn install_launchd_agent(host: &str, port: u16) -> Result<String, String> {
             stderr = crate::adapters::paths::log_dir().join("launchd.err").display(),
         );
         fs::write(&plist_path, plist).map_err(|e| e.to_string())?;
-        let status = Command::new("launchctl")
-            .args(["bootstrap", "gui/$(id -u)", plist_path.to_string_lossy().as_ref()])
-            .status();
-        if status.as_ref().map(|s| s.success()).unwrap_or(false) {
+        let uid = std::process::Command::new("id")
+            .arg("-u")
+            .output()
+            .ok()
+            .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_owned())
+            .unwrap_or_else(|| "501".to_owned());
+        let st = Command::new("launchctl")
+            .args(["bootstrap", &format!("gui/{uid}"), plist_path.to_string_lossy().as_ref()])
+            .status()
+            .map_err(|e| e.to_string())?;
+        if st.success() {
             Ok(format!("launchd agent installed: {}", plist_path.display()))
         } else {
-            // Fallback for shells where $(id -u) is not expanded.
-            let uid = std::process::Command::new("id")
-                .arg("-u")
-                .output()
-                .ok()
-                .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_owned())
-                .unwrap_or_default();
-            let st = Command::new("launchctl")
-                .args(["bootstrap", &format!("gui/{uid}"), plist_path.to_string_lossy().as_ref()])
-                .status()
-                .map_err(|e| e.to_string())?;
-            if st.success() {
-                Ok(format!("launchd agent installed: {}", plist_path.display()))
-            } else {
-                Err("failed to bootstrap launchd agent".to_owned())
-            }
+            Err("failed to bootstrap launchd agent".to_owned())
         }
     }
 }
@@ -406,8 +398,13 @@ pub fn enable_launchd(now: bool) -> Result<String, String> {
     let mut msg = install_launchd_agent(&host, port)?;
     if now {
         let _ = cmd_stop();
-        let pid = cmd_start(&host, port)?;
-        msg.push_str(&format!("\nServer started (PID {pid})"));
+        match cmd_start(&host, port) {
+            Ok(pid) => msg.push_str(&format!("\nServer started (PID {pid})")),
+            Err(e) if e.contains("already in use") => {
+                msg.push_str(&format!("\nServer already running on port {port}"));
+            }
+            Err(e) => return Err(e),
+        }
     }
     Ok(msg)
 }
