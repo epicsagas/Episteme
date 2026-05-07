@@ -33,6 +33,8 @@
 
 ---
 
+<img src="docs/assets/demo.gif" align="center" width="100%" alt="Syntagma Demo" />
+
 <img src="docs/assets/features.png" align="center" width="100%" alt="Syntagma Features Overview" />
 
 ---
