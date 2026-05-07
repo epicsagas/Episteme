@@ -1,0 +1,38 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'syntagma-prod'
+    environment: 'production'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+rule_files:
+  - 'syntagma-rules.yml'
+
+scrape_configs:
+  # Syntagma API — 네이티브/원격 머신 모두 대응
+  # SYNTAGMA_API_HOST 환경변수로 주입됨
+  - job_name: 'syntagma-api'
+    static_configs:
+      - targets:
+          - '${SYNTAGMA_API_HOST}:${SYNTAGMA_API_PORT}'
+        labels:
+          service: 'syntagma-api'
+    metric_relabel_configs:
+      - source_labels: [entity_id]
+        regex: '(DP|RF|LAW|SMELL)-(\d+).*'
+        target_label: entity_type_short
+        replacement: '$1'
+
+  # Node exporter — 모니터링 호스트 자체 시스템 메트릭
+  - job_name: 'node'
+    static_configs:
+      - targets:
+          - 'node-exporter:9100'
+        labels:
+          service: 'monitoring-host'

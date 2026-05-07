@@ -1,376 +1,207 @@
-# Syntagma Monitoring Setup
+# Syntagma Monitoring
 
-Prometheus + Grafana configuration for tracking Syntagma pattern usage and code quality metrics.
+Prometheus + Grafana 독립 모니터링 스택.
+`syntagma-api`는 **네이티브, 원격 머신, 별도 docker** 어디서 실행해도 scrape 가능.
 
-## Quick Start
+---
 
-### 1. Start Monitoring Stack
+## 아키텍처
+
+```
+┌─────────────────────────────────────┐     ┌──────────────────────────────┐
+│  monitoring docker (독립 네트워크)    │     │  syntagma-api (어디서든 OK)  │
+│                                     │     │                              │
+│  prometheus ──scrape──────────────────────▶  :8000/metrics              │
+│      │                              │     │                              │
+│  grafana ◀── query ─── prometheus   │     │  로컬 네이티브               │
+│  alertmanager ◀── alert ─ prometheus│     │  원격 머신                   │
+│  node-exporter (호스트 시스템 메트릭)│     │  별도 docker host            │
+└─────────────────────────────────────┘     └──────────────────────────────┘
+```
+
+`SYNTAGMA_API_HOST` 환경변수 하나로 모든 시나리오 대응.
+
+---
+
+## 빠른 시작
+
+### 1. 환경 변수 설정
 
 ```bash
 cd monitoring
-
-# Using Docker Compose
-docker-compose up -d
+cp .env.example .env
 ```
 
-### 2. Instrument Your Code
+`.env` 파일에서 상황에 맞게 `SYNTAGMA_API_HOST` 설정:
 
-```python
-from prometheus_client import Counter, Histogram, Gauge, generate_latest
-from fastapi import FastAPI
-from fastapi.responses import Response
+| 실행 환경 | SYNTAGMA_API_HOST 값 |
+|-----------|----------------------|
+| 로컬 네이티브 (Mac/Windows) | `host.docker.internal` |
+| 로컬 네이티브 (Linux) | `172.17.0.1` 또는 호스트 IP |
+| 원격 머신 | `192.168.1.100` (실제 IP) |
 
-app = FastAPI()
-
-# Define metrics
-pattern_usage = Counter(
-    'syntagma_pattern_applied_total',
-    'Syntagma pattern application count',
-    ['entity_id', 'entity_type', 'context', 'service', 'alcove_doc']
-)
-
-smell_detected = Counter(
-    'syntagma_smell_detected_total',
-    'Code smell detection count',
-    ['smell_id', 'smell_name', 'severity', 'language']
-)
-
-refactoring_suggested = Counter(
-    'syntagma_refactoring_suggested_total',
-    'Refactoring suggestions generated',
-    ['refactoring_id', 'refactoring_name']
-)
-
-refactoring_applied = Counter(
-    'syntagma_refactoring_applied_total',
-    'Refactoring suggestions applied by developers',
-    ['refactoring_id', 'refactoring_name']
-)
-
-api_duration = Histogram(
-    'syntagma_api_duration_seconds',
-    'Syntagma API endpoint latency',
-    ['endpoint', 'method', 'status']
-)
-
-api_requests = Counter(
-    'syntagma_api_requests_total',
-    'Total API requests',
-    ['endpoint', 'method', 'status']
-)
-
-api_errors = Counter(
-    'syntagma_api_errors_total',
-    'API errors',
-    ['endpoint', 'error_type']
-)
-
-# Expose /metrics endpoint
-@app.get("/metrics")
-async def metrics():
-    return Response(content=generate_latest(), media_type="text/plain")
-```
-
-### 3. Track Pattern Usage
-
-```python
-# Example: Payment validation with Strategy pattern
-from your_metrics import pattern_usage, smell_detected
-
-def validate_payment(card_number: str):
-    # Track pattern usage
-    pattern_usage.labels(
-        entity_id='DP-023',
-        entity_type='pattern',
-        context='payment_validation',
-        service='payment-api',
-        alcove_doc='DR-001'  # Link to Alcove decision record
-    ).inc()
-    
-    # Your validation logic
-    validator = CardValidator(strategy=StrategyA())
-    result = validator.validate(card_number)
-    
-    # Track smell if detected
-    if len(card_number) < 13:
-        smell_detected.labels(
-            smell_id='SMELL-42',
-            smell_name='Data Validation',
-            severity='high',
-            language='python'
-        ).inc()
-    
-    return result
-```
-
-### 4. Access Dashboards
-
-- **Grafana**: http://localhost:3000 (admin/admin)
-- **Prometheus**: http://localhost:9090
-
-Import dashboard:
-1. Go to Grafana → Dashboards → Import
-2. Upload `grafana/syntagma-dashboard.json` (pattern/code-quality view) or `grafana/syntagma-api-dashboard.json` (API/latency/error view)
-
----
-
-## Metrics Reference
-
-### Pattern Usage Metrics
-
-| Metric | Type | Labels | Description |
-|--------|------|--------|-------------|
-| `syntagma_pattern_applied_total` | Counter | entity_id, entity_type, context, service, alcove_doc | Pattern application count |
-| `syntagma_pattern_usage_rate5m` | Gauge | entity_id | Pattern usage rate (5m window) |
-| `syntagma_pattern_diversity_by_service` | Gauge | service | Unique patterns per service |
-
-### Code Quality Metrics
-
-| Metric | Type | Labels | Description |
-|--------|------|--------|-------------|
-| `syntagma_smell_detected_total` | Counter | smell_id, smell_name, severity, language | Code smell detections |
-| `syntagma_smell_severity_count` | Gauge | severity | Smell count by severity |
-| `syntagma_code_health_score` | Gauge | - | Overall code health (0-100) |
-
-### Refactoring Metrics
-
-| Metric | Type | Labels | Description |
-|--------|------|--------|-------------|
-| `syntagma_refactoring_suggested_total` | Counter | refactoring_id, refactoring_name | Suggestions generated |
-| `syntagma_refactoring_applied_total` | Counter | refactoring_id, refactoring_name | Suggestions accepted |
-| `syntagma_refactoring_acceptance_rate` | Gauge | - | Acceptance rate (%) |
-
-### API Performance Metrics
-
-| Metric | Type | Labels | Description |
-|--------|------|--------|-------------|
-| `syntagma_api_duration_seconds` | Histogram | endpoint, method, status | Request latency |
-| `syntagma_api_requests_total` | Counter | endpoint, method, status | Total requests |
-| `syntagma_api_errors_total` | Counter | endpoint, error_type | Error count |
-| `syntagma_api_latency_p95` | Gauge | - | 95th percentile latency |
-| `syntagma_api_latency_p99` | Gauge | - | 99th percentile latency |
-
----
-
-## Alert Rules
-
-### Banned Pattern Alert
-
-Triggers when a banned pattern (e.g., Singleton per DR-091) is used:
-
-```yaml
-- alert: BannedPatternUsed
-  expr: increase(syntagma_pattern_applied_total{entity_id="DP-006"}[5m]) > 0
-  annotations:
-    summary: "Singleton pattern used (banned per DR-091)"
-    alcove_ref: "DR-091"
-```
-
-### Code Health Alert
-
-Triggers when code health score drops below 70:
-
-```yaml
-- alert: LowCodeHealth
-  expr: syntagma_code_health_score < 70
-  annotations:
-    summary: "Code health degraded (score: {{ $value }})"
-```
-
-### Pattern Usage Spike
-
-Detects unusual pattern usage spikes (potential copy-paste):
-
-```yaml
-- alert: PatternUsageSpike
-  expr: |
-    rate(syntagma_pattern_applied_total[5m]) / 
-    rate(syntagma_pattern_applied_total[1h] offset 1h) > 5
-  annotations:
-    summary: "Pattern {{ $labels.entity_id }} usage spiked 5x"
-```
-
----
-
-## Alcove Integration
-
-### Link Metrics to Alcove Documents
-
-Add `alcove_doc` label to track which team decision relates to each pattern:
-
-```python
-pattern_usage.labels(
-    entity_id='DP-023',
-    entity_type='pattern',
-    context='payment_validation',
-    service='payment-api',
-    alcove_doc='DR-001'  # References DECISION.md DR-001
-).inc()
-```
-
-### Generate Quarterly Reports
-
-Query Prometheus and update Alcove docs:
+**필수**: `GF_SECURITY_ADMIN_PASSWORD` 반드시 변경
 
 ```bash
-#!/bin/bash
-# scripts/update-alcove-usage-report.sh
-
-PROMETHEUS_URL="http://localhost:9090"
-ALCOVE_DOC=".alcove/PATTERN_USAGE.md"
-
-# Fetch top 10 patterns
-PATTERNS=$(curl -sG "$PROMETHEUS_URL/api/v1/query" \
-  --data-urlencode 'query=topk(10, increase(syntagma_pattern_applied_total[90d]))' \
-  | jq -r '.data.result[] | "\(.metric.entity_id):\(.value[1]):\(.metric.alcove_doc)"')
-
-# Update Alcove document
-cat > "$ALCOVE_DOC" <<EOF
-# Pattern Usage Report ($(date +%Y-Q%q))
-
-Generated: $(date)
-
-## Top Patterns
-
-EOF
-
-echo "$PATTERNS" | while IFS=: read -r entity count alcove_doc; do
-  cat >> "$ALCOVE_DOC" <<EOF
-### $entity ($count uses)
-- Team reference: $alcove_doc
-- Syntagma: https://syntagma.dev/entities/$entity
-
-EOF
-done
-
-# Commit to Alcove
-alcove rebuild-index .
+# .env 최소 설정 예시
+SYNTAGMA_API_HOST=host.docker.internal
+SYNTAGMA_API_PORT=8000
+GF_SECURITY_ADMIN_USER=admin
+GF_SECURITY_ADMIN_PASSWORD=your-strong-password
 ```
+
+### 2. 모니터링 스택 실행
+
+```bash
+cd monitoring
+docker compose up -d
+```
+
+### 3. 접속
+
+| 서비스 | URL | 계정 |
+|--------|-----|------|
+| Grafana | http://localhost:3000 | .env 설정값 |
+| Prometheus | http://localhost:9090 | - |
+| Alertmanager | http://localhost:9093 | - |
+
+### 4. Prometheus 타겟 확인
+
+http://localhost:9090/targets 에서 `syntagma-api` 타겟이 **UP** 상태인지 확인.
 
 ---
 
-## Docker Compose Setup
+## 시나리오별 설정
+
+### 로컬 네이티브 (Mac / Windows)
+
+```bash
+# .env
+SYNTAGMA_API_HOST=host.docker.internal
+SYNTAGMA_API_PORT=8000
+```
+
+`host.docker.internal`은 Docker Desktop이 자동으로 호스트 IP로 resolve.
+
+### 로컬 네이티브 (Linux)
+
+`host.docker.internal`은 Linux Docker에서 기본 미지원.
+`docker-compose.yml`의 `extra_hosts: host.docker.internal:host-gateway`로 자동 대응.
+
+```bash
+# .env
+SYNTAGMA_API_HOST=host.docker.internal
+SYNTAGMA_API_PORT=8000
+```
+
+또는 호스트 IP를 직접 지정:
+
+```bash
+SYNTAGMA_API_HOST=172.17.0.1   # docker0 브릿지 기본 게이트웨이
+```
+
+### 원격 머신
+
+```bash
+# .env
+SYNTAGMA_API_HOST=192.168.1.100   # 원격 머신 IP
+SYNTAGMA_API_PORT=8000
+```
+
+원격 머신에서 8000 포트가 방화벽에서 열려 있어야 함.
+
+### 여러 인스턴스 동시 모니터링
+
+`prometheus/prometheus.yml.tmpl`에 job 추가:
 
 ```yaml
-# monitoring/docker-compose.yml
-version: '3.8'
+scrape_configs:
+  - job_name: 'syntagma-api-prod'
+    static_configs:
+      - targets: ['prod.example.com:8000']
+        labels:
+          env: prod
 
-services:
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: syntagma-prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus/syntagma-rules.yml:/etc/prometheus/syntagma-rules.yml
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
+  - job_name: 'syntagma-api-staging'
+    static_configs:
+      - targets: ['staging.example.com:8000']
+        labels:
+          env: staging
+```
 
-  grafana:
-    image: grafana/grafana:latest
-    container_name: syntagma-grafana
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_USERS_ALLOW_SIGN_UP=false
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
-    depends_on:
-      - prometheus
+재시작 없이 설정 반영:
 
-  alertmanager:
-    image: prom/alertmanager:latest
-    container_name: syntagma-alertmanager
-    ports:
-      - "9093:9093"
-    volumes:
-      - ./alertmanager/config.yml:/etc/alertmanager/config.yml
-      - alertmanager_data:/alertmanager
-
-volumes:
-  prometheus_data:
-  grafana_data:
-  alertmanager_data:
+```bash
+curl -X POST http://localhost:9090/-/reload
 ```
 
 ---
 
-## Troubleshooting
+## prometheus.yml 설정 방식
 
-### Metrics not showing up
+`prometheus/prometheus.yml.tmpl` 템플릿을 컨테이너 시작 시 `envsubst`로 렌더링.
 
-1. Check Prometheus targets: http://localhost:9090/targets
-2. Verify `/metrics` endpoint is accessible:
-   ```bash
-   curl http://localhost:8000/metrics
-   ```
-3. Check label cardinality (avoid high-cardinality labels like user_id)
-
-### Dashboard empty
-
-1. Verify time range (top-right corner in Grafana)
-2. Check Prometheus data source: Configuration → Data Sources
-3. Validate PromQL queries in Prometheus UI first
-
-### Alerts not firing
-
-1. Check alert rules status: http://localhost:9090/alerts
-2. Verify Alertmanager config: http://localhost:9093
-3. Test alert expression in Prometheus query browser
-
----
-
-## Best Practices
-
-### 1. Label Hygiene
-
-```python
-# ✅ Good: bounded label cardinality
-pattern_usage.labels(
-    entity_id='DP-023',      # ~100 unique values
-    context='payment',        # ~20 unique values
-    service='payment-api'     # ~10 unique values
-).inc()
-
-# ❌ Bad: unbounded label cardinality
-pattern_usage.labels(
-    entity_id='DP-023',
-    user_id=str(user.id),     # Millions of unique values → ⚠️ Cardinality explosion
-    timestamp=str(now())      # Infinite unique values
-).inc()
+```
+prometheus.yml.tmpl  →  envsubst  →  prometheus.yml (컨테이너 내부)
 ```
 
-### 2. Metric Naming Convention
+렌더링 결과 확인:
 
-Follow Prometheus naming best practices:
-
-- `syntagma_<noun>_<unit>_total` for counters
-- `syntagma_<noun>_<unit>` for gauges/histograms
-- Use base units (seconds, bytes, not milliseconds/KB)
-
-### 3. Recording Rules
-
-Pre-compute expensive queries:
-
-```yaml
-# Good: pre-compute top patterns daily
-- record: syntagma:pattern_usage:top10_daily
-  expr: topk(10, increase(syntagma_pattern_applied_total[24h]))
-  
-# Then query the recording rule instead of raw metric
+```bash
+docker exec syntagma-prometheus cat /etc/prometheus/prometheus.yml
 ```
 
 ---
 
-## Further Reading
+## Grafana 대시보드
 
-- [Prometheus Best Practices](https://prometheus.io/docs/practices/naming/)
-- [Grafana Dashboard Best Practices](https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/best-practices/)
-- [Alcove Integration Guide](../docs/alcove-integration.md)
+```
+Grafana → Dashboards → Import
+```
+
+- `grafana/syntagma-dashboard.json` — 패턴 사용량 / 코드 품질
+- `grafana/syntagma-api-dashboard.json` — API 레이턴시 / 에러율
+
+---
+
+## 운영 명령어
+
+```bash
+# 상태 확인
+docker compose ps
+
+# 설정 변경 후 Prometheus 무중단 리로드
+curl -X POST http://localhost:9090/-/reload
+
+# 로그 확인
+docker compose logs -f prometheus
+
+# 중지 (데이터 보존)
+docker compose down
+
+# 완전 초기화 (데이터 삭제)
+docker compose down -v
+```
+
+---
+
+## 트러블슈팅
+
+### syntagma-api 타겟이 DOWN
+
+```bash
+# 1. 컨테이너에서 직접 연결 확인
+docker exec syntagma-prometheus wget -qO- http://${SYNTAGMA_API_HOST}:${SYNTAGMA_API_PORT}/health
+
+# 2. 렌더링된 prometheus.yml 확인
+docker exec syntagma-prometheus cat /etc/prometheus/prometheus.yml
+
+# 3. Linux에서 host.docker.internal 미동작 시
+ip route | grep docker   # docker0 게이트웨이 IP 확인 → .env에 직접 지정
+```
+
+### Grafana 대시보드 데이터 없음
+
+1. Prometheus targets 페이지 확인: http://localhost:9090/targets
+2. 시간 범위 확인 (우상단)
+3. Prometheus에서 직접 쿼리 테스트: http://localhost:9090/graph
