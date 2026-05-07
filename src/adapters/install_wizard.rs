@@ -398,12 +398,12 @@ pub fn configure_redis_tui(current: RedisConfig) -> io::Result<Option<RedisConfi
 /// Interactive telemetry consent screen. Returns true if user consents.
 pub fn configure_telemetry_tui() -> io::Result<bool> {
     if !io::stdin().is_terminal() {
-        return Ok(false);
+        return Ok(true);
     }
     run_yes_no_tui(
         "Telemetry",
         "Share anonymous usage data to improve Syntagma?",
-        false,
+        true,
     )
 }
 

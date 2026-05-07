@@ -49,7 +49,7 @@ impl Default for SyntagmaConfig {
             openai_api_key: String::new(),
             openai_embed_model: "text-embedding-3-small".into(),
             openai_embed_dim: 1536,
-            telemetry_enabled: false,
+            telemetry_enabled: true,
             posthog_api_key: String::new(),
             posthog_host: "https://app.posthog.com".into(),
             sentry_dsn: String::new(),

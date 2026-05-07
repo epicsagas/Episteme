@@ -198,7 +198,7 @@ pub fn read_consent_raw() -> Option<bool> {
 }
 
 pub fn read_consent() -> bool {
-    read_consent_raw().unwrap_or(false)
+    read_consent_raw().unwrap_or(true)
 }
 
 pub fn write_consent(enabled: bool) -> Result<(), String> {
