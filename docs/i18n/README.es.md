@@ -33,7 +33,10 @@
 
 ---
 
-<img src="../assets/features.png" align="center" width="100%" alt="Resumen de caracteristicas de Syntagma" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../assets/features.png">
+  <img src="../assets/features.png" align="center" width="100%" alt="Resumen de caracteristicas de Syntagma" />
+</picture>
 
 ---
 
@@ -311,32 +314,25 @@ syntagma dist --out-dir release/
 
 ---
 
-## Caracteristicas
+## Características
 
-### Base de Conocimiento
-- **22 Patrones de Diseno GoF** — Catalogo completo con ejemplos del mundo real
-- **66 Tecnicas de Refactoring** — Del catalogo de Fowler con ejemplos de codigo
-- **56 Leyes y Principios de Software** — SOLID, Ley de Conway, Teorema CAP, etc.
-- **17 Tipos de Code Smells** — Long Method, God Object, Feature Envy, etc. ¹
-- **201 Relaciones Semanticas** — "resuelve", "refuerza", "viola", "se_relaciona_con"
+| | Característica | Por qué es importante |
+|--|----------------|-----------------------|
+| 🧠 | **22 Patrones de Diseño GoF** | Catálogo completo con ejemplos reales |
+| 🔧 | **66 Técnicas de Refactorización** | Catálogo de Fowler con ejemplos de código |
+| ⚖️ | **56 Leyes y Principios de Software** | SOLID, Ley de Conway, Teorema CAP, etc. |
+| 👃 | **17 Tipos de Code Smells** | Long Method, God Object, Feature Envy, etc. ¹ |
+| 🔗 | **201 Relaciones Semánticas** | "resuelve", "impone", "viola", "se relaciona con" |
+| 🤖 | **6 Herramientas MCP + 4 Agentes** | Interacción de agente IA de alta fidelidad con transferencias entre agentes |
+| 🌍 | **Soporte de 10 Lenguajes** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
+| 📊 | **Análisis Determinístico** | Python basado en AST + regex multilenguaje, mismo resultado siempre |
+| 🏷️ | **Conocimiento Citable** | Cada hallazgo se vincula a IDs de entidad explícitos (`RF-001`, `LAW-021`) |
+| 🌐 | **API REST (17 endpoints)** | Autenticación, límite de tasa, sondas de salud, métricas Prometheus |
+| 📦 | **Binario Único** | Sin runtime, multiplataforma (macOS, Linux, Windows) |
+| 🔌 | **Embeddings Locales** | fastembed (ONNX Runtime), búsqueda semántica sin configuración |
+| 🐳 | **Soporte Docker** | Build multi-etapa con verificaciones de salud |
 
-### Diseno AI-First
-- **Integracion MCP** — 6 herramientas especializadas para interaccion de alta fidelidad con agentes de IA
-- **4 Agentes Conectados** — Analisis de causalidad, seguimientos interactivos y transferencias entre agentes
-- **Soporte para 10 Lenguajes** — Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin
-- **Analisis Determinista** — Deteccion basada en AST para Python + soporte multilenguaje basado en regex
-- **Conocimiento Citable** — Cada hallazgo se vincula a IDs de entidad explicitos (ej., `RF-001`, `LAW-021`)
-- **Cadenas de Flujo de Trabajo** — Pipelines de multiples pasos: Revision de Codigo → Analisis de Causalidad → Refactoring → Verificacion
-
-### Listo para Produccion
-- **REST API** — 17 endpoints con autenticacion y limitacion de tasa
-- **Unico Binario** — Sin dependencias de tiempo de ejecucion, multiplataforma
-- **Embeddings Locales** — fastembed (ONNX Runtime) para busqueda semantica sin configuracion
-- **Visualizacion Interactiva** — Explorador de grafos basado en web (`syntagma web`)
-- **Soporte Docker** — Build multi-etapa con health checks
-- **Monitoreo** — Endpoint de metricas Prometheus
-
-> ¹ Duplicate Code (SMELL-13) y Shotgun Surgery (SMELL-09) requieren contexto de multiples archivos y se omiten en modo de archivo unico.
+> ¹ Duplicate Code (SMELL-13) y Shotgun Surgery (SMELL-09) requieren contexto de múltiples archivos y se omiten en modo de archivo único.
 
 ---
 

@@ -35,7 +35,10 @@
 
 ---
 
-<img src="../assets/features.png" align="center" width="100%" alt="Syntagma Funktionsuebersicht" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../assets/features.png">
+  <img src="../assets/features.png" align="center" width="100%" alt="Syntagma Funktionsuebersicht" />
+</picture>
 
 ---
 
@@ -315,30 +318,23 @@ syntagma dist --out-dir release/
 
 ## Funktionen
 
-### Wissensbasis
-- **22 GoF-Entwurfsmuster** — Vollstaendiger Katalog mit Praxisbeispielen
-- **66 Refactoring-Techniken** — Aus Fowlers Katalog mit Codebeispielen
-- **56 Software-Prinzipien & Gesetze** — SOLID, Conways Gesetz, CAP-Theorem usw.
-- **17 Code Smell-Typen** — Long Method, God Object, Feature Envy usw. ¹
-- **201 Semantische Beziehungen** — "loest", "durchsetzt", "verletzt", "bezieht_sich_auf"
+| | Funktion | Warum es wichtig ist |
+|--|----------|---------------------|
+| 🧠 | **22 GoF-Entwurfsmuster** | Vollständiger Katalog mit Praxisbeispielen |
+| 🔧 | **66 Refactoring-Techniken** | Fowlers Katalog mit Codebeispielen |
+| ⚖️ | **56 Software-Gesetze & Prinzipien** | SOLID, Conways Gesetz, CAP-Theorem u.a. |
+| 👃 | **17 Code-Smell-Typen** | Long Method, God Object, Feature Envy u.a. ¹ |
+| 🔗 | **201 semantische Beziehungen** | „löst", „erzwingt", „verletzt", „hängt zusammen mit" |
+| 🤖 | **6 MCP-Tools + 4 Agenten** | Hochwertige KI-Agenten-Interaktion mit Agenten-Übergaben |
+| 🌍 | **10 Sprachunterstützung** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
+| 📊 | **Deterministische Analyse** | AST-basiertes Python + Regex-Multilanguage, jedes Mal gleiches Ergebnis |
+| 🏷️ | **Zitierbares Wissen** | Jeder Fund verweist auf explizite Entitäts-IDs (`RF-001`, `LAW-021`) |
+| 🌐 | **REST-API (17 Endpunkte)** | Auth, Rate-Limiting, Health-Probes, Prometheus-Metriken |
+| 📦 | **Einzelne Binärdatei** | Keine Runtime, plattformübergreifend (macOS, Linux, Windows) |
+| 🔌 | **Lokale Embeddings** | fastembed (ONNX Runtime), konfigurationsfreie semantische Suche |
+| 🐳 | **Docker-Support** | Mehrstufiger Build mit Health-Checks |
 
-### KI-zentriertes Design
-- **MCP-Integration** — 6 spezialisierte Werkzeuge fuer hochwertige KI-Agenten-Interaktion
-- **4 Vernetzte Agenten** — Kausalitaetsanalyse, interaktive Nachfragen und agentenuebergreifende Uebergaben
-- **10 Sprachen unterstuetzt** — Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin
-- **Deterministische Analyse** — AST-basierte Python-Erkennung + regex-basierte Mehrsprachenunterstuetzung
-- **Zitierfaehiges Wissen** — Jedes Ergebnis verweist auf explizite Entitaets-IDs (z.B. `RF-001`, `LAW-021`)
-- **Workflow-Ketten** — Mehrstufige Pipelines: Code-Review → Kausalitaetsanalyse → Refactoring → Verifizierung
-
-### Produktionsbereit
-- **REST API** — 17 Endpunkte mit Authentifizierung und Ratenbegrenzung
-- **Einzelnes Binary** — Keine Laufzeitabhaengigkeiten, plattformuebergreifend
-- **Lokale Embeddings** — fastembed (ONNX Runtime) fuer zero-config semantische Suche
-- **Interaktive Visualisierung** — Webbasierte Graph-Explorer (`syntagma web`)
-- **Docker-Unterstuetzung** — Mehrstufiger Build mit Health-Checks
-- **Monitoring** — Prometheus-Metrik-Endpunkt
-
-> ¹ Duplicate Code (SMELL-13) und Shotgun Surgery (SMELL-09) erfordern Multi-Datei-Kontext und werden im Einzeldateimodus uebersprungen.
+> ¹ Duplicate Code (SMELL-13) und Shotgun Surgery (SMELL-09) erfordern Mehrdatei-Kontext und werden im Einzeldatei-Modus übersprungen.
 
 ---
 

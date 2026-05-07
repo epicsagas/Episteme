@@ -33,7 +33,10 @@
 
 ---
 
-<img src="../assets/features.png" align="center" width="100%" alt="Syntagma 功能概览" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../assets/features.png">
+  <img src="../assets/features.png" align="center" width="100%" alt="Syntagma 功能概览" />
+</picture>
 
 ---
 
@@ -311,32 +314,25 @@ syntagma dist --out-dir release/
 
 ---
 
-## 功能特性
+## 功能
 
-### 知识库
-- **22 种 GoF 设计模式** —— 包含真实案例的完整目录
-- **66 种重构技术** —— 来自 Fowler 目录，附带代码示例
-- **56 条软件法则与原则** —— SOLID、康威定律、CAP 定理等
-- **17 种代码坏味道类型** —— Long Method、God Object、Feature Envy 等 ¹
-- **201 条语义关系** —— "解决"、"强化"、"违反"、"关联"
+| | 功能 | 为什么重要 |
+|--|------|-----------|
+| 🧠 | **22个GoF设计模式** | 包含实际示例的完整目录 |
+| 🔧 | **66个重构技术** | Fowler目录，附带代码示例 |
+| ⚖️ | **56条软件定律与原则** | SOLID、康威定律、CAP定理等 |
+| 👃 | **17种代码异味类型** | Long Method、God Object、Feature Envy等 ¹ |
+| 🔗 | **201条语义关系** | "解决"、"强制"、"违反"、"关联" |
+| 🤖 | **6个MCP工具 + 4个代理** | 高保真AI代理交互，支持代理间交接 |
+| 🌍 | **10种语言支持** | Python（AST）、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin |
+| 📊 | **确定性分析** | 基于AST的Python + 正则多语言，每次结果一致 |
+| 🏷️ | **可引用的知识** | 每个发现都链接到明确的实体ID（`RF-001`、`LAW-021`） |
+| 🌐 | **REST API（17个端点）** | 认证、速率限制、健康探针、Prometheus指标 |
+| 📦 | **单一二进制文件** | 无运行时依赖，跨平台（macOS、Linux、Windows） |
+| 🔌 | **本地嵌入** | fastembed（ONNX Runtime），零配置语义搜索 |
+| 🐳 | **Docker支持** | 带健康检查的多阶段构建 |
 
-### AI 优先设计
-- **MCP 集成** —— 6 个专用工具，实现高保真 AI 智能体交互
-- **4 个互联智能体** —— 因果分析、交互式跟进和跨智能体移交
-- **10 种语言支持** —— Python（AST）、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin
-- **确定性分析** —— 基于 AST 的 Python 检测 + 基于正则表达式的多语言支持
-- **可引用的知识** —— 每个发现都链接到明确的实体 ID（如 `RF-001`、`LAW-021`）
-- **工作流链** —— 多步骤流水线：代码审查 → 因果分析 → 重构 → 验证
-
-### 生产就绪
-- **REST API** —— 17 个端点，带身份验证和速率限制
-- **单一二进制文件** —— 无运行时依赖，跨平台
-- **本地嵌入** —— fastembed (ONNX Runtime) 实现零配置语义搜索
-- **交互式可视化** —— 基于 Web 的图谱浏览器（`syntagma web`）
-- **Docker 支持** —— 多阶段构建，带健康检查
-- **监控** —— Prometheus 指标端点
-
-> ¹ 重复代码 (SMELL-13) 和散弹式修改 (SMELL-09) 需要多文件上下文，在单文件模式下会被跳过。
+> ¹ Duplicate Code（SMELL-13）和Shotgun Surgery（SMELL-09）需要多文件上下文，在单文件模式下会跳过。
 
 ---
 
