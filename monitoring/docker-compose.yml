@@ -1,61 +1,105 @@
 services:
+  # ---------------------------------------------------------------------------
+  # Prometheus — 환경변수로 scrape 타겟 주입 (네이티브/원격 모두 대응)
+  # ---------------------------------------------------------------------------
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.4.0
     container_name: syntagma-prometheus
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus/syntagma-rules.yml:/etc/prometheus/syntagma-rules.yml
+      - ./prometheus/prometheus.yml.tmpl:/etc/prometheus/prometheus.yml.tmpl:ro
+      - ./prometheus/syntagma-rules.yml:/etc/prometheus/syntagma-rules.yml:ro
       - prometheus_data:/prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--storage.tsdb.retention.time=90d"
-      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
-      - "--web.console.templates=/usr/share/prometheus/consoles"
-      - "--web.enable-lifecycle"
+    environment:
+      SYNTAGMA_API_HOST: ${SYNTAGMA_API_HOST:-host.docker.internal}
+      SYNTAGMA_API_PORT: ${SYNTAGMA_API_PORT:-8000}
+    # 시작 시 envsubst로 템플릿 렌더링 후 Prometheus 실행
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        envsubst < /etc/prometheus/prometheus.yml.tmpl \
+          > /etc/prometheus/prometheus.yml
+        exec /bin/prometheus \
+          --config.file=/etc/prometheus/prometheus.yml \
+          --storage.tsdb.path=/prometheus \
+          --storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-90d} \
+          --web.console.libraries=/usr/share/prometheus/console_libraries \
+          --web.console.templates=/usr/share/prometheus/consoles \
+          --web.enable-lifecycle
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    extra_hosts:
+      # Linux 호스트에서 host.docker.internal 미지원 문제 대응
+      - "host.docker.internal:host-gateway"
     networks:
       - monitoring
 
+  # ---------------------------------------------------------------------------
+  # Grafana
+  # ---------------------------------------------------------------------------
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:12.0.0
     container_name: syntagma-grafana
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      GF_SECURITY_ADMIN_USER: ${GF_SECURITY_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD:?GF_SECURITY_ADMIN_PASSWORD is required}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_INSTALL_PLUGINS: "grafana-piechart-panel"
+      # Prometheus datasource를 환경변수로 주입 (같은 docker network 내부)
+      GF_DATASOURCES_DEFAULT_URL: "http://prometheus:9090"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./grafana:/etc/grafana/provisioning/dashboards
+      - ./grafana:/etc/grafana/provisioning/dashboards:ro
     depends_on:
-      - prometheus
+      prometheus:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     networks:
       - monitoring
 
+  # ---------------------------------------------------------------------------
+  # Alertmanager
+  # ---------------------------------------------------------------------------
   alertmanager:
-    image: prom/alertmanager:latest
+    image: prom/alertmanager:v0.28.1
     container_name: syntagma-alertmanager
     ports:
       - "9093:9093"
     volumes:
-      - ./alertmanager/config.yml:/etc/alertmanager/config.yml
+      - ./alertmanager/config.yml:/etc/alertmanager/config.yml:ro
       - alertmanager_data:/alertmanager
     command:
       - "--config.file=/etc/alertmanager/config.yml"
       - "--storage.path=/alertmanager"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     networks:
       - monitoring
 
-  # Optional: Node exporter for host metrics
+  # ---------------------------------------------------------------------------
+  # Node Exporter — 모니터링 호스트 시스템 메트릭
+  # ---------------------------------------------------------------------------
   node-exporter:
-    image: prom/node-exporter:latest
+    image: prom/node-exporter:v1.9.1
     container_name: syntagma-node-exporter
     ports:
       - "9100:9100"
@@ -63,6 +107,7 @@ services:
       - "--path.rootfs=/host"
     volumes:
       - /:/host:ro,rslave
+    pid: host
     restart: unless-stopped
     networks:
       - monitoring
@@ -75,3 +120,4 @@ volumes:
 networks:
   monitoring:
     driver: bridge
+    # 외부 compose/docker와 네트워크 공유 없음 — 완전 독립
