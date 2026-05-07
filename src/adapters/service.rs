@@ -271,10 +271,12 @@ pub fn get_mcp_host() -> String {
 // macOS launchd integration
 // ---------------------------------------------------------------------------
 
+#[cfg(target_os = "macos")]
 fn launch_agent_label() -> &'static str {
     "io.syntagma.api"
 }
 
+#[cfg(target_os = "macos")]
 fn launch_agent_plist_path() -> PathBuf {
     let home = crate::adapters::paths::syntagma_home()
         .parent()
