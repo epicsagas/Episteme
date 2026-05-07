@@ -61,6 +61,7 @@ impl Default for SyntagmaConfig {
 #[derive(Debug, Default, Deserialize)]
 struct YamlConfig {
     redis: Option<HashMap<String, serde_yaml::Value>>,
+    mcp: Option<HashMap<String, serde_yaml::Value>>,
 }
 
 impl SyntagmaConfig {
@@ -75,8 +76,8 @@ impl SyntagmaConfig {
         config.enable_json_logging = env_bool_or("ENABLE_JSON_LOGGING", config.enable_json_logging);
         config.enable_debug_endpoints =
             env_bool_or("ENABLE_DEBUG_ENDPOINTS", config.enable_debug_endpoints);
-        config.mcp_host = env_or("SYNTAGMA_MCP_HOST", &config.mcp_host);
-        config.mcp_port = env_parse_or("SYNTAGMA_MCP_PORT", config.mcp_port);
+        config.mcp_host = cfg_val(&yaml, "mcp", "host", "SYNTAGMA_MCP_HOST", &config.mcp_host);
+        config.mcp_port = cfg_parse_val(&yaml, "mcp", "port", "SYNTAGMA_MCP_PORT", config.mcp_port);
 
         config.redis_host = cfg_val(
             &yaml,

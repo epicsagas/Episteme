@@ -52,10 +52,14 @@ pub fn install_claude(dry_run: bool, transport: &ClaudeTransport) -> Result<Vec<
         .as_object_mut()
         .ok_or("mcpServers is not an object")?;
 
-    if servers.contains_key("syntagma") {
+    let desired = claude_mcp_server_config(transport);
+    let existed = servers.contains_key("syntagma");
+    let matches = servers.get("syntagma") == Some(&desired);
+
+    if matches {
         messages.push("Claude Code: MCP already configured".to_owned());
     } else {
-        servers.insert("syntagma".to_owned(), claude_mcp_server_config(transport));
+        servers.insert("syntagma".to_owned(), desired);
         if !dry_run {
             write_json_file(&claude_json, &config)?;
         }
@@ -63,7 +67,11 @@ pub fn install_claude(dry_run: bool, transport: &ClaudeTransport) -> Result<Vec<
             ClaudeTransport::Http { port } => format!("HTTP, port {port}"),
             ClaudeTransport::Stdio => "stdio".to_owned(),
         };
-        messages.push(format!("Claude Code: MCP config added ({transport_label})"));
+        if existed {
+            messages.push(format!("Claude Code: MCP config updated ({transport_label})"));
+        } else {
+            messages.push(format!("Claude Code: MCP config added ({transport_label})"));
+        }
     }
 
     // Install agent prompt files into ~/.claude/agents/
