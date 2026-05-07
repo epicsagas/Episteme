@@ -100,7 +100,7 @@ jobs:
           7z a ${{ matrix.artifact }}.zip $files
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact }}
           path: dist/${{ matrix.artifact }}.*
@@ -125,7 +125,7 @@ jobs:
           echo "Found: $ARCHIVE ($(du -sh "$ARCHIVE" | cut -f1))"
 
       - name: Upload data artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: data-archive
           path: dist/syntagma-data-*.tar.gz
@@ -151,7 +151,7 @@ jobs:
           cat sha256sums.txt
 
       - name: Upload checksums
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: checksums
           path: dist/sha256sums.txt
