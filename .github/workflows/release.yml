@@ -35,7 +35,7 @@ jobs:
             os: windows-latest
             artifact: syntagma-windows-x86_64
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -112,7 +112,7 @@ jobs:
     name: Upload knowledge data archive
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Verify data archive exists
         run: |
@@ -190,7 +190,7 @@ jobs:
     needs: release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -229,7 +229,7 @@ jobs:
           echo "linux_aarch64=$(sha256sum linux_aarch64.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
 
       - name: Checkout homebrew tap
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: epicsagas/homebrew-tap
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
