@@ -578,7 +578,7 @@ pub fn keyword_search_with_chunk_counts(
             .map_err(|e| InfraError::Database(e.to_string()))?;
 
         let rows = stmt
-            .query_map(params![fts_query, limit as i64], |row| read_search_row(row))
+            .query_map(params![fts_query, limit as i64], read_search_row)
             .map_err(|e| InfraError::Database(e.to_string()))?;
 
         for row in rows {
