@@ -1,8 +1,8 @@
 use std::net::SocketAddr;
 
-use anyhow::Result;
 use crate::adapters::config::SyntagmaConfig;
 use crate::domain::graph::KnowledgeGraph;
+use anyhow::Result;
 
 use crate::server::api_app::create_app;
 use crate::server::mcp_auth::parse_api_keys;
@@ -18,7 +18,9 @@ pub async fn run(config: &SyntagmaConfig, graph: KnowledgeGraph) -> Result<()> {
 
     let api_keys = parse_api_keys(&config.api_keys);
     if api_keys.is_empty() {
-        tracing::warn!("SYNTAGMA_API_KEYS is not set — authentication is disabled (all endpoints open)");
+        tracing::warn!(
+            "SYNTAGMA_API_KEYS is not set — authentication is disabled (all endpoints open)"
+        );
     } else {
         tracing::info!("Authentication enabled with {} API key(s)", api_keys.len());
     }

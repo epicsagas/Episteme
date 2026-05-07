@@ -16,7 +16,10 @@ pub fn estimate_tokens(text: &str) -> usize {
 }
 
 fn build_minimal(entity: &serde_json::Value) -> serde_json::Value {
-    let meta = entity.get("metadata").cloned().unwrap_or(serde_json::Value::Null);
+    let meta = entity
+        .get("metadata")
+        .cloned()
+        .unwrap_or(serde_json::Value::Null);
     serde_json::json!({
         "id": entity.get("id")
             .or_else(|| entity.get("entity_id"))
@@ -45,18 +48,16 @@ fn build_summary(entity: &serde_json::Value) -> serde_json::Value {
     for key in &["benefits", "when_to_use", "drawbacks"] {
         if let Some(items) = ctx.get(*key).and_then(|v| v.as_array())
             && let Some(first) = items.first()
-                && let Some(s) = first.as_str() {
-                    parts.push(format!("{}: {}", key, s));
-                }
+            && let Some(s) = first.as_str()
+        {
+            parts.push(format!("{}: {}", key, s));
+        }
     }
     result["summary"] = serde_json::Value::String(parts.join("; "));
     result
 }
 
-fn truncate_context(
-    ctx: &serde_json::Value,
-    limit: usize,
-) -> serde_json::Value {
+fn truncate_context(ctx: &serde_json::Value, limit: usize) -> serde_json::Value {
     let map = ctx.as_object().cloned().unwrap_or_default();
     let truncated: HashMap<String, serde_json::Value> = map
         .into_iter()
@@ -69,11 +70,7 @@ fn truncate_context(
             (k, truncated_val)
         })
         .collect();
-    serde_json::Value::Object(
-        truncated
-            .into_iter()
-            .collect(),
-    )
+    serde_json::Value::Object(truncated.into_iter().collect())
 }
 
 pub fn summarize_entity(
@@ -85,7 +82,10 @@ pub fn summarize_entity(
         DetailLevel::Summary => build_summary(entity),
         DetailLevel::Detailed => {
             let mut result = build_summary(entity);
-            let ctx = entity.get("context").cloned().unwrap_or(serde_json::Value::Null);
+            let ctx = entity
+                .get("context")
+                .cloned()
+                .unwrap_or(serde_json::Value::Null);
             result["context"] = truncate_context(&ctx, 2);
             let relations = entity
                 .get("relations")
@@ -96,7 +96,8 @@ pub fn summarize_entity(
                 .iter()
                 .map(|(k, v)| (k.clone(), v.as_array().map(|a| a.len()).unwrap_or(0)))
                 .collect();
-            result["relation_counts"] = serde_json::to_value(counts).unwrap_or(serde_json::Value::Null);
+            result["relation_counts"] =
+                serde_json::to_value(counts).unwrap_or(serde_json::Value::Null);
             result
         }
         DetailLevel::Full => entity.clone(),

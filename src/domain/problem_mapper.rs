@@ -153,10 +153,7 @@ static INTENT_SYNONYMS: &[(&str, &[&str])] = &[
         &["DP-001", "DP-002", "DP-003", "DP-004", "DP-005"],
     ),
     ("decouple", &["DP-006", "DP-007", "DP-010", "DP-015"]),
-    (
-        "loose coupling",
-        &["DP-006", "DP-007", "DP-010", "LAW-043"],
-    ),
+    ("loose coupling", &["DP-006", "DP-007", "DP-010", "LAW-043"]),
     (
         "tight coupling",
         &["SMELL-19", "SMELL-20", "DP-006", "LAW-043"],
@@ -395,7 +392,10 @@ mod tests {
     fn intent_synonyms_word_boundary_no_false_match() {
         // "undo" must not match inside "fundamental"
         let ids = lookup_intent_synonyms("fundamental principle");
-        assert!(ids.is_empty(), "should not match 'undo' inside 'fundamental'");
+        assert!(
+            ids.is_empty(),
+            "should not match 'undo' inside 'fundamental'"
+        );
     }
 
     #[test]

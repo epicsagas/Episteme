@@ -48,7 +48,7 @@ static SECTION_BOOST: &[(&str, f64)] = &[
     ("description", 1.05),
     // Pattern-specific
     ("applicability", 1.08),
-    ("essence", 1.08),   // State, Command, etc. use "Essence" as the primary section
+    ("essence", 1.08), // State, Command, etc. use "Essence" as the primary section
     ("structure", 1.04),
     // Law/principle-specific
     ("statement", 1.10), // DRY, KISS, and many laws use "Statement" as the primary section
@@ -197,7 +197,14 @@ pub fn title_match_boost(title: &str, query_lower: &str) -> f64 {
     // toward boosting (e.g. "extract" appears in Extract Method, Extract Class,
     // Extract Superclass…).  We use them only for counting, but require at least
     // one *specific* token to earn a boost.
-    const STOP_WORDS: &[&str] = &["pattern", "principle", "smell", "refactoring", "law", "code"];
+    const STOP_WORDS: &[&str] = &[
+        "pattern",
+        "principle",
+        "smell",
+        "refactoring",
+        "law",
+        "code",
+    ];
 
     let query_tokens: Vec<&str> = query_lower.split_whitespace().collect();
     let significant_tokens: Vec<&str> = query_tokens
@@ -248,13 +255,14 @@ pub fn type_boost(entity_type: &str, query_lower: &str) -> f64 {
 /// Count how many chunks each entity has in the database.
 fn count_chunks_per_entity(conn: &Connection) -> HashMap<String, usize> {
     let mut map = HashMap::new();
-    let mut stmt = match conn.prepare("SELECT entity_id, COUNT(*) as cnt FROM chunks GROUP BY entity_id") {
-        Ok(s) => s,
-        Err(e) => {
-            tracing::warn!("count_chunks_per_entity: prepare failed: {e}");
-            return map;
-        }
-    };
+    let mut stmt =
+        match conn.prepare("SELECT entity_id, COUNT(*) as cnt FROM chunks GROUP BY entity_id") {
+            Ok(s) => s,
+            Err(e) => {
+                tracing::warn!("count_chunks_per_entity: prepare failed: {e}");
+                return map;
+            }
+        };
     let rows = match stmt.query_map([], |row| {
         let entity_id: String = row.get(0)?;
         let cnt: i64 = row.get(1)?;
@@ -293,7 +301,11 @@ pub fn sparse_entity_boost(counts: &HashMap<String, usize>, entity_id: &str) -> 
 
 /// Compute cosine similarity between two f32 vectors.
 pub fn cosine_similarity(a: &[f32], b: &[f32]) -> f64 {
-    let dot: f64 = a.iter().zip(b.iter()).map(|(x, y)| (*x as f64) * (*y as f64)).sum();
+    let dot: f64 = a
+        .iter()
+        .zip(b.iter())
+        .map(|(x, y)| (*x as f64) * (*y as f64))
+        .sum();
     let norm_a: f64 = a.iter().map(|x| (*x as f64).powi(2)).sum::<f64>().sqrt();
     let norm_b: f64 = b.iter().map(|x| (*x as f64).powi(2)).sum::<f64>().sqrt();
 
@@ -352,7 +364,9 @@ pub fn semantic_search(
     let params_refs: Vec<&dyn rusqlite::types::ToSql> =
         param_values.iter().map(|x| x.as_ref()).collect();
 
-    let mut stmt = conn.prepare(&sql).map_err(|e| InfraError::Database(e.to_string()))?;
+    let mut stmt = conn
+        .prepare(&sql)
+        .map_err(|e| InfraError::Database(e.to_string()))?;
 
     let rows = stmt
         .query_map(params_refs.as_slice(), |row| {
@@ -410,7 +424,11 @@ pub fn semantic_search(
         });
     }
 
-    results.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+    results.sort_by(|a, b| {
+        b.score
+            .partial_cmp(&a.score)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
     results.truncate(top_k);
     Ok(results)
 }
@@ -560,9 +578,7 @@ pub fn keyword_search_with_chunk_counts(
             .map_err(|e| InfraError::Database(e.to_string()))?;
 
         let rows = stmt
-            .query_map(params![fts_query, limit as i64], |row| {
-                read_search_row(row)
-            })
+            .query_map(params![fts_query, limit as i64], read_search_row)
             .map_err(|e| InfraError::Database(e.to_string()))?;
 
         for row in rows {
@@ -582,7 +598,11 @@ pub fn keyword_search_with_chunk_counts(
         // BM25 rank is negative; abs converts it to a positive relevance magnitude.
         r.score = r.score.abs() * boost * sparse_boost;
     }
-    results.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+    results.sort_by(|a, b| {
+        b.score
+            .partial_cmp(&a.score)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
 
     Ok(results)
 }
@@ -653,21 +673,21 @@ pub fn hybrid_search(
         expanded_limit,
         entity_type_filter,
         Some(chunk_counts.clone()),
-    ).unwrap_or_default();
+    )
+    .unwrap_or_default();
 
     // --- semantic search (graceful degradation) ---
     let semantic_results: Vec<SearchResult> = {
         match provider.embed(query) {
-            Ok(query_embedding) => {
-                semantic_search(
-                    conn,
-                    &query_embedding,
-                    expanded_limit,
-                    entity_type_filter,
-                    entity_id_filter,
-                    query,
-                ).unwrap_or_default()
-            }
+            Ok(query_embedding) => semantic_search(
+                conn,
+                &query_embedding,
+                expanded_limit,
+                entity_type_filter,
+                entity_id_filter,
+                query,
+            )
+            .unwrap_or_default(),
             Err(_) => Vec::new(),
         }
     };
@@ -710,7 +730,8 @@ pub fn hybrid_search(
         let t_boost = title_match_boost(&kr.title, &query_lower_rrf);
         let s_boost = section_boost(&kr.section);
         let sparse_boost = sparse_entity_boost(&chunk_counts, &kr.entity_id);
-        let rrf_score = KEYWORD_WEIGHT / (RRF_K as f64 + rank as f64) * t_boost * s_boost * sparse_boost;
+        let rrf_score =
+            KEYWORD_WEIGHT / (RRF_K as f64 + rank as f64) * t_boost * s_boost * sparse_boost;
         chunk_scores.insert(
             kr.chunk_id.clone(),
             SearchResult {
@@ -746,7 +767,11 @@ pub fn hybrid_search(
     // whose best chunk is more relevant (e.g. a single high-scoring chunk for a
     // specific smell beats many medium-scoring chunks for a generic one).
     let mut ranked: Vec<SearchResult> = chunk_scores.into_values().collect();
-    ranked.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+    ranked.sort_by(|a, b| {
+        b.score
+            .partial_cmp(&a.score)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
     let mut seen_entities = std::collections::HashSet::new();
     ranked.retain(|r| seen_entities.insert(r.entity_id.clone()));
     ranked.truncate(limit);
@@ -821,7 +846,13 @@ mod tests {
     #[test]
     fn sparse_boost_tier_single_chunk() {
         let conn = setup_test_db();
-        insert_chunk(&conn, "c1", "shotgun", "Shotgun Surgery", "Shotgun surgery...");
+        insert_chunk(
+            &conn,
+            "c1",
+            "shotgun",
+            "Shotgun Surgery",
+            "Shotgun surgery...",
+        );
 
         let counts = count_chunks_per_entity(&conn);
         let boost = sparse_entity_boost(&counts, "shotgun");
@@ -857,13 +888,7 @@ mod tests {
     fn sparse_boost_tier_5_plus_chunks() {
         let conn = setup_test_db();
         for i in 0..6 {
-            insert_chunk(
-                &conn,
-                &format!("c{i}"),
-                "factory",
-                "Factory",
-                "chunk",
-            );
+            insert_chunk(&conn, &format!("c{i}"), "factory", "Factory", "chunk");
         }
 
         let counts = count_chunks_per_entity(&conn);

@@ -32,10 +32,7 @@ pub fn cmd_explore(
         .and_then(|v| v.as_array())
         .cloned()
         .unwrap_or_default();
-    let _count = result
-        .get("count")
-        .and_then(as_u64_or_zero)
-        .unwrap_or(0);
+    let _count = result.get("count").and_then(as_u64_or_zero).unwrap_or(0);
 
     if results.is_empty() {
         println!("No results found for '{}'.", query);
@@ -55,13 +52,13 @@ pub fn cmd_explore(
     println!("Found {} result(s) for '{}':", deduped.len(), query);
     println!();
     for entry in &deduped {
-        let id = entry.get("entity_id").and_then(|v| v.as_str()).unwrap_or("?");
+        let id = entry
+            .get("entity_id")
+            .and_then(|v| v.as_str())
+            .unwrap_or("?");
         let title = entry.get("title").and_then(|v| v.as_str()).unwrap_or("");
         let etype = entry.get("type").and_then(|v| v.as_str()).unwrap_or("");
-        let category = entry
-            .get("category")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
+        let category = entry.get("category").and_then(|v| v.as_str()).unwrap_or("");
         // Score may be an integer (keyword fallback) or a float string (RAG hybrid).
         let score_display = match entry.get("score") {
             Some(v) if v.is_u64() => v.as_u64().unwrap_or(0).to_string(),
@@ -177,10 +174,7 @@ fn cmd_explore_repl(limit: usize, entity_type: Option<&str>) -> Result<()> {
                         .and_then(|v| v.as_array())
                         .cloned()
                         .unwrap_or_default();
-                    let length = result
-                        .get("length")
-                        .and_then(|v| v.as_u64())
-                        .unwrap_or(0);
+                    let length = result.get("length").and_then(|v| v.as_u64()).unwrap_or(0);
                     println!("Path ({} hops):", length);
                     for (i, p) in path.iter().enumerate() {
                         let pid = p.get("id").and_then(|v| v.as_str()).unwrap_or("?");
@@ -203,7 +197,10 @@ fn cmd_explore_repl(limit: usize, entity_type: Option<&str>) -> Result<()> {
                     Some(c) => {
                         println!("{} contradiction(s):", c.len());
                         for entry in c {
-                            let eid = entry.get("entity_id").and_then(|v| v.as_str()).unwrap_or("?");
+                            let eid = entry
+                                .get("entity_id")
+                                .and_then(|v| v.as_str())
+                                .unwrap_or("?");
                             let title = entry.get("title").and_then(|v| v.as_str()).unwrap_or("");
                             println!("  [{}] {}", eid, title);
                         }
@@ -230,10 +227,7 @@ pub fn print_search_results(query: &str, result: &serde_json::Value) {
         .and_then(|v| v.as_array())
         .cloned()
         .unwrap_or_default();
-    let _count = result
-        .get("count")
-        .and_then(as_u64_or_zero)
-        .unwrap_or(0);
+    let _count = result.get("count").and_then(as_u64_or_zero).unwrap_or(0);
 
     if results.is_empty() {
         println!("No results found for '{}'.", query);
@@ -252,7 +246,10 @@ pub fn print_search_results(query: &str, result: &serde_json::Value) {
 
     println!("Found {} result(s) for '{}':", deduped.len(), query);
     for entry in &deduped {
-        let id = entry.get("entity_id").and_then(|v| v.as_str()).unwrap_or("?");
+        let id = entry
+            .get("entity_id")
+            .and_then(|v| v.as_str())
+            .unwrap_or("?");
         let title = entry.get("title").and_then(|v| v.as_str()).unwrap_or("");
         let etype = entry.get("type").and_then(|v| v.as_str()).unwrap_or("");
         println!("  [{}] {} ({})", id, title, etype);

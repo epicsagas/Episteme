@@ -17,12 +17,8 @@ fn main() -> Result<()> {
 
     // Load the knowledge graph from the default data directory.
     let data_dir = syntagma::paths::data_dir();
-    let graph = syntagma::adapters::json_loader::load_graph(&data_dir).with_context(|| {
-        format!(
-            "failed to load knowledge graph from {}",
-            data_dir.display()
-        )
-    })?;
+    let graph = syntagma::adapters::json_loader::load_graph(&data_dir)
+        .with_context(|| format!("failed to load knowledge graph from {}", data_dir.display()))?;
 
     let mut mcp = syntagma::server::mcp_handler::SyntagmaMCP::new(graph);
     mcp.try_attach_rag();
@@ -45,8 +41,7 @@ fn main() -> Result<()> {
 
         if let Some(response) = syntagma::server::mcp_dispatcher::dispatch(&mcp, request) {
             let response_str = serde_json::to_string(&response)?;
-            writeln!(stdout_lock, "{}", response_str)
-                .context("failed to write response")?;
+            writeln!(stdout_lock, "{}", response_str).context("failed to write response")?;
             stdout_lock.flush().context("failed to flush stdout")?;
         }
     }

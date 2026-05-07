@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use crate::domain::types::{Contradiction, Entity, GraphEdge, GraphStats, Neighborhood};
+use std::collections::HashMap;
 
 /// Trait for graph storage and traversal operations.
 ///
@@ -21,7 +21,12 @@ pub trait GraphRepository: Send + Sync {
     fn get_neighborhood(&self, id: &str) -> Option<Neighborhood>;
 
     /// BFS shortest path between `from_id` and `to_id` within `max_depth` hops.
-    fn find_shortest_path(&self, from_id: &str, to_id: &str, max_depth: usize) -> Option<Vec<String>>;
+    fn find_shortest_path(
+        &self,
+        from_id: &str,
+        to_id: &str,
+        max_depth: usize,
+    ) -> Option<Vec<String>>;
 
     /// Find entities similar to `entity_id` using Jaccard similarity above `threshold`.
     fn find_similar_entities(&self, entity_id: &str, threshold: f64) -> Vec<(String, f64)>;

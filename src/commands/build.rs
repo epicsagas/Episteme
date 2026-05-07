@@ -91,18 +91,22 @@ pub fn cmd_build(
                 }
             } else {
                 info!("Using local embedding provider");
-                Box::new(syntagma::adapters::local_embeddings::LocalEmbeddingProvider::new(
-                    EMBEDDING_DIMENSIONS,
-                ))
+                Box::new(
+                    syntagma::adapters::local_embeddings::LocalEmbeddingProvider::new(
+                        EMBEDDING_DIMENSIONS,
+                    ),
+                )
             }
         }
 
         #[cfg(not(feature = "openai-embeddings"))]
         {
             let _ = &config;
-            Box::new(syntagma::adapters::local_embeddings::LocalEmbeddingProvider::new(
-                EMBEDDING_DIMENSIONS,
-            ))
+            Box::new(
+                syntagma::adapters::local_embeddings::LocalEmbeddingProvider::new(
+                    EMBEDDING_DIMENSIONS,
+                ),
+            )
         }
     };
 
@@ -142,10 +146,7 @@ pub fn cmd_build(
                 println!("  Total entities:        {}", gs.total_entities);
                 println!("  Total edges:           {}", gs.total_edges);
                 println!("  With relations:        {}", gs.entities_with_relations);
-                println!(
-                    "  Avg edges/entity:      {:.2}",
-                    gs.avg_edges_per_entity
-                );
+                println!("  Avg edges/entity:      {:.2}", gs.avg_edges_per_entity);
             }
             Err(e) => {
                 println!("Could not load graph for stats: {e:#}");
@@ -163,11 +164,8 @@ pub fn cmd_dist(out_dir: &str, no_db: bool, skip_build: bool) -> Result<()> {
     std::fs::create_dir_all(&out_dir)
         .with_context(|| format!("failed to create output dir {}", out_dir.display()))?;
 
-    let staging_root = std::env::temp_dir().join(format!(
-        "syntagma-dist-{}-{}",
-        std::process::id(),
-        version
-    ));
+    let staging_root =
+        std::env::temp_dir().join(format!("syntagma-dist-{}-{}", std::process::id(), version));
     if staging_root.exists() {
         let _ = std::fs::remove_dir_all(&staging_root);
     }
@@ -239,15 +237,17 @@ pub fn cmd_dist(out_dir: &str, no_db: bool, skip_build: bool) -> Result<()> {
     let _ = std::fs::remove_dir_all(&staging_root);
 
     println!("Created dist archive: {}", archive_path.display());
-    println!("Included: raw/meta/data{}", if no_db { "" } else { ", db/syntagma.db" });
+    println!(
+        "Included: raw/meta/data{}",
+        if no_db { "" } else { ", db/syntagma.db" }
+    );
     Ok(())
 }
 
 fn copy_dir_recursive(src: &std::path::Path, dst: &std::path::Path) -> Result<()> {
-    std::fs::create_dir_all(dst)
-        .with_context(|| format!("failed to create {}", dst.display()))?;
-    for entry in std::fs::read_dir(src)
-        .with_context(|| format!("failed to read {}", src.display()))?
+    std::fs::create_dir_all(dst).with_context(|| format!("failed to create {}", dst.display()))?;
+    for entry in
+        std::fs::read_dir(src).with_context(|| format!("failed to read {}", src.display()))?
     {
         let entry = entry?;
         let src_path = entry.path();
@@ -256,7 +256,11 @@ fn copy_dir_recursive(src: &std::path::Path, dst: &std::path::Path) -> Result<()
             copy_dir_recursive(&src_path, &dst_path)?;
         } else {
             std::fs::copy(&src_path, &dst_path).with_context(|| {
-                format!("failed to copy {} -> {}", src_path.display(), dst_path.display())
+                format!(
+                    "failed to copy {} -> {}",
+                    src_path.display(),
+                    dst_path.display()
+                )
             })?;
         }
     }

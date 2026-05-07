@@ -13,7 +13,11 @@ use cli::{Commands, GraphCommands, HooksCommands, ServiceCommands};
 // ---------------------------------------------------------------------------
 
 #[derive(Parser)]
-#[command(name = "syntagma", version, about = "Software engineering knowledge graph")]
+#[command(
+    name = "syntagma",
+    version,
+    about = "Software engineering knowledge graph"
+)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -88,7 +92,15 @@ fn dispatch(cli: Cli) -> Result<()> {
             batch_size,
             rebuild,
             stats,
-        } => commands::cmd_build(data_dir.as_deref(), None, gpu, no_gpu, batch_size, rebuild, stats),
+        } => commands::cmd_build(
+            data_dir.as_deref(),
+            None,
+            gpu,
+            no_gpu,
+            batch_size,
+            rebuild,
+            stats,
+        ),
 
         Commands::Dist {
             out_dir,
@@ -115,12 +127,7 @@ fn dispatch(cli: Cli) -> Result<()> {
             all,
             dry_run,
             local,
-        } => commands::cmd_install(
-            &tools,
-            all,
-            dry_run,
-            local,
-        ),
+        } => commands::cmd_install(&tools, all, dry_run, local),
     }
 }
 
@@ -166,9 +173,15 @@ fn service_op(sub: ServiceCommands) -> commands::ServiceOp {
 
 fn hooks_op(sub: HooksCommands) -> commands::HooksOp {
     match sub {
-        HooksCommands::Ground { prompt, limit, json } => {
-            commands::HooksOp::Ground { prompt, limit, json }
-        }
+        HooksCommands::Ground {
+            prompt,
+            limit,
+            json,
+        } => commands::HooksOp::Ground {
+            prompt,
+            limit,
+            json,
+        },
         HooksCommands::Sniff {
             files,
             staged,
@@ -182,10 +195,7 @@ fn hooks_op(sub: HooksCommands) -> commands::HooksOp {
             _json: json,
             verbose,
         },
-        HooksCommands::Audit { file, json } => commands::HooksOp::Audit {
-            file,
-            _json: json,
-        },
+        HooksCommands::Audit { file, json } => commands::HooksOp::Audit { file, _json: json },
     }
 }
 

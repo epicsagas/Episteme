@@ -10,12 +10,8 @@ use syntagma::domain::graph::KnowledgeGraph;
 /// Load the knowledge graph from the default data directory.
 pub fn load_graph() -> Result<KnowledgeGraph> {
     let dir = paths::data_dir();
-    syntagma::adapters::json_loader::load_graph(&dir).with_context(|| {
-        format!(
-            "failed to load knowledge graph from {}",
-            dir.display()
-        )
-    })
+    syntagma::adapters::json_loader::load_graph(&dir)
+        .with_context(|| format!("failed to load knowledge graph from {}", dir.display()))
 }
 
 /// Resolve the default data directory (or use override).
@@ -56,5 +52,6 @@ pub fn detect_language(file: &str, language: Option<&str>) -> Result<String> {
 
 /// Try to extract a u64 from a JSON value, handling both Number and String.
 pub fn as_u64_or_zero(v: &serde_json::Value) -> Option<u64> {
-    v.as_u64().or_else(|| v.as_str().and_then(|s| s.parse().ok()))
+    v.as_u64()
+        .or_else(|| v.as_str().and_then(|s| s.parse().ok()))
 }

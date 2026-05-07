@@ -4,6 +4,7 @@
 
 use std::fs;
 use std::net::TcpListener;
+#[cfg(target_os = "macos")]
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use std::time::{Duration, Instant};
@@ -69,10 +70,7 @@ pub fn find_pid_by_port(port: u16) -> Option<u32> {
         .output()
         .ok()?;
     if output.status.success() {
-        String::from_utf8_lossy(&output.stdout)
-            .trim()
-            .parse()
-            .ok()
+        String::from_utf8_lossy(&output.stdout).trim().parse().ok()
     } else {
         None
     }
@@ -125,9 +123,7 @@ pub fn wait_port_open(port: u16, timeout_secs: u64) -> bool {
 pub fn cmd_start(host: &str, port: u16) -> Result<u32, String> {
     if is_port_in_use(port) {
         if let Some(existing) = find_pid_by_port(port) {
-            return Err(format!(
-                "Port {port} is already in use (PID {existing})"
-            ));
+            return Err(format!("Port {port} is already in use (PID {existing})"));
         }
         return Err(format!("Port {port} is already in use"));
     }
@@ -187,9 +183,7 @@ pub fn cmd_stop() -> Result<(), String> {
     #[cfg(not(unix))]
     {
         // On non-Unix, try to kill via the OS command.
-        let _ = Command::new("kill")
-            .arg(pid.to_string())
-            .output();
+        let _ = Command::new("kill").arg(pid.to_string()).output();
     }
 
     if wait_port_free(port, 5) {
@@ -208,9 +202,7 @@ pub fn cmd_stop() -> Result<(), String> {
     }
     #[cfg(not(unix))]
     {
-        let _ = Command::new("kill")
-            .args(["-9", &pid.to_string()])
-            .output();
+        let _ = Command::new("kill").args(["-9", &pid.to_string()]).output();
     }
 
     // Give it a moment, then clean up PID file regardless.
@@ -248,7 +240,9 @@ pub fn cmd_status() -> bool {
         }
         None => {
             // No PID file -- but maybe the server is running from another source.
-            if is_port_in_use(port) && let Some(pid) = find_pid_by_port(port) {
+            if is_port_in_use(port)
+                && let Some(pid) = find_pid_by_port(port)
+            {
                 println!(
                     "syntagma server appears to be running (PID {pid} on port {port}), but no PID file"
                 );
@@ -271,10 +265,12 @@ pub fn get_mcp_host() -> String {
 // macOS launchd integration
 // ---------------------------------------------------------------------------
 
+#[cfg(target_os = "macos")]
 fn launch_agent_label() -> &'static str {
     "io.syntagma.api"
 }
 
+#[cfg(target_os = "macos")]
 fn launch_agent_plist_path() -> PathBuf {
     let home = crate::adapters::paths::syntagma_home()
         .parent()
@@ -289,7 +285,7 @@ pub fn install_launchd_agent(host: &str, port: u16) -> Result<String, String> {
     #[cfg(not(target_os = "macos"))]
     {
         let _ = (host, port);
-        return Err("launchd integration is only supported on macOS".to_owned());
+        Err("launchd integration is only supported on macOS".to_owned())
     }
     #[cfg(target_os = "macos")]
     {
@@ -324,8 +320,12 @@ pub fn install_launchd_agent(host: &str, port: u16) -> Result<String, String> {
             exe = exe.display(),
             host = host,
             port = port,
-            stdout = crate::adapters::paths::log_dir().join("launchd.log").display(),
-            stderr = crate::adapters::paths::log_dir().join("launchd.err").display(),
+            stdout = crate::adapters::paths::log_dir()
+                .join("launchd.log")
+                .display(),
+            stderr = crate::adapters::paths::log_dir()
+                .join("launchd.err")
+                .display(),
         );
         fs::write(&plist_path, plist).map_err(|e| e.to_string())?;
         let uid = std::process::Command::new("id")
@@ -335,7 +335,11 @@ pub fn install_launchd_agent(host: &str, port: u16) -> Result<String, String> {
             .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_owned())
             .unwrap_or_else(|| "501".to_owned());
         let st = Command::new("launchctl")
-            .args(["bootstrap", &format!("gui/{uid}"), plist_path.to_string_lossy().as_ref()])
+            .args([
+                "bootstrap",
+                &format!("gui/{uid}"),
+                plist_path.to_string_lossy().as_ref(),
+            ])
             .status()
             .map_err(|e| e.to_string())?;
         if st.success() {
@@ -349,7 +353,7 @@ pub fn install_launchd_agent(host: &str, port: u16) -> Result<String, String> {
 pub fn uninstall_launchd_agent() -> Result<String, String> {
     #[cfg(not(target_os = "macos"))]
     {
-        return Err("launchd integration is only supported on macOS".to_owned());
+        Err("launchd integration is only supported on macOS".to_owned())
     }
     #[cfg(target_os = "macos")]
     {
@@ -361,7 +365,11 @@ pub fn uninstall_launchd_agent() -> Result<String, String> {
             .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_owned())
             .unwrap_or_default();
         let _ = Command::new("launchctl")
-            .args(["bootout", &format!("gui/{uid}"), plist_path.to_string_lossy().as_ref()])
+            .args([
+                "bootout",
+                &format!("gui/{uid}"),
+                plist_path.to_string_lossy().as_ref(),
+            ])
             .status();
         if plist_path.exists() {
             fs::remove_file(&plist_path).map_err(|e| e.to_string())?;
@@ -373,7 +381,7 @@ pub fn uninstall_launchd_agent() -> Result<String, String> {
 pub fn launchd_status() -> Result<String, String> {
     #[cfg(not(target_os = "macos"))]
     {
-        return Err("launchd integration is only supported on macOS".to_owned());
+        Err("launchd integration is only supported on macOS".to_owned())
     }
     #[cfg(target_os = "macos")]
     {

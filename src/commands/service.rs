@@ -62,14 +62,14 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
             Ok(())
         }
         ServiceOp::LaunchdStatus => {
-            let msg = syntagma::adapters::service::launchd_status()
-                .map_err(|e| anyhow::anyhow!(e))?;
+            let msg =
+                syntagma::adapters::service::launchd_status().map_err(|e| anyhow::anyhow!(e))?;
             println!("{msg}");
             Ok(())
         }
         ServiceOp::Enable { now } => {
-            let msg = syntagma::adapters::service::enable_launchd(now)
-                .map_err(|e| anyhow::anyhow!(e))?;
+            let msg =
+                syntagma::adapters::service::enable_launchd(now).map_err(|e| anyhow::anyhow!(e))?;
             println!("{msg}");
             Ok(())
         }
@@ -124,8 +124,7 @@ pub fn cmd_mcp(http: bool, host: &str, port: u16) -> Result<()> {
 
         if let Some(response) = syntagma::server::mcp_dispatcher::dispatch(&mcp, request) {
             let response_str = serde_json::to_string(&response)?;
-            writeln!(stdout_lock, "{}", response_str)
-                        .context("failed to write response")?;
+            writeln!(stdout_lock, "{}", response_str).context("failed to write response")?;
             stdout_lock.flush().context("failed to flush stdout")?;
         }
     }

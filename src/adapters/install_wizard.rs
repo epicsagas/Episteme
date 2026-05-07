@@ -4,7 +4,7 @@ use crossterm::cursor::{Hide, MoveTo, Show};
 use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};
 use crossterm::style::{Attribute, Print, ResetColor, SetAttribute, SetForegroundColor};
 use crossterm::terminal::{
-    disable_raw_mode, enable_raw_mode, Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen,
+    Clear, ClearType, EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode,
 };
 use crossterm::{execute, queue};
 use std::io::{self, IsTerminal, Write};
@@ -27,14 +27,23 @@ pub fn select_claude_transport() -> io::Result<ClaudeTransport> {
 
 fn run_transport_tui() -> io::Result<ClaudeTransport> {
     let options: &[(&str, &str)] = &[
-        ("HTTP", "recommended — persistent server, instant tool calls"),
+        (
+            "HTTP",
+            "recommended — persistent server, instant tool calls",
+        ),
         ("stdio", "spawns a new process per tool call"),
     ];
     let mut cursor = 0usize;
 
     enable_raw_mode()?;
     let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen, Hide, MoveTo(0, 0), Clear(ClearType::All))?;
+    execute!(
+        stdout,
+        EnterAlternateScreen,
+        Hide,
+        MoveTo(0, 0),
+        Clear(ClearType::All)
+    )?;
 
     struct RawGuard;
     impl Drop for RawGuard {
@@ -51,7 +60,9 @@ fn run_transport_tui() -> io::Result<ClaudeTransport> {
 
         let ev = event::read()?;
         let Event::Key(key) = ev else { continue };
-        if key.kind != KeyEventKind::Press { continue }
+        if key.kind != KeyEventKind::Press {
+            continue;
+        }
 
         match key.code {
             KeyCode::Up | KeyCode::Char('k') | KeyCode::Char('K') => {
@@ -248,12 +259,7 @@ fn run_tui(checked: &mut [bool]) -> io::Result<Vec<String>> {
     }
 }
 
-fn draw(
-    w: &mut impl Write,
-    checked: &[bool],
-    cursor: usize,
-    warning: bool,
-) -> io::Result<()> {
+fn draw(w: &mut impl Write, checked: &[bool], cursor: usize, warning: bool) -> io::Result<()> {
     queue!(w, MoveTo(0, 0), Clear(ClearType::All))?;
 
     queue!(
@@ -377,10 +383,16 @@ pub fn configure_redis_tui(current: RedisConfig) -> io::Result<Option<RedisConfi
     // Field editing: host, port, db, ttl
     let host = prompt_field_tui("Redis cache", "host", &current.host)?;
     let port = prompt_numeric_tui::<u16>("Redis cache", "port", current.port)?;
-    let db   = prompt_numeric_tui::<u16>("Redis cache", "db",   current.db)?;
-    let ttl  = prompt_numeric_tui::<u64>("Redis cache", "ttl (seconds)", current.ttl)?;
+    let db = prompt_numeric_tui::<u16>("Redis cache", "db", current.db)?;
+    let ttl = prompt_numeric_tui::<u64>("Redis cache", "ttl (seconds)", current.ttl)?;
 
-    Ok(Some(RedisConfig { enabled: true, host, port, db, ttl }))
+    Ok(Some(RedisConfig {
+        enabled: true,
+        host,
+        port,
+        db,
+        ttl,
+    }))
 }
 
 /// Interactive telemetry consent screen. Returns true if user consents.
@@ -388,7 +400,11 @@ pub fn configure_telemetry_tui() -> io::Result<bool> {
     if !io::stdin().is_terminal() {
         return Ok(false);
     }
-    run_yes_no_tui("Telemetry", "Share anonymous usage data to improve Syntagma?", false)
+    run_yes_no_tui(
+        "Telemetry",
+        "Share anonymous usage data to improve Syntagma?",
+        false,
+    )
 }
 
 fn run_yes_no_tui(title: &str, question: &str, default_yes: bool) -> io::Result<bool> {
@@ -401,7 +417,13 @@ fn run_yes_no_tui(title: &str, question: &str, default_yes: bool) -> io::Result<
 
     enable_raw_mode()?;
     let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen, Hide, MoveTo(0, 0), Clear(ClearType::All))?;
+    execute!(
+        stdout,
+        EnterAlternateScreen,
+        Hide,
+        MoveTo(0, 0),
+        Clear(ClearType::All)
+    )?;
 
     struct RawGuard;
     impl Drop for RawGuard {
@@ -427,13 +449,16 @@ fn run_yes_no_tui(title: &str, question: &str, default_yes: bool) -> io::Result<
         for (i, (label, _)) in options.iter().enumerate() {
             let row_hi = i == cursor;
             if row_hi {
-                queue!(stdout,
-                    SetForegroundColor(HI), SetAttribute(Attribute::Bold),
+                queue!(
+                    stdout,
+                    SetForegroundColor(HI),
+                    SetAttribute(Attribute::Bold),
                     Print(format!(" › [•]  {label}\r\n")),
                     ResetColor,
                 )?;
             } else {
-                queue!(stdout,
+                queue!(
+                    stdout,
                     SetForegroundColor(DIM),
                     Print(format!("   [ ]  {label}\r\n")),
                     ResetColor,
@@ -441,7 +466,8 @@ fn run_yes_no_tui(title: &str, question: &str, default_yes: bool) -> io::Result<
             }
         }
 
-        queue!(stdout,
+        queue!(
+            stdout,
             Print("\r\n"),
             SetForegroundColor(DIM),
             Print(" ────────────────────────────────────────────────────────────────────────\r\n"),
@@ -452,14 +478,18 @@ fn run_yes_no_tui(title: &str, question: &str, default_yes: bool) -> io::Result<
 
         let ev = event::read()?;
         let Event::Key(key) = ev else { continue };
-        if key.kind != KeyEventKind::Press { continue }
+        if key.kind != KeyEventKind::Press {
+            continue;
+        }
 
         match key.code {
             KeyCode::Up | KeyCode::Char('k') => cursor = cursor.saturating_sub(1),
             KeyCode::Down | KeyCode::Char('j') => cursor = (cursor + 1).min(options.len() - 1),
             KeyCode::Enter => return Ok(options[cursor].1),
             KeyCode::Esc | KeyCode::Char('q') => return Ok(!default_yes),
-            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => return Ok(!default_yes),
+            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                return Ok(!default_yes);
+            }
             _ => {}
         }
     }
@@ -468,7 +498,13 @@ fn run_yes_no_tui(title: &str, question: &str, default_yes: bool) -> io::Result<
 fn prompt_field_tui(title: &str, label: &str, default: &str) -> io::Result<String> {
     enable_raw_mode()?;
     let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen, Hide, MoveTo(0, 0), Clear(ClearType::All))?;
+    execute!(
+        stdout,
+        EnterAlternateScreen,
+        Hide,
+        MoveTo(0, 0),
+        Clear(ClearType::All)
+    )?;
 
     struct RawGuard;
     impl Drop for RawGuard {
@@ -490,9 +526,11 @@ fn prompt_field_tui(title: &str, label: &str, default: &str) -> io::Result<Strin
         } else {
             format!(" › {label}: {input}_")
         };
-        queue!(stdout,
+        queue!(
+            stdout,
             Print("\r\n"),
-            SetForegroundColor(HI), SetAttribute(Attribute::Bold),
+            SetForegroundColor(HI),
+            SetAttribute(Attribute::Bold),
             Print(&display),
             ResetColor,
             Print("\r\n\r\n"),
@@ -505,13 +543,21 @@ fn prompt_field_tui(title: &str, label: &str, default: &str) -> io::Result<Strin
 
         let ev = event::read()?;
         let Event::Key(key) = ev else { continue };
-        if key.kind != KeyEventKind::Press { continue }
+        if key.kind != KeyEventKind::Press {
+            continue;
+        }
 
         match key.code {
             KeyCode::Enter => {
-                return Ok(if input.is_empty() { default.to_owned() } else { input });
+                return Ok(if input.is_empty() {
+                    default.to_owned()
+                } else {
+                    input
+                });
             }
-            KeyCode::Backspace => { input.pop(); }
+            KeyCode::Backspace => {
+                input.pop();
+            }
             KeyCode::Char(c) if !key.modifiers.contains(KeyModifiers::CONTROL) => {
                 input.push(c);
             }
@@ -533,12 +579,15 @@ where
 fn tui_header(w: &mut impl Write, subtitle: &str) -> io::Result<()> {
     let right_pad = 72usize.saturating_sub(12 + subtitle.len());
     let pad = " ".repeat(right_pad);
-    queue!(w,
-        SetForegroundColor(ACCENT), SetAttribute(Attribute::Bold),
+    queue!(
+        w,
+        SetForegroundColor(ACCENT),
+        SetAttribute(Attribute::Bold),
         Print(" ╭────────────────────────────────────────────────────────────────────────╮\r\n"),
         Print(" │ "),
         ResetColor,
-        SetForegroundColor(ACCENT), SetAttribute(Attribute::Bold),
+        SetForegroundColor(ACCENT),
+        SetAttribute(Attribute::Bold),
         Print("Syntagma"),
         ResetColor,
         Print(format!("  ·  {subtitle}")),
