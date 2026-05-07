@@ -107,16 +107,12 @@ impl KnowledgeGraph {
         let relations_path = data_dir.join("relations.json");
         let raw = std::fs::read_to_string(&relations_path)?;
 
-        let json_map: serde_json::Map<String, serde_json::Value> =
-            serde_json::from_str(&raw)?;
+        let json_map: serde_json::Map<String, serde_json::Value> = serde_json::from_str(&raw)?;
 
         let mut entities = HashMap::new();
 
         for (key, value) in json_map {
-            if !ENTITY_PREFIXES
-                .iter()
-                .any(|prefix| key.starts_with(prefix))
-            {
+            if !ENTITY_PREFIXES.iter().any(|prefix| key.starts_with(prefix)) {
                 continue;
             }
             match serde_json::from_value::<Entity>(value) {
@@ -222,11 +218,7 @@ impl KnowledgeGraph {
         let entity = self.entities.get(id)?;
 
         let outgoing = entity.relations.clone();
-        let incoming = self
-            .reverse_relations
-            .get(id)
-            .cloned()
-            .unwrap_or_default();
+        let incoming = self.reverse_relations.get(id).cloned().unwrap_or_default();
 
         Some(Neighborhood {
             entity: entity.clone(),
@@ -578,7 +570,12 @@ impl GraphRepository for KnowledgeGraph {
         self.get_neighborhood(id)
     }
 
-    fn find_shortest_path(&self, from_id: &str, to_id: &str, max_depth: usize) -> Option<Vec<String>> {
+    fn find_shortest_path(
+        &self,
+        from_id: &str,
+        to_id: &str,
+        max_depth: usize,
+    ) -> Option<Vec<String>> {
         self.find_shortest_path(from_id, to_id, max_depth)
     }
 
@@ -626,7 +623,8 @@ pub(crate) mod tests {
 
     /// Build a `KnowledgeGraph` from a vec of entities using `from_entities()`.
     pub(crate) fn build_graph_from_entities(entities: Vec<Entity>) -> KnowledgeGraph {
-        let map: HashMap<String, Entity> = entities.into_iter().map(|e| (e.id.clone(), e)).collect();
+        let map: HashMap<String, Entity> =
+            entities.into_iter().map(|e| (e.id.clone(), e)).collect();
         KnowledgeGraph::from_entities(map)
     }
 
@@ -635,7 +633,9 @@ pub(crate) mod tests {
         let mut smell = blank_entity("SMELL-01");
         smell.title = "Long Method".to_owned();
         smell.r#type = "smell".to_owned();
-        smell.relations.insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
+        smell
+            .relations
+            .insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
 
         let mut rf = blank_entity("RF-001");
         rf.title = "Extract Method".to_owned();
@@ -697,7 +697,10 @@ pub(crate) mod tests {
     #[test]
     fn get_neighbors_deduplicates() {
         let mut e = blank_entity("DP-001");
-        e.relations.insert("related_to".to_owned(), vec!["DP-002".to_owned(), "DP-002".to_owned()]);
+        e.relations.insert(
+            "related_to".to_owned(),
+            vec!["DP-002".to_owned(), "DP-002".to_owned()],
+        );
         let kg = build_graph_from_entities(vec![e]);
         let neighbors = kg.get_neighbors("DP-001", None);
         // Should not contain duplicates
@@ -710,7 +713,8 @@ pub(crate) mod tests {
     #[test]
     fn get_all_edges_roundtrip() {
         let mut e = blank_entity("SMELL-01");
-        e.relations.insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
+        e.relations
+            .insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
         let kg = build_graph_from_entities(vec![e]);
         let edges = kg.get_all_edges("SMELL-01");
         assert_eq!(edges.len(), 1);
@@ -722,23 +726,24 @@ pub(crate) mod tests {
     #[test]
     fn get_neighborhood_returns_incoming() {
         let mut smell = blank_entity("SMELL-01");
-        smell.relations.insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
+        smell
+            .relations
+            .insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
         let rf = blank_entity("RF-001");
         let kg = build_graph_from_entities(vec![smell, rf]);
 
         let nb = kg.get_neighborhood("RF-001").expect("should exist");
         assert_eq!(nb.entity.id, "RF-001");
         // Incoming should contain the reverse relation from SMELL-01
-        assert!(
-            !nb.incoming.is_empty(),
-            "RF-001 should have incoming edges"
-        );
+        assert!(!nb.incoming.is_empty(), "RF-001 should have incoming edges");
     }
 
     #[test]
     fn traverse_chain_single_step() {
         let mut smell = blank_entity("SMELL-01");
-        smell.relations.insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
+        smell
+            .relations
+            .insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
         let rf = blank_entity("RF-001");
         let kg = build_graph_from_entities(vec![smell, rf]);
 
@@ -752,18 +757,23 @@ pub(crate) mod tests {
     fn find_shortest_path_identity() {
         let e = blank_entity("DP-001");
         let kg = build_graph_from_entities(vec![e]);
-        let path = kg.find_shortest_path("DP-001", "DP-001", 5).expect("same node");
+        let path = kg
+            .find_shortest_path("DP-001", "DP-001", 5)
+            .expect("same node");
         assert_eq!(path, vec!["DP-001".to_owned()]);
     }
 
     #[test]
     fn find_shortest_path_between_two_nodes() {
         let mut e1 = blank_entity("DP-001");
-        e1.relations.insert("related_to".to_owned(), vec!["DP-002".to_owned()]);
+        e1.relations
+            .insert("related_to".to_owned(), vec!["DP-002".to_owned()]);
         let e2 = blank_entity("DP-002");
         let kg = build_graph_from_entities(vec![e1, e2]);
 
-        let path = kg.find_shortest_path("DP-001", "DP-002", 6).expect("path should exist");
+        let path = kg
+            .find_shortest_path("DP-001", "DP-002", 6)
+            .expect("path should exist");
         assert_eq!(path.first().unwrap(), "DP-001");
         assert_eq!(path.last().unwrap(), "DP-002");
     }
@@ -771,7 +781,8 @@ pub(crate) mod tests {
     #[test]
     fn extract_subgraph_radius_1() {
         let mut e1 = blank_entity("DP-001");
-        e1.relations.insert("related_to".to_owned(), vec!["DP-002".to_owned()]);
+        e1.relations
+            .insert("related_to".to_owned(), vec!["DP-002".to_owned()]);
         let e2 = blank_entity("DP-002");
         let kg = build_graph_from_entities(vec![e1, e2]);
 
@@ -785,7 +796,8 @@ pub(crate) mod tests {
     fn stats_counts_are_consistent() {
         let mut e1 = blank_entity("DP-001");
         e1.r#type = "pattern".to_owned();
-        e1.relations.insert("related_to".to_owned(), vec!["DP-002".to_owned()]);
+        e1.relations
+            .insert("related_to".to_owned(), vec!["DP-002".to_owned()]);
         let mut e2 = blank_entity("RF-001");
         e2.r#type = "refactoring".to_owned();
         let kg = build_graph_from_entities(vec![e1, e2]);
@@ -800,9 +812,11 @@ pub(crate) mod tests {
     #[test]
     fn find_similar_entities_with_low_threshold() {
         let mut e1 = blank_entity("DP-001");
-        e1.relations.insert("related_to".to_owned(), vec!["DP-003".to_owned()]);
+        e1.relations
+            .insert("related_to".to_owned(), vec!["DP-003".to_owned()]);
         let mut e2 = blank_entity("DP-002");
-        e2.relations.insert("related_to".to_owned(), vec!["DP-003".to_owned()]);
+        e2.relations
+            .insert("related_to".to_owned(), vec!["DP-003".to_owned()]);
         let e3 = blank_entity("DP-003");
         let kg = build_graph_from_entities(vec![e1, e2, e3]);
 
@@ -814,9 +828,12 @@ pub(crate) mod tests {
     #[test]
     fn infer_transitive_enforcements_runs() {
         let mut smell = blank_entity("SMELL-01");
-        smell.relations.insert("violates".to_owned(), vec!["LAW-001".to_owned()]);
+        smell
+            .relations
+            .insert("violates".to_owned(), vec!["LAW-001".to_owned()]);
         let mut rf = blank_entity("RF-001");
-        rf.relations.insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
+        rf.relations
+            .insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
         let law = blank_entity("LAW-001");
         let kg = build_graph_from_entities(vec![smell, rf, law]);
 
@@ -831,8 +848,10 @@ pub(crate) mod tests {
     #[test]
     fn find_contradictions_runs() {
         let mut e = blank_entity("DP-001");
-        e.relations.insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
-        e.relations.insert("violates".to_owned(), vec!["LAW-001".to_owned()]);
+        e.relations
+            .insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
+        e.relations
+            .insert("violates".to_owned(), vec!["LAW-001".to_owned()]);
         let kg = build_graph_from_entities(vec![e]);
 
         let contradictions = kg.find_contradictions();

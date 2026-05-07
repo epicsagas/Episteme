@@ -1,10 +1,10 @@
-use std::path::Path;
 use std::collections::HashMap;
+use std::path::Path;
 
-use crate::domain::types::Entity;
-use crate::domain::graph::KnowledgeGraph;
 use crate::adapters::error::{InfraError, Result};
 use crate::adapters::paths;
+use crate::domain::graph::KnowledgeGraph;
+use crate::domain::types::Entity;
 
 const ENTITY_PREFIXES: &[&str] = &["DP-", "RF-", "LAW-", "SMELL-"];
 
@@ -46,17 +46,25 @@ fn extract_first_section(raw_dir: &Path, file_path: &str) -> String {
     let mut para = String::new();
     for line in text.lines() {
         if line.starts_with("## ") {
-            if in_section { break; }
+            if in_section {
+                break;
+            }
             in_section = true;
             continue;
         }
         if in_section {
-            if line.starts_with('#') { break; }
+            if line.starts_with('#') {
+                break;
+            }
             let trimmed = line.trim();
             if trimmed.is_empty() {
-                if !para.is_empty() { break; }
+                if !para.is_empty() {
+                    break;
+                }
             } else {
-                if !para.is_empty() { para.push(' '); }
+                if !para.is_empty() {
+                    para.push(' ');
+                }
                 para.push_str(trimmed);
             }
         }

@@ -70,9 +70,9 @@ impl OpenAIEmbeddingProvider {
 
         let status = response.status();
         if !status.is_success() {
-            let text = response.text().unwrap_or_else(|e| {
-                format!("(failed to read response body: {e})")
-            });
+            let text = response
+                .text()
+                .unwrap_or_else(|e| format!("(failed to read response body: {e})"));
             return Err(format!(
                 "OpenAI embedding API returned status {}: {text}",
                 status
@@ -197,11 +197,7 @@ mod tests {
     fn openai_live_embed_single() {
         let key = std::env::var("SYNTAGMA_OPENAI_API_KEY")
             .expect("SYNTAGMA_OPENAI_API_KEY must be set for live test");
-        let provider = OpenAIEmbeddingProvider::new(
-            key,
-            "text-embedding-3-small".to_owned(),
-            1536,
-        );
+        let provider = OpenAIEmbeddingProvider::new(key, "text-embedding-3-small".to_owned(), 1536);
         let vec = provider.embed("hello world").expect("embed should succeed");
         assert_eq!(vec.len(), 1536);
         assert!(vec.iter().any(|&f| f != 0.0));
@@ -213,11 +209,7 @@ mod tests {
     fn openai_live_embed_batch() {
         let key = std::env::var("SYNTAGMA_OPENAI_API_KEY")
             .expect("SYNTAGMA_OPENAI_API_KEY must be set for live test");
-        let provider = OpenAIEmbeddingProvider::new(
-            key,
-            "text-embedding-3-small".to_owned(),
-            1536,
-        );
+        let provider = OpenAIEmbeddingProvider::new(key, "text-embedding-3-small".to_owned(), 1536);
         let texts = ["first sentence", "second sentence", "third sentence"];
         let results = provider
             .embed_batch(&texts, 2)

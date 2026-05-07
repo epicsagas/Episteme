@@ -1,9 +1,9 @@
 use axum::{
+    Router,
     extract::{Path, Query, State},
     http::StatusCode,
     response::{Html, Json},
     routing::get,
-    Router,
 };
 use serde::Deserialize;
 use std::sync::Arc;
@@ -117,7 +117,9 @@ async fn graph_entity(
         })
         .collect();
 
-    Ok(Json(serde_json::json!({"nodes": nodes, "edges": edge_data})))
+    Ok(Json(
+        serde_json::json!({"nodes": nodes, "edges": edge_data}),
+    ))
 }
 
 #[derive(Deserialize)]
@@ -219,7 +221,8 @@ async fn graph_sankey(State(mcp): State<Arc<SyntagmaMCP>>) -> Json<serde_json::V
     let graph = mcp.graph();
 
     // Count entities per type.
-    let mut type_counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    let mut type_counts: std::collections::HashMap<String, usize> =
+        std::collections::HashMap::new();
     for id in graph.all_entity_ids() {
         if let Some(entity) = graph.get_entity(&id) {
             let t = if entity.r#type.is_empty() {
@@ -330,8 +333,14 @@ async fn graph_tree(State(mcp): State<Arc<SyntagmaMCP>>) -> Json<serde_json::Val
     let type_order = ["pattern", "refactoring", "law", "smell"];
     let mut sorted_types: Vec<String> = by_type.keys().cloned().collect();
     sorted_types.sort_by(|a, b| {
-        let ai = type_order.iter().position(|t| *t == a.as_str()).unwrap_or(999);
-        let bi = type_order.iter().position(|t| *t == b.as_str()).unwrap_or(999);
+        let ai = type_order
+            .iter()
+            .position(|t| *t == a.as_str())
+            .unwrap_or(999);
+        let bi = type_order
+            .iter()
+            .position(|t| *t == b.as_str())
+            .unwrap_or(999);
         ai.cmp(&bi)
     });
 
@@ -351,7 +360,10 @@ async fn graph_tree(State(mcp): State<Arc<SyntagmaMCP>>) -> Json<serde_json::Val
                     let leaf_children: Vec<serde_json::Value> = items
                         .iter()
                         .map(|(id, title)| {
-                            let desc = graph.get_entity(id).map(|e| e.description.clone()).unwrap_or_default();
+                            let desc = graph
+                                .get_entity(id)
+                                .map(|e| e.description.clone())
+                                .unwrap_or_default();
                             serde_json::json!({"id": id, "title": title, "description": desc})
                         })
                         .collect();
@@ -940,7 +952,8 @@ mod tests {
 
     /// Build an SyntagmaMCP handler from a vec of entities.
     fn make_mcp(entities: Vec<Entity>) -> Arc<SyntagmaMCP> {
-        let map: HashMap<String, Entity> = entities.into_iter().map(|e| (e.id.clone(), e)).collect();
+        let map: HashMap<String, Entity> =
+            entities.into_iter().map(|e| (e.id.clone(), e)).collect();
         let kg = KnowledgeGraph::from_entities(map);
         Arc::new(SyntagmaMCP::new(kg))
     }
@@ -952,9 +965,12 @@ mod tests {
     #[tokio::test]
     async fn sankey_returns_nodes_and_links() {
         let mut smell = make_entity("SMELL-01", "smell", "quality", "Long Method");
-        smell.relations.insert("solved_by".into(), vec!["RF-001".into()]);
+        smell
+            .relations
+            .insert("solved_by".into(), vec!["RF-001".into()]);
         let mut rf = make_entity("RF-001", "refactoring", "design", "Extract Method");
-        rf.relations.insert("enforces".into(), vec!["LAW-001".into()]);
+        rf.relations
+            .insert("enforces".into(), vec!["LAW-001".into()]);
         let law = make_entity("LAW-001", "law", "quality", "Single Responsibility");
 
         let mcp = make_mcp(vec![smell, rf, law]);
@@ -983,7 +999,8 @@ mod tests {
     #[tokio::test]
     async fn sankey_excludes_filtered_relations() {
         let mut e1 = make_entity("DP-001", "pattern", "creational", "Factory");
-        e1.relations.insert("related_to".into(), vec!["DP-002".into()]);
+        e1.relations
+            .insert("related_to".into(), vec!["DP-002".into()]);
         let e2 = make_entity("DP-002", "pattern", "structural", "Adapter");
 
         let mcp = make_mcp(vec![e1, e2]);
@@ -1006,7 +1023,9 @@ mod tests {
     #[tokio::test]
     async fn sankey_includes_allowed_relations() {
         let mut smell = make_entity("SMELL-01", "smell", "quality", "Long Method");
-        smell.relations.insert("solved_by".into(), vec!["RF-001".into()]);
+        smell
+            .relations
+            .insert("solved_by".into(), vec!["RF-001".into()]);
         let rf = make_entity("RF-001", "refactoring", "design", "Extract Method");
 
         let mcp = make_mcp(vec![smell, rf]);
@@ -1033,7 +1052,9 @@ mod tests {
     #[tokio::test]
     async fn sankey_aggregates_multiple_edges() {
         let mut smell1 = make_entity("SMELL-01", "smell", "quality", "Long Method");
-        smell1.relations.insert("solved_by".into(), vec!["RF-001".into(), "RF-002".into()]);
+        smell1
+            .relations
+            .insert("solved_by".into(), vec!["RF-001".into(), "RF-002".into()]);
         let rf1 = make_entity("RF-001", "refactoring", "design", "Extract Method");
         let rf2 = make_entity("RF-002", "refactoring", "design", "Decompose Conditional");
 
@@ -1087,7 +1108,10 @@ mod tests {
         assert_eq!(children.len(), 2); // creational + structural
 
         // Find creational category
-        let creational = children.iter().find(|c| c["category"] == "creational").unwrap();
+        let creational = children
+            .iter()
+            .find(|c| c["category"] == "creational")
+            .unwrap();
         assert_eq!(creational["label"], "Creational");
         let leaf_items = creational["children"].as_array().unwrap();
         assert_eq!(leaf_items.len(), 2);

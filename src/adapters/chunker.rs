@@ -1,8 +1,8 @@
 use std::path::Path;
 
 use crate::adapters::error::{InfraError, Result};
-use crate::domain::types::Entity;
 use crate::adapters::sqlite_db::Chunk;
+use crate::domain::types::Entity;
 
 /// Minimum character length for a section to be kept as a chunk.
 const MIN_CHUNK_LEN: usize = 50;
@@ -69,8 +69,7 @@ pub fn chunk_markdown(file_path: &Path, entity_id: &str, entity: &Entity) -> Res
                 title: title.clone(),
                 section: current_section.clone(),
                 chunk_index: chunk_index as i64,
-                metadata: serde_json::to_string(&metadata)
-                    .unwrap_or_else(|_| "{}".to_owned()),
+                metadata: serde_json::to_string(&metadata).unwrap_or_else(|_| "{}".to_owned()),
             });
         }
     }
@@ -113,21 +112,9 @@ fn build_metadata(entity_id: &str, entity: &Entity) -> Metadata {
             .get("when_to_use")
             .cloned()
             .unwrap_or_default(),
-        symptoms: entity
-            .context
-            .get("symptoms")
-            .cloned()
-            .unwrap_or_default(),
-        benefits: entity
-            .context
-            .get("benefits")
-            .cloned()
-            .unwrap_or_default(),
-        drawbacks: entity
-            .context
-            .get("drawbacks")
-            .cloned()
-            .unwrap_or_default(),
+        symptoms: entity.context.get("symptoms").cloned().unwrap_or_default(),
+        benefits: entity.context.get("benefits").cloned().unwrap_or_default(),
+        drawbacks: entity.context.get("drawbacks").cloned().unwrap_or_default(),
     }
 }
 

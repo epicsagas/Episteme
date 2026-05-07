@@ -116,10 +116,7 @@ impl CacheManager {
         let pool = cfg
             .create_pool(Some(Runtime::Tokio1))
             .map_err(|e| e.to_string())?;
-        let mut conn = pool
-            .get()
-            .await
-            .map_err(|e| e.to_string())?;
+        let mut conn = pool.get().await.map_err(|e| e.to_string())?;
         let _: String = redis::cmd("PING")
             .query_async(&mut conn)
             .await
@@ -313,9 +310,7 @@ pub struct CacheManager {
 #[cfg(not(feature = "redis-cache"))]
 impl CacheManager {
     pub fn new(_enabled: bool, _default_ttl: u64) -> Self {
-        Self {
-            enabled: false,
-        }
+        Self { enabled: false }
     }
     pub fn is_enabled(&self) -> bool {
         self.enabled

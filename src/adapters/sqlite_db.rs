@@ -60,7 +60,9 @@ pub struct Chunk {
 
 /// Insert (or replace) a batch of chunks.
 pub fn insert_chunks(conn: &Connection, chunks: &[Chunk]) -> Result<()> {
-    let tx = conn.unchecked_transaction().map_err(|e| InfraError::Database(e.to_string()))?;
+    let tx = conn
+        .unchecked_transaction()
+        .map_err(|e| InfraError::Database(e.to_string()))?;
 
     for chunk in chunks {
         tx.execute(
@@ -81,7 +83,8 @@ pub fn insert_chunks(conn: &Connection, chunks: &[Chunk]) -> Result<()> {
         .map_err(|e| InfraError::Database(e.to_string()))?;
     }
 
-    tx.commit().map_err(|e| InfraError::Database(e.to_string()))?;
+    tx.commit()
+        .map_err(|e| InfraError::Database(e.to_string()))?;
     Ok(())
 }
 
@@ -128,7 +131,9 @@ pub fn get_all_embeddings(
 
     let params_refs: Vec<&dyn rusqlite::types::ToSql> = p.iter().map(|x| x.as_ref()).collect();
 
-    let mut stmt = conn.prepare(&sql).map_err(|e| InfraError::Database(e.to_string()))?;
+    let mut stmt = conn
+        .prepare(&sql)
+        .map_err(|e| InfraError::Database(e.to_string()))?;
 
     let rows = stmt
         .query_map(params_refs.as_slice(), |row| {
@@ -165,6 +170,5 @@ pub fn get_embedding_count(conn: &Connection) -> Result<usize> {
     let count: i64 = conn
         .query_row("SELECT COUNT(*) FROM embeddings", [], |row| row.get(0))
         .map_err(|e| InfraError::Database(e.to_string()))?;
-    usize::try_from(count)
-        .map_err(|_| InfraError::Database("embedding count overflow".to_owned()))
+    usize::try_from(count).map_err(|_| InfraError::Database("embedding count overflow".to_owned()))
 }

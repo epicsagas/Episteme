@@ -103,10 +103,7 @@ pub fn handle_sniff(files: &[String], min_confidence: f64) -> String {
             continue;
         }
 
-        let ext = path
-            .extension()
-            .and_then(|e| e.to_str())
-            .unwrap_or("");
+        let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
         let lang = detect_language_from_ext(ext);
         if lang.is_empty() {
             continue;
@@ -143,10 +140,7 @@ pub fn handle_sniff(files: &[String], min_confidence: f64) -> String {
 pub fn handle_audit(file_path: Option<&str>, min_confidence: f64) -> String {
     let detections = if let Some(fp) = file_path {
         let path = Path::new(fp);
-        let ext = path
-            .extension()
-            .and_then(|e| e.to_str())
-            .unwrap_or("");
+        let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
         let lang = detect_language_from_ext(ext);
         if lang.is_empty() {
             return "<!-- syntagma-audit: no language detected -->\n".to_owned();

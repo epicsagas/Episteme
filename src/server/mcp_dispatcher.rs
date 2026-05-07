@@ -1,7 +1,7 @@
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
-use crate::server::mcp_schemas;
 use crate::server::mcp_handler::SyntagmaMCP;
+use crate::server::mcp_schemas;
 
 /// Dispatch a single JSON-RPC 2.0 request against the MCP handler.
 ///
@@ -43,14 +43,8 @@ pub fn dispatch(mcp: &SyntagmaMCP, request: Value) -> Option<Value> {
         })),
 
         "tools/call" => {
-            let tool_name = params
-                .get("name")
-                .and_then(|v| v.as_str())
-                .unwrap_or("");
-            let arguments = params
-                .get("arguments")
-                .cloned()
-                .unwrap_or(json!({}));
+            let tool_name = params.get("name").and_then(|v| v.as_str()).unwrap_or("");
+            let arguments = params.get("arguments").cloned().unwrap_or(json!({}));
 
             let result = mcp.handle_tool_call(tool_name, &arguments);
             Some(tool_text_response(req_id, result))
@@ -66,10 +60,7 @@ pub fn dispatch(mcp: &SyntagmaMCP, request: Value) -> Option<Value> {
         })),
 
         "resources/read" => {
-            let uri = params
-                .get("uri")
-                .and_then(|v| v.as_str())
-                .unwrap_or("");
+            let uri = params.get("uri").and_then(|v| v.as_str()).unwrap_or("");
             let data = mcp.handle_resource_read(uri);
             Some(json!({
                 "jsonrpc": "2.0",

@@ -37,10 +37,7 @@ pub fn cmd_stats() -> Result<()> {
     println!("Total entities:        {}", stats.total_entities);
     println!("Total edges:           {}", stats.total_edges);
     println!("With relations:        {}", stats.entities_with_relations);
-    println!(
-        "Avg edges/entity:      {:.2}",
-        stats.avg_edges_per_entity
-    );
+    println!("Avg edges/entity:      {:.2}", stats.avg_edges_per_entity);
     println!();
     println!("By type:");
     let mut types: Vec<_> = stats.by_type.iter().collect();
@@ -133,7 +130,9 @@ pub fn cmd_telemetry(action: &str) -> Result<()> {
             );
             println!(
                 "[syntagma] Install ID:   {}",
-                syntagma::adapters::paths::syntagma_home().join("install-id").display()
+                syntagma::adapters::paths::syntagma_home()
+                    .join("install-id")
+                    .display()
             );
             Ok(())
         }

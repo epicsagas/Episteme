@@ -9,11 +9,15 @@ use syntagma::domain::engine::RefactoringInferenceEngine;
 
 use super::prelude::*;
 
-pub fn cmd_analyze(file: &str, language: Option<&str>, json: bool, min_confidence: f64) -> Result<()> {
+pub fn cmd_analyze(
+    file: &str,
+    language: Option<&str>,
+    json: bool,
+    min_confidence: f64,
+) -> Result<()> {
     let lang = detect_language(file, language)?;
 
-    let parser =
-        get_parser(&lang).map_err(|e| anyhow::anyhow!("{e}"))?;
+    let parser = get_parser(&lang).map_err(|e| anyhow::anyhow!("{e}"))?;
 
     let path = PathBuf::from(file);
     let detections = parser
@@ -72,8 +76,7 @@ pub fn cmd_analyze(file: &str, language: Option<&str>, json: bool, min_confidenc
 pub fn cmd_infer(file: &str, language: Option<&str>, top_k: usize, json: bool) -> Result<()> {
     let lang = detect_language(file, language)?;
 
-    let parser =
-        get_parser(&lang).map_err(|e| anyhow::anyhow!("{e}"))?;
+    let parser = get_parser(&lang).map_err(|e| anyhow::anyhow!("{e}"))?;
 
     let path = PathBuf::from(file);
     let detections = parser
@@ -141,10 +144,7 @@ pub fn cmd_infer(file: &str, language: Option<&str>, top_k: usize, json: bool) -
                     s.effort
                 );
                 if !s.principles_enforced.is_empty() {
-                    println!(
-                        "     Enforces: {}",
-                        s.principles_enforced.join(", ")
-                    );
+                    println!("     Enforces: {}", s.principles_enforced.join(", "));
                 }
                 println!("     {}", s.description);
             }

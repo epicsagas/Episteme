@@ -1,7 +1,7 @@
 //! Graph domain: entity lookup, neighbor traversal, and shortest-path queries.
 
 use crate::domain::graph::KnowledgeGraph;
-use crate::domain::summarizer::{summarize_entity, DetailLevel};
+use crate::domain::summarizer::{DetailLevel, summarize_entity};
 
 /// Get detailed information about a single entity.
 pub fn get_entity(
@@ -14,7 +14,7 @@ pub fn get_entity(
         None => {
             return serde_json::json!({
                 "error": format!("Entity '{}' not found.", entity_id)
-            })
+            });
         }
     };
 
