@@ -126,7 +126,12 @@ struct TelemetryEvent {
 }
 
 impl Telemetry {
-    pub fn new(enabled: bool, posthog_api_key: String, posthog_host: String, sentry_dsn: String) -> Self {
+    pub fn new(
+        enabled: bool,
+        posthog_api_key: String,
+        posthog_host: String,
+        sentry_dsn: String,
+    ) -> Self {
         if !enabled {
             return Self {
                 enabled: false,
@@ -274,7 +279,10 @@ async fn send_with_retry(
                 }))
                 .send()
                 .await;
-            ok &= res.as_ref().map(|r| r.status().is_success()).unwrap_or(false);
+            ok &= res
+                .as_ref()
+                .map(|r| r.status().is_success())
+                .unwrap_or(false);
         }
         if !sentry_dsn.is_empty() {
             let res = client
@@ -286,7 +294,10 @@ async fn send_with_retry(
                 }))
                 .send()
                 .await;
-            ok &= res.as_ref().map(|r| r.status().is_success()).unwrap_or(false);
+            ok &= res
+                .as_ref()
+                .map(|r| r.status().is_success())
+                .unwrap_or(false);
         }
         if ok {
             return Ok(());

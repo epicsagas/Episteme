@@ -7,14 +7,9 @@ use anyhow::Result;
 
 use syntagma::adapters::config::SyntagmaConfig;
 
-pub fn cmd_install(
-    tools: &[String],
-    all: bool,
-    dry_run: bool,
-    local: bool,
-) -> Result<()> {
-    use syntagma::adapters::installer;
+pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> Result<()> {
     use std::io::{self, IsTerminal};
+    use syntagma::adapters::installer;
 
     // --- Data seeding ---
     let seeded = if local {
@@ -42,8 +37,8 @@ pub fn cmd_install(
         println!("Fetching data from GitHub Releases...");
         let url = resolve_release_url().map_err(|e| anyhow::anyhow!(e))?;
         println!("  Downloading: {url}");
-        for msg in installer::seed_data_from_release(&url, dry_run)
-            .map_err(|e| anyhow::anyhow!(e))?
+        for msg in
+            installer::seed_data_from_release(&url, dry_run).map_err(|e| anyhow::anyhow!(e))?
         {
             println!("  {msg}");
         }
@@ -68,14 +63,15 @@ pub fn cmd_install(
             .collect()
     } else if tools.is_empty() && io::stdin().is_terminal() {
         let installed: Vec<&str> = detect_installed_tools().into_iter().collect();
-        let selected = match syntagma::adapters::install_wizard::interactive_select_tools(&installed) {
-            Ok(s) if !s.is_empty() => s,
-            Ok(_) => anyhow::bail!("install cancelled"),
-            Err(e) => {
-                eprintln!("Interactive UI failed ({e}); falling back to text prompt.");
-                syntagma::adapters::install_wizard::fallback_select_tools()
-            }
-        };
+        let selected =
+            match syntagma::adapters::install_wizard::interactive_select_tools(&installed) {
+                Ok(s) if !s.is_empty() => s,
+                Ok(_) => anyhow::bail!("install cancelled"),
+                Err(e) => {
+                    eprintln!("Interactive UI failed ({e}); falling back to text prompt.");
+                    syntagma::adapters::install_wizard::fallback_select_tools()
+                }
+            };
 
         let cfg = SyntagmaConfig::load().unwrap_or_default();
         if let Some(redis) = syntagma::adapters::install_wizard::configure_redis_tui(
@@ -86,13 +82,16 @@ pub fn cmd_install(
                 db: cfg.redis_db,
                 ttl: cfg.redis_ttl,
             },
-        ).map_err(|e| anyhow::anyhow!(e))? {
+        )
+        .map_err(|e| anyhow::anyhow!(e))?
+        {
             upsert_config_yaml(redis.enabled, &redis.host, redis.port, redis.db, redis.ttl)?;
         }
 
         let telemetry_enabled = syntagma::adapters::install_wizard::configure_telemetry_tui()
             .map_err(|e| anyhow::anyhow!(e))?;
-        syntagma::adapters::telemetry::write_consent(telemetry_enabled).map_err(|e| anyhow::anyhow!(e))?;
+        syntagma::adapters::telemetry::write_consent(telemetry_enabled)
+            .map_err(|e| anyhow::anyhow!(e))?;
 
         selected
     } else {
@@ -194,19 +193,21 @@ fn resolve_release_url() -> Result<String> {
         }
     }
 
-    anyhow::bail!(
-        "No data asset found for v{version}.\nCheck: https://github.com/{repo}/releases"
-    )
+    anyhow::bail!("No data asset found for v{version}.\nCheck: https://github.com/{repo}/releases")
 }
 
 fn get_package_version() -> String {
-    std::env::var("SYNTAGMA_VERSION")
-        .unwrap_or_else(|_| env!("CARGO_PKG_VERSION").to_owned())
+    std::env::var("SYNTAGMA_VERSION").unwrap_or_else(|_| env!("CARGO_PKG_VERSION").to_owned())
 }
 
 fn fetch_release_asset_url(api_url: &str, prefix: &str) -> Result<String> {
     let output = std::process::Command::new("curl")
-        .args(["-LfsS", "-H", "Accept: application/vnd.github+json", api_url])
+        .args([
+            "-LfsS",
+            "-H",
+            "Accept: application/vnd.github+json",
+            api_url,
+        ])
         .output()
         .map_err(|e| anyhow::anyhow!("curl failed: {e}"))?;
 
@@ -215,8 +216,8 @@ fn fetch_release_asset_url(api_url: &str, prefix: &str) -> Result<String> {
     }
 
     let json_str = String::from_utf8_lossy(&output.stdout);
-    let val: serde_json::Value = serde_json::from_str(&json_str)
-        .map_err(|e| anyhow::anyhow!("JSON parse: {e}"))?;
+    let val: serde_json::Value =
+        serde_json::from_str(&json_str).map_err(|e| anyhow::anyhow!("JSON parse: {e}"))?;
 
     if let Some(assets) = val.get("assets").and_then(|a| a.as_array()) {
         for asset in assets {
@@ -245,16 +246,18 @@ pub fn detect_installed_tools() -> std::collections::HashSet<&'static str> {
         let Ok(v) = serde_json::from_str::<Value>(&text) else {
             return false;
         };
-        v.get(parent)
-            .and_then(|m| m.get(child))
-            .is_some()
+        v.get(parent).and_then(|m| m.get(child)).is_some()
     }
 
     let mut installed = HashSet::new();
     let home = std::env::var("HOME").unwrap_or_default();
     let cwd = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
 
-    if has_json_path(&PathBuf::from(&home).join(".claude.json"), "mcpServers", "syntagma") {
+    if has_json_path(
+        &PathBuf::from(&home).join(".claude.json"),
+        "mcpServers",
+        "syntagma",
+    ) {
         installed.insert("claude");
     }
     if has_json_path(
@@ -317,9 +320,7 @@ fn upsert_config_yaml(
     if !root.is_mapping() {
         root = Value::Mapping(Mapping::new());
     }
-    let root_map = root
-        .as_mapping_mut()
-        .expect("mapping checked above");
+    let root_map = root.as_mapping_mut().expect("mapping checked above");
 
     let mut redis_map = Mapping::new();
     redis_map.insert(
@@ -342,10 +343,7 @@ fn upsert_config_yaml(
         Value::String("ttl".to_owned()),
         Value::Number(serde_yaml::Number::from(redis_ttl)),
     );
-    root_map.insert(
-        Value::String("redis".to_owned()),
-        Value::Mapping(redis_map),
-    );
+    root_map.insert(Value::String("redis".to_owned()), Value::Mapping(redis_map));
 
     std::fs::create_dir_all(syntagma::adapters::paths::syntagma_home())?;
     let yaml = serde_yaml::to_string(&root)?;

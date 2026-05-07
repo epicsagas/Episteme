@@ -1,6 +1,6 @@
+use crate::domain::metrics::SmellDetection;
 use std::fs;
 use std::path::Path;
-use crate::domain::metrics::SmellDetection;
 
 /// Trait for language-specific code parsers.
 ///

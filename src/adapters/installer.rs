@@ -2,7 +2,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 /// Transport configuration for Claude Code MCP integration.
 #[derive(Debug, Clone, PartialEq)]
@@ -44,9 +44,7 @@ pub fn install_claude(dry_run: bool, transport: &ClaudeTransport) -> Result<Vec<
     let mut messages = Vec::new();
 
     let mut config = read_json_file(&claude_json);
-    let map = config
-        .as_object_mut()
-        .ok_or("config is not an object")?;
+    let map = config.as_object_mut().ok_or("config is not an object")?;
 
     let servers = map
         .entry("mcpServers")
@@ -99,9 +97,7 @@ pub fn install_cursor(dry_run: bool) -> Result<Vec<String>, String> {
     fs::create_dir_all(&cursor_dir).map_err(|e| e.to_string())?;
 
     let mut config = read_json_file(&mcp_json);
-    let map = config
-        .as_object_mut()
-        .ok_or("config is not an object")?;
+    let map = config.as_object_mut().ok_or("config is not an object")?;
 
     let servers = map
         .entry("mcpServers")
@@ -149,9 +145,7 @@ pub fn install_gemini(dry_run: bool) -> Result<Vec<String>, String> {
     fs::create_dir_all(&gemini_dir).map_err(|e| e.to_string())?;
 
     let mut config = read_json_file(&mcp_json);
-    let map = config
-        .as_object_mut()
-        .ok_or("config is not an object")?;
+    let map = config.as_object_mut().ok_or("config is not an object")?;
 
     let servers = map
         .entry("mcpServers")
@@ -180,9 +174,7 @@ pub fn install_opencode(dry_run: bool) -> Result<Vec<String>, String> {
     fs::create_dir_all(&opencode_dir).map_err(|e| e.to_string())?;
 
     let mut config = read_json_file(&config_json);
-    let map = config
-        .as_object_mut()
-        .ok_or("config is not an object")?;
+    let map = config.as_object_mut().ok_or("config is not an object")?;
 
     let servers = map
         .entry("mcp")
@@ -210,9 +202,7 @@ pub fn install_cline(dry_run: bool) -> Result<Vec<String>, String> {
     fs::create_dir_all(&cline_dir).map_err(|e| e.to_string())?;
 
     let mut config = read_json_file(&mcp_json);
-    let map = config
-        .as_object_mut()
-        .ok_or("config is not an object")?;
+    let map = config.as_object_mut().ok_or("config is not an object")?;
     let servers = map
         .entry("mcpServers")
         .or_insert_with(|| json!({}))
@@ -248,14 +238,10 @@ pub fn seed_data(dry_run: bool) -> Result<Vec<String>, String> {
         copy_dir_recursive(&registry_src, &registry_dst)?;
     }
 
-    let source_dirs: Vec<PathBuf> = vec![
-        cwd.join("raw"),
-        cwd.join("data"),
-        cwd.join("meta"),
-    ]
-    .into_iter()
-    .filter(|p| p.exists() && p.is_dir())
-    .collect();
+    let source_dirs: Vec<PathBuf> = vec![cwd.join("raw"), cwd.join("data"), cwd.join("meta")]
+        .into_iter()
+        .filter(|p| p.exists() && p.is_dir())
+        .collect();
 
     for source in source_dirs {
         let target = if source.file_name() == Some(std::ffi::OsStr::new("raw")) {
@@ -282,7 +268,9 @@ pub fn seed_data(dry_run: bool) -> Result<Vec<String>, String> {
 pub fn seed_data_from_release(url: &str, dry_run: bool) -> Result<Vec<String>, String> {
     let mut messages = Vec::new();
     if dry_run {
-        messages.push(format!("Would download and extract release archive from {url}"));
+        messages.push(format!(
+            "Would download and extract release archive from {url}"
+        ));
         return Ok(messages);
     }
 
@@ -500,9 +488,7 @@ mod tests {
         // We cannot easily redirect dirs_home(), so test the config logic directly.
         let mut config = read_json_file(&path);
         let map = config.as_object_mut().unwrap();
-        let mcp_servers = map
-            .entry("mcpServers")
-            .or_insert_with(|| json!({}));
+        let mcp_servers = map.entry("mcpServers").or_insert_with(|| json!({}));
         let servers = mcp_servers.as_object_mut().unwrap();
         assert!(!servers.contains_key("syntagma"));
         servers.insert("syntagma".to_owned(), mcp_server_config());
@@ -520,9 +506,7 @@ mod tests {
         // First install.
         let mut config = json!({});
         let map = config.as_object_mut().unwrap();
-        let mcp_servers = map
-            .entry("mcpServers")
-            .or_insert_with(|| json!({}));
+        let mcp_servers = map.entry("mcpServers").or_insert_with(|| json!({}));
         let servers = mcp_servers.as_object_mut().unwrap();
         servers.insert("syntagma".to_owned(), mcp_server_config());
         write_json_file(&path, &config).unwrap();

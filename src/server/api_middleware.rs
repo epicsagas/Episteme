@@ -68,7 +68,11 @@ pub fn cors_layer(cors_origins: &str) -> CorsLayer {
     tracing::info!("CORS: restricting to {} origin(s)", origins.len());
     CorsLayer::new()
         .allow_origin(origins)
-        .allow_methods([axum::http::Method::GET, axum::http::Method::POST, axum::http::Method::OPTIONS])
+        .allow_methods([
+            axum::http::Method::GET,
+            axum::http::Method::POST,
+            axum::http::Method::OPTIONS,
+        ])
         .allow_headers([
             header::CONTENT_TYPE,
             header::AUTHORIZATION,
@@ -86,7 +90,8 @@ pub async fn request_id_middleware(request: Request, next: Next) -> Response {
         .and_then(|v| v.to_str().ok())
         .map(|s| s.to_owned())
         .unwrap_or_else(|| Uuid::new_v4().to_string());
-    let started = crate::adapters::structured_logging::log_request_started(&request_id, &method, &path);
+    let started =
+        crate::adapters::structured_logging::log_request_started(&request_id, &method, &path);
 
     let mut response = next.run(request).await;
     let status = response.status().as_u16();
@@ -135,13 +140,13 @@ pub async fn auth_middleware(
     let api_key = req.headers().get("X-API-Key").and_then(|v| v.to_str().ok());
 
     match api_key {
-        Some(key) if crate::server::mcp_auth::validate_api_key(key, &keys.0) => {
-            next.run(req).await
-        }
+        Some(key) if crate::server::mcp_auth::validate_api_key(key, &keys.0) => next.run(req).await,
         _ => {
-            let mut response =
-                (axum::http::StatusCode::UNAUTHORIZED, "Invalid or missing API key")
-                    .into_response();
+            let mut response = (
+                axum::http::StatusCode::UNAUTHORIZED,
+                "Invalid or missing API key",
+            )
+                .into_response();
             response.headers_mut().insert(
                 axum::http::header::WWW_AUTHENTICATE,
                 "ApiKey".parse().unwrap(),
@@ -216,10 +221,7 @@ mod tests {
     #[tokio::test]
     async fn root_bypasses_auth_without_key() {
         let app = make_app(ApiKeys(vec!["secret".into()]));
-        let req = HttpRequest::builder()
-            .uri("/")
-            .body(Body::empty())
-            .unwrap();
+        let req = HttpRequest::builder().uri("/").body(Body::empty()).unwrap();
         let resp = app.oneshot(req).await.unwrap();
         assert_eq!(resp.status(), StatusCode::OK);
     }
@@ -238,11 +240,7 @@ mod tests {
 
     #[tokio::test]
     async fn valid_key_among_multiple_passes_through() {
-        let app = make_app(ApiKeys(vec![
-            "alpha".into(),
-            "beta".into(),
-            "gamma".into(),
-        ]));
+        let app = make_app(ApiKeys(vec!["alpha".into(), "beta".into(), "gamma".into()]));
         let req = HttpRequest::builder()
             .uri("/stats")
             .header("X-API-Key", "beta")
@@ -262,13 +260,14 @@ mod tests {
             .unwrap();
         let resp = app.oneshot(req).await.unwrap();
         assert_eq!(resp.status(), StatusCode::UNAUTHORIZED);
-        assert!(resp
-            .headers()
-            .get("WWW-Authenticate")
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .contains("ApiKey"));
+        assert!(
+            resp.headers()
+                .get("WWW-Authenticate")
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .contains("ApiKey")
+        );
     }
 
     #[tokio::test]

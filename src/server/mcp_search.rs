@@ -46,56 +46,55 @@ pub fn search_knowledge(
 
     // Try hybrid RAG search with entity type detection
     if let (Some(db_mutex), Some(provider)) = (db, embedding_provider)
-        && let Ok(conn) = db_mutex.lock() {
-            // Multi-type parallel search with RRF merge (mirrors Python behavior)
-            if entity_types.len() >= 2 {
-                let mut merged: Vec<SearchResult> = Vec::new();
-                for etype in &entity_types {
-                    if let Ok(rag_results) = search_engines::hybrid_search(
-                        &conn,
-                        provider,
-                        query,
-                        limit,
-                        Some(etype),
-                        None,
-                    ) {
-                        merged.extend(rag_results);
-                    }
+        && let Ok(conn) = db_mutex.lock()
+    {
+        // Multi-type parallel search with RRF merge (mirrors Python behavior)
+        if entity_types.len() >= 2 {
+            let mut merged: Vec<SearchResult> = Vec::new();
+            for etype in &entity_types {
+                if let Ok(rag_results) =
+                    search_engines::hybrid_search(&conn, provider, query, limit, Some(etype), None)
+                {
+                    merged.extend(rag_results);
                 }
-                if !merged.is_empty() {
-                    merged.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
-                    inject_intent_synonyms(graph, query, &mut merged, limit);
-                    expand_with_related_entities(graph, &mut merged, limit);
-                    let deduped = entity_dedup(merged, limit);
-                    return serde_json::json!({
-                        "results": rag_results_to_json(graph, &deduped),
-                        "count": deduped.len(),
-                    });
-                }
-            } else {
-                // Single or no entity type filter
-                let etype_filter = entity_types.first().map(|s| s.as_str());
-                if let Ok(rag_results) = search_engines::hybrid_search(
-                    &conn,
-                    provider,
-                    query,
-                    limit,
-                    etype_filter,
-                    None,
-                )
-                    && !rag_results.is_empty() {
-                        let mut sorted = rag_results;
-                        sorted.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
-                        inject_intent_synonyms(graph, query, &mut sorted, limit);
-                        expand_with_related_entities(graph, &mut sorted, limit);
-                        let deduped = entity_dedup(sorted, limit);
-                        return serde_json::json!({
-                            "results": rag_results_to_json(graph, &deduped),
-                            "count": deduped.len(),
-                        });
-                    }
+            }
+            if !merged.is_empty() {
+                merged.sort_by(|a, b| {
+                    b.score
+                        .partial_cmp(&a.score)
+                        .unwrap_or(std::cmp::Ordering::Equal)
+                });
+                inject_intent_synonyms(graph, query, &mut merged, limit);
+                expand_with_related_entities(graph, &mut merged, limit);
+                let deduped = entity_dedup(merged, limit);
+                return serde_json::json!({
+                    "results": rag_results_to_json(graph, &deduped),
+                    "count": deduped.len(),
+                });
+            }
+        } else {
+            // Single or no entity type filter
+            let etype_filter = entity_types.first().map(|s| s.as_str());
+            if let Ok(rag_results) =
+                search_engines::hybrid_search(&conn, provider, query, limit, etype_filter, None)
+                && !rag_results.is_empty()
+            {
+                let mut sorted = rag_results;
+                sorted.sort_by(|a, b| {
+                    b.score
+                        .partial_cmp(&a.score)
+                        .unwrap_or(std::cmp::Ordering::Equal)
+                });
+                inject_intent_synonyms(graph, query, &mut sorted, limit);
+                expand_with_related_entities(graph, &mut sorted, limit);
+                let deduped = entity_dedup(sorted, limit);
+                return serde_json::json!({
+                    "results": rag_results_to_json(graph, &deduped),
+                    "count": deduped.len(),
+                });
             }
         }
+    }
 
     // Fallback: keyword search over graph entities
     let etype = entity_types.first().map(|s| s.as_str());
@@ -152,9 +151,10 @@ pub fn keyword_search(
     for (id, entity) in &batch {
         // Filter by entity type if requested
         if let Some(etype) = entity_type
-            && entity.r#type != etype {
-                continue;
-            }
+            && entity.r#type != etype
+        {
+            continue;
+        }
 
         let title_lower = entity.title.to_lowercase();
         let name_lower = entity.name.to_lowercase();
@@ -183,7 +183,8 @@ pub fn keyword_search(
         }
 
         // Title hits count separately for tie-breaking (shifted into high bits).
-        let title_matches = terms.iter()
+        let title_matches = terms
+            .iter()
             .filter(|term| title_lower.contains(*term) || name_lower.contains(*term))
             .count();
         let composite_score = (total_matches << 8) | title_matches.min(255);
@@ -263,7 +264,11 @@ fn inject_intent_synonyms(
         injected += 1;
     }
 
-    results.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+    results.sort_by(|a, b| {
+        b.score
+            .partial_cmp(&a.score)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
     results.truncate(limit);
 }
 
@@ -338,7 +343,11 @@ fn expand_with_related_entities(
     }
 
     results.extend(expanded);
-    results.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+    results.sort_by(|a, b| {
+        b.score
+            .partial_cmp(&a.score)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
     results.truncate(limit);
 }
 
@@ -365,7 +374,9 @@ mod tests {
         let mut smell = blank_entity("SMELL-01");
         smell.title = "Long Method".to_owned();
         smell.r#type = "smell".to_owned();
-        smell.relations.insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
+        smell
+            .relations
+            .insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
 
         let mut rf = blank_entity("RF-001");
         rf.title = "Extract Method".to_owned();
@@ -390,7 +401,10 @@ mod tests {
         expand_with_related_entities(&graph, &mut results, 10);
 
         assert_eq!(results.len(), 2);
-        let expanded = results.iter().find(|r| r.entity_id == "RF-001").expect("should find RF-001");
+        let expanded = results
+            .iter()
+            .find(|r| r.entity_id == "RF-001")
+            .expect("should find RF-001");
         assert_eq!(expanded.title, "Extract Method");
         assert_eq!(expanded.section, "Related Solution");
         assert_eq!(expanded.chunk_id, "expanded_RF-001");
@@ -403,7 +417,9 @@ mod tests {
         let mut smell = blank_entity("SMELL-01");
         smell.title = "Long Method".to_owned();
         smell.r#type = "smell".to_owned();
-        smell.relations.insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
+        smell
+            .relations
+            .insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
 
         let mut rf = blank_entity("RF-001");
         rf.title = "Extract Method".to_owned();
@@ -450,11 +466,14 @@ mod tests {
         let mut smell = blank_entity("SMELL-01");
         smell.title = "Long Method".to_owned();
         smell.r#type = "smell".to_owned();
-        smell.relations.insert("solved_by".to_owned(), vec![
-            "RF-001".to_owned(),
-            "RF-002".to_owned(),
-            "RF-003".to_owned(),
-        ]);
+        smell.relations.insert(
+            "solved_by".to_owned(),
+            vec![
+                "RF-001".to_owned(),
+                "RF-002".to_owned(),
+                "RF-003".to_owned(),
+            ],
+        );
 
         let mut rf1 = blank_entity("RF-001");
         rf1.title = "Extract Method".to_owned();
@@ -484,7 +503,10 @@ mod tests {
 
         expand_with_related_entities(&graph, &mut results, 10);
 
-        let expanded_count = results.iter().filter(|r| r.chunk_id.starts_with("expanded_")).count();
+        let expanded_count = results
+            .iter()
+            .filter(|r| r.chunk_id.starts_with("expanded_"))
+            .count();
         assert_eq!(expanded_count, 2, "should add at most 2 expanded results");
     }
 
@@ -520,7 +542,9 @@ mod tests {
         let mut smell = blank_entity("SMELL-01");
         smell.title = "Long Method".to_owned();
         smell.r#type = "smell".to_owned();
-        smell.relations.insert("related_to".to_owned(), vec!["RF-001".to_owned()]);
+        smell
+            .relations
+            .insert("related_to".to_owned(), vec!["RF-001".to_owned()]);
 
         let mut rf = blank_entity("RF-001");
         rf.title = "Extract Method".to_owned();
@@ -576,7 +600,10 @@ mod tests {
 
         inject_intent_synonyms(&graph, "flexible code", &mut results, 10);
 
-        let injected: Vec<&SearchResult> = results.iter().filter(|r| r.chunk_id.starts_with("synonym_")).collect();
+        let injected: Vec<&SearchResult> = results
+            .iter()
+            .filter(|r| r.chunk_id.starts_with("synonym_"))
+            .collect();
         assert_eq!(injected.len(), 2);
         assert_eq!(injected[0].section, "Intent Match");
         assert!((injected[0].score - 0.9 * SYNONYM_SCORE_RATIO).abs() < f64::EPSILON);
@@ -615,7 +642,10 @@ mod tests {
 
         inject_intent_synonyms(&graph, "pluggable", &mut results, 10);
 
-        let injected = results.iter().filter(|r| r.chunk_id.starts_with("synonym_")).count();
+        let injected = results
+            .iter()
+            .filter(|r| r.chunk_id.starts_with("synonym_"))
+            .count();
         assert_eq!(injected, 2, "should inject at most 2 synonym results");
     }
 

@@ -1,23 +1,22 @@
 use std::sync::Arc;
 
 use axum::{
-    Extension,
+    Extension, Json,
     extract::{Path, Query, State},
     http::StatusCode,
     response::IntoResponse,
-    Json,
 };
 use serde::Deserialize;
 
 use crate::adapters::cache::{CacheManager, cache_key};
 use crate::adapters::structured_logging::log_business_event;
 use crate::adapters::telemetry::Telemetry;
-use crate::server::mcp_handler::SyntagmaMCP;
 use crate::domain::types::GraphStats;
+use crate::server::mcp_handler::SyntagmaMCP;
 
 use crate::server::api_models::{
-    AnalyzeRequest, AnalyzeResponse, Components, ErrorResponse, GraphPathRequest,
-    GraphPathResponse, GraphNeighborsRequest, HealthResponse, RefactorRequest, RefactorResponse,
+    AnalyzeRequest, AnalyzeResponse, Components, ErrorResponse, GraphNeighborsRequest,
+    GraphPathRequest, GraphPathResponse, HealthResponse, RefactorRequest, RefactorResponse,
     SearchRequest, SearchResponse, StatsResponse, SubgraphRequest, SystemInfo,
 };
 
@@ -360,7 +359,17 @@ pub async fn search(
     Extension(telemetry): Extension<Arc<Telemetry>>,
     Query(params): Query<SearchQuery>,
 ) -> impl IntoResponse {
-    Json(do_search(&mcp, &cache, &telemetry, &params.q, params.limit, params.entity_type.as_deref()).await)
+    Json(
+        do_search(
+            &mcp,
+            &cache,
+            &telemetry,
+            &params.q,
+            params.limit,
+            params.entity_type.as_deref(),
+        )
+        .await,
+    )
 }
 
 /// Python-parity endpoint: `POST /search` with JSON body.
@@ -370,7 +379,17 @@ pub async fn search_post(
     Extension(telemetry): Extension<Arc<Telemetry>>,
     Json(body): Json<SearchRequest>,
 ) -> impl IntoResponse {
-    Json(do_search(&mcp, &cache, &telemetry, &body.query, body.limit, body.entity_type.as_deref()).await)
+    Json(
+        do_search(
+            &mcp,
+            &cache,
+            &telemetry,
+            &body.query,
+            body.limit,
+            body.entity_type.as_deref(),
+        )
+        .await,
+    )
 }
 
 pub async fn get_entity(
@@ -384,9 +403,7 @@ pub async fn get_entity(
         let msg = err.as_str().unwrap_or("entity not found");
         return (
             StatusCode::NOT_FOUND,
-            Json(ErrorResponse {
-                error: msg.into(),
-            }),
+            Json(ErrorResponse { error: msg.into() }),
         )
             .into_response();
     }
@@ -405,9 +422,7 @@ pub async fn get_neighbors(
         let msg = err.as_str().unwrap_or("entity not found");
         return (
             StatusCode::NOT_FOUND,
-            Json(ErrorResponse {
-                error: msg.into(),
-            }),
+            Json(ErrorResponse { error: msg.into() }),
         )
             .into_response();
     }
@@ -425,9 +440,7 @@ pub async fn get_neighbors_post(
         let msg = err.as_str().unwrap_or("entity not found");
         return (
             StatusCode::NOT_FOUND,
-            Json(ErrorResponse {
-                error: msg.into(),
-            }),
+            Json(ErrorResponse { error: msg.into() }),
         )
             .into_response();
     }
@@ -444,9 +457,7 @@ pub async fn graph_path(
         let msg = err.as_str().unwrap_or("no path found");
         return (
             StatusCode::NOT_FOUND,
-            Json(ErrorResponse {
-                error: msg.into(),
-            }),
+            Json(ErrorResponse { error: msg.into() }),
         )
             .into_response();
     }
@@ -461,10 +472,7 @@ pub async fn graph_path(
         .and_then(|v| v.as_str())
         .unwrap_or("")
         .to_owned();
-    let length = result
-        .get("length")
-        .and_then(|v| v.as_u64())
-        .unwrap_or(0) as usize;
+    let length = result.get("length").and_then(|v| v.as_u64()).unwrap_or(0) as usize;
     let path = result
         .get("path")
         .and_then(|v| v.as_array())
@@ -568,9 +576,7 @@ pub async fn subgraph(
 // Transitive relation inference
 // ---------------------------------------------------------------------------
 
-pub async fn infer_transitive(
-    State(mcp): State<AppState>,
-) -> impl IntoResponse {
+pub async fn infer_transitive(State(mcp): State<AppState>) -> impl IntoResponse {
     let graph = mcp.graph();
     let inferred = graph.infer_transitive_enforcements();
     Json(serde_json::json!({

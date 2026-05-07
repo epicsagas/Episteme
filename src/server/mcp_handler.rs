@@ -63,7 +63,8 @@ impl SyntagmaMCP {
                     [],
                     |row| row.get(0),
                 )
-                .unwrap_or(0i64) > 0;
+                .unwrap_or(0i64)
+                > 0;
 
             if !has_fts {
                 let _ = crate::adapters::search_engines::build_fts_index(&rw_conn);
@@ -79,8 +80,7 @@ impl SyntagmaMCP {
             // Prefer OpenAI provider when configured and key is present.
             #[cfg(feature = "openai-embeddings")]
             {
-                let cfg = crate::adapters::config::SyntagmaConfig::load()
-                    .unwrap_or_default();
+                let cfg = crate::adapters::config::SyntagmaConfig::load().unwrap_or_default();
                 let provider_pref = cfg.embedding_provider.to_lowercase();
                 let key = std::env::var("SYNTAGMA_OPENAI_API_KEY")
                     .ok()
@@ -92,7 +92,9 @@ impl SyntagmaMCP {
                             Some(cfg.openai_api_key.clone())
                         }
                     });
-                if provider_pref == "openai" && let Some(key) = key {
+                if provider_pref == "openai"
+                    && let Some(key) = key
+                {
                     let model = std::env::var("SYNTAGMA_OPENAI_EMBED_MODEL")
                         .ok()
                         .filter(|m| !m.is_empty())
@@ -112,11 +114,11 @@ impl SyntagmaMCP {
             }
 
             // Fallback: local provider — instantiate now (cheap), model loads on first embed() call.
-            self.embedding_provider = Some(
-                Box::new(crate::adapters::local_embeddings::LocalEmbeddingProvider::new(
+            self.embedding_provider = Some(Box::new(
+                crate::adapters::local_embeddings::LocalEmbeddingProvider::new(
                     EMBEDDING_DIMENSIONS,
-                )),
-            );
+                ),
+            ));
             self.db = Some(Mutex::new(conn));
             // Do NOT call warmup() here — let the first search request trigger model load
             // so MCP server startup is instant for the user.
@@ -165,11 +167,7 @@ impl SyntagmaMCP {
     }
 
     /// Get entities related to a given entity (delegates to `mcp_graph`).
-    pub fn get_neighbors(
-        &self,
-        entity_id: &str,
-        relation_type: Option<&str>,
-    ) -> serde_json::Value {
+    pub fn get_neighbors(&self, entity_id: &str, relation_type: Option<&str>) -> serde_json::Value {
         super::mcp_graph::get_neighbors(&self.graph, entity_id, relation_type)
     }
 
@@ -206,13 +204,21 @@ impl SyntagmaMCP {
         match uri {
             "syntagma://stats" => {
                 let stats = self.graph.stats();
-                serde_json::to_value(stats).unwrap_or(serde_json::json!({"error": "serialization failed"}))
+                serde_json::to_value(stats)
+                    .unwrap_or(serde_json::json!({"error": "serialization failed"}))
             }
             "syntagma://categories" => {
                 let entity_types: Vec<&str> = ["pattern", "refactoring", "law", "smell"].to_vec();
-                let categories: Vec<&str> =
-                    ["teams", "planning", "architecture", "quality", "scalability", "design", "decisions"]
-                        .to_vec();
+                let categories: Vec<&str> = [
+                    "teams",
+                    "planning",
+                    "architecture",
+                    "quality",
+                    "scalability",
+                    "design",
+                    "decisions",
+                ]
+                .to_vec();
                 serde_json::json!({
                     "entity_types": entity_types,
                     "categories": categories,
@@ -263,7 +269,10 @@ impl SyntagmaMCP {
 
     fn dispatch_search_knowledge(&self, args: &serde_json::Value) -> serde_json::Value {
         let query = args.get("query").and_then(|v| v.as_str()).unwrap_or("");
-        let limit = args.get("limit").and_then(|v| v.as_u64()).map(|v| v as usize);
+        let limit = args
+            .get("limit")
+            .and_then(|v| v.as_u64())
+            .map(|v| v as usize);
         let entity_type = args.get("entity_type").and_then(|v| v.as_str());
         self.search_knowledge(query, limit, entity_type)
     }
@@ -283,7 +292,10 @@ impl SyntagmaMCP {
     fn dispatch_find_path(&self, args: &serde_json::Value) -> serde_json::Value {
         let from_id = args.get("from_id").and_then(|v| v.as_str()).unwrap_or("");
         let to_id = args.get("to_id").and_then(|v| v.as_str()).unwrap_or("");
-        let max_depth = args.get("max_depth").and_then(|v| v.as_u64()).map(|v| v as usize);
+        let max_depth = args
+            .get("max_depth")
+            .and_then(|v| v.as_u64())
+            .map(|v| v as usize);
         self.find_path(from_id, to_id, max_depth)
     }
 
@@ -296,7 +308,10 @@ impl SyntagmaMCP {
     fn dispatch_suggest_refactorings(&self, args: &serde_json::Value) -> serde_json::Value {
         let code = args.get("code").and_then(|v| v.as_str()).unwrap_or("");
         let language = args.get("language").and_then(|v| v.as_str());
-        let top_k = args.get("top_k").and_then(|v| v.as_u64()).map(|v| v as usize);
+        let top_k = args
+            .get("top_k")
+            .and_then(|v| v.as_u64())
+            .map(|v| v as usize);
         self.suggest_refactorings(code, language, top_k)
     }
 

@@ -8,9 +8,18 @@ use super::prelude::*;
 /// importing the CLI enum directly. The main.rs match converts `GraphCommands`
 /// (the clap enum) into this one.
 pub enum GraphOp {
-    Entity { id: String },
-    Neighbors { id: String, relation_type: Option<String> },
-    Path { from: String, to: String, max_depth: usize },
+    Entity {
+        id: String,
+    },
+    Neighbors {
+        id: String,
+        relation_type: Option<String>,
+    },
+    Path {
+        from: String,
+        to: String,
+        max_depth: usize,
+    },
     Contradictions,
 }
 
@@ -19,21 +28,16 @@ pub fn cmd_graph(op: GraphOp) -> Result<()> {
     let graph = load_graph()?;
 
     match op {
-        GraphOp::Entity { id } => {
-            match graph.get_entity(&id) {
-                Some(entity) => {
-                    let json = serde_json::to_string_pretty(&entity)?;
-                    println!("{}", json);
-                }
-                None => {
-                    anyhow::bail!("entity '{}' not found", id);
-                }
+        GraphOp::Entity { id } => match graph.get_entity(&id) {
+            Some(entity) => {
+                let json = serde_json::to_string_pretty(&entity)?;
+                println!("{}", json);
             }
-        }
-        GraphOp::Neighbors {
-            id,
-            relation_type,
-        } => {
+            None => {
+                anyhow::bail!("entity '{}' not found", id);
+            }
+        },
+        GraphOp::Neighbors { id, relation_type } => {
             let neighbors = graph.get_neighbors(&id, relation_type.as_deref());
 
             if neighbors.is_empty() {

@@ -1,18 +1,19 @@
 use axum::{
+    Json, Router,
     extract::Request,
     extract::State,
     http::StatusCode,
     middleware::{self, Next},
     response::IntoResponse,
+    response::Response,
     routing::{get, post},
-    Json, Router, response::Response,
 };
 use serde::Deserialize;
 use std::sync::Arc;
 
 use crate::adapters::constants::MAX_REQUEST_BYTES;
-use crate::server::mcp_handler::SyntagmaMCP;
 use crate::server::mcp_dispatcher::dispatch;
+use crate::server::mcp_handler::SyntagmaMCP;
 
 pub type SharedMCP = Arc<SyntagmaMCP>;
 #[derive(Clone)]
@@ -60,7 +61,9 @@ async fn mcp_auth_middleware(
         .and_then(|v| v.to_str().ok())
         .and_then(|v| v.strip_prefix("Bearer "));
     match bearer {
-        Some(token) if crate::server::mcp_auth::validate_api_key(token, &keys.0) => next.run(request).await,
+        Some(token) if crate::server::mcp_auth::validate_api_key(token, &keys.0) => {
+            next.run(request).await
+        }
         _ => (
             StatusCode::UNAUTHORIZED,
             Json(serde_json::json!({"error": "unauthorized"})),
@@ -111,10 +114,7 @@ pub async fn handle_mcp_post(
 
     match dispatch(&mcp, request) {
         Some(response) => (StatusCode::OK, Json(response)),
-        None => (
-            StatusCode::NO_CONTENT,
-            Json(serde_json::Value::Null),
-        ),
+        None => (StatusCode::NO_CONTENT, Json(serde_json::Value::Null)),
     }
 }
 
@@ -155,7 +155,8 @@ mod tests {
     use tower::ServiceExt;
 
     fn test_router(keys: Vec<String>) -> Router {
-        let graph = crate::domain::graph::KnowledgeGraph::from_entities(std::collections::HashMap::new());
+        let graph =
+            crate::domain::graph::KnowledgeGraph::from_entities(std::collections::HashMap::new());
         let mcp = crate::server::mcp_handler::SyntagmaMCP::new(graph);
         mcp_http_router(mcp, keys)
     }

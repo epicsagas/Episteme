@@ -291,19 +291,42 @@ fn calculate_cc_ext(body: &str, extras: &[&'static str]) -> usize {
 }
 
 fn calculate_cc_java(body: &str) -> usize {
-    calculate_cc_ext(body, &[r"\bdo\b", r"\b\w+\s*\?\s*[^:\n]{1,50}:", r"\btry\b"])
+    calculate_cc_ext(
+        body,
+        &[r"\bdo\b", r"\b\w+\s*\?\s*[^:\n]{1,50}:", r"\btry\b"],
+    )
 }
 
 fn calculate_cc_cpp(body: &str) -> usize {
-    calculate_cc_ext(body, &[r"\bdo\b", r"\b\w+\s*\?\s*[^:\n]{1,50}:", r"\btry\b"])
+    calculate_cc_ext(
+        body,
+        &[r"\bdo\b", r"\b\w+\s*\?\s*[^:\n]{1,50}:", r"\btry\b"],
+    )
 }
 
 fn calculate_cc_csharp(body: &str) -> usize {
-    calculate_cc_ext(body, &[r"\bforeach\b", r"\bfrom\b", r"\bwhere\b", r"\bselect\b", r"\b\w+\s*\?\s*[^:\n]{1,50}:"])
+    calculate_cc_ext(
+        body,
+        &[
+            r"\bforeach\b",
+            r"\bfrom\b",
+            r"\bwhere\b",
+            r"\bselect\b",
+            r"\b\w+\s*\?\s*[^:\n]{1,50}:",
+        ],
+    )
 }
 
 fn calculate_cc_php(body: &str) -> usize {
-    calculate_cc_ext(body, &[r"\belseif\b", r"\bforeach\b", r"\bdo\b", r"\b\w+\s*\?\s*[^:\n]{1,50}:"])
+    calculate_cc_ext(
+        body,
+        &[
+            r"\belseif\b",
+            r"\bforeach\b",
+            r"\bdo\b",
+            r"\b\w+\s*\?\s*[^:\n]{1,50}:",
+        ],
+    )
 }
 
 fn calculate_cc_kotlin(body: &str) -> usize {
@@ -474,7 +497,10 @@ fn count_python_loc(body: &str) -> usize {
     body.lines()
         .filter(|l| {
             let t = l.trim();
-            !t.is_empty() && !t.starts_with('#') && !t.starts_with("'''") && !t.starts_with("\"\"\"")
+            !t.is_empty()
+                && !t.starts_with('#')
+                && !t.starts_with("'''")
+                && !t.starts_with("\"\"\"")
         })
         .count()
 }
@@ -516,7 +542,10 @@ fn strip_python_docstrings(code: &str) -> std::borrow::Cow<'_, str> {
     let triple_double = cached_regex(r#"(?s)""".*?""""#);
     let no_double = triple_double.replace_all(code, "");
     let triple_single = cached_regex(r"(?s)'''.*?'''");
-    triple_single.replace_all(&no_double, "").into_owned().into()
+    triple_single
+        .replace_all(&no_double, "")
+        .into_owned()
+        .into()
 }
 
 fn count_primitive_params_python(sig: &str) -> usize {
@@ -569,8 +598,7 @@ impl CodeParser for TypeScriptParser {
         let mut detections: Vec<SmellDetection> = Vec::new();
 
         // --- Functions: function declarations ---
-        let fn_re =
-            cached_regex(r"(?m)(?:export\s+)?(?:async\s+)?function\s+(\w+)\s*\(");
+        let fn_re = cached_regex(r"(?m)(?:export\s+)?(?:async\s+)?function\s+(\w+)\s*\(");
         for cap in fn_re.captures_iter(&cleaned) {
             let name = &cap[1];
             let full = cap.get(0).unwrap();
@@ -652,10 +680,8 @@ impl CodeParser for TypeScriptParser {
 
             let body = &cleaned[start..=end_pos];
             let method_count = ts_method_re.find_iter(body).count();
-            let field_count = count_keyword(
-                body,
-                r"(?:public|private|protected|readonly)\s+\w+\s*[:=]",
-            );
+            let field_count =
+                count_keyword(body, r"(?:public|private|protected|readonly)\s+\w+\s*[:=]");
 
             let metrics = CodeMetrics {
                 loc: count_loc(body),
@@ -935,25 +961,27 @@ impl GenericParser {
     }
 
     fn get_func_re(&self) -> &Regex {
-        self.func_re.get_or_init(|| Regex::new(self.config.func_regex).unwrap())
+        self.func_re
+            .get_or_init(|| Regex::new(self.config.func_regex).unwrap())
     }
 
     fn get_class_re(&self) -> Option<&Regex> {
-        self.config.class_regex.map(|pat| {
-            self.class_re.get_or_init(|| Regex::new(pat).unwrap())
-        })
+        self.config
+            .class_regex
+            .map(|pat| self.class_re.get_or_init(|| Regex::new(pat).unwrap()))
     }
 
     fn get_class_method_re(&self) -> Option<&Regex> {
         self.config.class_method_regex.map(|pat| {
-            self.class_method_re.get_or_init(|| Regex::new(pat).unwrap())
+            self.class_method_re
+                .get_or_init(|| Regex::new(pat).unwrap())
         })
     }
 
     fn get_class_field_re(&self) -> Option<&Regex> {
-        self.config.class_field_regex.map(|pat| {
-            self.class_field_re.get_or_init(|| Regex::new(pat).unwrap())
-        })
+        self.config
+            .class_field_regex
+            .map(|pat| self.class_field_re.get_or_init(|| Regex::new(pat).unwrap()))
     }
 
     /// Strip comments according to config.
@@ -1073,11 +1101,7 @@ impl CodeParser for GenericParser {
 }
 
 /// Build function metrics with the default `count_local_vars`.
-fn build_func_metrics(
-    body: &str,
-    sig: &str,
-    cc_fn: fn(&str) -> usize,
-) -> CodeMetrics {
+fn build_func_metrics(body: &str, sig: &str, cc_fn: fn(&str) -> usize) -> CodeMetrics {
     build_func_metrics_ext(body, sig, cc_fn, count_local_vars)
 }
 
@@ -1173,14 +1197,18 @@ pub fn cpp_parser() -> GenericParser {
         extensions: &["cpp", "cxx", "cc", "c", "hpp", "h"],
         func_regex: r"(?m)(?:(?:static|inline|virtual|const|extern)\s+)*(?:[\w:*&<>,\s]+)\s+(\w+)\s*\(",
         class_regex: Some(r"(?m)(?:class|struct)\s+(\w+)\s*(?::\s*[^\{]*)?\{"),
-        class_method_regex: Some(r"(?m)(?:(?:public|private|protected|virtual|static)\s+)*[\w:*&<>,\s]+\s+\w+\s*\("),
+        class_method_regex: Some(
+            r"(?m)(?:(?:public|private|protected|virtual|static)\s+)*[\w:*&<>,\s]+\s+\w+\s*\(",
+        ),
         class_field_regex: Some(r"(?m)(?:public|private|protected)\s+[\w:*&<>,\s]+\s+\w+\s*;"),
         strip_line_comment: "//",
         strip_block_comments: true,
         strip_hash_comments: false,
         cc_fn: calculate_cc_cpp,
         count_local_vars_fn: count_local_vars_cpp,
-        skip_names: &["if", "for", "while", "switch", "catch", "return", "class", "struct"],
+        skip_names: &[
+            "if", "for", "while", "switch", "catch", "return", "class", "struct",
+        ],
     })
 }
 
@@ -1190,9 +1218,15 @@ pub fn csharp_parser() -> GenericParser {
         name: "csharp",
         extensions: &["cs"],
         func_regex: r"(?m)(?:(?:public|private|protected|internal|static|virtual|override|async|abstract)\s+)+[\w<>\[\]?]+\s+(\w+)\s*\(",
-        class_regex: Some(r"(?m)(?:(?:public|private|protected|internal|static|abstract|sealed)\s+)*(?:class|struct|record)\s+(\w+)"),
-        class_method_regex: Some(r"(?m)(?:public|private|protected|internal)\s+[\w<>\[\]?]+\s+\w+\s*\("),
-        class_field_regex: Some(r"(?m)(?:public|private|protected|internal|readonly)\s+[\w<>\[\]?]+\s+\w+\s*[;=]"),
+        class_regex: Some(
+            r"(?m)(?:(?:public|private|protected|internal|static|abstract|sealed)\s+)*(?:class|struct|record)\s+(\w+)",
+        ),
+        class_method_regex: Some(
+            r"(?m)(?:public|private|protected|internal)\s+[\w<>\[\]?]+\s+\w+\s*\(",
+        ),
+        class_field_regex: Some(
+            r"(?m)(?:public|private|protected|internal|readonly)\s+[\w<>\[\]?]+\s+\w+\s*[;=]",
+        ),
         strip_line_comment: "//",
         strip_block_comments: true,
         strip_hash_comments: false,
@@ -1208,7 +1242,9 @@ pub fn kotlin_parser() -> GenericParser {
         name: "kotlin",
         extensions: &["kt", "kts"],
         func_regex: r"(?m)(?:(?:public|private|protected|internal|suspend|inline|open|override|abstract)\s+)*fun\s+(?:<[^>]*>\s*)?(\w+)\s*\(",
-        class_regex: Some(r"(?m)(?:(?:public|private|protected|internal|open|abstract|sealed|data|inner)\s+)*class\s+(\w+)"),
+        class_regex: Some(
+            r"(?m)(?:(?:public|private|protected|internal|open|abstract|sealed|data|inner)\s+)*class\s+(\w+)",
+        ),
         class_method_regex: Some(r"(?m)fun\s+(?:<[^>]*>\s*)?\w+\s*\("),
         class_field_regex: Some(r"(?:val|var)\s+\w+"),
         strip_line_comment: "//",
@@ -1249,9 +1285,7 @@ pub struct GoFullParser {
 
 impl GoFullParser {
     pub fn new() -> Self {
-        Self {
-            inner: go_parser(),
-        }
+        Self { inner: go_parser() }
     }
 }
 
@@ -1315,8 +1349,7 @@ impl CodeParser for GoFullParser {
                 })
                 .count();
 
-            let method_re =
-                cached_regex_owned(&format!(r"(?m)func\s+\([^)]*\s+\*?{name}\)\s+\w+"));
+            let method_re = cached_regex_owned(&format!(r"(?m)func\s+\([^)]*\s+\*?{name}\)\s+\w+"));
             let method_count = method_re.find_iter(&cleaned).count();
 
             let metrics = CodeMetrics {
@@ -1348,13 +1381,13 @@ impl CodeParser for GoFullParser {
 /// supports aliases like `"js"` -> TypeScriptParser, `"cpp"` -> CppParser.
 pub fn get_parser(language: &str) -> Result<Box<dyn CodeParser>, String> {
     match language.to_ascii_lowercase().as_str() {
-        "python" => Ok(Box::new(crate::adapters::python_ast_parser::PythonAstParser::new())),
+        "python" => Ok(Box::new(
+            crate::adapters::python_ast_parser::PythonAstParser::new(),
+        )),
         "java" => Ok(Box::new(java_parser())),
         "go" => Ok(Box::new(GoFullParser::new())),
         "rust" => Ok(Box::new(rust_parser())),
-        "typescript" | "javascript" | "js" | "ts" => {
-            Ok(Box::new(TypeScriptParser::new()))
-        }
+        "typescript" | "javascript" | "js" | "ts" => Ok(Box::new(TypeScriptParser::new())),
         "c" | "cpp" | "c++" | "cxx" | "cc" | "hpp" => Ok(Box::new(cpp_parser())),
         "c#" | "cs" | "csharp" => Ok(Box::new(csharp_parser())),
         "kotlin" | "kt" => Ok(Box::new(kotlin_parser())),
@@ -1816,7 +1849,10 @@ export function bigFunc(a: number, b: number, c: number, d: number, e: number, f
     fn cc_java_counts_do_and_try() {
         let code = "public void foo() { do { } while (x); try { } catch (E e) { } if (a) { } }";
         let cc = calculate_cc_java(code);
-        assert!(cc >= 5, "Java CC should count do + try + catch + if, got {cc}");
+        assert!(
+            cc >= 5,
+            "Java CC should count do + try + catch + if, got {cc}"
+        );
     }
 
     #[test]
@@ -1830,7 +1866,10 @@ export function bigFunc(a: number, b: number, c: number, d: number, e: number, f
     fn cc_cpp_counts_do_and_try() {
         let code = "void foo() { do { x++; } while (x < 10); try { } catch (...) { } if (a) { } }";
         let cc = calculate_cc_cpp(code);
-        assert!(cc >= 5, "C++ CC should count do + try + catch + if, got {cc}");
+        assert!(
+            cc >= 5,
+            "C++ CC should count do + try + catch + if, got {cc}"
+        );
     }
 
     #[test]
@@ -1844,7 +1883,10 @@ export function bigFunc(a: number, b: number, c: number, d: number, e: number, f
     fn cc_csharp_counts_foreach_and_linq() {
         let code = "void Foo() { foreach (var x in xs) { } from y in ys where y > 0 select y; if (a) { } }";
         let cc = calculate_cc_csharp(code);
-        assert!(cc >= 5, "C# CC should count foreach + from + where + select + if, got {cc}");
+        assert!(
+            cc >= 5,
+            "C# CC should count foreach + from + where + select + if, got {cc}"
+        );
     }
 
     #[test]
@@ -1858,7 +1900,10 @@ export function bigFunc(a: number, b: number, c: number, d: number, e: number, f
     fn cc_php_counts_elseif_foreach_do() {
         let code = "function foo() { if (a) { } elseif (b) { } foreach ($xs as $x) { } do { } while (c); }";
         let cc = calculate_cc_php(code);
-        assert!(cc >= 5, "PHP CC should count if + elseif + foreach + do, got {cc}");
+        assert!(
+            cc >= 5,
+            "PHP CC should count if + elseif + foreach + do, got {cc}"
+        );
     }
 
     #[test]
@@ -1872,14 +1917,21 @@ export function bigFunc(a: number, b: number, c: number, d: number, e: number, f
     fn cc_kotlin_counts_when_and_is() {
         let code = "fun foo(x: Any) { when (x) { is String -> println(x) is Int -> println(x) } if (a) { } }";
         let cc = calculate_cc_kotlin(code);
-        assert!(cc >= 5, "Kotlin CC should count when + is + is + if, got {cc}");
+        assert!(
+            cc >= 5,
+            "Kotlin CC should count when + is + is + if, got {cc}"
+        );
     }
 
     #[test]
     fn cc_rust_counts_loop_and_match_arms() {
-        let code = "fn foo() { loop { x += 1; } match x { 1 => true, 2 => false, _ => true } if (a) { } }";
+        let code =
+            "fn foo() { loop { x += 1; } match x { 1 => true, 2 => false, _ => true } if (a) { } }";
         let cc = calculate_cc_rust(code);
-        assert!(cc >= 6, "Rust CC should count loop + match + 3 arms + if, got {cc}");
+        assert!(
+            cc >= 6,
+            "Rust CC should count loop + match + 3 arms + if, got {cc}"
+        );
     }
 
     #[test]
@@ -1895,28 +1947,40 @@ export function bigFunc(a: number, b: number, c: number, d: number, e: number, f
     fn local_vars_cpp_counts_typed_declarations() {
         let code = "void foo() { int x = 1; double y = 2.0; auto z = 3; bool flag = true; }";
         let count = count_local_vars_cpp(code);
-        assert!(count >= 4, "C++ local vars should count int/double/auto/bool, got {count}");
+        assert!(
+            count >= 4,
+            "C++ local vars should count int/double/auto/bool, got {count}"
+        );
     }
 
     #[test]
     fn local_vars_csharp_counts_typed_and_var() {
         let code = "void Foo() { int x = 1; string y = \"hi\"; var z = 3; bool flag = true; }";
         let count = count_local_vars_csharp(code);
-        assert!(count >= 4, "C# local vars should count int/string/var/bool, got {count}");
+        assert!(
+            count >= 4,
+            "C# local vars should count int/string/var/bool, got {count}"
+        );
     }
 
     #[test]
     fn local_vars_php_counts_dollar_vars() {
         let code = "function foo() { $x = 1; $y = 2; $z = $x + $y; }";
         let count = count_local_vars_php(code);
-        assert!(count >= 3, "PHP local vars should count $x/$y/$z, got {count}");
+        assert!(
+            count >= 3,
+            "PHP local vars should count $x/$y/$z, got {count}"
+        );
     }
 
     #[test]
     fn local_vars_kotlin_counts_val_and_var() {
         let code = "fun foo() { val x = 1; var y = 2; val z = x + y; }";
         let count = count_local_vars_kotlin(code);
-        assert!(count >= 3, "Kotlin local vars should count val/var declarations, got {count}");
+        assert!(
+            count >= 3,
+            "Kotlin local vars should count val/var declarations, got {count}"
+        );
     }
 
     // --- TypeScript arrow function tests -----------------------------------
