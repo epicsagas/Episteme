@@ -33,9 +33,15 @@
 
 ---
 
-<img src="docs/assets/demo.gif" align="center" width="100%" alt="Syntagma Demo" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/features.png">
+  <img src="docs/assets/features.png" align="center" width="100%" alt="Syntagma Features Overview" />
+</picture>
 
-<img src="docs/assets/features.png" align="center" width="100%" alt="Syntagma Features Overview" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/demo.gif">
+  <img src="docs/assets/demo.gif" align="center" width="100%" alt="Syntagma Demo" />
+</picture>
 
 ---
 
@@ -315,28 +321,21 @@ syntagma dist --out-dir release/
 
 ## Features
 
-### Knowledge Base
-- **22 GoF Design Patterns** — Complete catalog with real-world examples
-- **66 Refactoring Techniques** — From Fowler's catalog with code samples
-- **56 Software Laws & Principles** — SOLID, Conway's Law, CAP Theorem, etc.
-- **17 Code Smell Types** — Long Method, God Object, Feature Envy, etc. ¹
-- **201 Semantic Relations** — "solves", "enforces", "violates", "relates_to"
-
-### AI-First Design
-- **MCP Integration** — 6 specialized tools for high-fidelity AI agent interaction
-- **4 Connected Agents** — Causation analysis, interactive follow-ups, and cross-agent handoffs
-- **10 Language Support** — Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin
-- **Deterministic Analysis** — AST-based Python detection + regex-based multi-language support
-- **Citable Knowledge** — Every finding links to explicit entity IDs (e.g., `RF-001`, `LAW-021`)
-- **Workflow Chains** — Multi-step pipelines: Code Review → Causation Analysis → Refactoring → Verification
-
-### Production Ready
-- **REST API** — 17 endpoints with authentication and rate limiting
-- **Single Binary** — No runtime dependencies, cross-platform
-- **Local Embeddings** — fastembed (ONNX Runtime) for zero-config semantic search
-- **Interactive Visualization** — Web-based graph explorer (`syntagma web`)
-- **Docker Support** — Multi-stage build with health checks
-- **Monitoring** — Prometheus metrics endpoint
+| | Feature | Why it matters |
+|--|---------|----------------|
+| 🧠 | **22 GoF Design Patterns** | Complete catalog with real-world examples |
+| 🔧 | **66 Refactoring Techniques** | Fowler's catalog with code samples |
+| ⚖️ | **56 Software Laws & Principles** | SOLID, Conway's Law, CAP Theorem, etc. |
+| 👃 | **17 Code Smell Types** | Long Method, God Object, Feature Envy, etc. ¹ |
+| 🔗 | **201 Semantic Relations** | "solves", "enforces", "violates", "relates_to" |
+| 🤖 | **6 MCP Tools + 4 Agents** | High-fidelity AI agent interaction with cross-agent handoffs |
+| 🌍 | **10 Language Support** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
+| 📊 | **Deterministic Analysis** | AST-based Python + regex multi-language, same result every time |
+| 🏷️ | **Citable Knowledge** | Every finding links to explicit entity IDs (`RF-001`, `LAW-021`) |
+| 🌐 | **REST API (17 endpoints)** | Auth, rate limiting, health probes, Prometheus metrics |
+| 📦 | **Single Binary** | No runtime, cross-platform (macOS, Linux, Windows) |
+| 🔌 | **Local Embeddings** | fastembed (ONNX Runtime), zero-config semantic search |
+| 🐳 | **Docker Support** | Multi-stage build with health checks |
 
 > ¹ Duplicate Code (SMELL-13) and Shotgun Surgery (SMELL-09) require multi-file context and are skipped in single-file mode.
 

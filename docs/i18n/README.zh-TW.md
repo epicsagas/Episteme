@@ -35,7 +35,10 @@
 
 ---
 
-<img src="../assets/features.png" align="center" width="100%" alt="Syntagma 功能總覽" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../assets/features.png">
+  <img src="../assets/features.png" align="center" width="100%" alt="Syntagma 功能總覽" />
+</picture>
 
 ---
 
@@ -313,32 +316,25 @@ syntagma dist --out-dir release/
 
 ---
 
-## 功能特色
+## 功能
 
-### 知識庫
-- **22 個 GoF 設計模式** — 完整目錄及真實範例
-- **66 種重構技巧** — 來自 Fowler 的目錄，附程式碼範例
-- **56 條軟體法則與原則** — SOLID、Conway's Law、CAP 定理等
-- **17 種程式碼壞味道類型** — Long Method、God Object、Feature Envy 等 ¹
-- **201 條語意關係** — 「解決」、「強制執行」、「違反」、「相關」
+| | 功能 | 為什麼重要 |
+|--|------|-----------|
+| 🧠 | **22個GoF設計模式** | 包含實際範例的完整目錄 |
+| 🔧 | **66個重構技術** | Fowler目錄，附帶程式碼範例 |
+| ⚖️ | **56條軟體定律與原則** | SOLID、康威定律、CAP定理等 |
+| 👃 | **17種程式碼異味類型** | Long Method、God Object、Feature Envy等 ¹ |
+| 🔗 | **201條語意關係** | 「解決」、「強制」、「違反」、「關聯」 |
+| 🤖 | **6個MCP工具 + 4個代理** | 高保真AI代理互動，支援代理間交接 |
+| 🌍 | **10種語言支援** | Python（AST）、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin |
+| 📊 | **確定性分析** | 基於AST的Python + 正規表示式多語言，每次結果一致 |
+| 🏷️ | **可引用的知識** | 每個發現都連結到明確的實體ID（`RF-001`、`LAW-021`） |
+| 🌐 | **REST API（17個端點）** | 認證、速率限制、健康探針、Prometheus指標 |
+| 📦 | **單一二進位檔案** | 無執行時期依賴，跨平台（macOS、Linux、Windows） |
+| 🔌 | **本地嵌入** | fastembed（ONNX Runtime），零配置語意搜尋 |
+| 🐳 | **Docker支援** | 帶健康檢查的多階段建置 |
 
-### AI 優先設計
-- **MCP 整合** — 6 個專用工具，提供高保真 AI 代理互動
-- **4 個互聯代理** — 因果分析、互動式後續追問、跨代理交接
-- **10 種程式語言支援** — Python（AST）、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin
-- **確定性分析** — 基於 AST 的 Python 偵測 + 基於 regex 的多語言支援
-- **可引用的知識** — 每個發現都連結到明確的實體 ID（例如 `RF-001`、`LAW-021`）
-- **工作流程鏈** — 多步驟管線：程式碼審查 → 因果分析 → 重構 → 驗證
-
-### 生產環境就緒
-- **REST API** — 17 個端點，支援身份驗證與速率限制
-- **單一二進位檔** — 無執行時期相依性，跨平台
-- **本機嵌入** — fastembed（ONNX Runtime），零設定語意搜尋
-- **互動式視覺化** — 基於 Web 的圖譜瀏覽器（`syntagma web`）
-- **Docker 支援** — 多階段建置，附健康檢查
-- **監控** — Prometheus 指標端點
-
-> ¹ Duplicate Code（SMELL-13）與 Shotgun Surgery（SMELL-09）需要多檔案上下文，在單檔案模式下會被跳過。
+> ¹ Duplicate Code（SMELL-13）和Shotgun Surgery（SMELL-09）需要多檔案上下文，在單檔案模式下會跳過。
 
 ---
 

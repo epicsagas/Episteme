@@ -33,7 +33,10 @@
 
 ---
 
-<img src="../assets/features.png" align="center" width="100%" alt="Syntagma Features Overview" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../assets/features.png">
+  <img src="../assets/features.png" align="center" width="100%" alt="Syntagma Features Overview" />
+</picture>
 
 ---
 
@@ -313,30 +316,23 @@ syntagma dist --out-dir release/
 
 ## 機能
 
-### ナレッジベース
-- **22のGoFデザインパターン** — 実践的な例を含む完全なカタログ
-- **66のリファクタリング手法** — Fowlerのカタログに基づくコードサンプル付き
-- **56のソフトウェア法則・原則** — SOLID、Conway's Law、CAP定理など
-- **17種類のコードスメル** — Long Method、God Object、Feature Envyなど ¹
-- **201の意味的関係** — 「解決する」「強制する」「違反する」「関連する」
+| | 機能 | 重要性 |
+|--|------|--------|
+| 🧠 | **22のGoFデザインパターン** | 実例を含む完全なカタログ |
+| 🔧 | **66のリファクタリング手法** | コードサンプル付きのFowlerのカタログ |
+| ⚖️ | **56のソフトウェア法則・原則** | SOLID、コンウェイの法則、CAP定理など |
+| 👃 | **17のコードスメルタイプ** | Long Method、God Object、Feature Envyなど ¹ |
+| 🔗 | **201のセマンティック関係** | 「解決する」「強制する」「違反する」「関連する」 |
+| 🤖 | **6つのMCPツール + 4つのエージェント** | 高忠実度AIエージェント連携とエージェント間ハンドオフ |
+| 🌍 | **10言語サポート** | Python（AST）、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin |
+| 📊 | **決定論的分析** | ASTベースPython + 正規表現マルチ言語、常に同じ結果 |
+| 🏷️ | **引用可能なナレッジ** | すべての発見が明示的エンティティID（`RF-001`、`LAW-021`）にリンク |
+| 🌐 | **REST API（17エンドポイント）** | 認証、レート制限、ヘルスプローブ、Prometheusメトリクス |
+| 📦 | **単一バイナリ** | ランタイム不要、クロスプラットフォーム（macOS、Linux、Windows） |
+| 🔌 | **ローカル埋め込み** | fastembed（ONNX Runtime）、ゼロ設定セマンティック検索 |
+| 🐳 | **Dockerサポート** | ヘルスチェック付きマルチステージビルド |
 
-### AIファースト設計
-- **MCP統合** — 高精度なAIエージェント連携のための6つの専門ツール
-- **4つの連携エージェント** — 因果関係分析、インタラクティブなフォローアップ、エージェント間の引き継ぎ
-- **10言語対応** — Python (AST)、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin
-- **決定論的分析** — ASTベースのPython検出 + 正規表現ベースの多言語対応
-- **引用可能なナレッジ** — すべての発見が明示的なエンティティID（例：`RF-001`、`LAW-021`）にリンク
-- **ワークフローチェーン** — マルチステップパイプライン：コードレビュー → 因果関係分析 → リファクタリング → 検証
-
-### 本番運用対応
-- **REST API** — 認証とレート制限付きの17エンドポイント
-- **単一バイナリ** — ランタイム依存なし、クロスプラットフォーム
-- **ローカル埋め込み** — fastembed (ONNX Runtime)によるゼロ設定セマンティック検索
-- **インタラクティブな可視化** — Webベースのグラフエクスプローラー（`syntagma web`）
-- **Dockerサポート** — ヘルスチェック付きのマルチステージビルド
-- **モニタリング** — Prometheusメトリクスエンドポイント
-
-> ¹ Duplicate Code (SMELL-13) と Shotgun Surgery (SMELL-09) は複数ファイルのコンテキストが必要なため、単一ファイルモードではスキップされます。
+> ¹ Duplicate Code（SMELL-13）とShotgun Surgery（SMELL-09）は複数ファイルのコンテキストが必要なため、単一ファイルモードではスキップされます。
 
 ---
 

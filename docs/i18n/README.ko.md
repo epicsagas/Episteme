@@ -33,7 +33,10 @@
 
 ---
 
-<img src="../assets/features.png" align="center" width="100%" alt="Syntagma 기능 개요" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../assets/features.png">
+  <img src="../assets/features.png" align="center" width="100%" alt="Syntagma 기능 개요" />
+</picture>
 
 ---
 
@@ -313,28 +316,21 @@ syntagma dist --out-dir release/
 
 ## 기능
 
-### 지식 베이스
-- **22개 GoF 설계 패턴** — 실제 예제가 포함된 완전한 카탈로그
-- **66개 리팩토링 기법** — 코드 샘플이 포함된 Fowler의 카탈로그
-- **56개 소프트웨어 법칙 및 원칙** — SOLID, Conway의 법칙, CAP 정리 등
-- **17개 코드 스멜 유형** — Long Method, God Object, Feature Envy 등 ¹
-- **201개 의미론적 관계** — "해결한다", "강제한다", "위반한다", "관련 있다"
-
-### AI 우선 설계
-- **MCP 통합** — 고품질 AI 에이전트 상호작용을 위한 6개 전문 도구
-- **4개 연결된 에이전트** — 인과 관계 분석, 대화형 후속 조치, 에이전트 간 핸드오프
-- **10개 언어 지원** — Python(AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin
-- **결정론적 분석** — AST 기반 Python 감지 + 정규식 기반 다중 언어 지원
-- **인용 가능한 지식** — 모든 발견 사항이 명시적인 엔티티 ID(예: `RF-001`, `LAW-021`)에 연결
-- **워크플로우 체인** — 다단계 파이프라인: 코드 리뷰 → 인과 관계 분석 → 리팩토링 → 검증
-
-### 프로덕션 준비 완료
-- **REST API** — 인증 및 속도 제한이 포함된 17개 엔드포인트
-- **단일 바이너리** — 런타임 종속성 없음, 크로스 플랫폼
-- **로컬 임베딩** — 제로 구성 의미론적 검색을 위한 fastembed(ONNX Runtime)
-- **대화형 시각화** — 웹 기반 그래프 탐색기 (`syntagma web`)
-- **Docker 지원** — 헬스 체크가 포함된 다단계 빌드
-- **모니터링** — Prometheus 메트릭 엔드포인트
+| | 기능 | 왜 중요한가 |
+|--|------|------------|
+| 🧠 | **22개 GoF 설계 패턴** | 실제 예제가 포함된 완전한 카탈로그 |
+| 🔧 | **66개 리팩토링 기법** | 코드 샘플이 포함된 Fowler의 카탈로그 |
+| ⚖️ | **56개 소프트웨어 법칙 및 원칙** | SOLID, Conway의 법칙, CAP 정리 등 |
+| 👃 | **17개 코드 스멜 유형** | Long Method, God Object, Feature Envy 등 ¹ |
+| 🔗 | **201개 의미론적 관계** | "해결한다", "강제한다", "위반한다", "관련 있다" |
+| 🤖 | **6개 MCP 도구 + 4개 에이전트** | 고품질 AI 에이전트 상호작용 및 에이전트 간 핸드오프 |
+| 🌍 | **10개 언어 지원** | Python(AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
+| 📊 | **결정론적 분석** | AST 기반 Python + 정규식 다중 언어, 매번 동일한 결과 |
+| 🏷️ | **인용 가능한 지식** | 모든 발견 사항이 명시적 엔티티 ID(`RF-001`, `LAW-021`)에 연결 |
+| 🌐 | **REST API (17개 엔드포인트)** | 인증, 속도 제한, 헬스 프로브, Prometheus 메트릭 |
+| 📦 | **단일 바이너리** | 런타임 없음, 크로스 플랫폼 (macOS, Linux, Windows) |
+| 🔌 | **로컬 임베딩** | fastembed(ONNX Runtime), 제로 구성 의미론적 검색 |
+| 🐳 | **Docker 지원** | 헬스 체크가 포함된 다단계 빌드 |
 
 > ¹ Duplicate Code(SMELL-13)과 Shotgun Surgery(SMELL-09)는 다중 파일 컨텍스트가 필요하며 단일 파일 모드에서는 건너뜁니다.
 

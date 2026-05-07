@@ -35,9 +35,9 @@ jobs:
             os: windows-latest
             artifact: syntagma-windows-x86_64
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@888c2e70ea403335fb409a3b5d302e37e6b46e06 # stable
         with:
           toolchain: "1.95"
           targets: ${{ matrix.target }}
@@ -52,7 +52,7 @@ jobs:
           sudo apt-get install -y libssl-dev:arm64
 
       - name: Cache Cargo
-        uses: actions/cache@v4
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           path: |
             ~/.cargo/registry
@@ -100,7 +100,7 @@ jobs:
           7z a ${{ matrix.artifact }}.zip $files
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ${{ matrix.artifact }}
           path: dist/${{ matrix.artifact }}.*
@@ -112,7 +112,7 @@ jobs:
     name: Upload knowledge data archive
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Verify data archive exists
         run: |
@@ -125,20 +125,39 @@ jobs:
           echo "Found: $ARCHIVE ($(du -sh "$ARCHIVE" | cut -f1))"
 
       - name: Upload data artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: data-archive
           path: dist/syntagma-data-*.tar.gz
 
   # ---------------------------------------------------------------------------
-  # 3. Generate SHA256 checksums for all release assets
+  # 3. Generate SBOM and SHA256 checksums
   # ---------------------------------------------------------------------------
+  sbom:
+    name: Generate SBOM
+    needs: [build-binaries]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Generate SBOM (SPDX JSON)
+        uses: anchore/sbom-action@f325610c9f50a54015d37c8d16cb3b0e2c8f4de0 # v0.18.0
+        with:
+          format: spdx-json
+          output-file: sbom.spdx.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: sbom
+          path: sbom.spdx.json
+
   checksums:
     name: Generate SHA256 checksums
     needs: [build-binaries, build-data]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           path: dist/
           merge-multiple: true
@@ -151,7 +170,7 @@ jobs:
           cat sha256sums.txt
 
       - name: Upload checksums
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: checksums
           path: dist/sha256sums.txt
@@ -161,11 +180,11 @@ jobs:
   # ---------------------------------------------------------------------------
   release:
     name: Create GitHub Release
-    needs: [build-binaries, build-data, checksums]
+    needs: [build-binaries, build-data, sbom, checksums]
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           path: dist/
           merge-multiple: true
@@ -174,12 +193,13 @@ jobs:
         run: ls -lh dist/
 
       - name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2.2.2
         with:
           files: |
             dist/*.tar.gz
             dist/*.zip
             dist/sha256sums.txt
+            sbom.spdx.json
           generate_release_notes: true
 
   # ---------------------------------------------------------------------------
@@ -190,9 +210,9 @@ jobs:
     needs: release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@888c2e70ea403335fb409a3b5d302e37e6b46e06 # stable
         with:
           toolchain: "1.95"
 
@@ -229,7 +249,7 @@ jobs:
           echo "linux_aarch64=$(sha256sum linux_aarch64.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
 
       - name: Checkout homebrew tap
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: epicsagas/homebrew-tap
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
