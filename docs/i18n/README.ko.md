@@ -282,7 +282,7 @@ syntagma explore "strategy pattern"    # 지식 그래프 탐색
 
 **워크플로우 예시**: `code-reviewer`가 God Object를 감지 → 3개의 다운스트림 스멜까지 인과 관계 추적 → "RF-018 적용"(→ refactoring-expert) 또는 "근본 원인 심층 분석"(→ syntagma-advisor) 또는 "아키텍처 검사"(→ architecture-analyst) 옵션 제공.
 
-[전체 MCP 통합 가이드](docs/mcp-integration-guide.md)
+[전체 MCP 통합 가이드](../../docs/mcp-integration-guide.md)
 
 ---
 
@@ -344,12 +344,12 @@ syntagma dist --out-dir release/
 
 | 문서 | 설명 |
 |------|------|
-| [빠른 시작](QUICKSTART.md) | 단계별 설정, 첫 실행, 문제 해결 |
-| [MCP 통합 가이드](docs/mcp-integration-guide.md) | 도구 참조, 에이전트 예시, 대화 흐름 |
-| [API 참조](docs/api.md) | REST 엔드포인트, 인증, 예시 |
-| [배포](docs/distribution.md) | 릴리스 패키징 및 배포 |
-| [개발 및 기여](DEVELOPMENT.md) | 아키텍처, 기여 방법 |
-| [변경 이력](CHANGELOG.md) | 릴리스 이력 및 버전 정보 |
+| [빠른 시작](../../QUICKSTART.md) | 단계별 설정, 첫 실행, 문제 해결 |
+| [MCP 통합 가이드](../../docs/mcp-integration-guide.md) | 도구 참조, 에이전트 예시, 대화 흐름 |
+| [API 참조](../../docs/api.md) | REST 엔드포인트, 인증, 예시 |
+| [배포](../../docs/distribution.md) | 릴리스 패키징 및 배포 |
+| [개발 및 기여](../../DEVELOPMENT.md) | 아키텍처, 기여 방법 |
+| [변경 이력](../../CHANGELOG.md) | 릴리스 이력 및 버전 정보 |
 
 ---
 
@@ -407,23 +407,23 @@ rustup update stable
 rustup show   # 활성 툴체인 확인
 ```
 
-> 추가 도움: [QUICKSTART.md 문제 해결 섹션](QUICKSTART.md#troubleshooting) · [이슈 열기](https://github.com/epicsagas/Syntagma/issues)
+> 추가 도움: [QUICKSTART.md 문제 해결 섹션](../../QUICKSTART.md#troubleshooting) · [이슈 열기](https://github.com/epicsagas/Syntagma/issues)
 
 ---
 
 ## 로드맵
 
-- [ ] **대화형 튜토리얼** — MCP 도구에 대한 앱 내 가이드 투어
-- [ ] **팀 메트릭** — 조직 전체의 패턴 사용 현황 집계
 - [ ] **사용자 정의 엔티티** — 팀별 패턴/스멜 추가
-- [ ] **IDE 플러그인** — VSCode, IntelliJ 네이티브 통합
-- [ ] **다국어 문서** — 한국어, 일본어, 중국어 지식 베이스
+- [ ] **대화형 튜토리얼** — MCP 도구에 대한 앱 내 가이드 투어
+- [ ] **다국어 메타데이터** — 엔티티 제목 및 요약의 한국어, 일본어, 중국어 지원 (README 번역은 완료)
+- [ ] **MCP 도구 설명** — IDE 전용 플러그인을 대체하는 향상된 도구 설명
+- [ ] **팀 메트릭** — 조직 전체의 패턴 사용 현황 집계
 
 ---
 
 ## 기여
 
-기여를 환영합니다! 아키텍처 개요와 기여 가이드는 [DEVELOPMENT.md](DEVELOPMENT.md)를 참조하세요.
+기여를 환영합니다! 아키텍처 개요와 기여 가이드는 [DEVELOPMENT.md](../../DEVELOPMENT.md)를 참조하세요.
 
 ```bash
 # 테스트 실행
@@ -442,4 +442,4 @@ cargo fmt
 
 ## 라이선스
 
-Apache 2.0 — 자세한 내용은 [LICENSE](LICENSE)를 참조하세요.
+Apache 2.0 — 자세한 내용은 [LICENSE](../../LICENSE)를 참조하세요.

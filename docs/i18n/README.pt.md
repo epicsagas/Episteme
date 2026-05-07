@@ -284,7 +284,7 @@ Os agentes trabalham juntos — cada análise termina com opções de **Próximo
 
 **Exemplo de fluxo de trabalho**: `code-reviewer` detecta God Object → rastreia causalidade para 3 smells posteriores → oferece "Aplicar RF-018" (→ refactoring-expert) ou "Aprofundar causa raiz" (→ syntagma-advisor) ou "Verificação de arquitetura" (→ architecture-analyst).
 
-[Guia Completo de Integração MCP](../mcp-integration-guide.md)
+[Guia Completo de Integração MCP](../../docs/mcp-integration-guide.md)
 
 ---
 
@@ -346,12 +346,12 @@ syntagma dist --out-dir release/
 
 | Documento | Descrição |
 |-----------|-----------|
-| [Início Rápido](../QUICKSTART.md) | Configuração passo a passo, primeira execução, solução de problemas |
-| [Guia de Integração MCP](../mcp-integration-guide.md) | Referência de ferramentas, exemplos de agentes, fluxos de conversação |
-| [Referência da API](../api.md) | Endpoints REST, autenticação, exemplos |
-| [Distribuição](../distribution.md) | Empacotamento de release e implantação |
-| [Desenvolvimento e Contribuição](../DEVELOPMENT.md) | Arquitetura, como contribuir |
-| [Registro de Alterações](../CHANGELOG.md) | Histórico de releases e notas de versão |
+| [Início Rápido](../../QUICKSTART.md) | Configuração passo a passo, primeira execução, solução de problemas |
+| [Guia de Integração MCP](../../docs/mcp-integration-guide.md) | Referência de ferramentas, exemplos de agentes, fluxos de conversação |
+| [Referência da API](../../docs/api.md) | Endpoints REST, autenticação, exemplos |
+| [Distribuição](../../docs/distribution.md) | Empacotamento de release e implantação |
+| [Desenvolvimento e Contribuição](../../DEVELOPMENT.md) | Arquitetura, como contribuir |
+| [Registro de Alterações](../../CHANGELOG.md) | Histórico de releases e notas de versão |
 
 ---
 
@@ -409,23 +409,23 @@ rustup update stable
 rustup show   # confirme a toolchain ativa
 ```
 
-> Mais ajuda: [Seção de solução de problemas do QUICKSTART.md](../QUICKSTART.md#troubleshooting) · [Abra uma issue](https://github.com/epicsagas/Syntagma/issues)
+> Mais ajuda: [Seção de solução de problemas do QUICKSTART.md](../../QUICKSTART.md#troubleshooting) · [Abra uma issue](https://github.com/epicsagas/Syntagma/issues)
 
 ---
 
 ## Roteiro
 
-- [ ] **Tutoriais Interativos** — Tours guiados no aplicativo para ferramentas MCP
-- [ ] **Métricas de Equipe** — Agregação de uso de padrões pela organização
 - [ ] **Entidades Personalizadas** — Adicionar padrões/smells específicos da equipe
-- [ ] **Plugins de IDE** — Integrações nativas para VSCode, IntelliJ
-- [ ] **Documentação Multilíngue** — Base de conhecimento em coreano, japonês, chinês
+- [ ] **Tutoriais Interativos** — Tours guiados no aplicativo para ferramentas MCP
+- [ ] **Metadados Multilíngues** — Títulos e resumos de entidades em coreano, japonês, chinês (traduções do README já concluídas)
+- [ ] **Descrições de Ferramentas MCP** — Descrições aprimoradas para substituir plugins IDE específicos
+- [ ] **Métricas de Equipe** — Agregação de uso de padrões pela organização
 
 ---
 
 ## Contribuindo
 
-Contribuições são bem-vindas! Veja [DEVELOPMENT.md](../DEVELOPMENT.md) para a visão geral da arquitetura e guia de contribuição.
+Contribuições são bem-vindas! Veja [DEVELOPMENT.md](../../DEVELOPMENT.md) para a visão geral da arquitetura e guia de contribuição.
 
 ```bash
 # Executar testes
@@ -444,4 +444,4 @@ Dúvidas? [Abra uma discussão](https://github.com/epicsagas/Syntagma/discussion
 
 ## Licença
 
-Apache 2.0 — veja [LICENSE](../LICENSE) para detalhes.
+Apache 2.0 — veja [LICENSE](../../LICENSE) para detalhes.

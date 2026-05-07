@@ -12,7 +12,7 @@
     <a href="https://github.com/epicsagas/Syntagma/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Syntagma/ci.yml?branch=main&label=CI" alt="CI" /></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.95+-orange.svg" alt="rust-lang" /></a>
     <a href="https://crates.io/crates/syntagma"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
+    <a href="../../LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
     <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
 </p>
 
@@ -282,7 +282,7 @@ Los agentes trabajan juntos — cada analisis termina con opciones de **Proximos
 
 **Ejemplo de flujo de trabajo**: `code-reviewer` detecta God Object → rastrea la causalidad hasta 3 smells derivados → ofrece "Aplicar RF-018" (→ refactoring-expert) o "Analisis profundo de causa raiz" (→ syntagma-advisor) o "Verificacion de arquitectura" (→ architecture-analyst).
 
-[Guia completa de integracion MCP](docs/mcp-integration-guide.md)
+[Guia completa de integracion MCP](../../docs/mcp-integration-guide.md)
 
 ---
 
@@ -344,12 +344,12 @@ syntagma dist --out-dir release/
 
 | Documento | Descripcion |
 |-----------|-------------|
-| [Inicio Rapido](QUICKSTART.md) | Configuracion paso a paso, primera ejecucion, solucion de problemas |
-| [Guia de Integracion MCP](docs/mcp-integration-guide.md) | Referencia de herramientas, ejemplos de agentes, flujos de conversacion |
-| [Referencia API](docs/api.md) | Endpoints REST, autenticacion, ejemplos |
-| [Distribucion](docs/distribution.md) | Empaquetado de releases y despliegue |
-| [Desarrollo y Contribuciones](DEVELOPMENT.md) | Arquitectura, como contribuir |
-| [Registro de Cambios](CHANGELOG.md) | Historial de releases y notas de version |
+| [Inicio Rapido](../../QUICKSTART.md) | Configuracion paso a paso, primera ejecucion, solucion de problemas |
+| [Guia de Integracion MCP](../../docs/mcp-integration-guide.md) | Referencia de herramientas, ejemplos de agentes, flujos de conversacion |
+| [Referencia API](../../docs/api.md) | Endpoints REST, autenticacion, ejemplos |
+| [Distribucion](../../docs/distribution.md) | Empaquetado de releases y despliegue |
+| [Desarrollo y Contribuciones](../../DEVELOPMENT.md) | Arquitectura, como contribuir |
+| [Registro de Cambios](../../CHANGELOG.md) | Historial de releases y notas de version |
 
 ---
 
@@ -407,23 +407,23 @@ rustup update stable
 rustup show   # confirma el toolchain activo
 ```
 
-> Mas ayuda: [seccion de solucion de problemas en QUICKSTART.md](QUICKSTART.md#troubleshooting) · [Abrir un issue](https://github.com/epicsagas/Syntagma/issues)
+> Mas ayuda: [seccion de solucion de problemas en QUICKSTART.md](../../QUICKSTART.md#troubleshooting) · [Abrir un issue](https://github.com/epicsagas/Syntagma/issues)
 
 ---
 
 ## Hoja de Ruta
 
-- [ ] **Tutoriales Interactivos** — Guias integradas en la aplicacion para herramientas MCP
-- [ ] **Metricas de Equipo** — Uso agregado de patrones a nivel organizacional
 - [ ] **Entidades Personalizadas** — Agregar patrones/smells especificos del equipo
-- [ ] **Plugins IDE** — Integraciones nativas para VSCode, IntelliJ
-- [ ] **Documentacion Multilingue** — Base de conocimiento en coreano, japones, chino
+- [ ] **Tutoriales Interactivos** — Guias integradas en la aplicacion para herramientas MCP
+- [ ] **Metadatos Multilingues** — Titulos y resumenes de entidades en coreano, japones, chino (traducciones README completadas)
+- [ ] **Descripciones de Herramientas MCP** — Descripciones mejoradas para reemplazar plugins IDE especificos
+- [ ] **Metricas de Equipo** — Uso agregado de patrones a nivel organizacional
 
 ---
 
 ## Contribuciones
 
-Las contribuciones son bienvenidas! Consulta [DEVELOPMENT.md](DEVELOPMENT.md) para el resumen de arquitectura y la guia de contribucion.
+Las contribuciones son bienvenidas! Consulta [DEVELOPMENT.md](../../DEVELOPMENT.md) para el resumen de arquitectura y la guia de contribucion.
 
 ```bash
 # Ejecutar pruebas
@@ -442,4 +442,4 @@ Preguntas? [Abre una discusion](https://github.com/epicsagas/Syntagma/discussion
 
 ## Licencia
 
-Apache 2.0 — consulta [LICENSE](LICENSE) para mas detalles.
+Apache 2.0 — consulta [LICENSE](../../LICENSE) para mas detalles.

@@ -284,7 +284,7 @@ syntagma explore "strategy pattern"    # 探索知識圖譜
 
 **工作流程範例**：`code-reviewer` 偵測到 God Object → 追蹤因果關係至 3 個下游壞味道 → 提供「套用 RF-018」（→ refactoring-expert）或「深入分析根本原因」（→ syntagma-advisor）或「架構檢查」（→ architecture-analyst）。
 
-[完整 MCP 整合指南](../mcp-integration-guide.md)
+[完整 MCP 整合指南](../../docs/mcp-integration-guide.md)
 
 ---
 
@@ -347,9 +347,9 @@ syntagma dist --out-dir release/
 | 文件 | 說明 |
 |------|------|
 | [快速入門](../../QUICKSTART.md) | 逐步設定、首次執行、疑難排解 |
-| [MCP 整合指南](../mcp-integration-guide.md) | 工具參考、代理範例、對話流程 |
-| [API 參考](../api.md) | REST 端點、身份驗證、範例 |
-| [發行](../distribution.md) | 發行打包與部署 |
+| [MCP 整合指南](../../docs/mcp-integration-guide.md) | 工具參考、代理範例、對話流程 |
+| [API 參考](../../docs/api.md) | REST 端點、身份驗證、範例 |
+| [發行](../../docs/distribution.md) | 發行打包與部署 |
 | [開發與貢獻](../../DEVELOPMENT.md) | 架構說明、如何貢獻 |
 | [更新日誌](../../CHANGELOG.md) | 版本歷史與版本說明 |
 
@@ -415,11 +415,11 @@ rustup show   # 確認使用中的工具鏈
 
 ## 發展路線圖
 
-- [ ] **互動式教學** — 應用程式內的 MCP 工具導覽
-- [ ] **團隊指標** — 跨組織的聚合模式使用分析
 - [ ] **自訂實體** — 新增團隊特定的模式/壞味道
-- [ ] **IDE 外掛** — VSCode、IntelliJ 原生整合
-- [ ] **多語言文件** — 韓文、日文、中文的知識庫
+- [ ] **互動式教學** — 應用程式內的 MCP 工具導覽
+- [ ] **多語言中繼資料** — 實體標題與摘要的韓文、日文、中文支援（README 翻譯已完成）
+- [ ] **MCP 工具描述** — 取代 IDE 專用外掛的增強工具描述
+- [ ] **團隊指標** — 跨組織的聚合模式使用分析
 
 ---
 
