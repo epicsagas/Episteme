@@ -282,7 +282,7 @@ syntagma explore "strategy pattern"    # ナレッジグラフの探索
 
 **ワークフロー例**: `code-reviewer`がGod Objectを検出 → 3つの下流スメルへの因果関係を追跡 → 「RF-018を適用」（→ refactoring-expert）または「根本原因を深掘り」（→ syntagma-advisor）または「アーキテクチャチェック」（→ architecture-analyst）を提案。
 
-[MCP統合ガイド（全文）](docs/mcp-integration-guide.md)
+[MCP統合ガイド（全文）](../../docs/mcp-integration-guide.md)
 
 ---
 
@@ -344,12 +344,12 @@ syntagma dist --out-dir release/
 
 | ドキュメント | 説明 |
 |----------|-------------|
-| [クイックスタート](QUICKSTART.md) | ステップバイステップのセットアップ、初回実行、トラブルシューティング |
-| [MCP統合ガイド](docs/mcp-integration-guide.md) | ツールリファレンス、エージェントの使用例、会話フロー |
-| [APIリファレンス](docs/api.md) | RESTエンドポイント、認証、使用例 |
-| [配布](docs/distribution.md) | リリースパッケージングとデプロイメント |
-| [開発とコントリビューション](DEVELOPMENT.md) | アーキテクチャ、コントリビューション方法 |
-| [変更履歴](CHANGELOG.md) | リリース履歴とバージョンノート |
+| [クイックスタート](../../QUICKSTART.md) | ステップバイステップのセットアップ、初回実行、トラブルシューティング |
+| [MCP統合ガイド](../../docs/mcp-integration-guide.md) | ツールリファレンス、エージェントの使用例、会話フロー |
+| [APIリファレンス](../../docs/api.md) | RESTエンドポイント、認証、使用例 |
+| [配布](../../docs/distribution.md) | リリースパッケージングとデプロイメント |
+| [開発とコントリビューション](../../DEVELOPMENT.md) | アーキテクチャ、コントリビューション方法 |
+| [変更履歴](../../CHANGELOG.md) | リリース履歴とバージョンノート |
 
 ---
 
@@ -407,23 +407,23 @@ rustup update stable
 rustup show   # アクティブなツールチェーンを確認
 ```
 
-> さらなるヘルプ：[QUICKSTART.mdのトラブルシューティングセクション](QUICKSTART.md#troubleshooting) · [イシューを開く](https://github.com/epicsagas/Syntagma/issues)
+> さらなるヘルプ：[QUICKSTART.mdのトラブルシューティングセクション](../../QUICKSTART.md#troubleshooting) · [イシューを開く](https://github.com/epicsagas/Syntagma/issues)
 
 ---
 
 ## ロードマップ
 
-- [ ] **インタラクティブチュートリアル** — MCPツールのアプリ内ガイドツアー
-- [ ] **チームメトリクス** — 組織全体でのパターン使用状況の集計
 - [ ] **カスタムエンティティ** — チーム固有のパターン/スメルの追加
-- [ ] **IDEプラグイン** — VSCode、IntelliJのネイティブ統合
-- [ ] **多言語ドキュメント** — 韓国語、日本語、中国語のナレッジベース
+- [ ] **インタラクティブチュートリアル** — MCPツールのアプリ内ガイドツアー
+- [ ] **多言語メタデータ** — エンティティのタイトルと概要の韓国語・日本語・中国語対応（README翻訳は完了）
+- [ ] **MCPツール説明** — IDE専用プラグインに代わる強化されたツール説明
+- [ ] **チームメトリクス** — 組織全体でのパターン使用状況の集計
 
 ---
 
 ## コントリビューション
 
-コントリビューションを歓迎します！アーキテクチャの概要とコントリビューションガイドは[DEVELOPMENT.md](DEVELOPMENT.md)を参照してください。
+コントリビューションを歓迎します！アーキテクチャの概要とコントリビューションガイドは[DEVELOPMENT.md](../../DEVELOPMENT.md)を参照してください。
 
 ```bash
 # テストの実行
@@ -442,4 +442,4 @@ cargo fmt
 
 ## ライセンス
 
-Apache 2.0 — 詳細は[LICENSE](LICENSE)を参照してください。
+Apache 2.0 — 詳細は[LICENSE](../../LICENSE)を参照してください。

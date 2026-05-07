@@ -284,7 +284,7 @@ Agenten arbeiten zusammen — jede Analyse endet mit **Naechste Schritte**-Optio
 
 **Workflow-Beispiel**: `code-reviewer` erkennt God Object → verfolgt Kausalitaet zu 3 downstream-Smells → bietet "RF-018 anwenden" (→ refactoring-expert) oder "Ursache vertiefen" (→ syntagma-advisor) oder "Architekturpruefung" (→ architecture-analyst).
 
-[Vollstaendiger MCP-Integrationsleitfaden](../mcp-integration-guide.md)
+[Vollstaendiger MCP-Integrationsleitfaden](../../docs/mcp-integration-guide.md)
 
 ---
 
@@ -347,9 +347,9 @@ syntagma dist --out-dir release/
 | Dokument | Beschreibung |
 |----------|-------------|
 | [Schnellstart](../../QUICKSTART.md) | Schritt-fuer-Schritt-Einrichtung, erster Start, Fehlerbehebung |
-| [MCP-Integrationsleitfaden](../mcp-integration-guide.md) | Werkzeugreferenz, Agenten-Beispiele, Konversationsablaeufe |
-| [API-Referenz](../api.md) | REST-Endpunkte, Authentifizierung, Beispiele |
-| [Distribution](../distribution.md) | Release-Paketierung und Bereitstellung |
+| [MCP-Integrationsleitfaden](../../docs/mcp-integration-guide.md) | Werkzeugreferenz, Agenten-Beispiele, Konversationsablaeufe |
+| [API-Referenz](../../docs/api.md) | REST-Endpunkte, Authentifizierung, Beispiele |
+| [Distribution](../../docs/distribution.md) | Release-Paketierung und Bereitstellung |
 | [Entwicklung & Mitwirken](../../DEVELOPMENT.md) | Architektur, wie man beitraegt |
 | [Aenderungsprotokoll](../../CHANGELOG.md) | Release-Historie und Versionshinweise |
 
@@ -415,11 +415,11 @@ rustup show   # aktive Toolchain bestaetigen
 
 ## Roadmap
 
-- [ ] **Interaktive Tutorials** — Anwendungsinterne gefuehrte Touren fuer MCP-Werkzeuge
-- [ ] **Team-Metriken** — Aggregierte Musternutzung ueber die Organisation hinweg
 - [ ] **Benutzerdefinierte Entitaeten** — Team-spezifische Muster/Smells hinzufuegen
-- [ ] **IDE-Plugins** — VSCode, IntelliJ native Integrationen
-- [ ] **Mehrsprachige Dokumentation** — Wissensbasis auf Koreanisch, Japanisch, Chinesisch
+- [ ] **Interaktive Tutorials** — Anwendungsinterne gefuehrte Touren fuer MCP-Werkzeuge
+- [ ] **Mehrsprachige Metadaten** — Entitaetstitel und Zusammenfassungen auf Koreanisch, Japanisch, Chinesisch (README-Uebersetzungen bereits abgeschlossen)
+- [ ] **MCP-Werkzeugbeschreibungen** — Verbesserte Beschreibungen als Ersatz fuer IDE-spezifische Plugins
+- [ ] **Team-Metriken** — Aggregierte Musternutzung ueber die Organisation hinweg
 
 ---
 

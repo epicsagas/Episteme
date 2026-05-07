@@ -12,7 +12,7 @@
     <a href="https://github.com/epicsagas/Syntagma/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Syntagma/ci.yml?branch=main&label=CI" alt="CI" /></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.95+-orange.svg" alt="rust-lang" /></a>
     <a href="https://crates.io/crates/syntagma"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
+    <a href="../../LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
     <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
 </p>
 
@@ -282,7 +282,7 @@ syntagma explore "strategy pattern"    # 探索知识图谱
 
 **工作流示例**：`code-reviewer` 检测到 God Object → 追踪因果关系到 3 个下游坏味道 → 提供"应用 RF-018"（→ refactoring-expert）或"深入分析根本原因"（→ syntagma-advisor）或"架构检查"（→ architecture-analyst）。
 
-[完整 MCP 集成指南](docs/mcp-integration-guide.md)
+[完整 MCP 集成指南](../../docs/mcp-integration-guide.md)
 
 ---
 
@@ -344,12 +344,12 @@ syntagma dist --out-dir release/
 
 | 文档 | 说明 |
 |----------|-------------|
-| [快速开始](QUICKSTART.md) | 逐步设置、首次运行、故障排除 |
-| [MCP 集成指南](docs/mcp-integration-guide.md) | 工具参考、智能体示例、对话流程 |
-| [API 参考](docs/api.md) | REST 端点、身份验证、示例 |
-| [分发](docs/distribution.md) | 发布打包和部署 |
-| [开发与贡献](DEVELOPMENT.md) | 架构说明、如何贡献 |
-| [更新日志](CHANGELOG.md) | 发布历史和版本说明 |
+| [快速开始](../../QUICKSTART.md) | 逐步设置、首次运行、故障排除 |
+| [MCP 集成指南](../../docs/mcp-integration-guide.md) | 工具参考、智能体示例、对话流程 |
+| [API 参考](../../docs/api.md) | REST 端点、身份验证、示例 |
+| [分发](../../docs/distribution.md) | 发布打包和部署 |
+| [开发与贡献](../../DEVELOPMENT.md) | 架构说明、如何贡献 |
+| [更新日志](../../CHANGELOG.md) | 发布历史和版本说明 |
 
 ---
 
@@ -407,23 +407,23 @@ rustup update stable
 rustup show   # 确认当前工具链
 ```
 
-> 更多帮助：[QUICKSTART.md 故障排除部分](QUICKSTART.md#troubleshooting) · [提交 Issue](https://github.com/epicsagas/Syntagma/issues)
+> 更多帮助：[QUICKSTART.md 故障排除部分](../../QUICKSTART.md#troubleshooting) · [提交 Issue](https://github.com/epicsagas/Syntagma/issues)
 
 ---
 
 ## 路线图
 
-- [ ] **交互式教程** —— 应用内 MCP 工具引导教程
-- [ ] **团队指标** —— 跨组织的模式使用聚合
 - [ ] **自定义实体** —— 添加团队特定的模式/坏味道
-- [ ] **IDE 插件** —— VSCode、IntelliJ 原生集成
-- [ ] **多语言文档** —— 韩语、日语、中文知识库
+- [ ] **交互式教程** —— 应用内 MCP 工具引导教程
+- [ ] **多语言元数据** —— 实体标题和摘要的韩语、日语、中文支持（README 翻译已完成）
+- [ ] **MCP 工具描述** —— 替代 IDE 专用插件的增强工具描述
+- [ ] **团队指标** —— 跨组织的模式使用聚合
 
 ---
 
 ## 贡献
 
-欢迎贡献！请参阅 [DEVELOPMENT.md](DEVELOPMENT.md) 了解架构概览和贡献指南。
+欢迎贡献！请参阅 [DEVELOPMENT.md](../../DEVELOPMENT.md) 了解架构概览和贡献指南。
 
 ```bash
 # 运行测试
@@ -442,4 +442,4 @@ cargo fmt
 
 ## 许可证
 
-Apache 2.0 —— 详情请参阅 [LICENSE](LICENSE)。
+Apache 2.0 —— 详情请参阅 [LICENSE](../../LICENSE)。

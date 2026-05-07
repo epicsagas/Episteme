@@ -12,7 +12,7 @@
     <a href="https://github.com/epicsagas/Syntagma/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Syntagma/ci.yml?branch=main&label=CI" alt="CI" /></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.95+-orange.svg" alt="rust-lang" /></a>
     <a href="https://crates.io/crates/syntagma"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
+    <a href="../../LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
     <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
 </p>
 
@@ -282,7 +282,7 @@ syntagma explore "strategy pattern"    # ज्ञान ग्राफ का 
 
 **वर्कफ़्लो उदाहरण**: `code-reviewer` God Object का पता लगाता है → कॉज़ेशन को 3 दीर्घकालिक स्मेल्स तक ट्रेस करता है → "RF-018 लागू करें" (→ refactoring-expert) या "मूल कारण का गहन विश्लेषण" (→ syntagma-advisor) या "आर्किटेक्चर जाँच" (→ architecture-analyst) प्रस्तुत करता है।
 
-[पूर्ण MCP एकीकरण गाइड](docs/mcp-integration-guide.md)
+[पूर्ण MCP एकीकरण गाइड](../../docs/mcp-integration-guide.md)
 
 ---
 
@@ -344,12 +344,12 @@ syntagma dist --out-dir release/
 
 | दस्तावेज़ | विवरण |
 |----------|-------------|
-| [त्वरित शुरुआत](QUICKSTART.md) | चरण-दर-चरण सेटअप, पहला रन, समस्या निवारण |
-| [MCP एकीकरण गाइड](docs/mcp-integration-guide.md) | टूल संदर्भ, एजेंट उदाहरण, वार्तालाप प्रवाह |
-| [API संदर्भ](docs/api.md) | REST एंडपॉइंट्स, प्रमाणीकरण, उदाहरण |
-| [वितरण](docs/distribution.md) | रिलीज़ पैकेजिंग और परिनियोजन |
-| [विकास और योगदान](DEVELOPMENT.md) | आर्किटेक्चर, योगदान कैसे करें |
-| [बदलाव सूची](CHANGELOG.md) | रिलीज़ इतिहास और संस्करण नोट्स |
+| [त्वरित शुरुआत](../../QUICKSTART.md) | चरण-दर-चरण सेटअप, पहला रन, समस्या निवारण |
+| [MCP एकीकरण गाइड](../../docs/mcp-integration-guide.md) | टूल संदर्भ, एजेंट उदाहरण, वार्तालाप प्रवाह |
+| [API संदर्भ](../../docs/api.md) | REST एंडपॉइंट्स, प्रमाणीकरण, उदाहरण |
+| [वितरण](../../docs/distribution.md) | रिलीज़ पैकेजिंग और परिनियोजन |
+| [विकास और योगदान](../../DEVELOPMENT.md) | आर्किटेक्चर, योगदान कैसे करें |
+| [बदलाव सूची](../../CHANGELOG.md) | रिलीज़ इतिहास और संस्करण नोट्स |
 
 ---
 
@@ -407,23 +407,23 @@ rustup update stable
 rustup show   # सक्रिय टूलचेन की पुष्टि करें
 ```
 
-> अधिक सहायता: [QUICKSTART.md समस्या निवारण अनुभाग](QUICKSTART.md#troubleshooting) · [एक इश्यू खोलें](https://github.com/epicsagas/Syntagma/issues)
+> अधिक सहायता: [QUICKSTART.md समस्या निवारण अनुभाग](../../QUICKSTART.md#troubleshooting) · [एक इश्यू खोलें](https://github.com/epicsagas/Syntagma/issues)
 
 ---
 
 ## रोडमैप
 
-- [ ] **इंटरैक्टिव ट्यूटोरियल** — MCP टूल्स के लिए इन-ऐप गाइडेड टूर
-- [ ] **टीम मेट्रिक्स** — संगठन में पैटर्न उपयोग का समेकन
 - [ ] **कस्टम एंटिटीज़** — टीम-विशिष्ट पैटर्न्स/स्मेल्स जोड़ें
-- [ ] **IDE प्लगइन्स** — VSCode, IntelliJ नेटिव एकीकरण
-- [ ] **बहुभाषी दस्तावेज़** — कोरियाई, जापानी, चीनी में ज्ञान आधार
+- [ ] **इंटरैक्टिव ट्यूटोरियल** — MCP टूल्स के लिए इन-ऐप गाइडेड टूर
+- [ ] **बहुभाषी मेटाडेटा** — कोरियाई, जापानी, चीनी में एंटिटी शीर्षक और सारांश (README अनुवाद पहले से पूर्ण)
+- [ ] **MCP टूल विवरण** — IDE-विशिष्ट प्लगइन्स को बदलने के लिए उन्नत टूल विवरण
+- [ ] **टीम मेट्रिक्स** — संगठन में पैटर्न उपयोग का समेकन
 
 ---
 
 ## योगदान
 
-योगदान का स्वागत है! आर्किटेक्चर अवलोकन और योगदान गाइड के लिए [DEVELOPMENT.md](DEVELOPMENT.md) देखें।
+योगदान का स्वागत है! आर्किटेक्चर अवलोकन और योगदान गाइड के लिए [DEVELOPMENT.md](../../DEVELOPMENT.md) देखें।
 
 ```bash
 # टेस्ट चलाएँ
@@ -442,4 +442,4 @@ cargo fmt
 
 ## लाइसेंस
 
-Apache 2.0 — विवरण के लिए [LICENSE](LICENSE) देखें।
+Apache 2.0 — विवरण के लिए [LICENSE](../../LICENSE) देखें।
