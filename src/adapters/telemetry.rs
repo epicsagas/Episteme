@@ -142,11 +142,17 @@ impl Telemetry {
         let ph_key = posthog_api_key.clone();
         let ph_host = posthog_host.clone();
         let sentry = sentry_dsn.clone();
-        tokio::spawn(async move {
-            let client = reqwest::Client::new();
-            while let Some(ev) = rx.recv().await {
-                let _ = send_with_retry(&client, &ph_key, &ph_host, &sentry, &ev).await;
-            }
+        std::thread::spawn(move || {
+            let rt = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .expect("telemetry runtime");
+            rt.block_on(async move {
+                let client = reqwest::Client::new();
+                while let Some(ev) = rx.recv().await {
+                    let _ = send_with_retry(&client, &ph_key, &ph_host, &sentry, &ev).await;
+                }
+            });
         });
         Self {
             enabled,
@@ -198,7 +204,7 @@ pub fn read_consent_raw() -> Option<bool> {
 }
 
 pub fn read_consent() -> bool {
-    read_consent_raw().unwrap_or(false)
+    read_consent_raw().unwrap_or(true)
 }
 
 pub fn write_consent(enabled: bool) -> Result<(), String> {
