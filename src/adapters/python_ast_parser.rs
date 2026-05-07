@@ -1,8 +1,8 @@
 use crate::domain::detectors::detect_all;
 use crate::domain::metrics::{CodeMetrics, SmellDetection};
 use crate::ports::parser::CodeParser;
-use rustpython_parser::ast::{self, Ranged};
 use rustpython_parser::Parse;
+use rustpython_parser::ast::{self, Ranged};
 
 pub struct PythonAstParser;
 
@@ -115,7 +115,12 @@ fn detect_class_metrics(c: &ast::StmtClassDef, code: &str, file_name: &str) -> V
     let method_count = c
         .body
         .iter()
-        .filter(|s| matches!(s, ast::Stmt::FunctionDef(_) | ast::Stmt::AsyncFunctionDef(_)))
+        .filter(|s| {
+            matches!(
+                s,
+                ast::Stmt::FunctionDef(_) | ast::Stmt::AsyncFunctionDef(_)
+            )
+        })
         .count();
     let field_count = c
         .body
@@ -153,7 +158,13 @@ fn count_primitive_params(args: &ast::Arguments) -> usize {
         .iter()
         .chain(args.args.iter())
         .chain(args.kwonlyargs.iter())
-        .filter(|a| a.def.annotation.as_ref().map(|expr| is_primitive(expr)).unwrap_or(true))
+        .filter(|a| {
+            a.def
+                .annotation
+                .as_ref()
+                .map(|expr| is_primitive(expr))
+                .unwrap_or(true)
+        })
         .count()
 }
 
@@ -192,10 +203,18 @@ fn max_nesting(body: &[ast::Stmt], depth: usize) -> usize {
     let mut max_depth = depth;
     for stmt in body {
         let nested = match stmt {
-            ast::Stmt::If(s) => max_nesting(&s.body, depth + 1).max(max_nesting(&s.orelse, depth + 1)),
-            ast::Stmt::For(s) => max_nesting(&s.body, depth + 1).max(max_nesting(&s.orelse, depth + 1)),
-            ast::Stmt::AsyncFor(s) => max_nesting(&s.body, depth + 1).max(max_nesting(&s.orelse, depth + 1)),
-            ast::Stmt::While(s) => max_nesting(&s.body, depth + 1).max(max_nesting(&s.orelse, depth + 1)),
+            ast::Stmt::If(s) => {
+                max_nesting(&s.body, depth + 1).max(max_nesting(&s.orelse, depth + 1))
+            }
+            ast::Stmt::For(s) => {
+                max_nesting(&s.body, depth + 1).max(max_nesting(&s.orelse, depth + 1))
+            }
+            ast::Stmt::AsyncFor(s) => {
+                max_nesting(&s.body, depth + 1).max(max_nesting(&s.orelse, depth + 1))
+            }
+            ast::Stmt::While(s) => {
+                max_nesting(&s.body, depth + 1).max(max_nesting(&s.orelse, depth + 1))
+            }
             ast::Stmt::Try(s) => max_nesting(&s.body, depth + 1)
                 .max(max_nesting(&s.orelse, depth + 1))
                 .max(max_nesting(&s.finalbody, depth + 1)),
@@ -210,10 +229,18 @@ fn count_local_assignments(body: &[ast::Stmt]) -> usize {
     body.iter()
         .map(|stmt| match stmt {
             ast::Stmt::Assign(_) | ast::Stmt::AnnAssign(_) | ast::Stmt::AugAssign(_) => 1,
-            ast::Stmt::If(s) => count_local_assignments(&s.body) + count_local_assignments(&s.orelse),
-            ast::Stmt::For(s) => count_local_assignments(&s.body) + count_local_assignments(&s.orelse),
-            ast::Stmt::AsyncFor(s) => count_local_assignments(&s.body) + count_local_assignments(&s.orelse),
-            ast::Stmt::While(s) => count_local_assignments(&s.body) + count_local_assignments(&s.orelse),
+            ast::Stmt::If(s) => {
+                count_local_assignments(&s.body) + count_local_assignments(&s.orelse)
+            }
+            ast::Stmt::For(s) => {
+                count_local_assignments(&s.body) + count_local_assignments(&s.orelse)
+            }
+            ast::Stmt::AsyncFor(s) => {
+                count_local_assignments(&s.body) + count_local_assignments(&s.orelse)
+            }
+            ast::Stmt::While(s) => {
+                count_local_assignments(&s.body) + count_local_assignments(&s.orelse)
+            }
             ast::Stmt::Try(s) => {
                 count_local_assignments(&s.body)
                     + count_local_assignments(&s.orelse)
@@ -250,7 +277,9 @@ fn count_external_calls(body: &[ast::Stmt]) -> usize {
             ast::Expr::BoolOp(b) => b.values.iter().map(count_expr).sum(),
             ast::Expr::BinOp(b) => count_expr(&b.left) + count_expr(&b.right),
             ast::Expr::UnaryOp(u) => count_expr(&u.operand),
-            ast::Expr::Compare(c) => count_expr(&c.left) + c.comparators.iter().map(count_expr).sum::<usize>(),
+            ast::Expr::Compare(c) => {
+                count_expr(&c.left) + c.comparators.iter().map(count_expr).sum::<usize>()
+            }
             _ => 0,
         }
     }
@@ -261,7 +290,9 @@ fn count_external_calls(body: &[ast::Stmt]) -> usize {
             ast::Stmt::AnnAssign(a) => a.value.as_ref().map(|v| count_expr(v)).unwrap_or(0),
             ast::Stmt::If(s) => count_external_calls(&s.body) + count_external_calls(&s.orelse),
             ast::Stmt::For(s) => count_external_calls(&s.body) + count_external_calls(&s.orelse),
-            ast::Stmt::AsyncFor(s) => count_external_calls(&s.body) + count_external_calls(&s.orelse),
+            ast::Stmt::AsyncFor(s) => {
+                count_external_calls(&s.body) + count_external_calls(&s.orelse)
+            }
             ast::Stmt::While(s) => count_external_calls(&s.body) + count_external_calls(&s.orelse),
             ast::Stmt::Try(s) => {
                 count_external_calls(&s.body)
@@ -302,12 +333,20 @@ fn count_call_chains(body: &[ast::Stmt]) -> usize {
 }
 
 fn line_number_at_offset(code: &str, offset: usize) -> usize {
-    code[..offset.min(code.len())].bytes().filter(|b| *b == b'\n').count() + 1
+    code[..offset.min(code.len())]
+        .bytes()
+        .filter(|b| *b == b'\n')
+        .count()
+        + 1
 }
 
 fn range_len_lines(code: &str, range: rustpython_parser::text_size::TextRange) -> usize {
     let start = range.start().to_usize().min(code.len());
     let end = range.end().to_usize().min(code.len());
     let slice = &code[start..end];
-    slice.lines().filter(|l| !l.trim().is_empty()).count().max(1)
+    slice
+        .lines()
+        .filter(|l| !l.trim().is_empty())
+        .count()
+        .max(1)
 }

@@ -1,9 +1,9 @@
 use std::collections::HashSet;
 
-use crate::domain::types::Entity;
-use crate::domain::metrics::SmellDetection;
 use crate::domain::graph::KnowledgeGraph;
 use crate::domain::inference::{EffortLevel, RefactoringSuggestion, SuggestionMetadata};
+use crate::domain::metrics::SmellDetection;
+use crate::domain::types::Entity;
 
 // ---------------------------------------------------------------------------
 // RefactoringRanker — merged from syntagma-infer/src/ranker.rs
@@ -138,11 +138,7 @@ impl RefactoringRanker {
     /// Calculate principle alignment score.
     ///
     /// How many principles violated by the smell are enforced by the refactoring?
-    fn calculate_principle_alignment(
-        &self,
-        detection: &SmellDetection,
-        rf_entity: &Entity,
-    ) -> f64 {
+    fn calculate_principle_alignment(&self, detection: &SmellDetection, rf_entity: &Entity) -> f64 {
         let Some(smell_entity) = self.graph.get_entity(&detection.smell_id) else {
             return 0.5;
         };
@@ -313,10 +309,10 @@ impl RefactoringInferenceEngine {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::metrics::CodeMetrics;
     use crate::domain::inference::EffortLevel;
-    use std::collections::HashMap;
+    use crate::domain::metrics::CodeMetrics;
     use crate::domain::types::Entity;
+    use std::collections::HashMap;
 
     fn blank_entity(id: &str) -> Entity {
         Entity {
@@ -335,7 +331,8 @@ mod tests {
     }
 
     fn build_graph(entities: Vec<Entity>) -> KnowledgeGraph {
-        let map: HashMap<String, Entity> = entities.into_iter().map(|e| (e.id.clone(), e)).collect();
+        let map: HashMap<String, Entity> =
+            entities.into_iter().map(|e| (e.id.clone(), e)).collect();
         KnowledgeGraph::from_entities(map)
     }
 
@@ -357,11 +354,13 @@ mod tests {
     fn test_extract_effort_small() {
         let mut entity = blank_entity("RF-001");
         entity.title = "Extract Method".to_owned();
-        entity.context.insert(
-            "when_to_use".to_owned(),
-            vec!["simple refactor".to_owned()],
+        entity
+            .context
+            .insert("when_to_use".to_owned(), vec!["simple refactor".to_owned()]);
+        assert_eq!(
+            RefactoringRanker::extract_effort(&entity),
+            EffortLevel::Small
         );
-        assert_eq!(RefactoringRanker::extract_effort(&entity), EffortLevel::Small);
     }
 
     #[test]
@@ -372,13 +371,19 @@ mod tests {
             "benefits".to_owned(),
             vec!["significant improvement".to_owned()],
         );
-        assert_eq!(RefactoringRanker::extract_effort(&entity), EffortLevel::Large);
+        assert_eq!(
+            RefactoringRanker::extract_effort(&entity),
+            EffortLevel::Large
+        );
     }
 
     #[test]
     fn test_extract_effort_medium_default() {
         let entity = blank_entity("RF-003");
-        assert_eq!(RefactoringRanker::extract_effort(&entity), EffortLevel::Medium);
+        assert_eq!(
+            RefactoringRanker::extract_effort(&entity),
+            EffortLevel::Medium
+        );
     }
 
     #[test]
@@ -386,26 +391,43 @@ mod tests {
         let mut smell_entity = blank_entity("SMELL-01");
         smell_entity.title = "Long Method".to_owned();
         smell_entity.r#type = "smell".to_owned();
-        smell_entity.relations.insert("violates".to_owned(), vec!["LAW-001".to_owned()]);
-        smell_entity.relations.insert("solved_by".to_owned(), vec!["RF-001".to_owned(), "RF-002".to_owned()]);
+        smell_entity
+            .relations
+            .insert("violates".to_owned(), vec!["LAW-001".to_owned()]);
+        smell_entity.relations.insert(
+            "solved_by".to_owned(),
+            vec!["RF-001".to_owned(), "RF-002".to_owned()],
+        );
 
         // RF-001 has more relations -> higher usage score
         let mut rf1 = blank_entity("RF-001");
         rf1.title = "Extract Method".to_owned();
         rf1.r#type = "refactoring".to_owned();
-        rf1.relations.insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
-        rf1.relations.insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
-        rf1.relations.insert("related_to".to_owned(), (0..12).map(|i| format!("DP-{i}")).collect());
-        rf1.context.insert("when_to_use".to_owned(), vec!["simple".to_owned()]);
-        rf1.context.insert("benefits".to_owned(), vec!["quick win".to_owned()]);
+        rf1.relations
+            .insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
+        rf1.relations
+            .insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
+        rf1.relations.insert(
+            "related_to".to_owned(),
+            (0..12).map(|i| format!("DP-{i}")).collect(),
+        );
+        rf1.context
+            .insert("when_to_use".to_owned(), vec!["simple".to_owned()]);
+        rf1.context
+            .insert("benefits".to_owned(), vec!["quick win".to_owned()]);
 
         // RF-002 has fewer relations -> lower usage score
         let mut rf2 = blank_entity("RF-002");
         rf2.title = "Replace Method with Method Object".to_owned();
         rf2.r#type = "refactoring".to_owned();
-        rf2.relations.insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
-        rf2.relations.insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
-        rf2.context.insert("benefits".to_owned(), vec!["complex restructuring".to_owned()]);
+        rf2.relations
+            .insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
+        rf2.relations
+            .insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
+        rf2.context.insert(
+            "benefits".to_owned(),
+            vec!["complex restructuring".to_owned()],
+        );
 
         let graph = build_graph(vec![smell_entity, rf1, rf2]);
         let ranker = RefactoringRanker::new(graph);
@@ -435,13 +457,18 @@ mod tests {
         rf_entity.title = "Extract Method".to_owned();
         rf_entity.r#type = "refactoring".to_owned();
         // Enforces one of the two violated laws
-        rf_entity.relations.insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
+        rf_entity
+            .relations
+            .insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
 
         let graph = build_graph(vec![smell_entity, rf_entity]);
         let ranker = RefactoringRanker::new(graph);
 
         let detection = make_detection("SMELL-01", "Long Method", 0.8);
-        let score = ranker.calculate_principle_alignment(&detection, ranker.graph().get_entity("RF-001").unwrap());
+        let score = ranker.calculate_principle_alignment(
+            &detection,
+            ranker.graph().get_entity("RF-001").unwrap(),
+        );
 
         // 1 overlap out of 2 violated = 0.5
         assert!((score - 0.5).abs() < f64::EPSILON);
@@ -456,7 +483,10 @@ mod tests {
         let ranker = RefactoringRanker::new(graph);
 
         let detection = make_detection("SMELL-01", "Long Method", 0.8);
-        let score = ranker.calculate_principle_alignment(&detection, ranker.graph().get_entity("RF-001").unwrap());
+        let score = ranker.calculate_principle_alignment(
+            &detection,
+            ranker.graph().get_entity("RF-001").unwrap(),
+        );
 
         // No violated laws -> neutral 0.5
         assert!((score - 0.5).abs() < f64::EPSILON);
@@ -467,8 +497,13 @@ mod tests {
         let mut rf_entity = blank_entity("RF-001");
         rf_entity.title = "Extract Method".to_owned();
         rf_entity.r#type = "refactoring".to_owned();
-        rf_entity.relations.insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
-        rf_entity.relations.insert("solves".to_owned(), vec!["SMELL-01".to_owned(), "SMELL-02".to_owned()]);
+        rf_entity
+            .relations
+            .insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
+        rf_entity.relations.insert(
+            "solves".to_owned(),
+            vec!["SMELL-01".to_owned(), "SMELL-02".to_owned()],
+        );
         // total = 3 relations
 
         let graph = build_graph(vec![rf_entity]);
@@ -485,7 +520,10 @@ mod tests {
         rf_entity.title = "Popular Refactoring".to_owned();
         rf_entity.r#type = "refactoring".to_owned();
         // 25 relations -> should cap at 1.0
-        rf_entity.relations.insert("enforces".to_owned(), (0..25).map(|i| format!("LAW-{i}")).collect());
+        rf_entity.relations.insert(
+            "enforces".to_owned(),
+            (0..25).map(|i| format!("LAW-{i}")).collect(),
+        );
 
         let graph = build_graph(vec![rf_entity]);
         let ranker = RefactoringRanker::new(graph);
@@ -503,8 +541,12 @@ mod tests {
         let mut rf_entity = blank_entity("RF-001");
         rf_entity.title = "Extract Method".to_owned();
         rf_entity.r#type = "refactoring".to_owned();
-        rf_entity.relations.insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
-        rf_entity.context.insert("benefits".to_owned(), vec!["reduce complexity".to_owned()]);
+        rf_entity
+            .relations
+            .insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
+        rf_entity
+            .context
+            .insert("benefits".to_owned(), vec!["reduce complexity".to_owned()]);
 
         let graph = build_graph(vec![law_entity, rf_entity]);
         let ranker = RefactoringRanker::new(graph);
@@ -554,14 +596,20 @@ mod tests {
     fn test_composite_score_formula() {
         // Verify exact formula: 0.4 * severity + 0.3 * effort + 0.2 * principle + 0.1 * usage
         let mut smell_entity = blank_entity("SMELL-01");
-        smell_entity.relations.insert("violates".to_owned(), vec!["LAW-001".to_owned()]);
+        smell_entity
+            .relations
+            .insert("violates".to_owned(), vec!["LAW-001".to_owned()]);
 
         let mut rf_entity = blank_entity("RF-001");
         rf_entity.title = "Test Refactoring".to_owned();
         rf_entity.r#type = "refactoring".to_owned();
-        rf_entity.relations.insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
+        rf_entity
+            .relations
+            .insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
         // 2 relations total -> usage = 2/20 = 0.1
-        rf_entity.relations.insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
+        rf_entity
+            .relations
+            .insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
         // no context -> medium effort -> 0.6
 
         let graph = build_graph(vec![smell_entity, rf_entity]);
@@ -575,8 +623,12 @@ mod tests {
 
         // severity = 0.9, effort = 0.6, principle = 1.0 (1/1 overlap), usage = 0.1
         let expected = 0.4 * 0.9 + 0.3 * 0.6 + 0.2 * 1.0 + 0.1 * 0.1;
-        assert!((s.priority_score - expected).abs() < 1e-10,
-            "expected {}, got {}", expected, s.priority_score);
+        assert!(
+            (s.priority_score - expected).abs() < 1e-10,
+            "expected {}, got {}",
+            expected,
+            s.priority_score
+        );
 
         assert!((s.metadata.severity_score - 0.9).abs() < f64::EPSILON);
         assert!((s.metadata.effort_score - 0.6).abs() < f64::EPSILON);
@@ -595,22 +647,33 @@ mod tests {
         let mut smell = blank_entity("SMELL-01");
         smell.title = "Long Method".to_owned();
         smell.r#type = "smell".to_owned();
-        smell.relations.insert("violates".to_owned(), vec!["LAW-001".to_owned()]);
-        smell.relations.insert("solved_by".to_owned(), vec!["RF-001".to_owned(), "RF-002".to_owned()]);
+        smell
+            .relations
+            .insert("violates".to_owned(), vec!["LAW-001".to_owned()]);
+        smell.relations.insert(
+            "solved_by".to_owned(),
+            vec!["RF-001".to_owned(), "RF-002".to_owned()],
+        );
 
         let mut rf1 = blank_entity("RF-001");
         rf1.title = "Extract Method".to_owned();
         rf1.r#type = "refactoring".to_owned();
-        rf1.relations.insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
-        rf1.relations.insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
-        rf1.context.insert("when_to_use".to_owned(), vec!["simple refactor".to_owned()]);
-        rf1.context.insert("benefits".to_owned(), vec!["quick win".to_owned()]);
+        rf1.relations
+            .insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
+        rf1.relations
+            .insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
+        rf1.context
+            .insert("when_to_use".to_owned(), vec!["simple refactor".to_owned()]);
+        rf1.context
+            .insert("benefits".to_owned(), vec!["quick win".to_owned()]);
 
         let mut rf2 = blank_entity("RF-002");
         rf2.title = "Replace Temp with Query".to_owned();
         rf2.r#type = "refactoring".to_owned();
-        rf2.relations.insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
-        rf2.relations.insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
+        rf2.relations
+            .insert("enforces".to_owned(), vec!["LAW-001".to_owned()]);
+        rf2.relations
+            .insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
 
         let graph = build_graph(vec![law, smell, rf1, rf2]);
         let engine = RefactoringInferenceEngine::new(graph);
@@ -640,7 +703,11 @@ mod tests {
         smell.r#type = "smell".to_owned();
         smell.relations.insert(
             "solved_by".to_owned(),
-            vec!["RF-001".to_owned(), "RF-002".to_owned(), "RF-003".to_owned()],
+            vec![
+                "RF-001".to_owned(),
+                "RF-002".to_owned(),
+                "RF-003".to_owned(),
+            ],
         );
 
         let mut rf1 = blank_entity("RF-001");
@@ -686,12 +753,16 @@ mod tests {
         let mut smell1 = blank_entity("SMELL-01");
         smell1.title = "Long Method".to_owned();
         smell1.r#type = "smell".to_owned();
-        smell1.relations.insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
+        smell1
+            .relations
+            .insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
 
         let mut smell2 = blank_entity("SMELL-02");
         smell2.title = "Long Parameter List".to_owned();
         smell2.r#type = "smell".to_owned();
-        smell2.relations.insert("solved_by".to_owned(), vec!["RF-002".to_owned()]);
+        smell2
+            .relations
+            .insert("solved_by".to_owned(), vec!["RF-002".to_owned()]);
 
         let mut rf1 = blank_entity("RF-001");
         rf1.title = "Extract Method".to_owned();
@@ -720,8 +791,13 @@ mod tests {
         let mut smell = blank_entity("SMELL-01");
         smell.title = "Long Method".to_owned();
         smell.r#type = "smell".to_owned();
-        smell.relations.insert("solved_by".to_owned(), vec!["RF-001".to_owned(), "RF-002".to_owned()]);
-        smell.relations.insert("violates".to_owned(), vec!["LAW-001".to_owned()]);
+        smell.relations.insert(
+            "solved_by".to_owned(),
+            vec!["RF-001".to_owned(), "RF-002".to_owned()],
+        );
+        smell
+            .relations
+            .insert("violates".to_owned(), vec!["LAW-001".to_owned()]);
 
         let graph = build_graph(vec![smell]);
         let engine = RefactoringInferenceEngine::new(graph);

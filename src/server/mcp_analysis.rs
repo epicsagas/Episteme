@@ -6,10 +6,7 @@ use crate::domain::engine::RefactoringInferenceEngine;
 use crate::domain::graph::KnowledgeGraph;
 
 /// Detect code smells in source code using the parser framework.
-pub fn analyze_code(
-    code: &str,
-    language: Option<&str>,
-) -> serde_json::Value {
+pub fn analyze_code(code: &str, language: Option<&str>) -> serde_json::Value {
     if code.len() > MAX_CODE_BYTES {
         return serde_json::json!({
             "error": "Code input exceeds 500 KB limit."

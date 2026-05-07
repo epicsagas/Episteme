@@ -67,7 +67,11 @@ impl LocalEmbeddingProvider {
         }
 
         // L2 normalize so cosine similarity remains meaningful.
-        let norm = v.iter().map(|x| (*x as f64) * (*x as f64)).sum::<f64>().sqrt() as f32;
+        let norm = v
+            .iter()
+            .map(|x| (*x as f64) * (*x as f64))
+            .sum::<f64>()
+            .sqrt() as f32;
         if norm > 0.0 {
             for x in &mut v {
                 *x /= norm;
@@ -146,7 +150,9 @@ mod tests {
     #[test]
     fn non_empty_text_produces_non_zero_embedding() {
         let provider = LocalEmbeddingProvider::new(384);
-        let v = provider.embed("factory method pattern reduces conditional complexity").unwrap();
+        let v = provider
+            .embed("factory method pattern reduces conditional complexity")
+            .unwrap();
         assert_eq!(v.len(), provider.embedding_dim());
         let sum_abs: f32 = v.iter().map(|x| x.abs()).sum();
         assert!(sum_abs > 0.0);
@@ -155,8 +161,12 @@ mod tests {
     #[test]
     fn semantically_different_texts_produce_different_embeddings() {
         let provider = LocalEmbeddingProvider::new(384);
-        let a = provider.embed("dependency inversion and interface boundaries").unwrap();
-        let b = provider.embed("recipe for sourdough bread starter hydration").unwrap();
+        let a = provider
+            .embed("dependency inversion and interface boundaries")
+            .unwrap();
+        let b = provider
+            .embed("recipe for sourdough bread starter hydration")
+            .unwrap();
         assert_eq!(a.len(), b.len());
         assert_ne!(a, b);
     }

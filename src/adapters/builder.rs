@@ -3,12 +3,12 @@ use std::path::Path;
 
 use rusqlite::Connection;
 
+use crate::adapters::chunker;
 use crate::adapters::error::{InfraError, Result};
 use crate::adapters::json_loader::load_graph;
 use crate::adapters::sqlite_db::{self, Chunk};
 use crate::domain::types::Entity;
 use crate::ports::embeddings::EmbeddingProvider;
-use crate::adapters::chunker;
 
 // ---------------------------------------------------------------------------
 // Build statistics
@@ -45,7 +45,8 @@ pub fn build(
     // Load file_to_entity mapping.
     let f2e_path = data_dir.join("file_to_entity.json");
     let f2e_raw = std::fs::read_to_string(&f2e_path).map_err(InfraError::Io)?;
-    let file_to_entity: HashMap<String, String> = serde_json::from_str(&f2e_raw).map_err(InfraError::Json)?;
+    let file_to_entity: HashMap<String, String> =
+        serde_json::from_str(&f2e_raw).map_err(InfraError::Json)?;
 
     // Load the knowledge graph for entity metadata.
     let kg = load_graph(data_dir)?;
@@ -154,7 +155,8 @@ fn generate_embeddings(
         .map_err(|e| InfraError::Database(e.to_string()))?;
     }
 
-    tx.commit().map_err(|e| InfraError::Database(e.to_string()))?;
+    tx.commit()
+        .map_err(|e| InfraError::Database(e.to_string()))?;
 
     Ok(rows.len())
 }

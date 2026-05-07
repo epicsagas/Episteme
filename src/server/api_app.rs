@@ -1,18 +1,20 @@
 use std::sync::Arc;
 use std::time::Instant;
 
-use axum::{Router, Extension, middleware as axum_mw, routing::get, routing::post};
 use crate::domain::graph::KnowledgeGraph;
 use crate::server::mcp_handler::SyntagmaMCP;
-use tower_http::trace::TraceLayer;
+use axum::{Extension, Router, middleware as axum_mw, routing::get, routing::post};
 use tower_http::catch_panic::CatchPanicLayer;
+use tower_http::trace::TraceLayer;
 
 use crate::adapters::cache::CacheManager;
 use crate::adapters::metrics::{self, MetricsHandle};
 use crate::adapters::rate_limiter::RateLimiter;
 use crate::adapters::rate_limiter_mw::rate_limit_middleware;
 use crate::adapters::telemetry::Telemetry;
-use crate::server::api_middleware::{auth_middleware, cors_layer, global_error_handler, request_id_middleware, ApiKeys};
+use crate::server::api_middleware::{
+    ApiKeys, auth_middleware, cors_layer, global_error_handler, request_id_middleware,
+};
 use crate::server::api_routes::AppState;
 use crate::server::mcp_transport_http;
 
@@ -64,7 +66,10 @@ pub async fn create_app(
 
     // Set up the Redis cache manager.
     let cache = Arc::new(CacheManager::new(redis_enabled, redis_ttl));
-    if let Err(e) = cache.connect(redis_host, redis_port, u64::from(redis_db)).await {
+    if let Err(e) = cache
+        .connect(redis_host, redis_port, u64::from(redis_db))
+        .await
+    {
         tracing::warn!("Redis cache connection failed, caching disabled: {e}");
     }
     let telemetry = Arc::new(Telemetry::new(
@@ -103,18 +108,33 @@ pub async fn create_app(
         .route("/search", post(crate::server::api_routes::search_post))
         // Graph queries
         .route("/graph/{id}", get(crate::server::api_routes::get_entity))
-        .route("/graph/{id}/neighbors", get(crate::server::api_routes::get_neighbors))
-        .route("/graph/neighbors", post(crate::server::api_routes::get_neighbors_post))
+        .route(
+            "/graph/{id}/neighbors",
+            get(crate::server::api_routes::get_neighbors),
+        )
+        .route(
+            "/graph/neighbors",
+            post(crate::server::api_routes::get_neighbors_post),
+        )
         .route("/graph/path", post(crate::server::api_routes::graph_path))
         .route("/graph/subgraph", post(crate::server::api_routes::subgraph))
-        .route("/graph/contradictions", get(crate::server::api_routes::contradictions))
-        .route("/graph/infer", get(crate::server::api_routes::infer_transitive))
+        .route(
+            "/graph/contradictions",
+            get(crate::server::api_routes::contradictions),
+        )
+        .route(
+            "/graph/infer",
+            get(crate::server::api_routes::infer_transitive),
+        )
         // Prometheus metrics endpoint
         .route("/metrics", get(metrics_endpoint));
 
     // Debug / profiling endpoints (gated behind config flag)
     if enable_debug {
-        router = router.route("/debug/profile", get(crate::server::api_routes::debug_profile));
+        router = router.route(
+            "/debug/profile",
+            get(crate::server::api_routes::debug_profile),
+        );
     }
 
     router
@@ -132,7 +152,9 @@ pub async fn create_app(
 }
 
 /// Handler for `GET /metrics`. Returns Prometheus text-format metrics.
-async fn metrics_endpoint(Extension(handle): Extension<Arc<MetricsHandle>>) -> impl axum::response::IntoResponse {
+async fn metrics_endpoint(
+    Extension(handle): Extension<Arc<MetricsHandle>>,
+) -> impl axum::response::IntoResponse {
     (
         [(
             axum::http::header::CONTENT_TYPE,

@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::fmt;
 use std::str::FromStr;
 
@@ -186,14 +186,10 @@ impl FromStr for SmellType {
             "Speculative Generality" | "SpeculativeGenerality" | "speculative_generality" => {
                 Ok(SmellType::SpeculativeGenerality)
             }
-            "Duplicate Code" | "DuplicateCode" | "duplicate_code" => {
-                Ok(SmellType::DuplicateCode)
-            }
+            "Duplicate Code" | "DuplicateCode" | "duplicate_code" => Ok(SmellType::DuplicateCode),
             "Middle Man" | "MiddleMan" | "middle_man" => Ok(SmellType::MiddleMan),
             "Feature Envy" | "FeatureEnvy" | "feature_envy" => Ok(SmellType::FeatureEnvy),
-            "Message Chains" | "MessageChains" | "message_chains" => {
-                Ok(SmellType::MessageChains)
-            }
+            "Message Chains" | "MessageChains" | "message_chains" => Ok(SmellType::MessageChains),
             "God Object" | "GodObject" | "god_object" => Ok(SmellType::GodObject),
             other => Err(format!("unknown smell type: {other}")),
         }

@@ -7,7 +7,7 @@ use axum::{
     response::{IntoResponse, Response},
 };
 
-use crate::adapters::rate_limiter::{rate_limit_for_path, RateLimiter};
+use crate::adapters::rate_limiter::{RateLimiter, rate_limit_for_path};
 
 /// Per-route rate-limiting middleware for axum.
 ///
@@ -71,7 +71,10 @@ mod tests {
         Router::new()
             .route("/analyze", get(ok_handler))
             .route("/health", get(ok_handler))
-            .layer(middleware::from_fn_with_state(limiter, rate_limit_middleware))
+            .layer(middleware::from_fn_with_state(
+                limiter,
+                rate_limit_middleware,
+            ))
     }
 
     #[tokio::test]

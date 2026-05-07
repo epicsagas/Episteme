@@ -78,10 +78,28 @@ impl SyntagmaConfig {
         config.mcp_host = env_or("SYNTAGMA_MCP_HOST", &config.mcp_host);
         config.mcp_port = env_parse_or("SYNTAGMA_MCP_PORT", config.mcp_port);
 
-        config.redis_host = cfg_val(&yaml, "redis", "host", "SYNTAGMA_REDIS_HOST", &config.redis_host);
-        config.redis_port = cfg_parse_val(&yaml, "redis", "port", "SYNTAGMA_REDIS_PORT", config.redis_port);
+        config.redis_host = cfg_val(
+            &yaml,
+            "redis",
+            "host",
+            "SYNTAGMA_REDIS_HOST",
+            &config.redis_host,
+        );
+        config.redis_port = cfg_parse_val(
+            &yaml,
+            "redis",
+            "port",
+            "SYNTAGMA_REDIS_PORT",
+            config.redis_port,
+        );
         config.redis_db = cfg_parse_val(&yaml, "redis", "db", "SYNTAGMA_REDIS_DB", config.redis_db);
-        config.redis_ttl = cfg_parse_val(&yaml, "redis", "ttl", "SYNTAGMA_REDIS_TTL", config.redis_ttl);
+        config.redis_ttl = cfg_parse_val(
+            &yaml,
+            "redis",
+            "ttl",
+            "SYNTAGMA_REDIS_TTL",
+            config.redis_ttl,
+        );
         config.redis_enabled = cfg_bool_val(
             &yaml,
             "redis",
@@ -90,7 +108,8 @@ impl SyntagmaConfig {
             config.redis_enabled,
         );
 
-        config.embedding_provider = env_or("SYNTAGMA_EMBEDDING_PROVIDER", &config.embedding_provider);
+        config.embedding_provider =
+            env_or("SYNTAGMA_EMBEDDING_PROVIDER", &config.embedding_provider);
         config.openai_api_key = env_or("OPENAI_API_KEY", &config.openai_api_key);
         config.openai_embed_model =
             env_or("SYNTAGMA_OPENAI_EMBED_MODEL", &config.openai_embed_model);
@@ -132,13 +151,7 @@ fn env_bool_or(key: &str, default: bool) -> bool {
         .unwrap_or(default)
 }
 
-fn cfg_val(
-    yaml: &YamlConfig,
-    _section: &str,
-    key: &str,
-    env_var: &str,
-    default: &str,
-) -> String {
+fn cfg_val(yaml: &YamlConfig, _section: &str, key: &str, env_var: &str, default: &str) -> String {
     if let Ok(v) = std::env::var(env_var) {
         return v;
     }
@@ -158,9 +171,10 @@ fn cfg_parse_val<T: std::str::FromStr>(
     default: T,
 ) -> T {
     if let Ok(v) = std::env::var(env_var)
-        && let Ok(parsed) = v.parse() {
-            return parsed;
-        }
+        && let Ok(parsed) = v.parse()
+    {
+        return parsed;
+    }
     yaml.redis
         .as_ref()
         .and_then(|m| m.get(key))
@@ -188,8 +202,11 @@ fn cfg_bool_val(
         .as_ref()
         .and_then(|m| m.get(key))
         .map(|v| {
-            v.as_bool()
-                .unwrap_or_else(|| v.as_str().map(|s| s.to_lowercase() == "true").unwrap_or(default))
+            v.as_bool().unwrap_or_else(|| {
+                v.as_str()
+                    .map(|s| s.to_lowercase() == "true")
+                    .unwrap_or(default)
+            })
         })
         .unwrap_or(default)
 }
