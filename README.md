@@ -413,11 +413,11 @@ rustup show   # confirm active toolchain
 
 ## Roadmap
 
-- [ ] **Interactive Tutorials** — In-app guided tours for MCP tools
-- [ ] **Team Metrics** — Aggregate pattern usage across organization
 - [ ] **Custom Entities** — Add team-specific patterns/smells
-- [ ] **IDE Plugins** — VSCode, IntelliJ native integrations
-- [ ] **Multilingual Docs** — Knowledge base in Korean, Japanese, Chinese
+- [ ] **Interactive Tutorials** — In-app guided tours for MCP tools
+- [ ] **Multilingual Metadata** — Entity titles and summaries in Korean, Japanese, Chinese (README translations already complete)
+- [ ] **MCP Tool Descriptions** — Enhanced tool descriptions to replace IDE-specific plugins
+- [ ] **Team Metrics** — Aggregate pattern usage across organization
 
 ---
 
