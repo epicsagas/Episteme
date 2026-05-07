@@ -289,7 +289,7 @@ pub fn install_launchd_agent(host: &str, port: u16) -> Result<String, String> {
     #[cfg(not(target_os = "macos"))]
     {
         let _ = (host, port);
-        return Err("launchd integration is only supported on macOS".to_owned());
+        Err("launchd integration is only supported on macOS".to_owned())
     }
     #[cfg(target_os = "macos")]
     {
@@ -349,7 +349,7 @@ pub fn install_launchd_agent(host: &str, port: u16) -> Result<String, String> {
 pub fn uninstall_launchd_agent() -> Result<String, String> {
     #[cfg(not(target_os = "macos"))]
     {
-        return Err("launchd integration is only supported on macOS".to_owned());
+        Err("launchd integration is only supported on macOS".to_owned())
     }
     #[cfg(target_os = "macos")]
     {
@@ -373,7 +373,7 @@ pub fn uninstall_launchd_agent() -> Result<String, String> {
 pub fn launchd_status() -> Result<String, String> {
     #[cfg(not(target_os = "macos"))]
     {
-        return Err("launchd integration is only supported on macOS".to_owned());
+        Err("launchd integration is only supported on macOS".to_owned())
     }
     #[cfg(target_os = "macos")]
     {
