@@ -4,6 +4,7 @@
 
 use std::fs;
 use std::net::TcpListener;
+#[cfg(target_os = "macos")]
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use std::time::{Duration, Instant};
