@@ -216,7 +216,7 @@ pub fn keyword_search(
 // without displacing direct matches.
 const SYNONYM_SCORE_RATIO: f64 = 0.95;
 // Graph-expanded remedies rank just below the lowest smell result.
-const EXPANSION_SCORE_RATIO: f64 = 0.9;
+const EXPANSION_SCORE_RATIO: f64 = 0.95;
 
 /// Inject entities from intent synonym matching when the query matches
 /// curated abstract intent phrases (e.g. "flexible" -> Strategy pattern).
@@ -279,46 +279,63 @@ fn expand_with_related_entities(
     results: &mut Vec<SearchResult>,
     limit: usize,
 ) {
-    let top_smells: Vec<&SearchResult> = results
+    let top_smell_ids: Vec<String> = results
         .iter()
         .take(3)
         .filter(|r| r.entity_type == "smell")
+        .map(|r| r.entity_id.clone())
         .collect();
 
-    if top_smells.is_empty() {
+    if top_smell_ids.is_empty() {
         return;
     }
 
-    let lowest_smell_score = top_smells
+    let lowest_smell_score = results
         .iter()
+        .take(3)
+        .filter(|r| r.entity_type == "smell")
         .map(|r| r.score)
         .min_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
         .unwrap_or(0.0);
 
     let existing_ids: HashSet<String> = results.iter().map(|r| r.entity_id.clone()).collect();
     let mut expanded: Vec<SearchResult> = Vec::new();
+    let mut boosted_ids: HashSet<String> = HashSet::new();
+    let mut expand_count = 0usize;
+    let expansion_score = lowest_smell_score * EXPANSION_SCORE_RATIO;
 
-    for smell in &top_smells {
-        if expanded.len() >= 2 {
+    for smell_id in &top_smell_ids {
+        if expand_count >= 2 {
             break;
         }
 
-        let mut neighbor_ids = graph.get_neighbors(&smell.entity_id, Some("solved_by"));
+        let mut neighbor_ids = graph.get_neighbors(smell_id, Some("solved_by"));
         if neighbor_ids.is_empty() {
             neighbor_ids = graph
-                .get_neighbors(&smell.entity_id, None)
+                .get_neighbors(smell_id, None)
                 .into_iter()
                 .filter(|id| id.starts_with("RF-"))
                 .collect();
         }
 
         for neighbor_id in neighbor_ids {
-            if expanded.len() >= 2 {
+            if expand_count >= 2 {
                 break;
             }
-            if existing_ids.contains(&neighbor_id)
-                || expanded.iter().any(|r| r.entity_id == neighbor_id)
-            {
+            if expanded.iter().any(|r| r.entity_id == neighbor_id) {
+                continue;
+            }
+
+            // Boost existing low-ranked result instead of skipping
+            if existing_ids.contains(&neighbor_id) {
+                if !boosted_ids.contains(&neighbor_id)
+                    && let Some(existing) =
+                        results.iter_mut().find(|r| r.entity_id == neighbor_id)
+                    && existing.score < expansion_score
+                {
+                    existing.score = expansion_score;
+                    boosted_ids.insert(neighbor_id.clone());
+                }
                 continue;
             }
 
@@ -326,6 +343,7 @@ fn expand_with_related_entities(
                 continue;
             };
 
+            expand_count += 1;
             expanded.push(SearchResult {
                 chunk_id: format!("expanded_{}", neighbor_id),
                 entity_id: neighbor_id.clone(),
@@ -334,7 +352,7 @@ fn expand_with_related_entities(
                 section: "Related Solution".to_owned(),
                 text: entity.title.clone(),
                 metadata_json: String::new(),
-                score: lowest_smell_score * EXPANSION_SCORE_RATIO,
+                score: expansion_score,
                 similarity: 0.0,
                 keyword_rank: None,
                 semantic_rank: None,
@@ -535,6 +553,76 @@ mod tests {
         expand_with_related_entities(&graph, &mut results, 10);
 
         assert_eq!(results.len(), 1);
+    }
+
+    #[test]
+    fn expand_boosts_low_ranked_existing_entity() {
+        let mut smell = blank_entity("SMELL-01");
+        smell.title = "Long Method".to_owned();
+        smell.r#type = "smell".to_owned();
+        smell
+            .relations
+            .insert("solved_by".to_owned(), vec!["RF-001".to_owned()]);
+
+        let mut rf = blank_entity("RF-001");
+        rf.title = "Extract Method".to_owned();
+        rf.r#type = "refactoring".to_owned();
+
+        let graph = build_graph_from_entities(vec![smell, rf]);
+
+        let mut results = vec![
+            SearchResult {
+                chunk_id: "chunk_1".to_owned(),
+                text: "A long method".to_owned(),
+                entity_id: "SMELL-01".to_owned(),
+                entity_type: "smell".to_owned(),
+                title: "Long Method".to_owned(),
+                section: "Description".to_owned(),
+                metadata_json: String::new(),
+                score: 0.85,
+                similarity: 0.85,
+                keyword_rank: None,
+                semantic_rank: None,
+            },
+            SearchResult {
+                chunk_id: "chunk_2".to_owned(),
+                text: "Some other smell".to_owned(),
+                entity_id: "SMELL-02".to_owned(),
+                entity_type: "smell".to_owned(),
+                title: "Long Parameter List".to_owned(),
+                section: "Description".to_owned(),
+                metadata_json: String::new(),
+                score: 0.70,
+                similarity: 0.70,
+                keyword_rank: None,
+                semantic_rank: None,
+            },
+            SearchResult {
+                chunk_id: "chunk_3".to_owned(),
+                text: "Extract Method".to_owned(),
+                entity_id: "RF-001".to_owned(),
+                entity_type: "refactoring".to_owned(),
+                title: "Extract Method".to_owned(),
+                section: "Description".to_owned(),
+                metadata_json: String::new(),
+                score: 0.40,
+                similarity: 0.40,
+                keyword_rank: None,
+                semantic_rank: None,
+            },
+        ];
+
+        expand_with_related_entities(&graph, &mut results, 10);
+
+        assert_eq!(results.len(), 3, "should not add duplicates");
+        let rf_result = results.iter().find(|r| r.entity_id == "RF-001").unwrap();
+        let expected_score = 0.70 * EXPANSION_SCORE_RATIO;
+        assert!(
+            (rf_result.score - expected_score).abs() < f64::EPSILON,
+            "RF-001 should be boosted to {}, got {}",
+            expected_score,
+            rf_result.score
+        );
     }
 
     #[test]
