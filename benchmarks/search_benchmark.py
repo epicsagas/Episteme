@@ -134,6 +134,7 @@ def main() -> int:
         )
 
     data = json.loads(eval_set_path.read_text(encoding="utf-8"))
+    eval_version = data.get("version", 1)
     queries: list[dict[str, Any]] = data.get("queries", [])
     if not queries:
         raise SystemExit("eval set has no queries")
@@ -148,9 +149,41 @@ def main() -> int:
     mrr_sum = 0.0
     ndcg_sum = 0.0
 
+    # Per-tier and per-category accumulators
+    tier_accum: dict[str, dict[str, float]] = {}
+    category_accum: dict[str, dict[str, float]] = {}
+
+    def accum_bucket(
+        store: dict[str, dict[str, float]],
+        key: str,
+        h1: int,
+        h3: int,
+        h5: int,
+        rr: float,
+        ndcg: float,
+    ) -> None:
+        if key not in store:
+            store[key] = {
+                "hit1": 0,
+                "hit3": 0,
+                "hit5": 0,
+                "mrr": 0.0,
+                "ndcg": 0.0,
+                "n": 0,
+            }
+        b = store[key]
+        b["hit1"] += h1
+        b["hit3"] += h3
+        b["hit5"] += h5
+        b["mrr"] += rr
+        b["ndcg"] += ndcg
+        b["n"] += 1
+
     for q in queries:
         text = q["query"]
         relevant = set(q["relevant_ids"])
+        tier = q.get("tier", "easy")
+        category = q.get("category", "exact_name")
 
         samples: list[float] = []
         ids_last: list[str] = []
@@ -176,10 +209,15 @@ def main() -> int:
         mrr_sum += q_rr
         ndcg_sum += q_ndcg
 
+        accum_bucket(tier_accum, tier, q_hit1, q_hit3, q_hit5, q_rr, q_ndcg)
+        accum_bucket(category_accum, category, q_hit1, q_hit3, q_hit5, q_rr, q_ndcg)
+
         per_query.append(
             {
                 "query": text,
                 "relevant_ids": sorted(relevant),
+                "tier": tier,
+                "category": category,
                 "return_code": rc_last,
                 "latency_mean_ms": round(statistics.mean(samples), 3),
                 "latency_p95_ms": round(percentile(samples, 95), 3),
@@ -193,9 +231,25 @@ def main() -> int:
             }
         )
 
+    def bucket_summary(bucket: dict[str, float]) -> dict[str, float]:
+        n = bucket["n"]
+        if n == 0:
+            return {}
+        return {
+            "hit@1": round(bucket["hit1"] / n, 6),
+            "hit@3": round(bucket["hit3"] / n, 6),
+            "hit@5": round(bucket["hit5"] / n, 6),
+            "mrr@5": round(bucket["mrr"] / n, 6),
+            "ndcg@5": round(bucket["ndcg"] / n, 6),
+            "queries": n,
+        }
+
     n = len(queries)
+    per_tier = {k: bucket_summary(v) for k, v in sorted(tier_accum.items())}
+    per_category = {k: bucket_summary(v) for k, v in sorted(category_accum.items())}
     summary = {
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "eval_version": eval_version,
         "queries": n,
         "repeats": args.repeats,
         "top_k": args.top_k,
@@ -214,6 +268,8 @@ def main() -> int:
             "mrr@5": round(mrr_sum / n, 6),
             "ndcg@5": round(ndcg_sum / n, 6),
         },
+        "per_tier": per_tier,
+        "per_category": per_category,
     }
 
     result = {

@@ -68,7 +68,9 @@ pub fn install_claude(dry_run: bool, transport: &ClaudeTransport) -> Result<Vec<
             ClaudeTransport::Stdio => "stdio".to_owned(),
         };
         if existed {
-            messages.push(format!("Claude Code: MCP config updated ({transport_label})"));
+            messages.push(format!(
+                "Claude Code: MCP config updated ({transport_label})"
+            ));
         } else {
             messages.push(format!("Claude Code: MCP config added ({transport_label})"));
         }
