@@ -42,8 +42,8 @@ epis analyze src/domain/engine.rs
 sleep 3
 
 echo ""
-echo "$ episteme infer src/domain/engine.rs --top-k 3"
-episteme infer src/domain/engine.rs --top-k 3
+echo "$ epis infer src/domain/engine.rs --top-k 3"
+epis infer src/domain/engine.rs --top-k 3
 sleep 3
 
 sleep 2

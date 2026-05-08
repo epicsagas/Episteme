@@ -9,23 +9,23 @@ use crossterm::terminal::{
 use crossterm::{execute, queue};
 use std::io::{self, IsTerminal, Write};
 
-use crate::adapters::installer::ClaudeTransport;
+use crate::adapters::installer::Transport;
 
 const DEFAULT_MCP_PORT: u16 = 43175;
 
-/// Prompt the user to choose HTTP or stdio transport for Claude Code MCP.
+/// Prompt the user to choose HTTP or stdio transport for MCP integration.
 ///
 /// In a non-TTY environment (CI, pipes), silently returns HTTP + default port.
-pub fn select_claude_transport() -> io::Result<ClaudeTransport> {
+pub fn select_transport() -> io::Result<Transport> {
     if !io::stdin().is_terminal() {
-        return Ok(ClaudeTransport::Http {
+        return Ok(Transport::Http {
             port: DEFAULT_MCP_PORT,
         });
     }
     run_transport_tui()
 }
 
-fn run_transport_tui() -> io::Result<ClaudeTransport> {
+fn run_transport_tui() -> io::Result<Transport> {
     let options: &[(&str, &str)] = &[
         (
             "HTTP",
@@ -83,9 +83,9 @@ fn run_transport_tui() -> io::Result<ClaudeTransport> {
     if transport == 0 {
         // HTTP selected — prompt for port in same style
         let port = prompt_port_tui(DEFAULT_MCP_PORT)?;
-        Ok(ClaudeTransport::Http { port })
+        Ok(Transport::Http { port })
     } else {
-        Ok(ClaudeTransport::Stdio)
+        Ok(Transport::Stdio)
     }
 }
 
@@ -638,7 +638,7 @@ pub fn fallback_select_tools() -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::adapters::installer::ClaudeTransport;
+    use crate::adapters::installer::Transport;
 
     #[test]
     fn selected_names_filters_checked() {
@@ -649,16 +649,16 @@ mod tests {
         );
     }
 
-    /// In a non-TTY context (stdin is not a terminal, e.g. CI), `select_claude_transport`
+    /// In a non-TTY context (stdin is not a terminal, e.g. CI), `select_transport`
     /// must return HTTP + default port without blocking.
     #[test]
-    fn select_claude_transport_non_tty_returns_http_default() {
+    fn select_transport_non_tty_returns_http_default() {
         // stdin is redirected (not a terminal) in the test harness.
         if io::stdin().is_terminal() {
             // Skip when running interactively; the non-TTY branch is what we test.
             return;
         }
-        let result = select_claude_transport().unwrap();
-        assert_eq!(result, ClaudeTransport::Http { port: 43175 });
+        let result = select_transport().unwrap();
+        assert_eq!(result, Transport::Http { port: 43175 });
     }
 }

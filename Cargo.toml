@@ -48,10 +48,6 @@ path = "src/main.rs"
 name = "episteme"
 path = "src/main.rs"
 
-[[bin]]
-name = "episteme-mcp"
-path = "src/bin/episteme-mcp.rs"
-
 [dependencies]
 # Serialization
 serde = { version = "1", features = ["derive"] }

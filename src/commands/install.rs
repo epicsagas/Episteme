@@ -54,7 +54,7 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     }
 
     // --- Tool installation ---
-    use episteme::adapters::installer::ClaudeTransport;
+    use episteme::adapters::installer::Transport;
 
     let mut selected: Vec<String> = if all || tools.iter().any(|t| t == "all") {
         vec!["claude", "cursor", "codex", "gemini", "opencode", "cline"]
@@ -100,23 +100,23 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     selected.sort();
     selected.dedup();
 
-    // --- Claude transport selection (TTY only; non-TTY defaults to HTTP + 43175) ---
-    let claude_transport: ClaudeTransport =
-        if selected.contains(&"claude".to_string()) && io::stdin().is_terminal() {
-            episteme::adapters::install_wizard::select_claude_transport()
+    // --- Transport selection (TTY only; non-TTY defaults to HTTP + 43175) ---
+    let transport: Transport =
+        if io::stdin().is_terminal() {
+            episteme::adapters::install_wizard::select_transport()
                 .map_err(|e| anyhow::anyhow!(e))?
         } else {
-            ClaudeTransport::default()
+            Transport::default()
         };
 
     for tool in &selected {
         let result = match tool.as_str() {
-            "claude" => installer::install_claude(dry_run, &claude_transport),
-            "cursor" => installer::install_cursor(dry_run),
+            "claude" => installer::install_claude(dry_run, &transport),
+            "cursor" => installer::install_cursor(dry_run, &transport),
             "codex" => installer::install_codex(dry_run),
-            "gemini" => installer::install_gemini(dry_run),
-            "opencode" => installer::install_opencode(dry_run),
-            "cline" => installer::install_cline(dry_run),
+            "gemini" => installer::install_gemini(dry_run, &transport),
+            "opencode" => installer::install_opencode(dry_run, &transport),
+            "cline" => installer::install_cline(dry_run, &transport),
             _ => Err(format!("Unknown tool: {tool}")),
         };
         match result {
@@ -130,8 +130,7 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     }
 
     // --- Enable launchd for HTTP transport ---
-    if selected.contains(&"claude".to_string())
-        && matches!(claude_transport, ClaudeTransport::Http { .. })
+    if matches!(transport, Transport::Http { .. })
         && !dry_run
         && io::stdin().is_terminal()
     {
@@ -294,7 +293,7 @@ pub fn detect_installed_tools() -> std::collections::HashSet<&'static str> {
         installed.insert("cline");
     }
     if let Ok(content) = std::fs::read_to_string(cwd.join("AGENTS.md"))
-        && (content.contains("EPISTEME-BEGIN") || content.contains("episteme-mcp"))
+        && (content.contains("EPISTEME-BEGIN") || content.contains("epis mcp"))
     {
         installed.insert("codex");
     }

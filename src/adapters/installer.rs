@@ -4,41 +4,34 @@ use std::process::Command;
 
 use serde_json::{Value, json};
 
-/// Transport configuration for Claude Code MCP integration.
+/// Transport configuration for MCP integration across all AI tools.
 #[derive(Debug, Clone, PartialEq)]
-pub enum ClaudeTransport {
+pub enum Transport {
     Http { port: u16 },
     Stdio,
 }
 
-impl Default for ClaudeTransport {
+impl Default for Transport {
     fn default() -> Self {
-        ClaudeTransport::Http { port: 43175 }
+        Transport::Http { port: 43175 }
     }
 }
 
-fn claude_mcp_server_config(transport: &ClaudeTransport) -> Value {
+fn mcp_server_config(transport: &Transport) -> Value {
     match transport {
-        ClaudeTransport::Http { port } => json!({
+        Transport::Http { port } => json!({
             "type": "http",
             "url": format!("http://127.0.0.1:{port}/mcp")
         }),
-        ClaudeTransport::Stdio => json!({
+        Transport::Stdio => json!({
             "command": "epis",
             "args": ["mcp"]
         }),
     }
 }
 
-fn mcp_server_config() -> Value {
-    json!({
-        "command": "episteme-mcp",
-        "args": []
-    })
-}
-
 /// Install MCP config for Claude Code (~/.claude.json).
-pub fn install_claude(dry_run: bool, transport: &ClaudeTransport) -> Result<Vec<String>, String> {
+pub fn install_claude(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
     let home = dirs_home();
     let claude_json = home.join(".claude.json");
     let mut messages = Vec::new();
@@ -52,7 +45,7 @@ pub fn install_claude(dry_run: bool, transport: &ClaudeTransport) -> Result<Vec<
         .as_object_mut()
         .ok_or("mcpServers is not an object")?;
 
-    let desired = claude_mcp_server_config(transport);
+    let desired = mcp_server_config(transport);
     let existed = servers.contains_key("episteme");
     let matches = servers.get("episteme") == Some(&desired);
 
@@ -64,8 +57,8 @@ pub fn install_claude(dry_run: bool, transport: &ClaudeTransport) -> Result<Vec<
             write_json_file(&claude_json, &config)?;
         }
         let transport_label = match transport {
-            ClaudeTransport::Http { port } => format!("HTTP, port {port}"),
-            ClaudeTransport::Stdio => "stdio".to_owned(),
+            Transport::Http { port } => format!("HTTP, port {port}"),
+            Transport::Stdio => "stdio".to_owned(),
         };
         if existed {
             messages.push(format!(
@@ -76,30 +69,60 @@ pub fn install_claude(dry_run: bool, transport: &ClaudeTransport) -> Result<Vec<
         }
     }
 
-    // Install agent prompt files into ~/.claude/agents/
-    let agents_src = crate::adapters::paths::episteme_home()
-        .join("registry")
-        .join("agents");
-    let agents_dst = home.join(".claude").join("agents");
+    // Upsert registry artifacts (agents, skills) into ~/.claude/
+    let registry_src = crate::adapters::paths::episteme_home().join("registry");
+    if registry_src.is_dir() && !dry_run {
+        let claude_dir = home.join(".claude");
 
-    if agents_src.is_dir() && !dry_run {
-        fs::create_dir_all(&agents_dst).map_err(|e| e.to_string())?;
-        for entry in fs::read_dir(&agents_src).map_err(|e| e.to_string())? {
-            let entry = entry.map_err(|e| e.to_string())?;
-            let dst_file = agents_dst.join(entry.file_name());
-            fs::copy(entry.path(), &dst_file).map_err(|e| e.to_string())?;
+        // agents → ~/.claude/agents/
+        let agents_src = registry_src.join("agents");
+        if agents_src.is_dir() {
+            let agents_dst = claude_dir.join("agents");
+            let (upserted, skipped) = upsert_dir(&agents_src, &agents_dst)?;
+            messages.push(format!(
+                "Claude Code: agents — {upserted} updated, {skipped} unchanged"
+            ));
         }
-        messages.push(format!(
-            "Claude Code: agents installed to {}",
-            agents_dst.display()
-        ));
+
+        // skills/<name>/ → ~/.claude/skills/<name>/
+        let skills_src = registry_src.join("skills");
+        if skills_src.is_dir() {
+            let skills_dst = claude_dir.join("skills");
+            let mut total_upserted = 0usize;
+            let mut total_skipped = 0usize;
+            for entry in fs::read_dir(&skills_src).map_err(|e| e.to_string())? {
+                let entry = entry.map_err(|e| e.to_string())?;
+                if !entry.path().is_dir() {
+                    continue;
+                }
+                let name = entry.file_name();
+                let src = entry.path();
+                let dst = skills_dst.join(&name);
+                let (u, s) = upsert_dir(&src, &dst)?;
+                total_upserted += u;
+                total_skipped += s;
+            }
+            messages.push(format!(
+                "Claude Code: skills — {total_upserted} updated, {total_skipped} unchanged"
+            ));
+        }
+
+        // hooks/ → ~/.claude/hooks/  (flat files only)
+        let hooks_src = registry_src.join("hooks");
+        if hooks_src.is_dir() {
+            let hooks_dst = claude_dir.join("hooks");
+            let (upserted, skipped) = upsert_dir(&hooks_src, &hooks_dst)?;
+            messages.push(format!(
+                "Claude Code: hooks — {upserted} updated, {skipped} unchanged"
+            ));
+        }
     }
 
     Ok(messages)
 }
 
 /// Install MCP config for Cursor (~/.cursor/mcp.json).
-pub fn install_cursor(dry_run: bool) -> Result<Vec<String>, String> {
+pub fn install_cursor(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
     let home = dirs_home();
     let cursor_dir = home.join(".cursor");
     let mcp_json = cursor_dir.join("mcp.json");
@@ -115,16 +138,21 @@ pub fn install_cursor(dry_run: bool) -> Result<Vec<String>, String> {
         .as_object_mut()
         .ok_or("mcpServers is not an object")?;
 
-    if servers.contains_key("episteme") {
+    let desired = mcp_server_config(transport);
+    let existed = servers.contains_key("episteme");
+    let matches = servers.get("episteme") == Some(&desired);
+
+    if matches {
         return Ok(vec!["Cursor: MCP already configured".to_owned()]);
     }
 
-    servers.insert("episteme".to_owned(), mcp_server_config());
+    servers.insert("episteme".to_owned(), desired);
     if !dry_run {
         write_json_file(&mcp_json, &config)?;
     }
 
-    Ok(vec!["Cursor: MCP config added".to_owned()])
+    let label = if existed { "updated" } else { "added" };
+    Ok(vec![format!("Cursor: MCP config {label}")])
 }
 
 /// Install AGENTS.md section for Codex.
@@ -134,7 +162,7 @@ pub fn install_codex(dry_run: bool) -> Result<Vec<String>, String> {
 
     if agents_md.exists() {
         let content = fs::read_to_string(&agents_md).map_err(|e| e.to_string())?;
-        if content.contains("episteme-mcp") {
+        if content.contains("epis mcp") {
             return Ok(vec!["Codex: AGENTS.md already configured".to_owned()]);
         }
     }
@@ -142,12 +170,12 @@ pub fn install_codex(dry_run: bool) -> Result<Vec<String>, String> {
     let _ = dry_run;
     // Don't modify AGENTS.md -- just report.
     Ok(vec![
-        "Codex: Add 'episteme-mcp' to AGENTS.md manually".to_owned(),
+        "Codex: Add 'epis mcp' to AGENTS.md manually".to_owned(),
     ])
 }
 
 /// Install MCP config for Gemini CLI (~/.gemini/mcp.json).
-pub fn install_gemini(dry_run: bool) -> Result<Vec<String>, String> {
+pub fn install_gemini(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
     let home = dirs_home();
     let gemini_dir = home.join(".gemini");
     let mcp_json = gemini_dir.join("mcp.json");
@@ -163,20 +191,25 @@ pub fn install_gemini(dry_run: bool) -> Result<Vec<String>, String> {
         .as_object_mut()
         .ok_or("mcpServers is not an object")?;
 
-    if servers.contains_key("episteme") {
+    let desired = mcp_server_config(transport);
+    let existed = servers.contains_key("episteme");
+    let matches = servers.get("episteme") == Some(&desired);
+
+    if matches {
         return Ok(vec!["Gemini CLI: MCP already configured".to_owned()]);
     }
 
-    servers.insert("episteme".to_owned(), mcp_server_config());
+    servers.insert("episteme".to_owned(), desired);
     if !dry_run {
         write_json_file(&mcp_json, &config)?;
     }
 
-    Ok(vec!["Gemini CLI: MCP config added".to_owned()])
+    let label = if existed { "updated" } else { "added" };
+    Ok(vec![format!("Gemini CLI: MCP config {label}")])
 }
 
 /// Install MCP config for OpenCode (~/.config/opencode/opencode.json).
-pub fn install_opencode(dry_run: bool) -> Result<Vec<String>, String> {
+pub fn install_opencode(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
     let home = dirs_home();
     let opencode_dir = home.join(".config").join("opencode");
     let config_json = opencode_dir.join("opencode.json");
@@ -192,20 +225,25 @@ pub fn install_opencode(dry_run: bool) -> Result<Vec<String>, String> {
         .as_object_mut()
         .ok_or("mcp is not an object")?;
 
-    if servers.contains_key("episteme") {
+    let desired = mcp_server_config(transport);
+    let existed = servers.contains_key("episteme");
+    let matches = servers.get("episteme") == Some(&desired);
+
+    if matches {
         return Ok(vec!["OpenCode: MCP already configured".to_owned()]);
     }
 
-    servers.insert("episteme".to_owned(), mcp_server_config());
+    servers.insert("episteme".to_owned(), desired);
     if !dry_run {
         write_json_file(&config_json, &config)?;
     }
 
-    Ok(vec!["OpenCode: MCP config added".to_owned()])
+    let label = if existed { "updated" } else { "added" };
+    Ok(vec![format!("OpenCode: MCP config {label}")])
 }
 
 /// Install MCP config for Cline (~/.cline/mcp.json).
-pub fn install_cline(dry_run: bool) -> Result<Vec<String>, String> {
+pub fn install_cline(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
     let home = dirs_home();
     let cline_dir = home.join(".cline");
     let mcp_json = cline_dir.join("mcp.json");
@@ -218,14 +256,20 @@ pub fn install_cline(dry_run: bool) -> Result<Vec<String>, String> {
         .or_insert_with(|| json!({}))
         .as_object_mut()
         .ok_or("mcpServers is not an object")?;
-    if servers.contains_key("episteme") {
+
+    let desired = mcp_server_config(transport);
+    let existed = servers.contains_key("episteme");
+    let matches = servers.get("episteme") == Some(&desired);
+
+    if matches {
         return Ok(vec!["Cline: MCP already configured".to_owned()]);
     }
-    servers.insert("episteme".to_owned(), mcp_server_config());
+    servers.insert("episteme".to_owned(), desired);
     if !dry_run {
         write_json_file(&mcp_json, &config)?;
     }
-    Ok(vec!["Cline: MCP config added".to_owned()])
+    let label = if existed { "updated" } else { "added" };
+    Ok(vec![format!("Cline: MCP config {label}")])
 }
 
 /// Data seeding: copy raw data from project source tree to ~/.episteme/.
@@ -393,16 +437,16 @@ pub fn seed_data_from_local_archive(path: &Path, dry_run: bool) -> Result<Vec<St
 
 /// Run all installers in sequence, collecting messages and tolerating
 /// individual failures without aborting the whole operation.
-pub fn install_all(dry_run: bool) -> Result<Vec<String>, String> {
+pub fn install_all(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
     let mut messages = Vec::new();
 
     for result in [
-        install_claude(dry_run, &ClaudeTransport::default()),
-        install_cursor(dry_run),
+        install_claude(dry_run, transport),
+        install_cursor(dry_run, transport),
         install_codex(dry_run),
-        install_gemini(dry_run),
-        install_opencode(dry_run),
-        install_cline(dry_run),
+        install_gemini(dry_run, transport),
+        install_opencode(dry_run, transport),
+        install_cline(dry_run, transport),
     ] {
         match result {
             Ok(msgs) => messages.extend(msgs),
@@ -453,6 +497,39 @@ fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<(), String> {
     Ok(())
 }
 
+/// Copy files from `src` into `dst`, only overwriting when content differs.
+/// Returns (upserted_count, skipped_count).
+fn upsert_dir(src: &Path, dst: &Path) -> Result<(usize, usize), String> {
+    if !dst.exists() {
+        fs::create_dir_all(dst).map_err(|e| e.to_string())?;
+    }
+    let mut upserted = 0usize;
+    let mut skipped = 0usize;
+    for entry in fs::read_dir(src).map_err(|e| e.to_string())? {
+        let entry = entry.map_err(|e| e.to_string())?;
+        let src_path = entry.path();
+        let dst_path = dst.join(entry.file_name());
+        if src_path.is_dir() {
+            let (u, s) = upsert_dir(&src_path, &dst_path)?;
+            upserted += u;
+            skipped += s;
+        } else {
+            let src_content = fs::read(&src_path).map_err(|e| e.to_string())?;
+            let needs_write = match fs::read(&dst_path) {
+                Ok(dst_content) => dst_content != src_content,
+                Err(_) => true,
+            };
+            if needs_write {
+                fs::write(&dst_path, &src_content).map_err(|e| e.to_string())?;
+                upserted += 1;
+            } else {
+                skipped += 1;
+            }
+        }
+    }
+    Ok((upserted, skipped))
+}
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -463,10 +540,17 @@ mod tests {
     use tempfile::TempDir;
 
     #[test]
-    fn mcp_server_config_has_expected_shape() {
-        let config = mcp_server_config();
-        assert_eq!(config["command"], "episteme-mcp");
-        assert!(config["args"].is_array());
+    fn mcp_server_config_stdio_has_expected_shape() {
+        let config = mcp_server_config(&Transport::Stdio);
+        assert_eq!(config["command"], "epis");
+        assert_eq!(config["args"], json!(["mcp"]));
+    }
+
+    #[test]
+    fn mcp_server_config_http_has_expected_shape() {
+        let config = mcp_server_config(&Transport::Http { port: 43175 });
+        assert_eq!(config["type"], "http");
+        assert_eq!(config["url"], "http://127.0.0.1:43175/mcp");
     }
 
     #[test]
@@ -501,11 +585,11 @@ mod tests {
         let mcp_servers = map.entry("mcpServers").or_insert_with(|| json!({}));
         let servers = mcp_servers.as_object_mut().unwrap();
         assert!(!servers.contains_key("episteme"));
-        servers.insert("episteme".to_owned(), mcp_server_config());
+        servers.insert("episteme".to_owned(), mcp_server_config(&Transport::Stdio));
         write_json_file(&path, &config).unwrap();
 
         let reloaded = read_json_file(&path);
-        assert!(reloaded["mcpServers"]["episteme"]["command"] == "episteme-mcp");
+        assert!(reloaded["mcpServers"]["episteme"]["command"] == "epis");
     }
 
     #[test]
@@ -518,7 +602,7 @@ mod tests {
         let map = config.as_object_mut().unwrap();
         let mcp_servers = map.entry("mcpServers").or_insert_with(|| json!({}));
         let servers = mcp_servers.as_object_mut().unwrap();
-        servers.insert("episteme".to_owned(), mcp_server_config());
+        servers.insert("episteme".to_owned(), mcp_server_config(&Transport::Stdio));
         write_json_file(&path, &config).unwrap();
 
         // Second pass should detect existing.
@@ -563,23 +647,23 @@ mod tests {
     }
 
     #[test]
-    fn claude_transport_default_is_http_43175() {
+    fn transport_default_is_http_43175() {
         assert_eq!(
-            ClaudeTransport::default(),
-            ClaudeTransport::Http { port: 43175 }
+            Transport::default(),
+            Transport::Http { port: 43175 }
         );
     }
 
     #[test]
-    fn claude_mcp_server_config_http() {
-        let cfg = claude_mcp_server_config(&ClaudeTransport::Http { port: 8080 });
+    fn mcp_server_config_http_custom_port() {
+        let cfg = mcp_server_config(&Transport::Http { port: 8080 });
         assert_eq!(cfg["type"], "http");
         assert_eq!(cfg["url"], "http://127.0.0.1:8080/mcp");
     }
 
     #[test]
-    fn claude_mcp_server_config_stdio() {
-        let cfg = claude_mcp_server_config(&ClaudeTransport::Stdio);
+    fn mcp_server_config_stdio() {
+        let cfg = mcp_server_config(&Transport::Stdio);
         assert_eq!(cfg["command"], "epis");
         assert_eq!(cfg["args"], json!(["mcp"]));
     }
@@ -599,7 +683,7 @@ mod tests {
             .unwrap();
         servers.insert(
             "episteme".to_owned(),
-            claude_mcp_server_config(&ClaudeTransport::Http { port: 43175 }),
+            mcp_server_config(&Transport::Http { port: 43175 }),
         );
         write_json_file(&path, &config).unwrap();
 
@@ -626,7 +710,7 @@ mod tests {
             .unwrap();
         servers.insert(
             "episteme".to_owned(),
-            claude_mcp_server_config(&ClaudeTransport::Stdio),
+            mcp_server_config(&Transport::Stdio),
         );
         write_json_file(&path, &config).unwrap();
 

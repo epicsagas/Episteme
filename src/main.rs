@@ -14,7 +14,7 @@ use cli::{Commands, GraphCommands, HooksCommands, ServiceCommands};
 
 #[derive(Parser)]
 #[command(
-    name = "epis",
+    name = "episteme",
     version,
     about = "Software engineering knowledge graph"
 )]

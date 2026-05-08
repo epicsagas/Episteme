@@ -296,8 +296,8 @@ In `~/.claude/claude_desktop_config.json`:
 {
   "mcpServers": {
     "episteme": {
-      "command": "uvx",
-      "args": ["episteme-mcp"]
+      "command": "epis",
+      "args": ["mcp"]
     },
     "alcove": {
       "command": "alcove",
