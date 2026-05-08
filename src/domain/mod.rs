@@ -1,3 +1,4 @@
+pub mod composite_graph;
 pub mod detectors;
 pub mod engine;
 pub mod graph;
@@ -7,6 +8,7 @@ pub mod problem_mapper;
 pub mod summarizer;
 pub mod types;
 
+pub use composite_graph::CompositeGraph;
 pub use engine::RefactoringInferenceEngine;
 pub use graph::{GraphError, KnowledgeGraph};
 pub use inference::*;

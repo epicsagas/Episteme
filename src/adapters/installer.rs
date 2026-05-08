@@ -48,6 +48,7 @@ pub fn install_claude(dry_run: bool, transport: &Transport) -> Result<Vec<String
     let desired = mcp_server_config(transport);
     let existed = servers.contains_key("episteme");
     let matches = servers.get("episteme") == Some(&desired);
+    let legacy_removed = remove_legacy_keys(servers);
 
     if matches {
         messages.push("Claude Code: MCP already configured".to_owned());
@@ -67,6 +68,16 @@ pub fn install_claude(dry_run: bool, transport: &Transport) -> Result<Vec<String
         } else {
             messages.push(format!("Claude Code: MCP config added ({transport_label})"));
         }
+    }
+
+    if !legacy_removed.is_empty() {
+        if !dry_run {
+            write_json_file(&claude_json, &config)?;
+        }
+        messages.push(format!(
+            "Claude Code: removed legacy key(s): {}",
+            legacy_removed.join(", ")
+        ));
     }
 
     // Upsert registry artifacts (agents, skills) into ~/.claude/
@@ -121,6 +132,18 @@ pub fn install_claude(dry_run: bool, transport: &Transport) -> Result<Vec<String
     Ok(messages)
 }
 
+/// Remove legacy MCP server keys (e.g. "syntagma") from a servers map.
+/// Returns a list of removed key names.
+fn remove_legacy_keys(servers: &mut serde_json::Map<String, Value>) -> Vec<String> {
+    let legacy_keys = ["syntagma".to_owned()];
+    let removed: Vec<String> = legacy_keys
+        .iter()
+        .filter(|k| servers.remove(k.as_str()).is_some())
+        .cloned()
+        .collect();
+    removed
+}
+
 /// Install MCP config for Cursor (~/.cursor/mcp.json).
 pub fn install_cursor(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
     let home = dirs_home();
@@ -141,8 +164,9 @@ pub fn install_cursor(dry_run: bool, transport: &Transport) -> Result<Vec<String
     let desired = mcp_server_config(transport);
     let existed = servers.contains_key("episteme");
     let matches = servers.get("episteme") == Some(&desired);
+    let legacy_removed = remove_legacy_keys(servers);
 
-    if matches {
+    if matches && legacy_removed.is_empty() {
         return Ok(vec!["Cursor: MCP already configured".to_owned()]);
     }
 
@@ -152,7 +176,11 @@ pub fn install_cursor(dry_run: bool, transport: &Transport) -> Result<Vec<String
     }
 
     let label = if existed { "updated" } else { "added" };
-    Ok(vec![format!("Cursor: MCP config {label}")])
+    let mut msgs = vec![format!("Cursor: MCP config {label}")];
+    if !legacy_removed.is_empty() {
+        msgs.push(format!("Cursor: removed legacy key(s): {}", legacy_removed.join(", ")));
+    }
+    Ok(msgs)
 }
 
 /// Install AGENTS.md section for Codex.
@@ -194,8 +222,9 @@ pub fn install_gemini(dry_run: bool, transport: &Transport) -> Result<Vec<String
     let desired = mcp_server_config(transport);
     let existed = servers.contains_key("episteme");
     let matches = servers.get("episteme") == Some(&desired);
+    let legacy_removed = remove_legacy_keys(servers);
 
-    if matches {
+    if matches && legacy_removed.is_empty() {
         return Ok(vec!["Gemini CLI: MCP already configured".to_owned()]);
     }
 
@@ -205,7 +234,11 @@ pub fn install_gemini(dry_run: bool, transport: &Transport) -> Result<Vec<String
     }
 
     let label = if existed { "updated" } else { "added" };
-    Ok(vec![format!("Gemini CLI: MCP config {label}")])
+    let mut msgs = vec![format!("Gemini CLI: MCP config {label}")];
+    if !legacy_removed.is_empty() {
+        msgs.push(format!("Gemini CLI: removed legacy key(s): {}", legacy_removed.join(", ")));
+    }
+    Ok(msgs)
 }
 
 /// Install MCP config for OpenCode (~/.config/opencode/opencode.json).
@@ -228,8 +261,9 @@ pub fn install_opencode(dry_run: bool, transport: &Transport) -> Result<Vec<Stri
     let desired = mcp_server_config(transport);
     let existed = servers.contains_key("episteme");
     let matches = servers.get("episteme") == Some(&desired);
+    let legacy_removed = remove_legacy_keys(servers);
 
-    if matches {
+    if matches && legacy_removed.is_empty() {
         return Ok(vec!["OpenCode: MCP already configured".to_owned()]);
     }
 
@@ -239,7 +273,11 @@ pub fn install_opencode(dry_run: bool, transport: &Transport) -> Result<Vec<Stri
     }
 
     let label = if existed { "updated" } else { "added" };
-    Ok(vec![format!("OpenCode: MCP config {label}")])
+    let mut msgs = vec![format!("OpenCode: MCP config {label}")];
+    if !legacy_removed.is_empty() {
+        msgs.push(format!("OpenCode: removed legacy key(s): {}", legacy_removed.join(", ")));
+    }
+    Ok(msgs)
 }
 
 /// Install MCP config for Cline (~/.cline/mcp.json).
@@ -260,8 +298,9 @@ pub fn install_cline(dry_run: bool, transport: &Transport) -> Result<Vec<String>
     let desired = mcp_server_config(transport);
     let existed = servers.contains_key("episteme");
     let matches = servers.get("episteme") == Some(&desired);
+    let legacy_removed = remove_legacy_keys(servers);
 
-    if matches {
+    if matches && legacy_removed.is_empty() {
         return Ok(vec!["Cline: MCP already configured".to_owned()]);
     }
     servers.insert("episteme".to_owned(), desired);
@@ -269,7 +308,11 @@ pub fn install_cline(dry_run: bool, transport: &Transport) -> Result<Vec<String>
         write_json_file(&mcp_json, &config)?;
     }
     let label = if existed { "updated" } else { "added" };
-    Ok(vec![format!("Cline: MCP config {label}")])
+    let mut msgs = vec![format!("Cline: MCP config {label}")];
+    if !legacy_removed.is_empty() {
+        msgs.push(format!("Cline: removed legacy key(s): {}", legacy_removed.join(", ")));
+    }
+    Ok(msgs)
 }
 
 /// Data seeding: copy raw data from project source tree to ~/.episteme/.

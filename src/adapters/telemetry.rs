@@ -11,6 +11,9 @@ pub enum Tool {
     FindPath,
     AnalyzeCode,
     SuggestRefactorings,
+    AddInsight,
+    ConfirmLinks,
+    SearchInsights,
 }
 
 impl Tool {
@@ -22,6 +25,9 @@ impl Tool {
             Self::FindPath => "find_path",
             Self::AnalyzeCode => "analyze_code",
             Self::SuggestRefactorings => "suggest_refactorings",
+            Self::AddInsight => "add_insight",
+            Self::ConfirmLinks => "confirm_links",
+            Self::SearchInsights => "search_insights",
         }
     }
 }

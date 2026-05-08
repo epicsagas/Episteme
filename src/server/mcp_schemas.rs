@@ -72,6 +72,9 @@ const DESC_GET_NEIGHBORS: &str = "Get entities related to a given entity in the 
 const DESC_FIND_PATH: &str = "Find the shortest path between two entities in the knowledge graph. Use when the user asks how two concepts relate or connect, e.g. \"how does Strategy relate to Open/Closed?\", \"what connects God Class and Single Responsibility?\".";
 const DESC_ANALYZE_CODE: &str = "Detect code smells in source code. Use when the user shares code and asks for review, feedback, problems, or improvements. Supports Python, Java, Go, Rust, TypeScript, C++, C#, Kotlin, PHP, and Ruby.";
 const DESC_SUGGEST_REFACTORINGS: &str = "Get ranked refactoring suggestions for source code. Uses composite scoring (severity, effort, principle alignment, usage) to prioritize suggestions. Supports Python, Java, Go, Rust, TypeScript, C++, C#, Kotlin, PHP, and Ruby.";
+const DESC_ADD_INSIGHT: &str = "Add a tacit knowledge insight from free text. Automatically detects links to canonical knowledge graph entities and checks for duplicates. Use when capturing team decisions, lessons learned, or architectural rationale.";
+const DESC_CONFIRM_LINKS: &str = "Confirm or reject auto-detected links between an insight and canonical entities. Use after add_insight to validate the suggested entity connections.";
+const DESC_SEARCH_INSIGHTS: &str = "Search user-contributed tacit knowledge insights. Use when looking for past team decisions, lessons learned, or architectural notes recorded by the user or team.";
 
 pub fn tool_schemas() -> Vec<Value> {
     vec![
@@ -214,6 +217,83 @@ pub fn tool_schemas() -> Vec<Value> {
                     },
                 },
                 "required": ["code"],
+            },
+        }),
+        json!({
+            "name": "add_insight",
+            "description": DESC_ADD_INSIGHT,
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "description": "Free-text insight content (decision, lesson learned, architectural note).",
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": { "type": "string" },
+                        "description": "Optional tags for categorization.",
+                    },
+                    "linked_entities": {
+                        "type": "array",
+                        "items": { "type": "string" },
+                        "description": "Optional entity IDs to explicitly link (e.g. DP-005, SMELL-01).",
+                    },
+                    "project": {
+                        "type": "string",
+                        "description": "Optional project name to tag the insight with.",
+                    },
+                },
+                "required": ["text"],
+            },
+        }),
+        json!({
+            "name": "confirm_links",
+            "description": DESC_CONFIRM_LINKS,
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "insight_id": {
+                        "type": "string",
+                        "description": "ID of the insight to confirm links for (e.g. TK-001).",
+                    },
+                    "accepted": {
+                        "type": "array",
+                        "items": { "type": "string" },
+                        "description": "Entity IDs the user confirmed as valid links.",
+                    },
+                    "rejected": {
+                        "type": "array",
+                        "items": { "type": "string" },
+                        "description": "Entity IDs the user rejected as invalid links.",
+                    },
+                    "merged_with": {
+                        "type": "string",
+                        "description": "Optional insight ID to merge with (supersedes relation).",
+                    },
+                },
+                "required": ["insight_id", "accepted"],
+            },
+        }),
+        json!({
+            "name": "search_insights",
+            "description": DESC_SEARCH_INSIGHTS,
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Natural-language search query over user insights.",
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results to return.",
+                        "minimum": 1,
+                        "maximum": 20,
+                        "default": 10,
+                    },
+                },
+                "required": ["query"],
             },
         }),
     ]

@@ -23,6 +23,7 @@ pub mod service;
 pub mod sqlite_db;
 pub mod structured_logging;
 pub mod telemetry;
+pub mod user_graph_store;
 
 pub use config::EpistemeConfig;
 pub use error::InfraError;
@@ -30,3 +31,4 @@ pub use json_loader::load_graph;
 pub use local_embeddings::LocalEmbeddingProvider;
 pub use noop_embeddings::NoopEmbeddingProvider;
 pub use regex_parsers::get_parser;
+pub use user_graph_store::UserGraphStore;

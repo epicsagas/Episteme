@@ -13,6 +13,7 @@ pub enum EntityType {
     Refactoring,
     Law,
     Smell,
+    Insight,
 }
 
 impl EntityType {
@@ -22,6 +23,7 @@ impl EntityType {
             EntityType::Refactoring => "RF-",
             EntityType::Law => "LAW-",
             EntityType::Smell => "SMELL-",
+            EntityType::Insight => "TK-",
         }
     }
 }
@@ -33,6 +35,7 @@ impl fmt::Display for EntityType {
             EntityType::Refactoring => write!(f, "refactoring"),
             EntityType::Law => write!(f, "law"),
             EntityType::Smell => write!(f, "smell"),
+            EntityType::Insight => write!(f, "insight"),
         }
     }
 }
@@ -45,6 +48,7 @@ impl FromStr for EntityType {
             "refactoring" => Ok(EntityType::Refactoring),
             "law" => Ok(EntityType::Law),
             "smell" => Ok(EntityType::Smell),
+            "insight" => Ok(EntityType::Insight),
             other => Err(format!("unknown entity type: {other}")),
         }
     }
@@ -61,6 +65,9 @@ pub enum RelationType {
     Enforces,
     Violates,
     RelatedTo,
+    DerivesFrom,
+    AppliesTo,
+    Supersedes,
 }
 
 impl fmt::Display for RelationType {
@@ -71,6 +78,9 @@ impl fmt::Display for RelationType {
             RelationType::Enforces => write!(f, "enforces"),
             RelationType::Violates => write!(f, "violates"),
             RelationType::RelatedTo => write!(f, "related_to"),
+            RelationType::DerivesFrom => write!(f, "derives_from"),
+            RelationType::AppliesTo => write!(f, "applies_to"),
+            RelationType::Supersedes => write!(f, "supersedes"),
         }
     }
 }
@@ -84,6 +94,9 @@ impl FromStr for RelationType {
             "enforces" => Ok(RelationType::Enforces),
             "violates" => Ok(RelationType::Violates),
             "related_to" => Ok(RelationType::RelatedTo),
+            "derives_from" => Ok(RelationType::DerivesFrom),
+            "applies_to" => Ok(RelationType::AppliesTo),
+            "supersedes" => Ok(RelationType::Supersedes),
             other => Err(format!("unknown relation type: {other}")),
         }
     }
@@ -348,4 +361,76 @@ pub struct GraphStats {
     pub by_type: HashMap<String, usize>,
     pub entities_with_relations: usize,
     pub avg_edges_per_entity: f64,
+}
+
+// ---------------------------------------------------------------------------
+// User insight types (tacit knowledge layer)
+// ---------------------------------------------------------------------------
+
+/// A user-contributed insight linked to canonical knowledge graph entities.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UserEntity {
+    pub id: String,
+    pub title: String,
+    pub content: String,
+    pub author: String,
+    pub confidence: f64,
+    pub evidence_count: u32,
+    pub last_validated: String,
+    pub tags: Vec<String>,
+    pub relations: HashMap<String, Vec<String>>,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+/// A link suggestion returned during insight creation.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct InsightLink {
+    pub entity_id: String,
+    pub score: f64,
+    pub link_type: InsightLinkType,
+}
+
+/// Whether a link was auto-detected or manually suggested.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum InsightLinkType {
+    Auto,
+    Suggested,
+    Manual,
+}
+
+impl fmt::Display for InsightLinkType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            InsightLinkType::Auto => write!(f, "auto"),
+            InsightLinkType::Suggested => write!(f, "suggested"),
+            InsightLinkType::Manual => write!(f, "manual"),
+        }
+    }
+}
+
+/// Correlation score between two user insights.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CorrelationScore {
+    pub insight_id: String,
+    pub semantic: f64,
+    pub graph_proximity: f64,
+    pub temporal: f64,
+    pub combined: f64,
+}
+
+/// Duplicate detection result during insight creation.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DuplicateCandidate {
+    pub insight_id: String,
+    pub overlap: OverlapKind,
+    pub note: String,
+}
+
+/// How two insights overlap.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum OverlapKind {
+    Exact,
+    Partial,
+    None,
 }
