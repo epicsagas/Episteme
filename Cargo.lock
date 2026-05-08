@@ -3467,8 +3467,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "syntagma"
-version = "0.1.0"
+name = "syntagma-engine"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "axum",

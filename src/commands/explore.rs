@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 
-use syntagma::server::mcp_handler::SyntagmaMCP;
+use syntagma_engine::server::mcp_handler::SyntagmaMCP;
 
 use super::prelude::*;
 

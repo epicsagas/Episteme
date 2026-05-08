@@ -31,12 +31,12 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     install_tracing();
-    let _ = syntagma::adapters::telemetry::ensure_consent_or_set_default();
-    syntagma::adapters::telemetry::track_session_started();
+    let _ = syntagma_engine::adapters::telemetry::ensure_consent_or_set_default();
+    syntagma_engine::adapters::telemetry::track_session_started();
 
     let cmd_enum = telemetry_command(&cli.command);
     if let Some(cmd) = cmd_enum {
-        syntagma::adapters::telemetry::track_command_invoked(cmd);
+        syntagma_engine::adapters::telemetry::track_command_invoked(cmd);
     }
     let started_at = Instant::now();
 
@@ -45,10 +45,10 @@ fn main() -> Result<()> {
     if let Some(cmd) = cmd_enum {
         let elapsed = started_at.elapsed().as_millis();
         match &result {
-            Ok(_) => syntagma::adapters::telemetry::track_command_completed(cmd, elapsed),
-            Err(_) => syntagma::adapters::telemetry::track_command_failed(
+            Ok(_) => syntagma_engine::adapters::telemetry::track_command_completed(cmd, elapsed),
+            Err(_) => syntagma_engine::adapters::telemetry::track_command_failed(
                 cmd,
-                syntagma::adapters::telemetry::FailureClass::Unknown,
+                syntagma_engine::adapters::telemetry::FailureClass::Unknown,
             ),
         }
     }
@@ -207,8 +207,8 @@ fn hooks_op(sub: HooksCommands) -> commands::HooksOp {
 ///
 /// Adding a new command only requires touching this function and the
 /// `dispatch` match; the telemetry crate's `Command` enum is separate.
-fn telemetry_command(cmd: &Commands) -> Option<syntagma::adapters::telemetry::Command> {
-    use syntagma::adapters::telemetry::Command as C;
+fn telemetry_command(cmd: &Commands) -> Option<syntagma_engine::adapters::telemetry::Command> {
+    use syntagma_engine::adapters::telemetry::Command as C;
     match cmd {
         Commands::Install { .. } => Some(C::Install),
         Commands::Build { .. } => Some(C::Build),

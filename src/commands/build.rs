@@ -6,8 +6,8 @@ use std::path::PathBuf;
 use anyhow::{Context, Result};
 use tracing::info;
 
-use syntagma::adapters::config::SyntagmaConfig;
-use syntagma::adapters::constants::EMBEDDING_DIMENSIONS;
+use syntagma_engine::adapters::config::SyntagmaConfig;
+use syntagma_engine::adapters::constants::EMBEDDING_DIMENSIONS;
 
 use super::prelude::*;
 
@@ -25,8 +25,8 @@ pub fn cmd_build(
     let data_dir = resolve_data_dir(data_dir);
     let raw_dir = raw_dir
         .map(std::path::PathBuf::from)
-        .unwrap_or_else(syntagma::adapters::paths::raw_dir);
-    let db_path = syntagma::adapters::paths::db_path();
+        .unwrap_or_else(syntagma_engine::adapters::paths::raw_dir);
+    let db_path = syntagma_engine::adapters::paths::db_path();
 
     // If --rebuild, delete the existing database.
     if rebuild && db_path.exists() {
@@ -56,7 +56,7 @@ pub fn cmd_build(
     );
     pb.set_message("Building RAG index...");
 
-    let provider: Box<dyn syntagma::ports::embeddings::EmbeddingProvider> = {
+    let provider: Box<dyn syntagma_engine::ports::embeddings::EmbeddingProvider> = {
         #[cfg(feature = "openai-embeddings")]
         {
             let provider_pref = config.embedding_provider.to_lowercase();
@@ -80,7 +80,7 @@ pub fn cmd_build(
                         .unwrap_or(config.openai_embed_dim);
                     info!("Using OpenAI embedding provider (model={model}, dim={dim})");
                     Box::new(
-                        syntagma::adapters::openai_embeddings::OpenAIEmbeddingProvider::new(
+                        syntagma_engine::adapters::openai_embeddings::OpenAIEmbeddingProvider::new(
                             key, model, dim,
                         ),
                     )
@@ -92,7 +92,7 @@ pub fn cmd_build(
             } else {
                 info!("Using local embedding provider");
                 Box::new(
-                    syntagma::adapters::local_embeddings::LocalEmbeddingProvider::new(
+                    syntagma_engine::adapters::local_embeddings::LocalEmbeddingProvider::new(
                         EMBEDDING_DIMENSIONS,
                     ),
                 )
@@ -103,7 +103,7 @@ pub fn cmd_build(
         {
             let _ = &config;
             Box::new(
-                syntagma::adapters::local_embeddings::LocalEmbeddingProvider::new(
+                syntagma_engine::adapters::local_embeddings::LocalEmbeddingProvider::new(
                     EMBEDDING_DIMENSIONS,
                 ),
             )
@@ -119,7 +119,7 @@ pub fn cmd_build(
         info!("--no-gpu requested; CPU-only behavior applies for local embedding providers");
     }
 
-    let stats = syntagma::adapters::builder::build(
+    let stats = syntagma_engine::adapters::builder::build(
         &db_path,
         &data_dir,
         &raw_dir,
@@ -188,7 +188,7 @@ pub fn cmd_dist(out_dir: &str, no_db: bool, skip_build: bool) -> Result<()> {
     }
 
     if !no_db {
-        let db_src = syntagma::adapters::paths::db_path();
+        let db_src = syntagma_engine::adapters::paths::db_path();
         if !db_src.exists() && !skip_build {
             println!("Embedding DB not found. Running build...");
             let project_meta = cwd.join("meta").to_string_lossy().into_owned();

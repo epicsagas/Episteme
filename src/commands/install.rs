@@ -5,11 +5,11 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 
-use syntagma::adapters::config::SyntagmaConfig;
+use syntagma_engine::adapters::config::SyntagmaConfig;
 
 pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> Result<()> {
     use std::io::{self, IsTerminal};
-    use syntagma::adapters::installer;
+    use syntagma_engine::adapters::installer;
 
     // --- Data seeding ---
     let seeded = if local {
@@ -48,13 +48,13 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     };
 
     // --- Build RAG index (skip if DB already provided by archive) ---
-    if seeded && !dry_run && !syntagma::adapters::paths::db_path().exists() {
+    if seeded && !dry_run && !syntagma_engine::adapters::paths::db_path().exists() {
         println!("\nBuilding RAG index...");
         super::build::cmd_build(None, None, false, false, 64, true, false)?;
     }
 
     // --- Tool installation ---
-    use syntagma::adapters::installer::ClaudeTransport;
+    use syntagma_engine::adapters::installer::ClaudeTransport;
 
     let mut selected: Vec<String> = if all || tools.iter().any(|t| t == "all") {
         vec!["claude", "cursor", "codex", "gemini", "opencode", "cline"]
@@ -64,18 +64,18 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     } else if tools.is_empty() && io::stdin().is_terminal() {
         let installed: Vec<&str> = detect_installed_tools().into_iter().collect();
         let selected =
-            match syntagma::adapters::install_wizard::interactive_select_tools(&installed) {
+            match syntagma_engine::adapters::install_wizard::interactive_select_tools(&installed) {
                 Ok(s) if !s.is_empty() => s,
                 Ok(_) => anyhow::bail!("install cancelled"),
                 Err(e) => {
                     eprintln!("Interactive UI failed ({e}); falling back to text prompt.");
-                    syntagma::adapters::install_wizard::fallback_select_tools()
+                    syntagma_engine::adapters::install_wizard::fallback_select_tools()
                 }
             };
 
         let cfg = SyntagmaConfig::load().unwrap_or_default();
-        if let Some(redis) = syntagma::adapters::install_wizard::configure_redis_tui(
-            syntagma::adapters::install_wizard::RedisConfig {
+        if let Some(redis) = syntagma_engine::adapters::install_wizard::configure_redis_tui(
+            syntagma_engine::adapters::install_wizard::RedisConfig {
                 enabled: cfg.redis_enabled,
                 host: cfg.redis_host.clone(),
                 port: cfg.redis_port,
@@ -88,9 +88,9 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
             upsert_config_yaml(redis.enabled, &redis.host, redis.port, redis.db, redis.ttl)?;
         }
 
-        let telemetry_enabled = syntagma::adapters::install_wizard::configure_telemetry_tui()
+        let telemetry_enabled = syntagma_engine::adapters::install_wizard::configure_telemetry_tui()
             .map_err(|e| anyhow::anyhow!(e))?;
-        syntagma::adapters::telemetry::write_consent(telemetry_enabled)
+        syntagma_engine::adapters::telemetry::write_consent(telemetry_enabled)
             .map_err(|e| anyhow::anyhow!(e))?;
 
         selected
@@ -103,7 +103,7 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     // --- Claude transport selection (TTY only; non-TTY defaults to HTTP + 43175) ---
     let claude_transport: ClaudeTransport =
         if selected.contains(&"claude".to_string()) && io::stdin().is_terminal() {
-            syntagma::adapters::install_wizard::select_claude_transport()
+            syntagma_engine::adapters::install_wizard::select_claude_transport()
                 .map_err(|e| anyhow::anyhow!(e))?
         } else {
             ClaudeTransport::default()
@@ -140,14 +140,14 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
         let mut line = String::new();
         io::stdin().read_line(&mut line).ok();
         if !line.trim().eq_ignore_ascii_case("n") {
-            match syntagma::adapters::service::enable_launchd(true) {
+            match syntagma_engine::adapters::service::enable_launchd(true) {
                 Ok(msg) => println!("  {msg}"),
                 Err(e) => eprintln!("  Warning: {e}"),
             }
         }
     }
 
-    syntagma::adapters::telemetry::track_install_completed(selected.len());
+    syntagma_engine::adapters::telemetry::track_install_completed(selected.len());
 
     Ok(())
 }
@@ -309,7 +309,7 @@ fn upsert_config_yaml(
     redis_ttl: u64,
 ) -> Result<()> {
     use serde_yaml::{Mapping, Value};
-    let path = syntagma::adapters::paths::syntagma_home().join("config.yaml");
+    let path = syntagma_engine::adapters::paths::syntagma_home().join("config.yaml");
     let mut root = if path.exists() {
         let text = std::fs::read_to_string(&path)?;
         serde_yaml::from_str::<Value>(&text).unwrap_or_else(|_| Value::Mapping(Mapping::new()))
@@ -345,7 +345,7 @@ fn upsert_config_yaml(
     );
     root_map.insert(Value::String("redis".to_owned()), Value::Mapping(redis_map));
 
-    std::fs::create_dir_all(syntagma::adapters::paths::syntagma_home())?;
+    std::fs::create_dir_all(syntagma_engine::adapters::paths::syntagma_home())?;
     let yaml = serde_yaml::to_string(&root)?;
     std::fs::write(path, yaml)?;
     Ok(())

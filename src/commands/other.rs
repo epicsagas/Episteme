@@ -4,7 +4,7 @@ use std::io::Read;
 
 use anyhow::Result;
 
-use syntagma::adapters::hooks;
+use syntagma_engine::adapters::hooks;
 
 use super::prelude::*;
 
@@ -103,19 +103,19 @@ pub fn cmd_hooks(sub: HooksOp) -> Result<()> {
 pub fn cmd_telemetry(action: &str) -> Result<()> {
     match action.trim().to_lowercase().as_str() {
         "on" => {
-            syntagma::adapters::telemetry::write_consent(true).map_err(|e| anyhow::anyhow!(e))?;
+            syntagma_engine::adapters::telemetry::write_consent(true).map_err(|e| anyhow::anyhow!(e))?;
             println!("[syntagma] Telemetry enabled.");
             println!("[syntagma] To opt out: syntagma telemetry off");
             Ok(())
         }
         "off" => {
-            syntagma::adapters::telemetry::write_consent(false).map_err(|e| anyhow::anyhow!(e))?;
+            syntagma_engine::adapters::telemetry::write_consent(false).map_err(|e| anyhow::anyhow!(e))?;
             println!("[syntagma] Telemetry disabled.");
             println!("[syntagma] To re-enable: syntagma telemetry on");
             Ok(())
         }
         "status" => {
-            let raw = syntagma::adapters::telemetry::read_consent_raw();
+            let raw = syntagma_engine::adapters::telemetry::read_consent_raw();
             let state = match raw {
                 Some(true) => "enabled",
                 Some(false) => "disabled",
@@ -124,13 +124,13 @@ pub fn cmd_telemetry(action: &str) -> Result<()> {
             println!("[syntagma] Telemetry: {state}");
             println!(
                 "[syntagma] Consent file: {}",
-                syntagma::adapters::paths::syntagma_home()
+                syntagma_engine::adapters::paths::syntagma_home()
                     .join("telemetry-consent")
                     .display()
             );
             println!(
                 "[syntagma] Install ID:   {}",
-                syntagma::adapters::paths::syntagma_home()
+                syntagma_engine::adapters::paths::syntagma_home()
                     .join("install-id")
                     .display()
             );
