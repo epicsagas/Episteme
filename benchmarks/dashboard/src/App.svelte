@@ -1,6 +1,8 @@
 <script>
   import TrendChart from './lib/TrendChart.svelte';
+  import LatencyTrend from './lib/LatencyTrend.svelte';
   import LatencySummary from './lib/LatencySummary.svelte';
+  import TierBreakdown from './lib/TierBreakdown.svelte';
   import QueryTable from './lib/QueryTable.svelte';
 
   // Load all benchmark result files eagerly
