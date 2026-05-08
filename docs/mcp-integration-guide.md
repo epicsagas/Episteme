@@ -1,17 +1,17 @@
 # MCP Integration Guide
 
-> Integrate Syntagma's knowledge graph into Claude Code, Cursor, and other MCP-compatible AI tools
+> Integrate Episteme's knowledge graph into Claude Code, Cursor, and other MCP-compatible AI tools
 
 ## Rust MCP HTTP Mode (Current)
 Use standalone HTTP transport directly:
 
 ```bash
 # Start MCP over HTTP
-syntagma mcp --http --host 127.0.0.1 --port 43175
+episteme mcp --http --host 127.0.0.1 --port 43175
 ```
 
 Authentication behavior:
-- If `SYNTAGMA_API_KEYS` is configured, requests must include:
+- If `EPISTEME_API_KEYS` is configured, requests must include:
 ```http
 Authorization: Bearer <api-key>
 ```
@@ -19,29 +19,29 @@ Authorization: Bearer <api-key>
 - `GET /health` is always public for health checks.
 
 Note:
-- `syntagma service` manages this same MCP HTTP mode in background (`start|stop|status|enable|disable`).
+- `epis service` manages this same MCP HTTP mode in background (`start|stop|status|enable|disable`).
 - Older `--proxy` examples are deprecated; use `mcp --http`/`service` directly.
 
 ## What is MCP?
 
-[Model Context Protocol (MCP)](https://modelcontextprotocol.io) is an open standard that allows AI assistants to access external tools and data sources. Syntagma provides 6 MCP tools that give AI agents direct access to software engineering knowledge.
+[Model Context Protocol (MCP)](https://modelcontextprotocol.io) is an open standard that allows AI assistants to access external tools and data sources. Episteme provides 6 MCP tools that give AI agents direct access to software engineering knowledge.
 
 ---
 
 ## Quick Start (Claude Code)
 
-### 1. Install Syntagma
+### 1. Install Episteme
 
 ```bash
 # Install (requires Rust 1.95+)
-cargo install --git https://github.com/epicsagas/Syntagma
+cargo install --git https://github.com/epicsagas/Episteme
 
 # Install agents and MCP server into Claude Code
 # (seeds data and configures MCP automatically)
-syntagma install claude
+epis install claude
 ```
 
-> If the data download fails, use source install: `git clone` → `cargo build --release` → `syntagma install --local`
+> If the data download fails, use source install: `git clone` → `cargo build --release` → `epis install --local`
 
 ### 2. Verify Installation
 
@@ -50,8 +50,8 @@ Check `~/.claude/claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "syntagma": {
-      "command": "syntagma",
+    "episteme": {
+      "command": "episteme",
       "args": ["mcp"]
     }
   }
@@ -60,7 +60,7 @@ Check `~/.claude/claude_desktop_config.json`:
 
 ### 3. Start Using
 
-Restart Claude Code. You now have access to 6 Syntagma tools:
+Restart Claude Code. You now have access to 6 Episteme tools:
 
 ```
 User: "What's the best way to fix a God Object smell?"
@@ -414,14 +414,14 @@ then tackle #1 (Extract Class) for long-term design."
 
 ## AI Agents
 
-Syntagma includes 4 specialized agents that work together as a connected system. Each agent uses knowledge graph tools for analysis and presents interactive follow-up options that can hand off to other agents.
+Episteme includes 4 specialized agents that work together as a connected system. Each agent uses knowledge graph tools for analysis and presents interactive follow-up options that can hand off to other agents.
 
 ### Agent Network
 
 ```
-code-reviewer ←→ syntagma-advisor
+code-reviewer ←→ episteme-advisor
       ↕                ↕
-architecture-analyst ←→ syntagma-researcher
+architecture-analyst ←→ episteme-researcher
       ↕
 refactoring-expert (external)
 ```
@@ -446,7 +446,7 @@ Each agent ends its report with **Next Steps** — interactive options that conn
 
 **Agent Response**:
 ```
-# Syntagma Code Review
+# Episteme Code Review
 
 ## Summary
 AuthenticationModule has a root-cause God Object smell causing 3
@@ -476,7 +476,7 @@ Independent:
 
 ## Next Steps
 1. Refactor — Apply RF-018 (Extract Class) → use refactoring-expert agent
-2. Deep dive — Explore root cause chain for SMELL-03 → use syntagma-advisor
+2. Deep dive — Explore root cause chain for SMELL-03 → use episteme-advisor
 3. Architecture check — Assess structural impact → use architecture-analyst
 4. Learn more — Get full explanation of SMELL-03 → get_entity(detail_level="full")
 ```
@@ -485,7 +485,7 @@ Independent:
 
 ---
 
-### 2. `syntagma-advisor`
+### 2. `episteme-advisor`
 
 **When to use**: Making engineering decisions (pattern selection, architecture trade-offs, root-cause deep dives)
 
@@ -523,13 +523,13 @@ Independent:
 
 ## Next Steps
 1. Implement — Apply DI pattern → use code-reviewer to validate
-2. Explore alternatives — Compare approaches → use syntagma-researcher
+2. Explore alternatives — Compare approaches → use episteme-researcher
 3. Architecture impact — Assess downstream effects → use architecture-analyst
 ```
 
 ---
 
-### 3. `syntagma-researcher`
+### 3. `episteme-researcher`
 
 **When to use**: Exploring relationships in the knowledge graph, finding alternatives
 
@@ -559,7 +559,7 @@ DP-012 --enforces--> LAW-001 (Single Responsibility)
   update chains — contrasted with Mediator (DP-014) which centralizes
 
 ## Next Steps
-1. Get advice — Turn findings into guidance → use syntagma-advisor
+1. Get advice — Turn findings into guidance → use episteme-advisor
 2. Check code — Detect Observer in your codebase → use code-reviewer
 3. Assess architecture — Evaluate structural fit → use architecture-analyst
 ```
@@ -603,9 +603,9 @@ DP-012 --enforces--> LAW-001 (Single Responsibility)
 - Overall: 5/10 | Structure: 4/10 | Scalability: 6/10 | Maintainability: 5/10
 
 ## Next Steps
-1. Get advice — Resolve key tensions → use syntagma-advisor
+1. Get advice — Resolve key tensions → use episteme-advisor
 2. Check code — Detect structural smells → use code-reviewer
-3. Research alternatives — Find better patterns → use syntagma-researcher
+3. Research alternatives — Find better patterns → use episteme-researcher
 ```
 
 ---
@@ -660,15 +660,15 @@ Every tool call naturally leads to the next:
 ### Cursor
 
 ```bash
-syntagma install cursor
+epis install cursor
 ```
 
 Adds MCP config to `~/.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
-    "syntagma": {
-      "command": "syntagma",
+    "episteme": {
+      "command": "episteme",
       "args": ["mcp"]
     }
   }
@@ -678,7 +678,7 @@ Adds MCP config to `~/.cursor/mcp.json`:
 ### Codex (OpenAI)
 
 ```bash
-syntagma install codex
+epis install codex
 ```
 
 Generates `AGENTS.md` in project root with agent definitions.
@@ -690,12 +690,12 @@ If your tool supports MCP, manually configure:
 ```json
 {
   "mcpServers": {
-    "syntagma": {
-      "command": "/path/to/syntagma",
+    "episteme": {
+      "command": "/path/to/episteme",
       "args": ["mcp"],
       "env": {
-        "SYNTAGMA_DATA_DIR": "~/.syntagma/data",
-        "SYNTAGMA_DB_PATH": "~/.syntagma/db/syntagma.db"
+        "EPISTEME_DATA_DIR": "~/.episteme/data",
+        "EPISTEME_DB_PATH": "~/.episteme/db/episteme.db"
       }
     }
   }
@@ -706,21 +706,21 @@ If your tool supports MCP, manually configure:
 
 ## Running as Background Service
 
-For better performance, run Syntagma MCP as a persistent HTTP proxy:
+For better performance, run Episteme MCP as a persistent HTTP proxy:
 
 ```bash
 # Start background service
-syntagma service start
+epis service start
 
 # Check status
-syntagma service status
+epis service status
 # Output: Running on http://localhost:43175 (PID 12345)
 
 # Enable auto-start on boot (macOS)
-syntagma service enable
+epis service enable
 
 # Stop service
-syntagma service stop
+epis service stop
 ```
 
 Update MCP config to use HTTP proxy:
@@ -728,15 +728,15 @@ Update MCP config to use HTTP proxy:
 ```json
 {
   "mcpServers": {
-    "syntagma": {
-      "command": "syntagma",
+    "episteme": {
+      "command": "episteme",
       "args": ["mcp", "--proxy", "http://localhost:43175"]
     }
   }
 }
 ```
 
-Logs: `~/.syntagma/logs/mcp.out.log`
+Logs: `~/.episteme/logs/mcp.out.log`
 
 ---
 
@@ -745,32 +745,32 @@ Logs: `~/.syntagma/logs/mcp.out.log`
 ### Tools not showing up in Claude
 
 1. Check config file exists: `cat ~/.claude/claude_desktop_config.json`
-2. Verify syntagma is in PATH: `which syntagma`
-3. Test MCP directly: `syntagma mcp`
-4. Check logs: `tail -f ~/.syntagma/logs/mcp.err.log`
+2. Verify episteme is in PATH: `which episteme`
+3. Test MCP directly: `episteme mcp`
+4. Check logs: `tail -f ~/.episteme/logs/mcp.err.log`
 
 ### "Database not found" error
 
 ```bash
 # Rebuild knowledge database
-syntagma build --rebuild
+epis build --rebuild
 ```
 
 ### Slow search responses
 
 ```bash
 # Use GPU acceleration
-syntagma build --gpu
+epis build --gpu
 
 # Or run as background service (faster warmup)
-syntagma service start
+epis service start
 ```
 
 ### Agent not using tools
 
 Make sure agent has tool-calling capability. In Claude Code:
 ```
-User: "Use Syntagma to find patterns for retry logic"
+User: "Use Episteme to find patterns for retry logic"
       ^^^^ explicitly mention tool usage
 ```
 
@@ -778,13 +778,13 @@ User: "Use Syntagma to find patterns for retry logic"
 
 ## Advanced: Custom Knowledge Integration
 
-Combine Syntagma (generic knowledge) with Alcove (team knowledge):
+Combine Episteme (generic knowledge) with Alcove (team knowledge):
 
 ```json
 {
   "mcpServers": {
-    "syntagma": {
-      "command": "syntagma",
+    "episteme": {
+      "command": "episteme",
       "args": ["mcp"]
     },
     "alcove": {
@@ -817,24 +817,24 @@ See [API Documentation](../docs/api.md) for endpoints.
 
 ## Automatic Triggering (Claude Code)
 
-When you describe a problem in natural language, Claude Code automatically detects the intent and calls the appropriate Syntagma tool — **you don't need to mention Syntagma explicitly**. Below are the exact trigger patterns and examples.
+When you describe a problem in natural language, Claude Code automatically detects the intent and calls the appropriate Episteme tool — **you don't need to mention Episteme explicitly**. Below are the exact trigger patterns and examples.
 
 ### How It Works
 
 ```
 Your natural language input
     ↓ Claude detects keywords/patterns
-    ↓ Syntagma tool is called automatically
+    ↓ Episteme tool is called automatically
     ↓ Knowledge graph returns verified data
     ↓ (Design Patterns · Code Smells · Refactoring Techniques · Engineering Laws)
     ↓ Claude's response is grounded in evidence
 ```
 
-> **Note:** This is prompt-based auto-triggering, not a hard hook. To guarantee a call, use the `/syntagma` skill directly.
+> **Note:** This is prompt-based auto-triggering, not a hard hook. To guarantee a call, use the `/episteme` skill directly.
 
 ### Code Structure Problems
 
-| What you say (examples) | What Syntagma detects | Automatic tool call |
+| What you say (examples) | What Episteme detects | Automatic tool call |
 |-------------------------|-----------------------|---------------------|
 | "This class does too much", "This file is over 300 lines" | God Class, Large Class, Single Responsibility | `search_knowledge("god class large class single responsibility")` |
 | "This function is too long", "Too many lines in this method" | Long Method | `search_knowledge("long method extract method")` |
@@ -843,7 +843,7 @@ Your natural language input
 
 ### Coupling & Dependency Problems
 
-| What you say (examples) | What Syntagma detects | Automatic tool call |
+| What you say (examples) | What Episteme detects | Automatic tool call |
 |-------------------------|-----------------------|---------------------|
 | "Business logic calls DB directly" | Coupling, Persistence, Repository | `search_knowledge("coupling persistence repository data access layer")` |
 | "Changing X breaks Y", "Changes ripple everywhere" | Brittle Coupling, Change Propagation | `search_knowledge("brittle coupling change propagation rigidity")` |
@@ -851,13 +851,13 @@ Your natural language input
 
 ### Testing & Quality Problems
 
-| What you say (examples) | What Syntagma detects | Automatic tool call |
+| What you say (examples) | What Episteme detects | Automatic tool call |
 |-------------------------|-----------------------|---------------------|
 | "This is hard to test", "Can't write unit tests for this" | Testability, Dependency Injection | `search_knowledge("testability dependency injection mockability")` |
 
 ### Performance & Concurrency Problems
 
-| What you say (examples) | What Syntagma detects | Automatic tool call |
+| What you say (examples) | What Episteme detects | Automatic tool call |
 |-------------------------|-----------------------|---------------------|
 | "The API is slow", "Response time is too high" | N+1 Query, Lazy Loading, Caching | `search_knowledge("N+1 query lazy loading caching performance")` |
 | "Is this thread-safe?", "Any concurrency issues?" | Thread Safety, Race Condition | `search_knowledge("thread safety race condition shared mutable state")` |
@@ -946,12 +946,12 @@ Claude: "Found 2 code smells:
 
 ## Next Steps
 
-1. **Try agents**: Ask syntagma-advisor "Should I use Singleton?"
+1. **Try agents**: Ask episteme-advisor "Should I use Singleton?"
 2. **Analyze code**: Paste a function and ask code-reviewer to check smells
-3. **Explore graph**: Use syntagma-researcher to find pattern relationships
+3. **Explore graph**: Use episteme-researcher to find pattern relationships
 4. **Custom workflows**: Combine tools (analyze → suggest → search)
 
 For more examples, see:
-- [Alcove Integration](../docs/alcove-integration.md) — Team knowledge + Syntagma
+- [Alcove Integration](../docs/alcove-integration.md) — Team knowledge + Episteme
 - [Monitoring Setup](../monitoring/README.md) — Track pattern usage
 - [API Reference](../docs/api.md) — REST endpoints

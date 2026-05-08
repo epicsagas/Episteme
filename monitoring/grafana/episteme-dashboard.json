@@ -1,7 +1,7 @@
 {
   "dashboard": {
-    "title": "Syntagma Pattern & Code Quality Metrics",
-    "uid": "syntagma-overview",
+    "title": "Episteme Pattern & Code Quality Metrics",
+    "uid": "episteme-overview",
     "version": 1,
     "editable": true,
     "timezone": "browser",
@@ -10,7 +10,7 @@
       "from": "now-6h",
       "to": "now"
     },
-    "tags": ["syntagma", "code-quality", "patterns"],
+    "tags": ["episteme", "code-quality", "patterns"],
     "panels": [
       {
         "id": 1,
@@ -24,7 +24,7 @@
         },
         "targets": [
           {
-            "expr": "topk(10, increase(syntagma_pattern_applied_total[30d]))",
+            "expr": "topk(10, increase(episteme_pattern_applied_total[30d]))",
             "legendFormat": "{{entity_id}}: {{entity_type}}",
             "refId": "A"
           }
@@ -60,7 +60,7 @@
         },
         "targets": [
           {
-            "expr": "sum by (entity_id) (rate(syntagma_pattern_applied_total[5m]))",
+            "expr": "sum by (entity_id) (rate(episteme_pattern_applied_total[5m]))",
             "legendFormat": "{{entity_id}}",
             "refId": "A"
           }
@@ -88,7 +88,7 @@
         },
         "targets": [
           {
-            "expr": "100 - (rate(syntagma_smell_detected_total[1h]) * 10)",
+            "expr": "100 - (rate(episteme_smell_detected_total[1h]) * 10)",
             "refId": "A"
           }
         ],
@@ -124,7 +124,7 @@
         },
         "targets": [
           {
-            "expr": "sum by (severity) (increase(syntagma_smell_detected_total[24h]))",
+            "expr": "sum by (severity) (increase(episteme_smell_detected_total[24h]))",
             "legendFormat": "{{severity}}",
             "refId": "A"
           }
@@ -149,7 +149,7 @@
         },
         "targets": [
           {
-            "expr": "sort_desc(sum by (entity_id, context) (increase(syntagma_pattern_applied_total[7d])))",
+            "expr": "sort_desc(sum by (entity_id, context) (increase(episteme_pattern_applied_total[7d])))",
             "format": "table",
             "instant": true,
             "refId": "A"
@@ -192,7 +192,7 @@
         },
         "targets": [
           {
-            "expr": "increase(syntagma_pattern_applied_total{entity_id=\"DP-006\"}[1h])",
+            "expr": "increase(episteme_pattern_applied_total{entity_id=\"DP-006\"}[1h])",
             "refId": "A"
           }
         ],
@@ -226,7 +226,7 @@
         },
         "targets": [
           {
-            "expr": "sum(rate(syntagma_refactoring_applied_total[1h])) / sum(rate(syntagma_refactoring_suggested_total[1h])) * 100",
+            "expr": "sum(rate(episteme_refactoring_applied_total[1h])) / sum(rate(episteme_refactoring_suggested_total[1h])) * 100",
             "refId": "A"
           }
         ],
@@ -261,12 +261,12 @@
         },
         "targets": [
           {
-            "expr": "histogram_quantile(0.95, rate(syntagma_api_duration_seconds_bucket[5m]))",
+            "expr": "histogram_quantile(0.95, rate(episteme_api_duration_seconds_bucket[5m]))",
             "legendFormat": "p95",
             "refId": "A"
           },
           {
-            "expr": "histogram_quantile(0.99, rate(syntagma_api_duration_seconds_bucket[5m]))",
+            "expr": "histogram_quantile(0.99, rate(episteme_api_duration_seconds_bucket[5m]))",
             "legendFormat": "p99",
             "refId": "B"
           }
@@ -301,7 +301,7 @@
         },
         "targets": [
           {
-            "expr": "topk(10, increase(syntagma_smell_detected_total[24h]))",
+            "expr": "topk(10, increase(episteme_smell_detected_total[24h]))",
             "format": "table",
             "instant": true,
             "refId": "A"
@@ -337,7 +337,7 @@
         },
         "targets": [
           {
-            "expr": "count by (service) (syntagma_pattern_applied_total)",
+            "expr": "count by (service) (episteme_pattern_applied_total)",
             "legendFormat": "{{service}}",
             "refId": "A"
           }
@@ -365,7 +365,7 @@
         },
         "targets": [
           {
-            "expr": "sum by (entity_id, alcove_doc) (increase(syntagma_pattern_applied_total[30d]))",
+            "expr": "sum by (entity_id, alcove_doc) (increase(episteme_pattern_applied_total[30d]))",
             "format": "table",
             "instant": true,
             "refId": "A"
@@ -376,7 +376,7 @@
             "id": "organize",
             "options": {
               "renameByName": {
-                "entity_id": "Syntagma Entity",
+                "entity_id": "Episteme Entity",
                 "alcove_doc": "Alcove Reference",
                 "Value": "Usage (30d)"
               }
@@ -392,7 +392,7 @@
           "name": "Deployments",
           "datasource": "Prometheus",
           "enable": true,
-          "expr": "changes(syntagma_build_info[5m]) > 0",
+          "expr": "changes(episteme_build_info[5m]) > 0",
           "iconColor": "blue",
           "tagKeys": "version"
         },

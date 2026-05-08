@@ -1,6 +1,6 @@
 //! All 16 code-smell detector functions.
 //!
-//! Ported faithfully from `syntagma.parsers.base` -- identical thresholds and
+//! Ported faithfully from `episteme.parsers.base` -- identical thresholds and
 //! confidence formulas.
 
 use crate::domain::metrics::{CodeMetrics, SmellDetection};

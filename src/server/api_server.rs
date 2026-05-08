@@ -1,6 +1,6 @@
 use std::net::SocketAddr;
 
-use crate::adapters::config::SyntagmaConfig;
+use crate::adapters::config::EpistemeConfig;
 use crate::domain::graph::KnowledgeGraph;
 use anyhow::Result;
 
@@ -11,7 +11,7 @@ use crate::server::mcp_auth::parse_api_keys;
 ///
 /// Binds to `config.api_host:config.api_port` and serves the axum application.
 /// Shuts down cleanly on ctrl-c (SIGINT).
-pub async fn run(config: &SyntagmaConfig, graph: KnowledgeGraph) -> Result<()> {
+pub async fn run(config: &EpistemeConfig, graph: KnowledgeGraph) -> Result<()> {
     let addr: SocketAddr = format!("{}:{}", config.api_host, config.api_port)
         .parse()
         .map_err(|e| anyhow::anyhow!("invalid bind address: {e}"))?;
@@ -19,7 +19,7 @@ pub async fn run(config: &SyntagmaConfig, graph: KnowledgeGraph) -> Result<()> {
     let api_keys = parse_api_keys(&config.api_keys);
     if api_keys.is_empty() {
         tracing::warn!(
-            "SYNTAGMA_API_KEYS is not set — authentication is disabled (all endpoints open)"
+            "EPISTEME_API_KEYS is not set — authentication is disabled (all endpoints open)"
         );
     } else {
         tracing::info!("Authentication enabled with {} API key(s)", api_keys.len());
@@ -45,14 +45,14 @@ pub async fn run(config: &SyntagmaConfig, graph: KnowledgeGraph) -> Result<()> {
         .await
         .map_err(|e| anyhow::anyhow!("failed to bind: {e}"))?;
 
-    tracing::info!("syntagma-api listening on {}", addr);
+    tracing::info!("episteme-api listening on {}", addr);
 
     axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())
         .await
         .map_err(|e| anyhow::anyhow!("server error: {e}"))?;
 
-    tracing::info!("syntagma-api stopped");
+    tracing::info!("episteme-api stopped");
     Ok(())
 }
 

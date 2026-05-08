@@ -378,4 +378,4 @@ models/
 
 .claude/worktrees/
 .claude/settings.local.json
-src/syntagma/_keys.py
+src/episteme/_keys.py

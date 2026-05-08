@@ -6,12 +6,12 @@ use crate::domain::metrics::SmellDetection;
 use crate::domain::types::Entity;
 
 // ---------------------------------------------------------------------------
-// RefactoringRanker — merged from syntagma-infer/src/ranker.rs
+// RefactoringRanker — merged from episteme-infer/src/ranker.rs
 // ---------------------------------------------------------------------------
 
 /// Ranks refactoring suggestions based on multiple criteria.
 ///
-/// Ported from `syntagma.cli.infer.RefactoringRanker` (Python).
+/// Ported from `episteme.cli.infer.RefactoringRanker` (Python).
 ///
 /// Composite scoring formula:
 /// - Severity weight: 40% (smell confidence)
@@ -235,12 +235,12 @@ impl RefactoringRanker {
 }
 
 // ---------------------------------------------------------------------------
-// RefactoringInferenceEngine — merged from syntagma-infer/src/engine.rs
+// RefactoringInferenceEngine — merged from episteme-infer/src/engine.rs
 // ---------------------------------------------------------------------------
 
 /// Main engine for code smell to refactoring inference.
 ///
-/// Ported from `syntagma.cli.infer.RefactoringInferenceEngine` (Python).
+/// Ported from `episteme.cli.infer.RefactoringInferenceEngine` (Python).
 ///
 /// For each detected smell, the engine:
 /// 1. Looks up `solved_by` refactoring IDs from the knowledge graph

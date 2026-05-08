@@ -1,4 +1,4 @@
-//! Standalone MCP stdio server binary for Syntagma.
+//! Standalone MCP stdio server binary for Episteme.
 //!
 //! Reads JSON-RPC requests from stdin and writes responses to stdout.
 
@@ -16,14 +16,14 @@ fn main() -> Result<()> {
         .try_init();
 
     // Load the knowledge graph from the default data directory.
-    let data_dir = syntagma_engine::paths::data_dir();
-    let graph = syntagma_engine::adapters::json_loader::load_graph(&data_dir)
+    let data_dir = episteme::paths::data_dir();
+    let graph = episteme::adapters::json_loader::load_graph(&data_dir)
         .with_context(|| format!("failed to load knowledge graph from {}", data_dir.display()))?;
 
-    let mut mcp = syntagma_engine::server::mcp_handler::SyntagmaMCP::new(graph);
+    let mut mcp = episteme::server::mcp_handler::EpistemeMCP::new(graph);
     mcp.try_attach_rag();
 
-    eprintln!("syntagma MCP server: reading JSON-RPC from stdin");
+    eprintln!("episteme MCP server: reading JSON-RPC from stdin");
 
     let stdin = io::stdin();
     let stdout = io::stdout();
@@ -39,7 +39,7 @@ fn main() -> Result<()> {
         let request: serde_json::Value =
             serde_json::from_str(trimmed).with_context(|| "invalid JSON on stdin")?;
 
-        if let Some(response) = syntagma_engine::server::mcp_dispatcher::dispatch(&mcp, request) {
+        if let Some(response) = episteme::server::mcp_dispatcher::dispatch(&mcp, request) {
             let response_str = serde_json::to_string(&response)?;
             writeln!(stdout_lock, "{}", response_str).context("failed to write response")?;
             stdout_lock.flush().context("failed to flush stdout")?;

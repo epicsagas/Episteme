@@ -24,7 +24,7 @@ pub mod sqlite_db;
 pub mod structured_logging;
 pub mod telemetry;
 
-pub use config::SyntagmaConfig;
+pub use config::EpistemeConfig;
 pub use error::InfraError;
 pub use json_loader::load_graph;
 pub use local_embeddings::LocalEmbeddingProvider;

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Search benchmark for Rust CLI `syntagma explore`.
+Search benchmark for Rust CLI `epis explore`.
 
 Outputs latency and retrieval quality metrics:
 - latency: mean/p50/p95/p99/min/max
@@ -90,7 +90,7 @@ def run_query(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Benchmark search quality/latency for syntagma"
+        description="Benchmark search quality/latency for episteme"
     )
     parser.add_argument(
         "--eval-set",
@@ -99,8 +99,8 @@ def main() -> int:
     )
     parser.add_argument(
         "--bin",
-        default="target/debug/syntagma",
-        help="Path to syntagma binary",
+        default="target/debug/episteme",
+        help="Path to episteme binary",
     )
     parser.add_argument(
         "--repeats",

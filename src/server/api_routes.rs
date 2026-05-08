@@ -12,7 +12,7 @@ use crate::adapters::cache::{CacheManager, cache_key};
 use crate::adapters::structured_logging::log_business_event;
 use crate::adapters::telemetry::Telemetry;
 use crate::domain::types::GraphStats;
-use crate::server::mcp_handler::SyntagmaMCP;
+use crate::server::mcp_handler::EpistemeMCP;
 
 use crate::server::api_models::{
     AnalyzeRequest, AnalyzeResponse, Components, ErrorResponse, GraphNeighborsRequest,
@@ -21,7 +21,7 @@ use crate::server::api_models::{
 };
 
 /// Shared application state passed to all handlers.
-pub type AppState = Arc<SyntagmaMCP>;
+pub type AppState = Arc<EpistemeMCP>;
 
 // ---------------------------------------------------------------------------
 // Query parameter structs for GET endpoints
@@ -50,7 +50,7 @@ pub struct EntityQuery {
 // Handlers
 // ---------------------------------------------------------------------------
 
-fn gather_components(mcp: &SyntagmaMCP) -> Components {
+fn gather_components(mcp: &EpistemeMCP) -> Components {
     let knowledge_graph = if mcp.graph().all_entity_ids().is_empty() {
         "empty".to_owned()
     } else {
@@ -128,7 +128,7 @@ pub async fn health(
 }
 
 pub async fn stats(State(mcp): State<AppState>) -> impl IntoResponse {
-    let resource = mcp.handle_resource_read("syntagma://stats");
+    let resource = mcp.handle_resource_read("episteme://stats");
     match serde_json::from_value::<GraphStats>(resource.clone()) {
         Ok(gs) => Json(StatsResponse {
             total_entities: gs.total_entities,
@@ -489,7 +489,7 @@ pub async fn graph_path(
 }
 
 pub async fn contradictions(State(mcp): State<AppState>) -> impl IntoResponse {
-    let result = mcp.handle_resource_read("syntagma://contradictions");
+    let result = mcp.handle_resource_read("episteme://contradictions");
     Json(result)
 }
 
@@ -499,7 +499,7 @@ pub async fn contradictions(State(mcp): State<AppState>) -> impl IntoResponse {
 
 pub async fn root_info() -> impl IntoResponse {
     Json(serde_json::json!({
-        "name": "syntagma",
+        "name": "episteme",
         "version": env!("CARGO_PKG_VERSION"),
         "description": "Software engineering knowledge graph API",
         "endpoints": [

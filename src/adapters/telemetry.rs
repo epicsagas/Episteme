@@ -186,11 +186,11 @@ impl Telemetry {
 }
 
 fn consent_file() -> std::path::PathBuf {
-    crate::adapters::paths::syntagma_home().join("telemetry-consent")
+    crate::adapters::paths::episteme_home().join("telemetry-consent")
 }
 
 fn install_id_file() -> std::path::PathBuf {
-    crate::adapters::paths::syntagma_home().join("install-id")
+    crate::adapters::paths::episteme_home().join("install-id")
 }
 
 pub fn read_consent_raw() -> Option<bool> {
@@ -208,7 +208,7 @@ pub fn read_consent() -> bool {
 }
 
 pub fn write_consent(enabled: bool) -> Result<(), String> {
-    let home = crate::adapters::paths::syntagma_home();
+    let home = crate::adapters::paths::episteme_home();
     fs::create_dir_all(&home).map_err(|e| e.to_string())?;
     fs::write(consent_file(), if enabled { "on" } else { "off" }).map_err(|e| e.to_string())
 }
@@ -216,9 +216,9 @@ pub fn write_consent(enabled: bool) -> Result<(), String> {
 pub fn ensure_consent_or_set_default() -> Result<(), String> {
     if read_consent_raw().is_none() {
         write_consent(true)?;
-        eprintln!("[syntagma] Telemetry enabled (anonymous install ID).");
-        eprintln!("[syntagma] To opt out: syntagma telemetry off");
-        eprintln!("[syntagma] Details: https://github.com/epicsagas/Syntagma#telemetry");
+        eprintln!("[episteme] Telemetry enabled (anonymous install ID).");
+        eprintln!("[episteme] To opt out: epis telemetry off");
+        eprintln!("[episteme] Details: https://github.com/epicsagas/Episteme#telemetry");
     }
     Ok(())
 }
@@ -226,12 +226,12 @@ pub fn ensure_consent_or_set_default() -> Result<(), String> {
 pub fn prompt_consent_interactive() -> bool {
     println!();
     println!("  ┌─ Telemetry ──────────────────────────────────────────────────────────┐");
-    println!("  │ Syntagma collects anonymous usage data to improve detection quality. │");
+    println!("  │ Episteme collects anonymous usage data to improve detection quality. │");
     println!("  │                                                                      │");
     println!("  │  What we send:    tool name, duration, outcome, version, OS          │");
     println!("  │  What we never:   code content, file paths, search queries           │");
     println!("  │  Identifier:      random install ID (not linked to you or machine)   │");
-    println!("  │  Opt out anytime: syntagma telemetry off                             │");
+    println!("  │  Opt out anytime: epis telemetry off                             │");
     println!("  └──────────────────────────────────────────────────────────────────────┘");
     println!();
     print!("  Enable telemetry? [Y/n]: ");
@@ -280,7 +280,7 @@ async fn send_with_retry(
                 .json(&serde_json::json!({
                     "api_key": posthog_api_key,
                     "event": ev.event,
-                    "distinct_id": "syntagma-server",
+                    "distinct_id": "episteme-server",
                     "properties": ev.properties,
                 }))
                 .send()
@@ -318,7 +318,7 @@ async fn send_with_retry(
 }
 
 fn telemetry_client() -> Option<Telemetry> {
-    let cfg = crate::adapters::config::SyntagmaConfig::load().ok()?;
+    let cfg = crate::adapters::config::EpistemeConfig::load().ok()?;
     if !cfg.telemetry_enabled {
         return None;
     }

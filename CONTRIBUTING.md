@@ -1,6 +1,6 @@
-# Contributing to Syntagma
+# Contributing to Episteme
 
-Thank you for your interest in contributing to Syntagma! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to Episteme! This document provides guidelines for contributing to the project.
 
 ---
 
@@ -8,8 +8,8 @@ Thank you for your interest in contributing to Syntagma! This document provides 
 
 1. **Fork and clone**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/Syntagma.git
-   cd Syntagma
+   git clone https://github.com/YOUR_USERNAME/Episteme.git
+   cd Episteme
    ```
 
 2. **Build the project**
@@ -91,7 +91,7 @@ CI runs these checks on every push and PR. PRs with failing checks will not be m
 
 **Location:** `src/adapters/regex_parsers.rs`
 
-Syntagma uses regex-based multi-language detection. To add a new language:
+Episteme uses regex-based multi-language detection. To add a new language:
 
 1. Add a new `Language` variant in `src/domain/types.rs`
 2. Add detection patterns in `src/adapters/regex_parsers.rs`
@@ -156,7 +156,7 @@ Include:
 1. **Description** — What went wrong
 2. **Steps to Reproduce** — Minimal commands
 3. **Expected vs Actual Behavior**
-4. **Environment** — OS, Syntagma version (`syntagma --version`), Rust version (`rustc --version`)
+4. **Environment** — OS, Episteme version (`epis --version`), Rust version (`rustc --version`)
 
 ### Feature Requests
 
@@ -171,7 +171,7 @@ Include:
 
 **Do not open public issues for security vulnerabilities.**
 
-Report security issues privately via [GitHub Security Advisories](https://github.com/epicsagas/Syntagma/security/advisories/new).
+Report security issues privately via [GitHub Security Advisories](https://github.com/epicsagas/Episteme/security/advisories/new).
 
 See [SECURITY.md](SECURITY.md) for supported versions and response times.
 
@@ -179,13 +179,13 @@ See [SECURITY.md](SECURITY.md) for supported versions and response times.
 
 ## License
 
-By contributing to Syntagma, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE).
+By contributing to Episteme, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE).
 
 ---
 
 ## Thank You
 
-Your contributions make Syntagma better for everyone. We appreciate your time and effort!
+Your contributions make Episteme better for everyone. We appreciate your time and effort!
 
 - [Development Guide](DEVELOPMENT.md) — Architecture, tech stack, API reference
 - [README](README.md) — Project overview and installation

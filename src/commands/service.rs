@@ -4,8 +4,8 @@ use std::net::SocketAddr;
 
 use anyhow::{Context, Result};
 
-use syntagma_engine::adapters::config::SyntagmaConfig;
-use syntagma_engine::server::mcp_handler::SyntagmaMCP;
+use episteme::adapters::config::EpistemeConfig;
+use episteme::server::mcp_handler::EpistemeMCP;
 
 use super::prelude::*;
 
@@ -27,54 +27,54 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
     match sub {
         ServiceOp::Serve { host, port } => cmd_mcp(true, &host, port),
         ServiceOp::Start { host, port } => {
-            let pid = syntagma_engine::adapters::service::cmd_start(&host, port)
+            let pid = episteme::adapters::service::cmd_start(&host, port)
                 .map_err(|e| anyhow::anyhow!(e))?;
             println!("MCP server started (PID {pid})");
             Ok(())
         }
         ServiceOp::Stop => {
-            syntagma_engine::adapters::service::cmd_stop().map_err(|e| anyhow::anyhow!(e))?;
+            episteme::adapters::service::cmd_stop().map_err(|e| anyhow::anyhow!(e))?;
             println!("MCP server stopped");
             Ok(())
         }
         ServiceOp::Restart { host, port } => {
             // Best-effort stop; ignore errors if nothing was running.
-            let _ = syntagma_engine::adapters::service::cmd_stop();
-            let pid = syntagma_engine::adapters::service::cmd_start(&host, port)
+            let _ = episteme::adapters::service::cmd_stop();
+            let pid = episteme::adapters::service::cmd_start(&host, port)
                 .map_err(|e| anyhow::anyhow!(e))?;
             println!("MCP server restarted (PID {pid})");
             Ok(())
         }
         ServiceOp::Status => {
-            syntagma_engine::adapters::service::cmd_status();
+            episteme::adapters::service::cmd_status();
             Ok(())
         }
         ServiceOp::LaunchdInstall { host, port } => {
-            let msg = syntagma_engine::adapters::service::install_launchd_agent(&host, port)
+            let msg = episteme::adapters::service::install_launchd_agent(&host, port)
                 .map_err(|e| anyhow::anyhow!(e))?;
             println!("{msg}");
             Ok(())
         }
         ServiceOp::LaunchdUninstall => {
-            let msg = syntagma_engine::adapters::service::uninstall_launchd_agent()
+            let msg = episteme::adapters::service::uninstall_launchd_agent()
                 .map_err(|e| anyhow::anyhow!(e))?;
             println!("{msg}");
             Ok(())
         }
         ServiceOp::LaunchdStatus => {
             let msg =
-                syntagma_engine::adapters::service::launchd_status().map_err(|e| anyhow::anyhow!(e))?;
+                episteme::adapters::service::launchd_status().map_err(|e| anyhow::anyhow!(e))?;
             println!("{msg}");
             Ok(())
         }
         ServiceOp::Enable { now } => {
             let msg =
-                syntagma_engine::adapters::service::enable_launchd(now).map_err(|e| anyhow::anyhow!(e))?;
+                episteme::adapters::service::enable_launchd(now).map_err(|e| anyhow::anyhow!(e))?;
             println!("{msg}");
             Ok(())
         }
         ServiceOp::Disable { now } => {
-            let msg = syntagma_engine::adapters::service::disable_launchd(now)
+            let msg = episteme::adapters::service::disable_launchd(now)
                 .map_err(|e| anyhow::anyhow!(e))?;
             println!("{msg}");
             Ok(())
@@ -83,7 +83,7 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
 }
 
 pub fn cmd_api(host: &str, port: u16) -> Result<()> {
-    let config = SyntagmaConfig::load()?;
+    let config = EpistemeConfig::load()?;
     let mut config = config;
     config.api_host = host.to_owned();
     config.api_port = port;
@@ -91,7 +91,7 @@ pub fn cmd_api(host: &str, port: u16) -> Result<()> {
     let graph = load_graph()?;
 
     let rt = tokio::runtime::Runtime::new()?;
-    rt.block_on(async { syntagma_engine::server::api_server::run(&config, graph).await })
+    rt.block_on(async { episteme::server::api_server::run(&config, graph).await })
 }
 
 pub fn cmd_mcp(http: bool, host: &str, port: u16) -> Result<()> {
@@ -100,10 +100,10 @@ pub fn cmd_mcp(http: bool, host: &str, port: u16) -> Result<()> {
     }
 
     let graph = load_graph()?;
-    let mut mcp = SyntagmaMCP::new(graph);
+    let mut mcp = EpistemeMCP::new(graph);
     mcp.try_attach_rag();
 
-    eprintln!("syntagma MCP server (stdio transport)");
+    eprintln!("episteme MCP server (stdio transport)");
     eprintln!("Reading JSON-RPC requests from stdin, writing responses to stdout...");
 
     use std::io::{self, BufRead, Write};
@@ -122,7 +122,7 @@ pub fn cmd_mcp(http: bool, host: &str, port: u16) -> Result<()> {
         let request: serde_json::Value =
             serde_json::from_str(trimmed).with_context(|| "invalid JSON")?;
 
-        if let Some(response) = syntagma_engine::server::mcp_dispatcher::dispatch(&mcp, request) {
+        if let Some(response) = episteme::server::mcp_dispatcher::dispatch(&mcp, request) {
             let response_str = serde_json::to_string(&response)?;
             writeln!(stdout_lock, "{}", response_str).context("failed to write response")?;
             stdout_lock.flush().context("failed to flush stdout")?;
@@ -133,18 +133,18 @@ pub fn cmd_mcp(http: bool, host: &str, port: u16) -> Result<()> {
 }
 
 fn cmd_mcp_http(host: &str, port: u16) -> Result<()> {
-    let cfg = SyntagmaConfig::load()?;
-    let allowed_api_keys = syntagma_engine::server::mcp_auth::parse_api_keys(&cfg.api_keys);
+    let cfg = EpistemeConfig::load()?;
+    let allowed_api_keys = episteme::server::mcp_auth::parse_api_keys(&cfg.api_keys);
     let graph = load_graph()?;
-    let mut mcp = SyntagmaMCP::new(graph);
+    let mut mcp = EpistemeMCP::new(graph);
     mcp.try_attach_rag();
 
     let addr: SocketAddr = format!("{host}:{port}")
         .parse()
         .with_context(|| format!("invalid bind address: {host}:{port}"))?;
-    let app = syntagma_engine::server::mcp_transport_http::mcp_http_router(mcp, allowed_api_keys);
+    let app = episteme::server::mcp_transport_http::mcp_http_router(mcp, allowed_api_keys);
 
-    println!("syntagma MCP server (HTTP): http://{host}:{port}/mcp");
+    println!("episteme MCP server (HTTP): http://{host}:{port}/mcp");
     let rt = tokio::runtime::Runtime::new()?;
     rt.block_on(async move {
         let listener = tokio::net::TcpListener::bind(addr)
@@ -158,8 +158,8 @@ fn cmd_mcp_http(host: &str, port: u16) -> Result<()> {
 
 pub fn cmd_web(host: &str, port: u16) -> Result<()> {
     let graph = load_graph()?;
-    let handler = std::sync::Arc::new(SyntagmaMCP::new(graph));
-    let app = syntagma_engine::server::web_viewer::web_router(handler);
+    let handler = std::sync::Arc::new(EpistemeMCP::new(graph));
+    let app = episteme::server::web_viewer::web_router(handler);
 
     let addr = format!("{host}:{port}");
 

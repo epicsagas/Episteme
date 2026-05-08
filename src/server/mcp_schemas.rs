@@ -1,7 +1,7 @@
 use serde_json::{Value, json};
 
 pub const PROTOCOL_VERSION: &str = "2024-11-05";
-pub const SERVER_NAME: &str = "syntagma";
+pub const SERVER_NAME: &str = "episteme";
 pub const SERVER_VERSION: &str = "0.1.0";
 pub const MAX_CODE_BYTES: usize = 500_000;
 
@@ -21,13 +21,13 @@ pub fn capabilities() -> Value {
 
 pub fn server_instructions() -> String {
     "\
-Syntagma is a software engineering knowledge graph. Use it to AUTOMATICALLY ground your answers \
+Episteme is a software engineering knowledge graph. Use it to AUTOMATICALLY ground your answers \
 in proven patterns, laws, and refactoring techniques — even when the user doesn't know those terms.
 
 CRITICAL: Auto-trigger on PROBLEM DESCRIPTIONS, not just named concepts. Users describe symptoms, \
 not diagnoses. You must translate their informal problem into knowledge graph queries.
 
-Auto-trigger rules — call Syntagma tools WITHOUT waiting for the user to mention them:
+Auto-trigger rules — call Episteme tools WITHOUT waiting for the user to mention them:
 
 ## Code problems (auto-translate complaint -> knowledge graph query)
 
@@ -66,7 +66,7 @@ Entity ID mentioned (DP-xxx, LAW-xxx, RF-xxx, SMELL-xxx) -> get_entity(id)
         .to_owned()
 }
 
-const DESC_SEARCH: &str = "Hybrid search over the Syntagma knowledge base. Use when the user asks about design patterns, engineering laws, code smells, refactorings, or any software engineering concept. Examples: \"what is Strategy pattern\", \"laws about coupling\", \"find smells related to God Class\", \"relevant principles for microservices\".";
+const DESC_SEARCH: &str = "Hybrid search over the Episteme knowledge base. Use when the user asks about design patterns, engineering laws, code smells, refactorings, or any software engineering concept. Examples: \"what is Strategy pattern\", \"laws about coupling\", \"find smells related to God Class\", \"relevant principles for microservices\".";
 const DESC_GET_ENTITY: &str = "Get detailed information about a knowledge graph entity by ID. Use when an entity ID is mentioned (DP-xxx, LAW-xxx, RF-xxx, SMELL-xxx) or the user asks \"tell me more about\" a previously mentioned concept.";
 const DESC_GET_NEIGHBORS: &str = "Get entities related to a given entity in the knowledge graph. Use to explore what patterns complement a law, what refactorings solve a smell, or how concepts connect. Follow up after search_knowledge or get_entity.";
 const DESC_FIND_PATH: &str = "Find the shortest path between two entities in the knowledge graph. Use when the user asks how two concepts relate or connect, e.g. \"how does Strategy relate to Open/Closed?\", \"what connects God Class and Single Responsibility?\".";
@@ -222,19 +222,19 @@ pub fn tool_schemas() -> Vec<Value> {
 pub fn resource_schemas() -> Vec<Value> {
     vec![
         json!({
-            "uri": "syntagma://stats",
+            "uri": "episteme://stats",
             "name": "Knowledge Graph Statistics",
             "description": "Aggregate statistics about the knowledge graph.",
             "mimeType": "application/json",
         }),
         json!({
-            "uri": "syntagma://categories",
+            "uri": "episteme://categories",
             "name": "Categories and Entity Types",
             "description": "Category and entity type listing.",
             "mimeType": "application/json",
         }),
         json!({
-            "uri": "syntagma://contradictions",
+            "uri": "episteme://contradictions",
             "name": "Contradictions",
             "description": "Entities with conflicting relations.",
             "mimeType": "application/json",

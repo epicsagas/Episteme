@@ -5,22 +5,22 @@ This guide explains how to create a release data archive for other users with th
 ## Command
 
 ```bash
-syntagma dist
+episteme dist
 ```
 
-## What `syntagma dist` includes
+## What `episteme dist` includes
 - `raw/`
 - `meta/`
 - `data/` (if present)
-- `db/syntagma.db` (embedding DB)
+- `db/episteme.db` (embedding DB)
 
 Output archive:
-- `dist/syntagma-data-<version>.tar.gz`
+- `dist/episteme-data-<version>.tar.gz`
 
 ## Auto-build behavior
-- If `~/.syntagma/db/syntagma.db` is missing, `syntagma dist` automatically runs `syntagma build` first.
+- If `~/.episteme/db/episteme.db` is missing, `episteme dist` automatically runs `epis build` first.
 - The built DB is also copied to the project-local `db/` directory for inclusion in the archive.
-- `syntagma install --local` seeds data from the archive (or source tree fallback) and auto-builds the RAG index to `~/.syntagma/`.
+- `epis install --local` seeds data from the archive (or source tree fallback) and auto-builds the RAG index to `~/.episteme/`.
 
 ## Options
 - `--out-dir <DIR>`: output directory (default: `dist`)
@@ -31,26 +31,26 @@ Examples:
 
 ```bash
 # default packaging to dist/
-syntagma dist
+episteme dist
 
 # custom output directory
-syntagma dist --out-dir release
+episteme dist --out-dir release
 
 # package metadata only (no DB)
-syntagma dist --no-db
+episteme dist --no-db
 
 # strict mode: fail if DB missing
-syntagma dist --skip-build
+episteme dist --skip-build
 ```
 
 ## Verification
 After generating the archive, verify structure:
 
 ```bash
-tar -tzf dist/syntagma-data-*.tar.gz | head -n 30
+tar -tzf dist/episteme-data-*.tar.gz | head -n 30
 ```
 
 You should see entries under:
-- `syntagma-data-<version>/raw/...`
-- `syntagma-data-<version>/meta/...`
-- `syntagma-data-<version>/db/syntagma.db` (unless `--no-db`)
+- `episteme-data-<version>/raw/...`
+- `episteme-data-<version>/meta/...`
+- `episteme-data-<version>/db/episteme.db` (unless `--no-db`)

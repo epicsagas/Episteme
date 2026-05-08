@@ -1,6 +1,6 @@
 # Knowledge Graph Traversal Example: SRP → Extract Class
 
-> Demonstrates Syntagma MCP tools for navigating the software engineering knowledge graph: finding paths between concepts, exploring neighborhoods, and understanding how laws, smells, and refactorings relate. Includes a real tooling bug discovered during the session.
+> Demonstrates Episteme MCP tools for navigating the software engineering knowledge graph: finding paths between concepts, exploring neighborhoods, and understanding how laws, smells, and refactorings relate. Includes a real tooling bug discovered during the session.
 
 ## Scenario
 

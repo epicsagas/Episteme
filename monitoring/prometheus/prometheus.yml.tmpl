@@ -2,7 +2,7 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
   external_labels:
-    cluster: 'syntagma-prod'
+    cluster: 'episteme-prod'
     environment: 'production'
 
 alerting:
@@ -12,17 +12,17 @@ alerting:
             - alertmanager:9093
 
 rule_files:
-  - 'syntagma-rules.yml'
+  - 'episteme-rules.yml'
 
 scrape_configs:
-  # Syntagma API — 네이티브/원격 머신 모두 대응
-  # SYNTAGMA_API_HOST 환경변수로 주입됨
-  - job_name: 'syntagma-api'
+  # Episteme API — 네이티브/원격 머신 모두 대응
+  # EPISTEME_API_HOST 환경변수로 주입됨
+  - job_name: 'episteme-api'
     static_configs:
       - targets:
-          - '${SYNTAGMA_API_HOST}:${SYNTAGMA_API_PORT}'
+          - '${EPISTEME_API_HOST}:${EPISTEME_API_PORT}'
         labels:
-          service: 'syntagma-api'
+          service: 'episteme-api'
     metric_relabel_configs:
       - source_labels: [entity_id]
         regex: '(DP|RF|LAW|SMELL)-(\d+).*'

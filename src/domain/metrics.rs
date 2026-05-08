@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 /// Code metrics for a function or class.
 ///
-/// Ported from `syntagma.parsers.base.CodeMetrics`.
+/// Ported from `episteme.parsers.base.CodeMetrics`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CodeMetrics {
     pub loc: usize,
@@ -52,7 +52,7 @@ impl Default for CodeMetrics {
 
 /// A detected code smell with confidence score and location.
 ///
-/// Ported from `syntagma.parsers.base.SmellDetection`.
+/// Ported from `episteme.parsers.base.SmellDetection`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SmellDetection {
     pub smell_id: String,

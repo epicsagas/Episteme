@@ -1,4 +1,4 @@
-# Syntagma UV Installation & Usage Guide
+# Episteme UV Installation & Usage Guide
 
 **Date:** 2026-04-29  
 **Version:** 0.0.5
@@ -48,13 +48,13 @@ uv --version
 
 ---
 
-## Quick Start with Syntagma
+## Quick Start with Episteme
 
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/epicsagas/Syntagma.git
-cd Syntagma
+git clone https://github.com/epicsagas/Episteme.git
+cd Episteme
 ```
 
 ### 2. Install Dependencies
@@ -143,7 +143,7 @@ uv run python scripts/detect_smells.py mycode.py
 uv run pytest
 
 # Run custom script
-uv run syntagma-analyze mycode.py
+uv run episteme-analyze mycode.py
 ```
 
 ### Lock File Management
@@ -162,7 +162,7 @@ uv sync --frozen
 
 ### Speed Comparison
 
-**Test**: Install Syntagma dependencies (25 packages)
+**Test**: Install Episteme dependencies (25 packages)
 
 | Tool | Time | Speedup |
 |------|------|---------|
@@ -183,14 +183,14 @@ uv sync --frozen
 
 ---
 
-## Syntagma-Specific Workflows
+## Episteme-Specific Workflows
 
 ### Development Workflow
 
 ```bash
 # 1. Initial setup
-git clone https://github.com/epicsagas/Syntagma.git
-cd Syntagma
+git clone https://github.com/epicsagas/Episteme.git
+cd Episteme
 uv sync --all-extras  # Install with dev dependencies
 
 # 2. Activate environment
@@ -226,8 +226,8 @@ git commit -m "feat: add Java parser support"
 
 ```bash
 # On production server
-git clone https://github.com/epicsagas/Syntagma.git
-cd Syntagma
+git clone https://github.com/epicsagas/Episteme.git
+cd Episteme
 
 # Install from lockfile (reproducible)
 uv sync --frozen --no-dev
@@ -353,7 +353,7 @@ uv add --extra-index-url https://pypi.org/simple \
 ### Editable Installs
 
 ```bash
-# Install Syntagma in editable mode
+# Install Episteme in editable mode
 uv sync --editable
 
 # Now changes to source code are immediately reflected
@@ -385,7 +385,7 @@ source .venv/bin/activate
 poetry export -f requirements.txt > requirements.txt
 
 # 2. Create pyproject.toml (if using old poetry format)
-# (Syntagma already uses PEP 621 format)
+# (Episteme already uses PEP 621 format)
 
 # 3. Switch to uv
 uv sync
@@ -458,12 +458,12 @@ uv automatically uses this version.
 Define in `pyproject.toml`:
 ```toml
 [project.scripts]
-syntagma-analyze = "scripts.detect_smells:main"
+episteme-analyze = "scripts.detect_smells:main"
 ```
 
 Run without activation:
 ```bash
-uv run syntagma-analyze mycode.py
+uv run episteme-analyze mycode.py
 ```
 
 ---
@@ -496,7 +496,7 @@ uv sync --reinstall
 - **Official Docs**: https://github.com/astral-sh/uv
 - **uv vs pip benchmark**: https://astral.sh/blog/uv-unified-python-packaging
 - **PEP 621 (pyproject.toml)**: https://peps.python.org/pep-0621/
-- **Syntagma Issues**: https://github.com/epicsagas/Syntagma/issues
+- **Episteme Issues**: https://github.com/epicsagas/Episteme/issues
 
 ---
 
@@ -520,5 +520,5 @@ A: `rm -rf ~/.cargo/bin/uv ~/.cache/uv`
 ---
 
 **Last Updated:** 2026-04-29  
-**Syntagma Version:** 0.0.5  
+**Episteme Version:** 0.0.5  
 **uv Version:** 0.1.x

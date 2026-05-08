@@ -1,9 +1,9 @@
 {
   "dashboard": {
     "id": null,
-    "uid": "syntagma-api",
-    "title": "Syntagma API Monitoring",
-    "tags": ["syntagma", "api", "fastapi"],
+    "uid": "episteme-api",
+    "title": "Episteme API Monitoring",
+    "tags": ["episteme", "api", "fastapi"],
     "timezone": "browser",
     "schemaVersion": 16,
     "version": 1,
@@ -16,7 +16,7 @@
         "title": "Request Rate (req/s)",
         "targets": [
           {
-            "expr": "rate(http_requests_total{job=\"syntagma-api\"}[5m])",
+            "expr": "rate(http_requests_total{job=\"episteme-api\"}[5m])",
             "legendFormat": "{{method}} {{endpoint}}",
             "refId": "A"
           }
@@ -39,22 +39,22 @@
         "title": "Request Latency (Percentiles)",
         "targets": [
           {
-            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=\"episteme-api\"}[5m]))",
             "legendFormat": "p50",
             "refId": "A"
           },
           {
-            "expr": "histogram_quantile(0.90, rate(http_request_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "expr": "histogram_quantile(0.90, rate(http_request_duration_seconds_bucket{job=\"episteme-api\"}[5m]))",
             "legendFormat": "p90",
             "refId": "B"
           },
           {
-            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"episteme-api\"}[5m]))",
             "legendFormat": "p95",
             "refId": "C"
           },
           {
-            "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job=\"episteme-api\"}[5m]))",
             "legendFormat": "p99",
             "refId": "D"
           }
@@ -77,12 +77,12 @@
         "title": "Error Rate (4xx/5xx)",
         "targets": [
           {
-            "expr": "rate(http_request_errors_4xx_total{job=\"syntagma-api\"}[5m])",
+            "expr": "rate(http_request_errors_4xx_total{job=\"episteme-api\"}[5m])",
             "legendFormat": "4xx - {{endpoint}}",
             "refId": "A"
           },
           {
-            "expr": "rate(http_request_errors_5xx_total{job=\"syntagma-api\"}[5m])",
+            "expr": "rate(http_request_errors_5xx_total{job=\"episteme-api\"}[5m])",
             "legendFormat": "5xx - {{endpoint}}",
             "refId": "B"
           }
@@ -122,7 +122,7 @@
         "title": "Active Requests",
         "targets": [
           {
-            "expr": "http_requests_inprogress{job=\"syntagma-api\"}",
+            "expr": "http_requests_inprogress{job=\"episteme-api\"}",
             "legendFormat": "{{method}} {{handler}}",
             "refId": "A"
           }
@@ -145,7 +145,7 @@
         "title": "Component Status",
         "targets": [
           {
-            "expr": "syntagma_component_status{job=\"syntagma-api\"}",
+            "expr": "episteme_component_status{job=\"episteme-api\"}",
             "legendFormat": "{{component}}",
             "refId": "A",
             "instant": true
@@ -184,7 +184,7 @@
         "title": "Code Smells Detected Over Time",
         "targets": [
           {
-            "expr": "rate(syntagma_smells_detected_total{job=\"syntagma-api\"}[5m])",
+            "expr": "rate(episteme_smells_detected_total{job=\"episteme-api\"}[5m])",
             "legendFormat": "{{smell_name}}",
             "refId": "A"
           }
@@ -208,7 +208,7 @@
         "title": "Semantic Search Rate",
         "targets": [
           {
-            "expr": "rate(syntagma_searches_total{job=\"syntagma-api\"}[5m])",
+            "expr": "rate(episteme_searches_total{job=\"episteme-api\"}[5m])",
             "legendFormat": "{{entity_type}} (filter={{has_filter}})",
             "refId": "A"
           }
@@ -231,12 +231,12 @@
         "title": "Analysis Duration",
         "targets": [
           {
-            "expr": "histogram_quantile(0.95, rate(syntagma_analysis_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "expr": "histogram_quantile(0.95, rate(episteme_analysis_duration_seconds_bucket{job=\"episteme-api\"}[5m]))",
             "legendFormat": "p95",
             "refId": "A"
           },
           {
-            "expr": "histogram_quantile(0.99, rate(syntagma_analysis_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "expr": "histogram_quantile(0.99, rate(episteme_analysis_duration_seconds_bucket{job=\"episteme-api\"}[5m]))",
             "legendFormat": "p99",
             "refId": "B"
           }
@@ -256,12 +256,12 @@
         "title": "Search Duration",
         "targets": [
           {
-            "expr": "histogram_quantile(0.95, rate(syntagma_search_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "expr": "histogram_quantile(0.95, rate(episteme_search_duration_seconds_bucket{job=\"episteme-api\"}[5m]))",
             "legendFormat": "p95",
             "refId": "A"
           },
           {
-            "expr": "histogram_quantile(0.99, rate(syntagma_search_duration_seconds_bucket{job=\"syntagma-api\"}[5m]))",
+            "expr": "histogram_quantile(0.99, rate(episteme_search_duration_seconds_bucket{job=\"episteme-api\"}[5m]))",
             "legendFormat": "p99",
             "refId": "B"
           }
@@ -281,7 +281,7 @@
         "title": "Memory Usage",
         "targets": [
           {
-            "expr": "syntagma_memory_usage_bytes{job=\"syntagma-api\"}",
+            "expr": "episteme_memory_usage_bytes{job=\"episteme-api\"}",
             "legendFormat": "RSS Memory",
             "refId": "A"
           }

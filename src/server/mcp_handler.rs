@@ -13,7 +13,7 @@ use crate::ports::embeddings::EmbeddingProvider;
 ///
 /// Optionally holds a SQLite connection and embedding provider for hybrid RAG search.
 /// When absent, falls back to pure keyword matching over graph entities.
-pub struct SyntagmaMCP {
+pub struct EpistemeMCP {
     graph: KnowledgeGraph,
     db: Option<Mutex<rusqlite::Connection>>,
     embedding_provider: Option<Box<dyn EmbeddingProvider>>,
@@ -21,7 +21,7 @@ pub struct SyntagmaMCP {
 
 // -- constructors & accessors ------------------------------------------------
 
-impl SyntagmaMCP {
+impl EpistemeMCP {
     pub fn new(graph: KnowledgeGraph) -> Self {
         Self {
             graph,
@@ -80,9 +80,9 @@ impl SyntagmaMCP {
             // Prefer OpenAI provider when configured and key is present.
             #[cfg(feature = "openai-embeddings")]
             {
-                let cfg = crate::adapters::config::SyntagmaConfig::load().unwrap_or_default();
+                let cfg = crate::adapters::config::EpistemeConfig::load().unwrap_or_default();
                 let provider_pref = cfg.embedding_provider.to_lowercase();
-                let key = std::env::var("SYNTAGMA_OPENAI_API_KEY")
+                let key = std::env::var("EPISTEME_OPENAI_API_KEY")
                     .ok()
                     .filter(|k| !k.is_empty())
                     .or_else(|| {
@@ -95,11 +95,11 @@ impl SyntagmaMCP {
                 if provider_pref == "openai"
                     && let Some(key) = key
                 {
-                    let model = std::env::var("SYNTAGMA_OPENAI_EMBED_MODEL")
+                    let model = std::env::var("EPISTEME_OPENAI_EMBED_MODEL")
                         .ok()
                         .filter(|m| !m.is_empty())
                         .unwrap_or_else(|| cfg.openai_embed_model.clone());
-                    let dim: usize = std::env::var("SYNTAGMA_OPENAI_EMBED_DIM")
+                    let dim: usize = std::env::var("EPISTEME_OPENAI_EMBED_DIM")
                         .ok()
                         .and_then(|s| s.parse().ok())
                         .unwrap_or(cfg.openai_embed_dim);
@@ -143,7 +143,7 @@ impl SyntagmaMCP {
 
 // -- tool implementations (delegating to service modules) ---------------------
 
-impl SyntagmaMCP {
+impl EpistemeMCP {
     /// Search knowledge graph entities (delegates to `mcp_search`).
     pub fn search_knowledge(
         &self,
@@ -199,15 +199,15 @@ impl SyntagmaMCP {
 
 // -- resource implementations ------------------------------------------------
 
-impl SyntagmaMCP {
+impl EpistemeMCP {
     pub fn handle_resource_read(&self, uri: &str) -> serde_json::Value {
         match uri {
-            "syntagma://stats" => {
+            "episteme://stats" => {
                 let stats = self.graph.stats();
                 serde_json::to_value(stats)
                     .unwrap_or(serde_json::json!({"error": "serialization failed"}))
             }
-            "syntagma://categories" => {
+            "episteme://categories" => {
                 let entity_types: Vec<&str> = ["pattern", "refactoring", "law", "smell"].to_vec();
                 let categories: Vec<&str> = [
                     "teams",
@@ -224,7 +224,7 @@ impl SyntagmaMCP {
                     "categories": categories,
                 })
             }
-            "syntagma://contradictions" => {
+            "episteme://contradictions" => {
                 let contradictions = self.graph.find_contradictions();
                 serde_json::json!(contradictions)
             }
@@ -237,7 +237,7 @@ impl SyntagmaMCP {
 
 // -- tool dispatch -----------------------------------------------------------
 
-impl SyntagmaMCP {
+impl EpistemeMCP {
     /// Top-level tool dispatch: route a tool name + arguments to the right method.
     pub fn handle_tool_call(&self, name: &str, args: &serde_json::Value) -> serde_json::Value {
         let telemetry_tool = Self::telemetry_tool_for(name);

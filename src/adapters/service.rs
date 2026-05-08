@@ -213,7 +213,7 @@ pub fn cmd_stop() -> Result<(), String> {
 
 /// Return the MCP port from config (or the default).
 pub fn get_mcp_port() -> u16 {
-    crate::adapters::config::SyntagmaConfig::load()
+    crate::adapters::config::EpistemeConfig::load()
         .map(|c| c.mcp_port)
         .unwrap_or(43175)
 }
@@ -230,10 +230,10 @@ pub fn cmd_status() -> bool {
                 } else {
                     format!("not yet listening on port {port}")
                 };
-                println!("syntagma server is running (PID {pid}, {port_status})");
+                println!("episteme server is running (PID {pid}, {port_status})");
                 true
             } else {
-                println!("syntagma server is NOT running (stale PID {pid})");
+                println!("episteme server is NOT running (stale PID {pid})");
                 clear_pid().ok();
                 false
             }
@@ -244,11 +244,11 @@ pub fn cmd_status() -> bool {
                 && let Some(pid) = find_pid_by_port(port)
             {
                 println!(
-                    "syntagma server appears to be running (PID {pid} on port {port}), but no PID file"
+                    "episteme server appears to be running (PID {pid} on port {port}), but no PID file"
                 );
                 return true;
             }
-            println!("syntagma server is stopped");
+            println!("episteme server is stopped");
             false
         }
     }
@@ -256,7 +256,7 @@ pub fn cmd_status() -> bool {
 
 /// Resolve the configured API host.
 pub fn get_mcp_host() -> String {
-    crate::adapters::config::SyntagmaConfig::load()
+    crate::adapters::config::EpistemeConfig::load()
         .map(|c| c.mcp_host)
         .unwrap_or_else(|_| "127.0.0.1".to_owned())
 }
@@ -267,12 +267,12 @@ pub fn get_mcp_host() -> String {
 
 #[cfg(target_os = "macos")]
 fn launch_agent_label() -> &'static str {
-    "io.syntagma.api"
+    "io.episteme.api"
 }
 
 #[cfg(target_os = "macos")]
 fn launch_agent_plist_path() -> PathBuf {
-    let home = crate::adapters::paths::syntagma_home()
+    let home = crate::adapters::paths::episteme_home()
         .parent()
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from("/tmp"));

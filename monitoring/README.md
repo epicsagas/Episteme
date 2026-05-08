@@ -1,7 +1,7 @@
-# Syntagma Monitoring
+# Episteme Monitoring
 
 Prometheus + Grafana 독립 모니터링 스택.
-`syntagma-api`는 **네이티브, 원격 머신, 별도 docker** 어디서 실행해도 scrape 가능.
+`episteme-api`는 **네이티브, 원격 머신, 별도 docker** 어디서 실행해도 scrape 가능.
 
 ---
 
@@ -9,7 +9,7 @@ Prometheus + Grafana 독립 모니터링 스택.
 
 ```
 ┌─────────────────────────────────────┐     ┌──────────────────────────────┐
-│  monitoring docker (독립 네트워크)    │     │  syntagma-api (어디서든 OK)  │
+│  monitoring docker (독립 네트워크)    │     │  episteme-api (어디서든 OK)  │
 │                                     │     │                              │
 │  prometheus ──scrape──────────────────────▶  :8000/metrics              │
 │      │                              │     │                              │
@@ -19,7 +19,7 @@ Prometheus + Grafana 독립 모니터링 스택.
 └─────────────────────────────────────┘     └──────────────────────────────┘
 ```
 
-`SYNTAGMA_API_HOST` 환경변수 하나로 모든 시나리오 대응.
+`EPISTEME_API_HOST` 환경변수 하나로 모든 시나리오 대응.
 
 ---
 
@@ -32,9 +32,9 @@ cd monitoring
 cp .env.example .env
 ```
 
-`.env` 파일에서 상황에 맞게 `SYNTAGMA_API_HOST` 설정:
+`.env` 파일에서 상황에 맞게 `EPISTEME_API_HOST` 설정:
 
-| 실행 환경 | SYNTAGMA_API_HOST 값 |
+| 실행 환경 | EPISTEME_API_HOST 값 |
 |-----------|----------------------|
 | 로컬 네이티브 (Mac/Windows) | `host.docker.internal` |
 | 로컬 네이티브 (Linux) | `172.17.0.1` 또는 호스트 IP |
@@ -44,8 +44,8 @@ cp .env.example .env
 
 ```bash
 # .env 최소 설정 예시
-SYNTAGMA_API_HOST=host.docker.internal
-SYNTAGMA_API_PORT=8000
+EPISTEME_API_HOST=host.docker.internal
+EPISTEME_API_PORT=8000
 GF_SECURITY_ADMIN_USER=admin
 GF_SECURITY_ADMIN_PASSWORD=your-strong-password
 ```
@@ -67,7 +67,7 @@ docker compose up -d
 
 ### 4. Prometheus 타겟 확인
 
-http://localhost:9090/targets 에서 `syntagma-api` 타겟이 **UP** 상태인지 확인.
+http://localhost:9090/targets 에서 `episteme-api` 타겟이 **UP** 상태인지 확인.
 
 ---
 
@@ -77,8 +77,8 @@ http://localhost:9090/targets 에서 `syntagma-api` 타겟이 **UP** 상태인�
 
 ```bash
 # .env
-SYNTAGMA_API_HOST=host.docker.internal
-SYNTAGMA_API_PORT=8000
+EPISTEME_API_HOST=host.docker.internal
+EPISTEME_API_PORT=8000
 ```
 
 `host.docker.internal`은 Docker Desktop이 자동으로 호스트 IP로 resolve.
@@ -90,22 +90,22 @@ SYNTAGMA_API_PORT=8000
 
 ```bash
 # .env
-SYNTAGMA_API_HOST=host.docker.internal
-SYNTAGMA_API_PORT=8000
+EPISTEME_API_HOST=host.docker.internal
+EPISTEME_API_PORT=8000
 ```
 
 또는 호스트 IP를 직접 지정:
 
 ```bash
-SYNTAGMA_API_HOST=172.17.0.1   # docker0 브릿지 기본 게이트웨이
+EPISTEME_API_HOST=172.17.0.1   # docker0 브릿지 기본 게이트웨이
 ```
 
 ### 원격 머신
 
 ```bash
 # .env
-SYNTAGMA_API_HOST=192.168.1.100   # 원격 머신 IP
-SYNTAGMA_API_PORT=8000
+EPISTEME_API_HOST=192.168.1.100   # 원격 머신 IP
+EPISTEME_API_PORT=8000
 ```
 
 원격 머신에서 8000 포트가 방화벽에서 열려 있어야 함.
@@ -116,13 +116,13 @@ SYNTAGMA_API_PORT=8000
 
 ```yaml
 scrape_configs:
-  - job_name: 'syntagma-api-prod'
+  - job_name: 'episteme-api-prod'
     static_configs:
       - targets: ['prod.example.com:8000']
         labels:
           env: prod
 
-  - job_name: 'syntagma-api-staging'
+  - job_name: 'episteme-api-staging'
     static_configs:
       - targets: ['staging.example.com:8000']
         labels:
@@ -148,7 +148,7 @@ prometheus.yml.tmpl  →  envsubst  →  prometheus.yml (컨테이너 내부)
 렌더링 결과 확인:
 
 ```bash
-docker exec syntagma-prometheus cat /etc/prometheus/prometheus.yml
+docker exec episteme-prometheus cat /etc/prometheus/prometheus.yml
 ```
 
 ---
@@ -159,8 +159,8 @@ docker exec syntagma-prometheus cat /etc/prometheus/prometheus.yml
 Grafana → Dashboards → Import
 ```
 
-- `grafana/syntagma-dashboard.json` — 패턴 사용량 / 코드 품질
-- `grafana/syntagma-api-dashboard.json` — API 레이턴시 / 에러율
+- `grafana/episteme-dashboard.json` — 패턴 사용량 / 코드 품질
+- `grafana/episteme-api-dashboard.json` — API 레이턴시 / 에러율
 
 ---
 
@@ -187,14 +187,14 @@ docker compose down -v
 
 ## 트러블슈팅
 
-### syntagma-api 타겟이 DOWN
+### episteme-api 타겟이 DOWN
 
 ```bash
 # 1. 컨테이너에서 직접 연결 확인
-docker exec syntagma-prometheus wget -qO- http://${SYNTAGMA_API_HOST}:${SYNTAGMA_API_PORT}/health
+docker exec episteme-prometheus wget -qO- http://${EPISTEME_API_HOST}:${EPISTEME_API_PORT}/health
 
 # 2. 렌더링된 prometheus.yml 확인
-docker exec syntagma-prometheus cat /etc/prometheus/prometheus.yml
+docker exec episteme-prometheus cat /etc/prometheus/prometheus.yml
 
 # 3. Linux에서 host.docker.internal 미동작 시
 ip route | grep docker   # docker0 게이트웨이 IP 확인 → .env에 직접 지정

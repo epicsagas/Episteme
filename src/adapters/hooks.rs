@@ -73,7 +73,7 @@ pub fn handle_ground(graph: &KnowledgeGraph, prompt: &str, limit: usize) -> Stri
     results.sort_by_key(|b| std::cmp::Reverse(b.1));
     results.truncate(limit);
 
-    let mut output = String::from("<!-- syntagma-ground -->\n");
+    let mut output = String::from("<!-- episteme-ground -->\n");
     for (id, _score) in &results {
         if let Some(entity) = graph.get_entity(id) {
             output.push_str(&format!(
@@ -82,7 +82,7 @@ pub fn handle_ground(graph: &KnowledgeGraph, prompt: &str, limit: usize) -> Stri
             ));
         }
     }
-    output.push_str("<!-- /syntagma-ground -->\n");
+    output.push_str("<!-- /episteme-ground -->\n");
     output
 }
 
@@ -95,7 +95,7 @@ pub fn handle_ground(graph: &KnowledgeGraph, prompt: &str, limit: usize) -> Stri
 /// Returns an XML-comment block listing every detection above
 /// `min_confidence`.
 pub fn handle_sniff(files: &[String], min_confidence: f64) -> String {
-    let mut output = String::from("<!-- syntagma-sniff -->\n");
+    let mut output = String::from("<!-- episteme-sniff -->\n");
 
     for file in files {
         let path = Path::new(file);
@@ -128,7 +128,7 @@ pub fn handle_sniff(files: &[String], min_confidence: f64) -> String {
         }
     }
 
-    output.push_str("<!-- /syntagma-sniff -->\n");
+    output.push_str("<!-- /episteme-sniff -->\n");
     output
 }
 
@@ -143,7 +143,7 @@ pub fn handle_audit(file_path: Option<&str>, min_confidence: f64) -> String {
         let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
         let lang = detect_language_from_ext(ext);
         if lang.is_empty() {
-            return "<!-- syntagma-audit: no language detected -->\n".to_owned();
+            return "<!-- episteme-audit: no language detected -->\n".to_owned();
         }
         get_parser(lang)
             .ok()
@@ -153,7 +153,7 @@ pub fn handle_audit(file_path: Option<&str>, min_confidence: f64) -> String {
         Vec::new()
     };
 
-    let mut output = String::from("<!-- syntagma-audit -->\n");
+    let mut output = String::from("<!-- episteme-audit -->\n");
 
     let high: Vec<_> = detections
         .iter()
@@ -182,7 +182,7 @@ pub fn handle_audit(file_path: Option<&str>, min_confidence: f64) -> String {
         }
     }
 
-    output.push_str("<!-- /syntagma-audit -->\n");
+    output.push_str("<!-- /episteme-audit -->\n");
     output
 }
 

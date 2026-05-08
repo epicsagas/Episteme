@@ -4,7 +4,7 @@ use std::io::Read;
 
 use anyhow::Result;
 
-use syntagma_engine::adapters::hooks;
+use episteme::adapters::hooks;
 
 use super::prelude::*;
 
@@ -103,34 +103,34 @@ pub fn cmd_hooks(sub: HooksOp) -> Result<()> {
 pub fn cmd_telemetry(action: &str) -> Result<()> {
     match action.trim().to_lowercase().as_str() {
         "on" => {
-            syntagma_engine::adapters::telemetry::write_consent(true).map_err(|e| anyhow::anyhow!(e))?;
-            println!("[syntagma] Telemetry enabled.");
-            println!("[syntagma] To opt out: syntagma telemetry off");
+            episteme::adapters::telemetry::write_consent(true).map_err(|e| anyhow::anyhow!(e))?;
+            println!("[episteme] Telemetry enabled.");
+            println!("[episteme] To opt out: epis telemetry off");
             Ok(())
         }
         "off" => {
-            syntagma_engine::adapters::telemetry::write_consent(false).map_err(|e| anyhow::anyhow!(e))?;
-            println!("[syntagma] Telemetry disabled.");
-            println!("[syntagma] To re-enable: syntagma telemetry on");
+            episteme::adapters::telemetry::write_consent(false).map_err(|e| anyhow::anyhow!(e))?;
+            println!("[episteme] Telemetry disabled.");
+            println!("[episteme] To re-enable: epis telemetry on");
             Ok(())
         }
         "status" => {
-            let raw = syntagma_engine::adapters::telemetry::read_consent_raw();
+            let raw = episteme::adapters::telemetry::read_consent_raw();
             let state = match raw {
                 Some(true) => "enabled",
                 Some(false) => "disabled",
                 None => "unset (will auto-enable on next command)",
             };
-            println!("[syntagma] Telemetry: {state}");
+            println!("[episteme] Telemetry: {state}");
             println!(
-                "[syntagma] Consent file: {}",
-                syntagma_engine::adapters::paths::syntagma_home()
+                "[episteme] Consent file: {}",
+                episteme::adapters::paths::episteme_home()
                     .join("telemetry-consent")
                     .display()
             );
             println!(
-                "[syntagma] Install ID:   {}",
-                syntagma_engine::adapters::paths::syntagma_home()
+                "[episteme] Install ID:   {}",
+                episteme::adapters::paths::episteme_home()
                     .join("install-id")
                     .display()
             );

@@ -14,22 +14,22 @@ mod dirs_sys {
     }
 }
 
-pub fn syntagma_home() -> PathBuf {
-    std::env::var("SYNTAGMA_HOME")
+pub fn episteme_home() -> PathBuf {
+    std::env::var("EPISTEME_HOME")
         .map(PathBuf::from)
-        .unwrap_or_else(|_| home_dir().join(".syntagma"))
+        .unwrap_or_else(|_| home_dir().join(".episteme"))
 }
 
 pub fn data_dir() -> PathBuf {
-    syntagma_home().join("data")
+    episteme_home().join("data")
 }
 
 pub fn db_dir() -> PathBuf {
-    syntagma_home().join("db")
+    episteme_home().join("db")
 }
 
 pub fn db_path() -> PathBuf {
-    db_dir().join("syntagma.db")
+    db_dir().join("episteme.db")
 }
 
 pub fn relations_path() -> PathBuf {
@@ -45,17 +45,17 @@ pub fn file_to_entity_path() -> PathBuf {
 }
 
 pub fn raw_dir() -> PathBuf {
-    syntagma_home().join("raw")
+    episteme_home().join("raw")
 }
 
 pub fn log_dir() -> PathBuf {
-    syntagma_home().join("logs")
+    episteme_home().join("logs")
 }
 
 pub fn pid_file() -> PathBuf {
-    syntagma_home().join("mcp.pid")
+    episteme_home().join("mcp.pid")
 }
 
 pub fn cache_dir() -> PathBuf {
-    syntagma_home().join("cache")
+    episteme_home().join("cache")
 }

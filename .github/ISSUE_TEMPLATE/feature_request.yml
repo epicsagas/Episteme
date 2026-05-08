@@ -1,5 +1,5 @@
 name: Feature Request
-description: Suggest a new feature or enhancement for Syntagma
+description: Suggest a new feature or enhancement for Episteme
 labels: ["enhancement"]
 body:
   - type: textarea

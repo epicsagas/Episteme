@@ -1,6 +1,6 @@
 {
   "version": "0.0.1",
-  "description": "Hierarchical classification system for Syntagma knowledge base",
+  "description": "Hierarchical classification system for Episteme knowledge base",
 
   "patterns": {
     "creational": [

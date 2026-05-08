@@ -818,6 +818,46 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "869b0adbda23651a9c5c0c3d270aac9fcb52e8622a8f2b17e57802d7791962f2"
 
 [[package]]
+name = "episteme"
+version = "0.2.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "clap",
+ "crossterm",
+ "deadpool-redis",
+ "fastembed",
+ "flate2",
+ "fxhash",
+ "indicatif",
+ "libc",
+ "md-5",
+ "metrics",
+ "metrics-exporter-prometheus",
+ "ndarray",
+ "proptest",
+ "redis",
+ "regex",
+ "reqwest 0.13.3",
+ "rusqlite",
+ "rustpython-parser",
+ "rustyline",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "sysinfo",
+ "tar",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "tower",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
 name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3464,46 +3504,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "syntagma-engine"
-version = "0.2.0"
-dependencies = [
- "anyhow",
- "axum",
- "clap",
- "crossterm",
- "deadpool-redis",
- "fastembed",
- "flate2",
- "fxhash",
- "indicatif",
- "libc",
- "md-5",
- "metrics",
- "metrics-exporter-prometheus",
- "ndarray",
- "proptest",
- "redis",
- "regex",
- "reqwest 0.13.3",
- "rusqlite",
- "rustpython-parser",
- "rustyline",
- "serde",
- "serde_json",
- "serde_yaml",
- "sysinfo",
- "tar",
- "tempfile",
- "thiserror",
- "tokio",
- "tower",
- "tower-http",
- "tracing",
- "tracing-subscriber",
- "uuid",
 ]
 
 [[package]]

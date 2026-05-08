@@ -1,6 +1,6 @@
-# Syntagma Benchmark Dashboard
+# Episteme Benchmark Dashboard
 
-A Svelte 5 single-page application for visualizing search quality and latency benchmark results from the `syntagma explore` CLI command.
+A Svelte 5 single-page application for visualizing search quality and latency benchmark results from the `epis explore` CLI command.
 
 ## Features
 
@@ -48,7 +48,7 @@ The dashboard automatically picks up any JSON file matching `benchmarks/results/
 
 ```bash
 # From the project root
-python benchmarks/search_benchmark.py --bin target/release/syntagma
+python benchmarks/search_benchmark.py --bin target/release/episteme
 ```
 
 Then rebuild the dashboard (`npm run build`) or restart the dev server — the new run will appear in the run selector dropdown and trend chart automatically.

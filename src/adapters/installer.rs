@@ -24,7 +24,7 @@ fn claude_mcp_server_config(transport: &ClaudeTransport) -> Value {
             "url": format!("http://127.0.0.1:{port}/mcp")
         }),
         ClaudeTransport::Stdio => json!({
-            "command": "syntagma",
+            "command": "epis",
             "args": ["mcp"]
         }),
     }
@@ -32,7 +32,7 @@ fn claude_mcp_server_config(transport: &ClaudeTransport) -> Value {
 
 fn mcp_server_config() -> Value {
     json!({
-        "command": "syntagma-mcp",
+        "command": "episteme-mcp",
         "args": []
     })
 }
@@ -53,13 +53,13 @@ pub fn install_claude(dry_run: bool, transport: &ClaudeTransport) -> Result<Vec<
         .ok_or("mcpServers is not an object")?;
 
     let desired = claude_mcp_server_config(transport);
-    let existed = servers.contains_key("syntagma");
-    let matches = servers.get("syntagma") == Some(&desired);
+    let existed = servers.contains_key("episteme");
+    let matches = servers.get("episteme") == Some(&desired);
 
     if matches {
         messages.push("Claude Code: MCP already configured".to_owned());
     } else {
-        servers.insert("syntagma".to_owned(), desired);
+        servers.insert("episteme".to_owned(), desired);
         if !dry_run {
             write_json_file(&claude_json, &config)?;
         }
@@ -77,7 +77,7 @@ pub fn install_claude(dry_run: bool, transport: &ClaudeTransport) -> Result<Vec<
     }
 
     // Install agent prompt files into ~/.claude/agents/
-    let agents_src = crate::adapters::paths::syntagma_home()
+    let agents_src = crate::adapters::paths::episteme_home()
         .join("registry")
         .join("agents");
     let agents_dst = home.join(".claude").join("agents");
@@ -115,11 +115,11 @@ pub fn install_cursor(dry_run: bool) -> Result<Vec<String>, String> {
         .as_object_mut()
         .ok_or("mcpServers is not an object")?;
 
-    if servers.contains_key("syntagma") {
+    if servers.contains_key("episteme") {
         return Ok(vec!["Cursor: MCP already configured".to_owned()]);
     }
 
-    servers.insert("syntagma".to_owned(), mcp_server_config());
+    servers.insert("episteme".to_owned(), mcp_server_config());
     if !dry_run {
         write_json_file(&mcp_json, &config)?;
     }
@@ -134,7 +134,7 @@ pub fn install_codex(dry_run: bool) -> Result<Vec<String>, String> {
 
     if agents_md.exists() {
         let content = fs::read_to_string(&agents_md).map_err(|e| e.to_string())?;
-        if content.contains("syntagma-mcp") {
+        if content.contains("episteme-mcp") {
             return Ok(vec!["Codex: AGENTS.md already configured".to_owned()]);
         }
     }
@@ -142,7 +142,7 @@ pub fn install_codex(dry_run: bool) -> Result<Vec<String>, String> {
     let _ = dry_run;
     // Don't modify AGENTS.md -- just report.
     Ok(vec![
-        "Codex: Add 'syntagma-mcp' to AGENTS.md manually".to_owned(),
+        "Codex: Add 'episteme-mcp' to AGENTS.md manually".to_owned(),
     ])
 }
 
@@ -163,11 +163,11 @@ pub fn install_gemini(dry_run: bool) -> Result<Vec<String>, String> {
         .as_object_mut()
         .ok_or("mcpServers is not an object")?;
 
-    if servers.contains_key("syntagma") {
+    if servers.contains_key("episteme") {
         return Ok(vec!["Gemini CLI: MCP already configured".to_owned()]);
     }
 
-    servers.insert("syntagma".to_owned(), mcp_server_config());
+    servers.insert("episteme".to_owned(), mcp_server_config());
     if !dry_run {
         write_json_file(&mcp_json, &config)?;
     }
@@ -192,11 +192,11 @@ pub fn install_opencode(dry_run: bool) -> Result<Vec<String>, String> {
         .as_object_mut()
         .ok_or("mcp is not an object")?;
 
-    if servers.contains_key("syntagma") {
+    if servers.contains_key("episteme") {
         return Ok(vec!["OpenCode: MCP already configured".to_owned()]);
     }
 
-    servers.insert("syntagma".to_owned(), mcp_server_config());
+    servers.insert("episteme".to_owned(), mcp_server_config());
     if !dry_run {
         write_json_file(&config_json, &config)?;
     }
@@ -218,17 +218,17 @@ pub fn install_cline(dry_run: bool) -> Result<Vec<String>, String> {
         .or_insert_with(|| json!({}))
         .as_object_mut()
         .ok_or("mcpServers is not an object")?;
-    if servers.contains_key("syntagma") {
+    if servers.contains_key("episteme") {
         return Ok(vec!["Cline: MCP already configured".to_owned()]);
     }
-    servers.insert("syntagma".to_owned(), mcp_server_config());
+    servers.insert("episteme".to_owned(), mcp_server_config());
     if !dry_run {
         write_json_file(&mcp_json, &config)?;
     }
     Ok(vec!["Cline: MCP config added".to_owned()])
 }
 
-/// Data seeding: copy raw data from project source tree to ~/.syntagma/.
+/// Data seeding: copy raw data from project source tree to ~/.episteme/.
 pub fn seed_data(dry_run: bool) -> Result<Vec<String>, String> {
     let data_dir = crate::adapters::paths::data_dir();
     let raw_dir = crate::adapters::paths::raw_dir();
@@ -242,7 +242,7 @@ pub fn seed_data(dry_run: bool) -> Result<Vec<String>, String> {
 
     // Seed registry/ (agent prompts etc.) alongside data.
     let registry_src = cwd.join("registry");
-    let registry_dst = crate::adapters::paths::syntagma_home().join("registry");
+    let registry_dst = crate::adapters::paths::episteme_home().join("registry");
     if registry_src.exists() && !dry_run {
         fs::create_dir_all(&registry_dst).map_err(|e| e.to_string())?;
         copy_dir_recursive(&registry_src, &registry_dst)?;
@@ -267,7 +267,7 @@ pub fn seed_data(dry_run: bool) -> Result<Vec<String>, String> {
 
     if messages.is_empty() {
         messages.push(
-            "No local data found to seed. Run 'syntagma build' after providing data.".to_owned(),
+            "No local data found to seed. Run 'epis build' after providing data.".to_owned(),
         );
     }
 
@@ -284,7 +284,7 @@ pub fn seed_data_from_release(url: &str, dry_run: bool) -> Result<Vec<String>, S
         return Ok(messages);
     }
 
-    let tmp_dir = std::env::temp_dir().join(format!("syntagma-install-{}", std::process::id()));
+    let tmp_dir = std::env::temp_dir().join(format!("episteme-install-{}", std::process::id()));
     fs::create_dir_all(&tmp_dir).map_err(|e| e.to_string())?;
     let archive_path = tmp_dir.join("release.tar.gz");
 
@@ -305,7 +305,7 @@ pub fn seed_data_from_release(url: &str, dry_run: bool) -> Result<Vec<String>, S
     archive.unpack(&extract_dir).map_err(|e| e.to_string())?;
     messages.push("Extracted release archive".to_owned());
 
-    // Copy discovered data folders into ~/.syntagma
+    // Copy discovered data folders into ~/.episteme
     let mut copied = false;
     for entry in fs::read_dir(&extract_dir).map_err(|e| e.to_string())? {
         let entry = entry.map_err(|e| e.to_string())?;
@@ -321,8 +321,8 @@ pub fn seed_data_from_release(url: &str, dry_run: bool) -> Result<Vec<String>, S
                     "db" => crate::adapters::paths::db_path()
                         .parent()
                         .map(|p| p.to_path_buf())
-                        .unwrap_or_else(|| crate::adapters::paths::syntagma_home().join("db")),
-                    "registry" => crate::adapters::paths::syntagma_home().join("registry"),
+                        .unwrap_or_else(|| crate::adapters::paths::episteme_home().join("db")),
+                    "registry" => crate::adapters::paths::episteme_home().join("registry"),
                     _ => crate::adapters::paths::data_dir(),
                 };
                 fs::create_dir_all(&target).map_err(|e| e.to_string())?;
@@ -349,7 +349,7 @@ pub fn seed_data_from_local_archive(path: &Path, dry_run: bool) -> Result<Vec<St
         )]);
     }
     let mut messages = Vec::new();
-    let tmp_dir = std::env::temp_dir().join(format!("syntagma-install-{}", std::process::id()));
+    let tmp_dir = std::env::temp_dir().join(format!("episteme-install-{}", std::process::id()));
     fs::create_dir_all(&tmp_dir).map_err(|e| e.to_string())?;
     let extract_dir = tmp_dir.join("extract-local");
     fs::create_dir_all(&extract_dir).map_err(|e| e.to_string())?;
@@ -374,8 +374,8 @@ pub fn seed_data_from_local_archive(path: &Path, dry_run: bool) -> Result<Vec<St
                     "db" => crate::adapters::paths::db_path()
                         .parent()
                         .map(|p| p.to_path_buf())
-                        .unwrap_or_else(|| crate::adapters::paths::syntagma_home().join("db")),
-                    "registry" => crate::adapters::paths::syntagma_home().join("registry"),
+                        .unwrap_or_else(|| crate::adapters::paths::episteme_home().join("db")),
+                    "registry" => crate::adapters::paths::episteme_home().join("registry"),
                     _ => crate::adapters::paths::data_dir(),
                 };
                 fs::create_dir_all(&target).map_err(|e| e.to_string())?;
@@ -418,7 +418,7 @@ pub fn install_all(dry_run: bool) -> Result<Vec<String>, String> {
 // ---------------------------------------------------------------------------
 
 fn dirs_home() -> PathBuf {
-    crate::adapters::paths::syntagma_home()
+    crate::adapters::paths::episteme_home()
         .parent()
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from("/tmp"))
@@ -465,7 +465,7 @@ mod tests {
     #[test]
     fn mcp_server_config_has_expected_shape() {
         let config = mcp_server_config();
-        assert_eq!(config["command"], "syntagma-mcp");
+        assert_eq!(config["command"], "episteme-mcp");
         assert!(config["args"].is_array());
     }
 
@@ -500,12 +500,12 @@ mod tests {
         let map = config.as_object_mut().unwrap();
         let mcp_servers = map.entry("mcpServers").or_insert_with(|| json!({}));
         let servers = mcp_servers.as_object_mut().unwrap();
-        assert!(!servers.contains_key("syntagma"));
-        servers.insert("syntagma".to_owned(), mcp_server_config());
+        assert!(!servers.contains_key("episteme"));
+        servers.insert("episteme".to_owned(), mcp_server_config());
         write_json_file(&path, &config).unwrap();
 
         let reloaded = read_json_file(&path);
-        assert!(reloaded["mcpServers"]["syntagma"]["command"] == "syntagma-mcp");
+        assert!(reloaded["mcpServers"]["episteme"]["command"] == "episteme-mcp");
     }
 
     #[test]
@@ -518,13 +518,13 @@ mod tests {
         let map = config.as_object_mut().unwrap();
         let mcp_servers = map.entry("mcpServers").or_insert_with(|| json!({}));
         let servers = mcp_servers.as_object_mut().unwrap();
-        servers.insert("syntagma".to_owned(), mcp_server_config());
+        servers.insert("episteme".to_owned(), mcp_server_config());
         write_json_file(&path, &config).unwrap();
 
         // Second pass should detect existing.
         let config = read_json_file(&path);
         let servers = config["mcpServers"].as_object().unwrap();
-        assert!(servers.contains_key("syntagma"));
+        assert!(servers.contains_key("episteme"));
     }
 
     #[test]
@@ -580,7 +580,7 @@ mod tests {
     #[test]
     fn claude_mcp_server_config_stdio() {
         let cfg = claude_mcp_server_config(&ClaudeTransport::Stdio);
-        assert_eq!(cfg["command"], "syntagma");
+        assert_eq!(cfg["command"], "epis");
         assert_eq!(cfg["args"], json!(["mcp"]));
     }
 
@@ -598,15 +598,15 @@ mod tests {
             .as_object_mut()
             .unwrap();
         servers.insert(
-            "syntagma".to_owned(),
+            "episteme".to_owned(),
             claude_mcp_server_config(&ClaudeTransport::Http { port: 43175 }),
         );
         write_json_file(&path, &config).unwrap();
 
         let reloaded = read_json_file(&path);
-        assert_eq!(reloaded["mcpServers"]["syntagma"]["type"], "http");
+        assert_eq!(reloaded["mcpServers"]["episteme"]["type"], "http");
         assert_eq!(
-            reloaded["mcpServers"]["syntagma"]["url"],
+            reloaded["mcpServers"]["episteme"]["url"],
             "http://127.0.0.1:43175/mcp"
         );
     }
@@ -625,13 +625,13 @@ mod tests {
             .as_object_mut()
             .unwrap();
         servers.insert(
-            "syntagma".to_owned(),
+            "episteme".to_owned(),
             claude_mcp_server_config(&ClaudeTransport::Stdio),
         );
         write_json_file(&path, &config).unwrap();
 
         let reloaded = read_json_file(&path);
-        assert_eq!(reloaded["mcpServers"]["syntagma"]["command"], "syntagma");
-        assert_eq!(reloaded["mcpServers"]["syntagma"]["args"], json!(["mcp"]));
+        assert_eq!(reloaded["mcpServers"]["episteme"]["command"], "epis");
+        assert_eq!(reloaded["mcpServers"]["episteme"]["args"], json!(["mcp"]));
     }
 }

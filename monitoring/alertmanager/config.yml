@@ -31,7 +31,7 @@ receivers:
   - name: 'team-platform'
     slack_configs:
       - channel: '#platform-alerts'
-        title: 'Syntagma Alert'
+        title: 'Episteme Alert'
         text: |
           {{ range .Alerts }}
           *Alert:* {{ .Annotations.summary }}

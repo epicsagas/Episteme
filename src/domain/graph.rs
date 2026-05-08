@@ -57,7 +57,7 @@ const ENTITY_PREFIXES: &[&str] = &["DP-", "RF-", "LAW-", "SMELL-"];
 
 /// Knowledge graph traversal and analysis engine.
 ///
-/// Ported from `syntagma.graph.api.KnowledgeGraph` (Python).
+/// Ported from `episteme.graph.api.KnowledgeGraph` (Python).
 /// The graph is constructed via `from_entities()` and then queried via `&self` methods.
 pub struct KnowledgeGraph {
     /// Entity id -> raw entity object.

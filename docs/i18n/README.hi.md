@@ -1,17 +1,17 @@
-<h1 align="center">Syntagma</h1>
+<h1 align="center">Episteme</h1>
 
 <p align="center"><b>सॉफ्टवेयर इंजीनियरिंग के लिए ज्ञान ग्राफ</b></p>
 
-<p align="center"><sub>Syntagma (συν ταγμα) — यूनानी भाषा में "संगठित प्रणाली" या "विवेक" का अर्थ</sub></p>
+<p align="center"><sub>Episteme (συν ταγμα) — यूनानी भाषा में "संगठित प्रणाली" या "विवेक" का अर्थ</sub></p>
 
 <p align="center">एक ऑफलाइन-फर्स्ट, सिंगल-बाइनरी ज्ञान ग्राफ जो डिज़ाइन पैटर्न, रिफैक्टरिंग तकनीकों और सॉफ्टवेयर नियमों को semantic संबंधों के माध्यम से जोड़ता है।<br><b>AI एजेंट्स के लिए सर्वप्रथम बनाया गया</b> — सॉफ्टवेयर इंजीनियरिंग विशेषज्ञता को सीधे Claude Code, Cursor और अन्य MCP-संगत उपकरणों में एकीकृत करें।</p>
 
 <p align="center">Rust में लिखा गया · सिंगल बाइनरी · पूरी तरह ऑफलाइन</p>
 
 <p align="center">
-    <a href="https://github.com/epicsagas/Syntagma/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Syntagma/ci.yml?branch=main&label=CI" alt="CI" /></a>
+    <a href="https://github.com/epicsagas/Episteme/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Episteme/ci.yml?branch=main&label=CI" alt="CI" /></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.95+-orange.svg" alt="rust-lang" /></a>
-    <a href="https://crates.io/crates/syntagma"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
+    <a href="https://crates.io/crates/episteme"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
     <a href="../../LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
     <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
 </p>
@@ -35,7 +35,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../assets/features.png">
-  <img src="../assets/features.png" align="center" width="100%" alt="Syntagma Features Overview" />
+  <img src="../assets/features.png" align="center" width="100%" alt="Episteme Features Overview" />
 </picture>
 
 ---
@@ -53,33 +53,33 @@
 
 इंस्टॉल करने के बाद, एक **नया टर्मिनल** खोलें (या macOS/Linux पर `source "$HOME/.cargo/env"` चलाएँ)।
 
-**2. Syntagma इंस्टॉल करें (पहली बिल्ड में 3–5 मिनट लगते हैं)**
+**2. Episteme इंस्टॉल करें (पहली बिल्ड में 3–5 मिनट लगते हैं)**
 
 ```bash
-cargo install --git https://github.com/epicsagas/Syntagma
+cargo install --git https://github.com/epicsagas/Episteme
 ```
 
 **3. डेटा सीड करें + अपने AI टूल को कनेक्ट करें**
 
 ```bash
-syntagma install claude    # या: cursor, codex, gemini
+epis install claude    # या: cursor, codex, gemini
 ```
 
 **4. सत्यापित करें**
 
 ```bash
-syntagma --version
-syntagma stats
+epis --version
+epis stats
 ```
 
-बस। Claude Code को पुनः आरंभ करें और Syntagma टूल्स तैयार हैं।
+बस। Claude Code को पुनः आरंभ करें और Episteme टूल्स तैयार हैं।
 
 ### 30 सेकंड में आज़माएँ
 
 **विकल्प A — CLI:** इसे अपने प्रोजेक्ट की किसी भी फ़ाइल पर चलाएँ।
 
 ```bash
-syntagma analyze src/domain/engine.rs
+epis analyze src/domain/engine.rs
 ```
 
 ```
@@ -101,21 +101,21 @@ syntagma analyze src/domain/engine.rs
 Find code smells in this project and suggest refactorings.
 ```
 
-Syntagma स्वचालित रूप से सक्रिय होता है — किसी विशेष सिंटैक्स की आवश्यकता नहीं है। यह आपके विवरण को ज्ञान ग्राफ से मैप करता है और रैंक किए गए, उद्धृत करने योग्य परिणाम लौटाता है।
+Episteme स्वचालित रूप से सक्रिय होता है — किसी विशेष सिंटैक्स की आवश्यकता नहीं है। यह आपके विवरण को ज्ञान ग्राफ से मैप करता है और रैंक किए गए, उद्धृत करने योग्य परिणाम लौटाता है।
 
 ---
 
-## Syntagma क्यों?
+## Episteme क्यों?
 
 LLM पहले से ही जानते हैं कि Strategy पैटर्न क्या है। वे SOLID सिद्धांतों को दोहरा सकते हैं, GoF पैटर्न्स की सूची बना सकते हैं, और कोड स्मेल्स को समझा सकते हैं। तो यह प्रोजेक्ट क्यों मौजूद है?
 
 **अंतर ज्ञान नहीं है — यह संरचित, जुड़ी हुई तर्कशक्ति है।**
 
-जब आप एक LLM से पूछते हैं "मैं God Object को कैसे ठीक करूँ?", तो यह एक उचित उत्तर देता है। लेकिन वह उत्तर वार्तालापों के बीच बदलता है, इसमें ट्रेसेबिलिटी की कमी होती है, और यह समस्या को उसके मूल कारणों या दीर्घकालिक प्रभावों से नहीं जोड़ता है। Syntagma पृथक तथ्यों को एक ट्रैवर्सेबल ग्राफ में बदल देता है जहाँ हर सिफारिश आधारित, उद्धृत करने योग्य, और व्यापक डिज़ाइन परिदृश्य से जुड़ी हुई है।
+जब आप एक LLM से पूछते हैं "मैं God Object को कैसे ठीक करूँ?", तो यह एक उचित उत्तर देता है। लेकिन वह उत्तर वार्तालापों के बीच बदलता है, इसमें ट्रेसेबिलिटी की कमी होती है, और यह समस्या को उसके मूल कारणों या दीर्घकालिक प्रभावों से नहीं जोड़ता है। Episteme पृथक तथ्यों को एक ट्रैवर्सेबल ग्राफ में बदल देता है जहाँ हर सिफारिश आधारित, उद्धृत करने योग्य, और व्यापक डिज़ाइन परिदृश्य से जुड़ी हुई है।
 
 ### केवल LLM को अच्छी तरह प्रॉम्प्ट करने से यह कैसे भिन्न है?
 
-| | अच्छी तरह से तैयार किया गया LLM प्रॉम्प्ट | Syntagma + LLM |
+| | अच्छी तरह से तैयार किया गया LLM प्रॉम्प्ट | Episteme + LLM |
 |---|---|---|
 | सक्रिय पहचान | केवल तभी जब उपयोगकर्ता सही प्रश्न पूछे | समस्या विवरणों पर स्वचालित रूप से सक्रिय होता है |
 | टोकन दक्षता | लंबे स्पष्टीकरण + कई फॉलो-अप राउंड | एक टूल कॉल संरचित परिणाम लौटाता है |
@@ -130,31 +130,31 @@ LLM पहले से ही जानते हैं कि Strategy पै�
 <details>
 <summary><b>1. जब आपका AI एजेंट समस्याओं की सक्रिय पहचान करे, पूछे जाने का इंतज़ार न करे</b></summary>
 
-MCP एकीकरण समस्या विवरणों पर स्वचालित रूप से सक्रिय होता है। जब एक उपयोगकर्ता कहता है "यह क्लास बहुत कुछ करती है", तो एजेंट को God Object के बारे में पूछने की ज़रूरत नहीं है — Syntagma शिकायत को `SMELL-03` से मैप करता है, रैंक किए गए रिफैक्टरिंग्स प्रस्तुत करता है, और उल्लंघन को मूल सिद्धांतों तक ट्रेस करता है। यह एक अस्पष्ट शिकायत को एक संरचित सुधार योजना में बदल देता है।
+MCP एकीकरण समस्या विवरणों पर स्वचालित रूप से सक्रिय होता है। जब एक उपयोगकर्ता कहता है "यह क्लास बहुत कुछ करती है", तो एजेंट को God Object के बारे में पूछने की ज़रूरत नहीं है — Episteme शिकायत को `SMELL-03` से मैप करता है, रैंक किए गए रिफैक्टरिंग्स प्रस्तुत करता है, और उल्लंघन को मूल सिद्धांतों तक ट्रेस करता है। यह एक अस्पष्ट शिकायत को एक संरचित सुधार योजना में बदल देता है।
 </details>
 
 <details>
 <summary><b>2. जब आप टोकन खपत कम करना चाहते हैं — स्पष्टीकरण पर नहीं खर्च करना चाहते</b></summary>
 
-Syntagma के बिना, एक LLM "मैं God Object को कैसे ठीक करूँ?" का उत्तर स्मेल को समझाकर, रिफैक्टरिंग्स की सूची बनाकर, SOLID सिद्धांतों का वर्णन करके, और प्रत्येक विकल्प से गुज़रकर देता है — प्रति उत्तर सैकड़ों टोकन। Syntagma के साथ, एक MCP टूल कॉल `SMELL-03 → RF-018 (0.89) → LAW-001` लौटाता है। समान विशेषज्ञता टोकन बजट के एक अंश में।
+Episteme के बिना, एक LLM "मैं God Object को कैसे ठीक करूँ?" का उत्तर स्मेल को समझाकर, रिफैक्टरिंग्स की सूची बनाकर, SOLID सिद्धांतों का वर्णन करके, और प्रत्येक विकल्प से गुज़रकर देता है — प्रति उत्तर सैकड़ों टोकन। Episteme के साथ, एक MCP टूल कॉल `SMELL-03 → RF-018 (0.89) → LAW-001` लौटाता है। समान विशेषज्ञता टोकन बजट के एक अंश में।
 </details>
 
 <details>
 <summary><b>3. जब आपको कोड विश्लेषण सुधार से जुड़ा हुआ चाहिए — केवल पहचान नहीं</b></summary>
 
-SonarQube जैसे उपकरण स्मेल्स की पहचान करते हैं। LLM पैटर्न्स सुझा सकते हैं। Syntagma दोनों करता है और उन्हें जोड़ता है: Long Method की पहचान करें → यह जो नियम तोड़ता है उन्हें ट्रेस करें → उन रिफैक्टरिंग्स को रैंक करें जो इसे हल करते हैं → दिखाएँ कि कौन से पैटर्न्स उन रिफैक्टरिंग्स को लागू करते हैं।
+SonarQube जैसे उपकरण स्मेल्स की पहचान करते हैं। LLM पैटर्न्स सुझा सकते हैं। Episteme दोनों करता है और उन्हें जोड़ता है: Long Method की पहचान करें → यह जो नियम तोड़ता है उन्हें ट्रेस करें → उन रिफैक्टरिंग्स को रैंक करें जो इसे हल करते हैं → दिखाएँ कि कौन से पैटर्न्स उन रिफैक्टरिंग्स को लागू करते हैं।
 </details>
 
 <details>
 <summary><b>4. जब पृथक पैटर्न ज्ञान पर्याप्त नहीं है — आपको संबंधों की आवश्यकता है</b></summary>
 
-Extract Method क्या करता है, यह जानना आधारभूत बात है। यह जानना कि यह Long Method (SMELL-01) को *हल करता है*, जो Single Responsibility (LAW-001) का *उल्लंघन करता है*, जिसे Facade Pattern (DP-012) *लागू करता है* — यह एक तर्क श्रृंखला है जिसे एक LLM स्वतंत्र रूप से विश्वसनीय ढंग से नहीं बना सकता। Syntagma के 201 semantic संबंध AI एजेंट्स को इन पथों को नियतात्मक रूप से ट्रैवर्स करने देते हैं।
+Extract Method क्या करता है, यह जानना आधारभूत बात है। यह जानना कि यह Long Method (SMELL-01) को *हल करता है*, जो Single Responsibility (LAW-001) का *उल्लंघन करता है*, जिसे Facade Pattern (DP-012) *लागू करता है* — यह एक तर्क श्रृंखला है जिसे एक LLM स्वतंत्र रूप से विश्वसनीय ढंग से नहीं बना सकता। Episteme के 201 semantic संबंध AI एजेंट्स को इन पथों को नियतात्मक रूप से ट्रैवर्स करने देते हैं।
 </details>
 
 <details>
 <summary><b>5. जब आप आर्किटेक्चर निर्णय ले रहे हैं और राय नहीं, साक्ष्य चाहिए</b></summary>
 
-"क्या मुझे माइक्रोसर्विसेज़ का उपयोग करना चाहिए?" — Syntagma प्रश्न को Conway's Law (LAW-017), SRP (LAW-001), और Strangler Fig पैटर्न (DP-026) से जोड़ता है, फिर दिखाता है कि वे कैसे संबंधित हैं। निर्णय इंजीनियरिंग नियमों तक ट्रेसेबल हो जाते हैं, ब्लॉग पोस्ट तक नहीं।
+"क्या मुझे माइक्रोसर्विसेज़ का उपयोग करना चाहिए?" — Episteme प्रश्न को Conway's Law (LAW-017), SRP (LAW-001), और Strangler Fig पैटर्न (DP-026) से जोड़ता है, फिर दिखाता है कि वे कैसे संबंधित हैं। निर्णय इंजीनियरिंग नियमों तक ट्रेसेबल हो जाते हैं, ब्लॉग पोस्ट तक नहीं।
 </details>
 
 <details>
@@ -166,7 +166,7 @@ Extract Method क्या करता है, यह जानना आध�
 <details>
 <summary><b>7. जब आप एक एयर-गैप्ड या प्रतिबंधित नेटवर्क में काम कर रहे हैं</b></summary>
 
-Syntagma पूरी तरह से ऑफलाइन चलता है: सिंगल बाइनरी, स्थानीय SQLite डेटाबेस, fastembed (ONNX Runtime) के माध्यम से स्थानीय एम्बेडिंग्स। कोई टेलीमेट्री नहीं, कोई फ़ोन-होम नहीं, कोई बाहरी API कॉल नहीं। आपका कोड और विश्लेषण परिणाम कभी भी आपकी मशीन से बाहर नहीं जाते।
+Episteme पूरी तरह से ऑफलाइन चलता है: सिंगल बाइनरी, स्थानीय SQLite डेटाबेस, fastembed (ONNX Runtime) के माध्यम से स्थानीय एम्बेडिंग्स। कोई टेलीमेट्री नहीं, कोई फ़ोन-होम नहीं, कोई बाहरी API कॉल नहीं। आपका कोड और विश्लेषण परिणाम कभी भी आपकी मशीन से बाहर नहीं जाते।
 </details>
 
 ---
@@ -177,25 +177,25 @@ Syntagma पूरी तरह से ऑफलाइन चलता है: �
 
 ```bash
 # पहली बिल्ड में 3–5 मिनट लगते हैं — यह सामान्य है
-cargo install --git https://github.com/epicsagas/Syntagma
-syntagma install claude    # डेटा सीड करता है + MCP कनेक्ट करता है + एजेंट्स इंस्टॉल करता है
+cargo install --git https://github.com/epicsagas/Episteme
+epis install claude    # डेटा सीड करता है + MCP कनेक्ट करता है + एजेंट्स इंस्टॉल करता है
 ```
 
-> `syntagma install claude` के बाद, MCP टूल्स और एजेंट्स के दिखने के लिए **Claude Code को पुनः आरंभ करें**।
+> `epis install claude` के बाद, MCP टूल्स और एजेंट्स के दिखने के लिए **Claude Code को पुनः आरंभ करें**।
 
 ### विकल्प 2: सोर्स से
 
 ```bash
-git clone https://github.com/epicsagas/Syntagma.git
-cd Syntagma && cargo build --release
+git clone https://github.com/epicsagas/Episteme.git
+cd Episteme && cargo build --release
 ```
 
 फिर अपने प्लेटफ़ॉर्म के लिए बाइनरी चलाएँ:
 
 | प्लेटफ़ॉर्म | कमांड |
 |----------|---------|
-| **macOS / Linux** | `./target/release/syntagma install --local claude` |
-| **Windows** | `.\target\release\syntagma.exe install --local claude` |
+| **macOS / Linux** | `./target/release/epis install --local claude` |
+| **Windows** | `.\target\release\episteme.exe install --local claude` |
 
 ### विकल्प 3: Docker (Rust की आवश्यकता नहीं)
 
@@ -214,9 +214,9 @@ docker-compose up -d
 ```json
 {
   "mcpServers": {
-    "syntagma": {
+    "episteme": {
       "command": "docker",
-      "args": ["exec", "-i", "syntagma-api", "syntagma", "mcp"]
+      "args": ["exec", "-i", "episteme-api", "episteme", "mcp"]
     }
   }
 }
@@ -224,42 +224,42 @@ docker-compose up -d
 
 ### विकल्प 4: प्री-बिल्ट बाइनरीज़ (Rust की आवश्यकता नहीं)
 
-[GitHub Releases](https://github.com/epicsagas/Syntagma/releases) से अपने प्लेटफ़ॉर्म के लिए नवीनतम बाइनरी डाउनलोड करें:
+[GitHub Releases](https://github.com/epicsagas/Episteme/releases) से अपने प्लेटफ़ॉर्म के लिए नवीनतम बाइनरी डाउनलोड करें:
 
 | प्लेटफ़ॉर्म | फ़ाइल |
 |----------|------|
-| **macOS** (Apple Silicon) | `syntagma-aarch64-apple-darwin.tar.gz` |
-| **macOS** (Intel) | `syntagma-x86_64-apple-darwin.tar.gz` |
-| **Linux** (x86_64) | `syntagma-x86_64-unknown-linux-gnu.tar.gz` |
-| **Linux** (ARM64) | `syntagma-aarch64-unknown-linux-gnu.tar.gz` |
-| **Windows** (x86_64) | `syntagma-x86_64-pc-windows-msvc.zip` |
+| **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.gz` |
+| **macOS** (Intel) | `episteme-x86_64-apple-darwin.tar.gz` |
+| **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.gz` |
+| **Linux** (ARM64) | `episteme-aarch64-unknown-linux-gnu.tar.gz` |
+| **Windows** (x86_64) | `episteme-x86_64-pc-windows-msvc.zip` |
 
 ```bash
 # macOS / Linux
-tar xzf syntagma-*.tar.gz
-sudo mv syntagma /usr/local/bin/
+tar xzf episteme-*.tar.gz
+sudo mv episteme /usr/local/bin/
 
-# Windows — ZIP निकालें और syntagma.exe को अपने PATH में जोड़ें
+# Windows — ZIP निकालें और episteme.exe को अपने PATH में जोड़ें
 ```
 
 फिर इंस्टॉल करें:
 ```bash
-syntagma install claude    # या: cursor, codex, gemini
+epis install claude    # या: cursor, codex, gemini
 ```
 
 ### सत्यापित करें
 
 ```bash
-syntagma --version
-syntagma stats
-syntagma explore "strategy pattern"    # ज्ञान ग्राफ का अन्वेषण करें
+epis --version
+epis stats
+epis explore "strategy pattern"    # ज्ञान ग्राफ का अन्वेषण करें
 ```
 
 ---
 
 ## MCP टूल्स और एजेंट्स
 
-> **MCP क्या है?** [Model Context Protocol](https://modelcontextprotocol.io) एक खुला मानक है जो AI टूल्स को बाहरी सेवाओं को कॉल करने देता है। Syntagma अपने ज्ञान ग्राफ को MCP टूल्स के रूप में प्रदर्शित करता है जिन्हें Claude Code, Cursor और अन्य संगत एडिटर्स स्वचालित रूप से कॉल कर सकते हैं।
+> **MCP क्या है?** [Model Context Protocol](https://modelcontextprotocol.io) एक खुला मानक है जो AI टूल्स को बाहरी सेवाओं को कॉल करने देता है। Episteme अपने ज्ञान ग्राफ को MCP टूल्स के रूप में प्रदर्शित करता है जिन्हें Claude Code, Cursor और अन्य संगत एडिटर्स स्वचालित रूप से कॉल कर सकते हैं।
 
 ### 6 MCP टूल्स
 
@@ -279,11 +279,11 @@ syntagma explore "strategy pattern"    # ज्ञान ग्राफ का 
 | एजेंट | कब उपयोग करें | मुख्य क्षमता | हस्तांतरित करता है |
 |-------|-------------|----------------|--------------|
 | **`code-reviewer`** | कोड स्मेल्स, SOLID उल्लंघन | कॉज़ेशन विश्लेषण (मूल कारण → दीर्घकालिक लक्षण) | advisor, architecture-analyst, refactoring-expert |
-| **`syntagma-advisor`** | इंजीनियरिंग निर्णय, ट्रेड-ऑफ़ | बहु-एंटिटी ट्रेड-ऑफ़ श्रृंखलाएँ कार्य योजनाओं के साथ | code-reviewer, architecture-analyst, researcher |
-| **`syntagma-researcher`** | ज्ञान ग्राफ अन्वेषण | पैटर्न्स, नियमों, स्मेल्स के बीच संबंध मानचित्र | advisor, code-reviewer |
+| **`episteme-advisor`** | इंजीनियरिंग निर्णय, ट्रेड-ऑफ़ | बहु-एंटिटी ट्रेड-ऑफ़ श्रृंखलाएँ कार्य योजनाओं के साथ | code-reviewer, architecture-analyst, researcher |
+| **`episteme-researcher`** | ज्ञान ग्राफ अन्वेषण | पैटर्न्स, नियमों, स्मेल्स के बीच संबंध मानचित्र | advisor, code-reviewer |
 | **`architecture-analyst`** | नियमों के विरुद्ध आर्किटेक्चर मूल्यांकन | जोखिम-भारित मूल्यांकन के साथ अनुपालन स्कोरिंग | advisor, code-reviewer, researcher |
 
-**वर्कफ़्लो उदाहरण**: `code-reviewer` God Object का पता लगाता है → कॉज़ेशन को 3 दीर्घकालिक स्मेल्स तक ट्रेस करता है → "RF-018 लागू करें" (→ refactoring-expert) या "मूल कारण का गहन विश्लेषण" (→ syntagma-advisor) या "आर्किटेक्चर जाँच" (→ architecture-analyst) प्रस्तुत करता है।
+**वर्कफ़्लो उदाहरण**: `code-reviewer` God Object का पता लगाता है → कॉज़ेशन को 3 दीर्घकालिक स्मेल्स तक ट्रेस करता है → "RF-018 लागू करें" (→ refactoring-expert) या "मूल कारण का गहन विश्लेषण" (→ episteme-advisor) या "आर्किटेक्चर जाँच" (→ architecture-analyst) प्रस्तुत करता है।
 
 [पूर्ण MCP एकीकरण गाइड](../../docs/mcp-integration-guide.md)
 
@@ -293,23 +293,23 @@ syntagma explore "strategy pattern"    # ज्ञान ग्राफ का 
 
 ```bash
 # स्मेल्स के लिए कोड विश्लेषण करें
-syntagma analyze my_code.py --language python --json
-syntagma infer my_code.py
+epis analyze my_code.py --language python --json
+episteme infer my_code.py
 
 # ज्ञान ग्राफ का अन्वेषण करें
-syntagma explore "strategy pattern"
-syntagma graph path DP-005 RF-001   # उदाहरण: Factory Method → Extract Method
+epis explore "strategy pattern"
+epis graph path DP-005 RF-001   # उदाहरण: Factory Method → Extract Method
 
 # RAG इंडेक्स बनाएँ
-syntagma build
+epis build
 
 # सर्वर प्रारंभ करें
-syntagma api              # :8000 पर REST API
-syntagma mcp --http       # :43175 पर MCP सर्वर
-syntagma web --port 8080  # Web UI (इंटरैक्टिव ग्राफ एक्सप्लोरर)
+epis api              # :8000 पर REST API
+episteme mcp --http       # :43175 पर MCP सर्वर
+episteme web --port 8080  # Web UI (इंटरैक्टिव ग्राफ एक्सप्लोरर)
 
 # वितरण पैकेजिंग
-syntagma dist --out-dir release/
+episteme dist --out-dir release/
 ```
 
 ---
@@ -355,24 +355,24 @@ syntagma dist --out-dir release/
 
 ```bash
 # डेटा स्थान
-SYNTAGMA_DATA_DIR=~/.syntagma/data
-SYNTAGMA_DB_PATH=~/.syntagma/db/syntagma.db
+EPISTEME_DATA_DIR=~/.episteme/data
+EPISTEME_DB_PATH=~/.episteme/db/episteme.db
 
 # API सर्वर
-SYNTAGMA_API_HOST=0.0.0.0
-SYNTAGMA_API_PORT=8000
-SYNTAGMA_API_KEY=your-secret-key
+EPISTEME_API_HOST=0.0.0.0
+EPISTEME_API_PORT=8000
+EPISTEME_API_KEY=your-secret-key
 
 # MCP सर्वर
-SYNTAGMA_MCP_HOST=127.0.0.1
-SYNTAGMA_MCP_PORT=43175
+EPISTEME_MCP_HOST=127.0.0.1
+EPISTEME_MCP_PORT=43175
 ```
 
 ---
 
 ## समस्या निवारण
 
-**इंस्टॉल के बाद `syntagma` कमांड नहीं मिल रहा है**
+**इंस्टॉल के बाद `episteme` कमांड नहीं मिल रहा है**
 
 | प्लेटफ़ॉर्म | समाधान |
 |----------|-----|
@@ -381,19 +381,19 @@ SYNTAGMA_MCP_PORT=43175
 
 **MCP टूल्स Claude Code / Cursor में नहीं दिख रहे हैं**
 
-`syntagma install` चलाने के बाद एडिटर को पुनः आरंभ करें। यदि अभी भी नहीं दिख रहे हैं, तो जाँचें कि कॉन्फ़िग लिखा गया है:
+`epis install` चलाने के बाद एडिटर को पुनः आरंभ करें। यदि अभी भी नहीं दिख रहे हैं, तो जाँचें कि कॉन्फ़िग लिखा गया है:
 ```bash
 cat ~/.claude.json   # Claude Code
 ```
 
 **पोर्ट पहले से उपयोग में है**
 ```bash
-syntagma mcp --http --port 43176   # एक भिन्न पोर्ट का उपयोग करें
+episteme mcp --http --port 43176   # एक भिन्न पोर्ट का उपयोग करें
 ```
 
 **पहली बार शुरू करने में धीमापन**
 
-Syntagma पहली बार चलने पर एक स्थानीय एम्बेडिंग इंडेक्स बनाता है। इसमें 30–60 सेकंड लगते हैं और यह एक बार की लागत है। बाद के शुरू होने तुरंत होते हैं।
+Episteme पहली बार चलने पर एक स्थानीय एम्बेडिंग इंडेक्स बनाता है। इसमें 30–60 सेकंड लगते हैं और यह एक बार की लागत है। बाद के शुरू होने तुरंत होते हैं।
 
 **`cargo install` के दौरान संकलन त्रुटियाँ**
 
@@ -403,7 +403,7 @@ rustup update stable
 rustup show   # सक्रिय टूलचेन की पुष्टि करें
 ```
 
-> अधिक सहायता: [QUICKSTART.md समस्या निवारण अनुभाग](../../QUICKSTART.md#troubleshooting) · [एक इश्यू खोलें](https://github.com/epicsagas/Syntagma/issues)
+> अधिक सहायता: [QUICKSTART.md समस्या निवारण अनुभाग](../../QUICKSTART.md#troubleshooting) · [एक इश्यू खोलें](https://github.com/epicsagas/Episteme/issues)
 
 ---
 
@@ -432,7 +432,7 @@ cargo clippy -- -D warnings
 cargo fmt
 ```
 
-प्रश्न हैं? [एक चर्चा खोलें](https://github.com/epicsagas/Syntagma/discussions) या [एक इश्यू दर्ज करें](https://github.com/epicsagas/Syntagma/issues)।
+प्रश्न हैं? [एक चर्चा खोलें](https://github.com/epicsagas/Episteme/discussions) या [एक इश्यू दर्ज करें](https://github.com/epicsagas/Episteme/issues)।
 
 ---
 

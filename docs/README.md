@@ -8,7 +8,7 @@
 ## Integration
 - [mcp-integration-guide.md](mcp-integration-guide.md) - MCP tools, agents, configuration
 - [api.md](api.md) - REST API reference (17 endpoints, auth, rate limiting)
-- [distribution.md](distribution.md) - Release packaging (`syntagma dist`)
+- [distribution.md](distribution.md) - Release packaging (`episteme dist`)
 
 ## Rust Rewrite
 - rs-parity-notes.md - Rust rewrite notes (auth, telemetry, embeddings)

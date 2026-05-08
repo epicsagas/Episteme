@@ -78,7 +78,7 @@ pub enum Commands {
         /// Output directory for generated archive
         #[arg(long, default_value_t = String::from("dist"))]
         out_dir: String,
-        /// Skip embedding database file (~/.syntagma/db/syntagma.db)
+        /// Skip embedding database file (~/.episteme/db/episteme.db)
         #[arg(long)]
         no_db: bool,
         /// Do not auto-build DB when missing
@@ -133,7 +133,7 @@ pub enum Commands {
         #[arg(long, default_value_t = 8080)]
         port: u16,
     },
-    /// Install Syntagma into AI tools
+    /// Install Episteme into AI tools
     Install {
         /// Tools to install (claude, cursor, codex, gemini, opencode, cline, all)
         #[arg(required = false)]

@@ -1,13 +1,13 @@
 use serde_json::{Value, json};
 
-use crate::server::mcp_handler::SyntagmaMCP;
+use crate::server::mcp_handler::EpistemeMCP;
 use crate::server::mcp_schemas;
 
 /// Dispatch a single JSON-RPC 2.0 request against the MCP handler.
 ///
 /// Returns `None` for notifications (no response expected).
 /// Returns `Some(response)` for requests that expect a response.
-pub fn dispatch(mcp: &SyntagmaMCP, request: Value) -> Option<Value> {
+pub fn dispatch(mcp: &EpistemeMCP, request: Value) -> Option<Value> {
     let method = request.get("method").and_then(|v| v.as_str()).unwrap_or("");
     let params = request.get("params").cloned().unwrap_or(json!({}));
     let req_id = request.get("id").cloned();

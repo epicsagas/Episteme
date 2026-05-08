@@ -1,17 +1,17 @@
-<h1 align="center">Syntagma</h1>
+<h1 align="center">Episteme</h1>
 
 <p align="center"><b>ソフトウェアエンジニアリングのためのナレッジグラフ</b></p>
 
-<p align="center"><sub>Syntagma (συν ταγμα) — ギリシャ語で「組織化された体系」または「識別力」を意味する</sub></p>
+<p align="center"><sub>Episteme (συν ταγμα) — ギリシャ語で「組織化された体系」または「識別力」を意味する</sub></p>
 
 <p align="center">オフラインファーストの単一バイナリナレッジグラフ。デザインパターン、リファクタリング手法、ソフトウェアの法則を意味的な関係性を通じて接続します。<br><b>AIエージェントファーストで構築</b> — ソフトウェアエンジニアリングの専門知識をClaude Code、Cursor、その他のMCP互換ツールに直接統合できます。</p>
 
 <p align="center">Rustで記述 · 単一バイナリ · 完全オフライン</p>
 
 <p align="center">
-    <a href="https://github.com/epicsagas/Syntagma/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Syntagma/ci.yml?branch=main&label=CI" alt="CI" /></a>
+    <a href="https://github.com/epicsagas/Episteme/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Episteme/ci.yml?branch=main&label=CI" alt="CI" /></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.95+-orange.svg" alt="rust-lang" /></a>
-    <a href="https://crates.io/crates/syntagma"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
+    <a href="https://crates.io/crates/episteme"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
     <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
 </p>
@@ -35,7 +35,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../assets/features.png">
-  <img src="../assets/features.png" align="center" width="100%" alt="Syntagma Features Overview" />
+  <img src="../assets/features.png" align="center" width="100%" alt="Episteme Features Overview" />
 </picture>
 
 ---
@@ -53,33 +53,33 @@
 
 インストール後、**新しいターミナル**を開いてください（macOS/Linuxの場合は`source "$HOME/.cargo/env"`を実行）。
 
-**2. Syntagmaのインストール（初回ビルドは3〜5分）**
+**2. Epistemeのインストール（初回ビルドは3〜5分）**
 
 ```bash
-cargo install --git https://github.com/epicsagas/Syntagma
+cargo install --git https://github.com/epicsagas/Episteme
 ```
 
 **3. データのシード + AIツールの設定**
 
 ```bash
-syntagma install claude    # または: cursor, codex, gemini
+epis install claude    # または: cursor, codex, gemini
 ```
 
 **4. 動作確認**
 
 ```bash
-syntagma --version
-syntagma stats
+epis --version
+epis stats
 ```
 
-以上です。Claude Codeを再起動すればSyntagmaツールが使用可能になります。
+以上です。Claude Codeを再起動すればEpistemeツールが使用可能になります。
 
 ### 30秒で試す
 
 **方法A — CLI:** プロジェクト内の任意のファイルを指定します。
 
 ```bash
-syntagma analyze src/domain/engine.rs
+epis analyze src/domain/engine.rs
 ```
 
 ```
@@ -101,21 +101,21 @@ syntagma analyze src/domain/engine.rs
 Find code smells in this project and suggest refactorings.
 ```
 
-Syntagmaが自動的に起動します — 特別な構文は不要です。説明内容をナレッジグラフにマッピングし、ランク付けされた引用可能な結果を返します。
+Epistemeが自動的に起動します — 特別な構文は不要です。説明内容をナレッジグラフにマッピングし、ランク付けされた引用可能な結果を返します。
 
 ---
 
-## なぜSyntagmaか？
+## なぜEpistemeか？
 
 LLMはすでにStrategyパターンが何かを知っています。SOLID原則を暗唱し、GoFパターンを列挙し、コードスメルを説明できます。では、なぜこのプロジェクトが存在するのでしょうか？
 
 **足りないのは知識ではなく、構造化された関連付けられた推論です。**
 
-LLMに「God Objectの修正方法」を尋ねると、もっともらしい回答が得られます。しかし、その回答は会話のたびに変わり、トレーサビリティがなく、問題を根本原因や下流の影響と結びつけません。Syntagmaは孤立した事実を走査可能なグラフに変え、すべての推奨事項が根拠を持ち、引用可能で、より広範な設計領域と結びついています。
+LLMに「God Objectの修正方法」を尋ねると、もっともらしい回答が得られます。しかし、その回答は会話のたびに変わり、トレーサビリティがなく、問題を根本原因や下流の影響と結びつけません。Epistemeは孤立した事実を走査可能なグラフに変え、すべての推奨事項が根拠を持ち、引用可能で、より広範な設計領域と結びついています。
 
 ### 丁寧なLLMプロンプトとどう違うのか？
 
-| | 丁寧に作成されたLLMプロンプト | Syntagma + LLM |
+| | 丁寧に作成されたLLMプロンプト | Episteme + LLM |
 |---|---|---|
 | 能動的検出 | ユーザーが正しい質問をした場合のみ | 問題の説明に対して自動起動 |
 | トークン効率 | 長い説明 + 複数回のフォローアップ | 1回のツール呼び出しで構造化結果を返す |
@@ -130,31 +130,31 @@ LLMに「God Objectの修正方法」を尋ねると、もっともらしい回�
 <details>
 <summary><b>1. AIエージェントに質問を待たずに能動的に問題を検出させたい場合</b></summary>
 
-MCP統合は問題の説明に対して自動起動します。ユーザーが「このクラスはやりすぎている」と言ったとき、エージェントがGod Objectについて質問する必要はありません — Syntagmaが不満を`SMELL-03`にマッピングし、ランク付けされたリファクタリングを提示し、違反を第一原理にまで遡ります。これにより、曖昧な不満が構造化された改善計画に変わります。
+MCP統合は問題の説明に対して自動起動します。ユーザーが「このクラスはやりすぎている」と言ったとき、エージェントがGod Objectについて質問する必要はありません — Epistemeが不満を`SMELL-03`にマッピングし、ランク付けされたリファクタリングを提示し、違反を第一原理にまで遡ります。これにより、曖昧な不満が構造化された改善計画に変わります。
 </details>
 
 <details>
 <summary><b>2. トークン消費を削減したい場合 — 説明に浪費しない</b></summary>
 
-Syntagmaなしでは、LLMは「God Objectの修正方法」に対して、スメルの説明、リファクタリングの列挙、SOLID原則の説明、各オプションの解説を行います — 回答ごとに数百のトークンを消費します。Syntagmaを使えば、1回のMCPツール呼び出しで`SMELL-03 → RF-018 (0.89) → LAW-001`が返ります。同等の専門知識がトークン予算のほんの一部で得られます。
+Epistemeなしでは、LLMは「God Objectの修正方法」に対して、スメルの説明、リファクタリングの列挙、SOLID原則の説明、各オプションの解説を行います — 回答ごとに数百のトークンを消費します。Epistemeを使えば、1回のMCPツール呼び出しで`SMELL-03 → RF-018 (0.89) → LAW-001`が返ります。同等の専門知識がトークン予算のほんの一部で得られます。
 </details>
 
 <details>
 <summary><b>3. 検出だけでなく、修正につながるコード分析が必要な場合</b></summary>
 
-SonarQubeのようなツールはスメルを検出します。LLMはパターンを提案できます。Syntagmaはその両方を行い、それらを結びつけます：Long Methodを検出 → 違反している法則を追跡 → それを解決するリファクタリングをランク付け → それらのリファクタリングを強制するパターンを表示。
+SonarQubeのようなツールはスメルを検出します。LLMはパターンを提案できます。Epistemeはその両方を行い、それらを結びつけます：Long Methodを検出 → 違反している法則を追跡 → それを解決するリファクタリングをランク付け → それらのリファクタリングを強制するパターンを表示。
 </details>
 
 <details>
 <summary><b>4. 孤立したパターンの知識では不十分で、関係性が必要な場合</b></summary>
 
-Extract Methodが何をするかを知っているのは基本です。それがLong Method (SMELL-01)を*解決し*、それがSingle Responsibility (LAW-001)に*違反し*、それがFacade Pattern (DP-012)によって*強制される*ということを知る — これがLLMが単独では確実に構築できない推論チェーンです。Syntagmaの201の意味的関係により、AIエージェントはこれらのパスを決定論的に走査できます。
+Extract Methodが何をするかを知っているのは基本です。それがLong Method (SMELL-01)を*解決し*、それがSingle Responsibility (LAW-001)に*違反し*、それがFacade Pattern (DP-012)によって*強制される*ということを知る — これがLLMが単独では確実に構築できない推論チェーンです。Epistemeの201の意味的関係により、AIエージェントはこれらのパスを決定論的に走査できます。
 </details>
 
 <details>
 <summary><b>5. アーキテクチャの決定において、意見ではなく証拠が必要な場合</b></summary>
 
-「マイクロサービスを使うべきか？」 — Syntagmaはこの質問をConway's Law (LAW-017)、SRP (LAW-001)、Strangler Figパターン (DP-026)に結びつけ、それらがどう関係しているかを示します。決定はブログ記事ではなく、エンジニアリングの法則に遡って追跡可能になります。
+「マイクロサービスを使うべきか？」 — Epistemeはこの質問をConway's Law (LAW-017)、SRP (LAW-001)、Strangler Figパターン (DP-026)に結びつけ、それらがどう関係しているかを示します。決定はブログ記事ではなく、エンジニアリングの法則に遡って追跡可能になります。
 </details>
 
 <details>
@@ -166,7 +166,7 @@ Extract Methodが何をするかを知っているのは基本です。それが
 <details>
 <summary><b>7. エアギャップ環境や制限されたネットワークで作業している場合</b></summary>
 
-Syntagmaは完全にオフラインで動作します：単一バイナリ、ローカルSQLiteデータベース、fastembed (ONNX Runtime)によるローカル埋め込み。テレメトリなし、電話ホームなし、外部API呼び出しなし。コードと分析結果はマシンから一切外部に送信されません。
+Epistemeは完全にオフラインで動作します：単一バイナリ、ローカルSQLiteデータベース、fastembed (ONNX Runtime)によるローカル埋め込み。テレメトリなし、電話ホームなし、外部API呼び出しなし。コードと分析結果はマシンから一切外部に送信されません。
 </details>
 
 ---
@@ -177,25 +177,25 @@ Syntagmaは完全にオフラインで動作します：単一バイナリ、ロ
 
 ```bash
 # 初回ビルドは3〜5分かかります — これは正常です
-cargo install --git https://github.com/epicsagas/Syntagma
-syntagma install claude    # データのシード + MCPの設定 + エージェントのインストール
+cargo install --git https://github.com/epicsagas/Episteme
+epis install claude    # データのシード + MCPの設定 + エージェントのインストール
 ```
 
-> `syntagma install claude`の後、MCPツールとエージェントを表示するには**Claude Codeを再起動**してください。
+> `epis install claude`の後、MCPツールとエージェントを表示するには**Claude Codeを再起動**してください。
 
 ### 方法2：ソースからビルド
 
 ```bash
-git clone https://github.com/epicsagas/Syntagma.git
-cd Syntagma && cargo build --release
+git clone https://github.com/epicsagas/Episteme.git
+cd Episteme && cargo build --release
 ```
 
 プラットフォームに応じてバイナリを実行してください：
 
 | プラットフォーム | コマンド |
 |----------|---------|
-| **macOS / Linux** | `./target/release/syntagma install --local claude` |
-| **Windows** | `.\target\release\syntagma.exe install --local claude` |
+| **macOS / Linux** | `./target/release/epis install --local claude` |
+| **Windows** | `.\target\release\episteme.exe install --local claude` |
 
 ### 方法3：Docker（Rust不要）
 
@@ -214,9 +214,9 @@ MCP設定ファイルに以下を追加してください：
 ```json
 {
   "mcpServers": {
-    "syntagma": {
+    "episteme": {
       "command": "docker",
-      "args": ["exec", "-i", "syntagma-api", "syntagma", "mcp"]
+      "args": ["exec", "-i", "episteme-api", "episteme", "mcp"]
     }
   }
 }
@@ -224,42 +224,42 @@ MCP設定ファイルに以下を追加してください：
 
 ### 方法4：プリビルトバイナリ（Rust不要）
 
-[GitHub Releases](https://github.com/epicsagas/Syntagma/releases)からプラットフォームに合った最新バイナリをダウンロードしてください：
+[GitHub Releases](https://github.com/epicsagas/Episteme/releases)からプラットフォームに合った最新バイナリをダウンロードしてください：
 
 | プラットフォーム | ファイル |
 |----------|------|
-| **macOS** (Apple Silicon) | `syntagma-aarch64-apple-darwin.tar.gz` |
-| **macOS** (Intel) | `syntagma-x86_64-apple-darwin.tar.gz` |
-| **Linux** (x86_64) | `syntagma-x86_64-unknown-linux-gnu.tar.gz` |
-| **Linux** (ARM64) | `syntagma-aarch64-unknown-linux-gnu.tar.gz` |
-| **Windows** (x86_64) | `syntagma-x86_64-pc-windows-msvc.zip` |
+| **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.gz` |
+| **macOS** (Intel) | `episteme-x86_64-apple-darwin.tar.gz` |
+| **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.gz` |
+| **Linux** (ARM64) | `episteme-aarch64-unknown-linux-gnu.tar.gz` |
+| **Windows** (x86_64) | `episteme-x86_64-pc-windows-msvc.zip` |
 
 ```bash
 # macOS / Linux
-tar xzf syntagma-*.tar.gz
-sudo mv syntagma /usr/local/bin/
+tar xzf episteme-*.tar.gz
+sudo mv episteme /usr/local/bin/
 
-# Windows — zipを展開し、syntagma.exeをPATHに追加
+# Windows — zipを展開し、episteme.exeをPATHに追加
 ```
 
 その後、インストールを実行：
 ```bash
-syntagma install claude    # または: cursor, codex, gemini
+epis install claude    # または: cursor, codex, gemini
 ```
 
 ### 動作確認
 
 ```bash
-syntagma --version
-syntagma stats
-syntagma explore "strategy pattern"    # ナレッジグラフの探索
+epis --version
+epis stats
+epis explore "strategy pattern"    # ナレッジグラフの探索
 ```
 
 ---
 
 ## MCPツールとエージェント
 
-> **MCPとは？** [Model Context Protocol](https://modelcontextprotocol.io)は、AIツールが外部サービスを呼び出すためのオープン標準です。SyntagmaはナレッジグラフをMCPツールとして公開し、Claude Code、Cursor、その他の互換エディタが自動的に呼び出せるようにします。
+> **MCPとは？** [Model Context Protocol](https://modelcontextprotocol.io)は、AIツールが外部サービスを呼び出すためのオープン標準です。EpistemeはナレッジグラフをMCPツールとして公開し、Claude Code、Cursor、その他の互換エディタが自動的に呼び出せるようにします。
 
 ### 6つのMCPツール
 
@@ -279,11 +279,11 @@ syntagma explore "strategy pattern"    # ナレッジグラフの探索
 | エージェント | 使用タイミング | 主な機能 | 引き継ぎ先 |
 |-------|-------------|----------------|--------------|
 | **`code-reviewer`** | コードスメル、SOLID違反 | 因果関係分析（根本原因 → 下流の症状） | advisor, architecture-analyst, refactoring-expert |
-| **`syntagma-advisor`** | エンジニアリングの決定、トレードオフ | アクションプラン付きのマルチエンティティトレードオフチェーン | code-reviewer, architecture-analyst, researcher |
-| **`syntagma-researcher`** | ナレッジグラフの探索 | パターン、法則、スメル間の接続マップ | advisor, code-reviewer |
+| **`episteme-advisor`** | エンジニアリングの決定、トレードオフ | アクションプラン付きのマルチエンティティトレードオフチェーン | code-reviewer, architecture-analyst, researcher |
+| **`episteme-researcher`** | ナレッジグラフの探索 | パターン、法則、スメル間の接続マップ | advisor, code-reviewer |
 | **`architecture-analyst`** | 法則に基づくアーキテクチャ評価 | リスク加重評価付きのコンプライアンススコアリング | advisor, code-reviewer, researcher |
 
-**ワークフロー例**: `code-reviewer`がGod Objectを検出 → 3つの下流スメルへの因果関係を追跡 → 「RF-018を適用」（→ refactoring-expert）または「根本原因を深掘り」（→ syntagma-advisor）または「アーキテクチャチェック」（→ architecture-analyst）を提案。
+**ワークフロー例**: `code-reviewer`がGod Objectを検出 → 3つの下流スメルへの因果関係を追跡 → 「RF-018を適用」（→ refactoring-expert）または「根本原因を深掘り」（→ episteme-advisor）または「アーキテクチャチェック」（→ architecture-analyst）を提案。
 
 [MCP統合ガイド（全文）](../../docs/mcp-integration-guide.md)
 
@@ -293,23 +293,23 @@ syntagma explore "strategy pattern"    # ナレッジグラフの探索
 
 ```bash
 # コードのスメル分析
-syntagma analyze my_code.py --language python --json
-syntagma infer my_code.py
+epis analyze my_code.py --language python --json
+episteme infer my_code.py
 
 # ナレッジグラフの探索
-syntagma explore "strategy pattern"
-syntagma graph path DP-005 RF-001   # 例: Factory Method → Extract Method
+epis explore "strategy pattern"
+epis graph path DP-005 RF-001   # 例: Factory Method → Extract Method
 
 # RAGインデックスのビルド
-syntagma build
+epis build
 
 # サーバーの起動
-syntagma api              # REST API on :8000
-syntagma mcp --http       # MCPサーバー on :43175
-syntagma web --port 8080  # Web UI（インタラクティブなグラフエクスプローラー）
+epis api              # REST API on :8000
+episteme mcp --http       # MCPサーバー on :43175
+episteme web --port 8080  # Web UI（インタラクティブなグラフエクスプローラー）
 
 # 配布パッケージング
-syntagma dist --out-dir release/
+episteme dist --out-dir release/
 ```
 
 ---
@@ -355,24 +355,24 @@ syntagma dist --out-dir release/
 
 ```bash
 # データの場所
-SYNTAGMA_DATA_DIR=~/.syntagma/data
-SYNTAGMA_DB_PATH=~/.syntagma/db/syntagma.db
+EPISTEME_DATA_DIR=~/.episteme/data
+EPISTEME_DB_PATH=~/.episteme/db/episteme.db
 
 # APIサーバー
-SYNTAGMA_API_HOST=0.0.0.0
-SYNTAGMA_API_PORT=8000
-SYNTAGMA_API_KEY=your-secret-key
+EPISTEME_API_HOST=0.0.0.0
+EPISTEME_API_PORT=8000
+EPISTEME_API_KEY=your-secret-key
 
 # MCPサーバー
-SYNTAGMA_MCP_HOST=127.0.0.1
-SYNTAGMA_MCP_PORT=43175
+EPISTEME_MCP_HOST=127.0.0.1
+EPISTEME_MCP_PORT=43175
 ```
 
 ---
 
 ## トラブルシューティング
 
-**インストール後に`syntagma`コマンドが見つからない場合**
+**インストール後に`episteme`コマンドが見つからない場合**
 
 | プラットフォーム | 解決方法 |
 |----------|-----|
@@ -381,19 +381,19 @@ SYNTAGMA_MCP_PORT=43175
 
 **MCPツールがClaude Code / Cursorに表示されない場合**
 
-`syntagma install`を実行した後、エディタを再起動してください。それでも表示されない場合、設定が書き込まれたか確認してください：
+`epis install`を実行した後、エディタを再起動してください。それでも表示されない場合、設定が書き込まれたか確認してください：
 ```bash
 cat ~/.claude.json   # Claude Code
 ```
 
 **ポートが既に使用されている場合**
 ```bash
-syntagma mcp --http --port 43176   # 別のポートを使用
+episteme mcp --http --port 43176   # 別のポートを使用
 ```
 
 **初回起動が遅い場合**
 
-Syntagmaは初回実行時にローカル埋め込みインデックスを構築します。これには30〜60秒かかり、一度だけのコストです。2回目以降の起動は瞬時です。
+Epistemeは初回実行時にローカル埋め込みインデックスを構築します。これには30〜60秒かかり、一度だけのコストです。2回目以降の起動は瞬時です。
 
 **`cargo install`中にコンパイルエラーが発生する場合**
 
@@ -403,7 +403,7 @@ rustup update stable
 rustup show   # アクティブなツールチェーンを確認
 ```
 
-> さらなるヘルプ：[QUICKSTART.mdのトラブルシューティングセクション](../../QUICKSTART.md#troubleshooting) · [イシューを開く](https://github.com/epicsagas/Syntagma/issues)
+> さらなるヘルプ：[QUICKSTART.mdのトラブルシューティングセクション](../../QUICKSTART.md#troubleshooting) · [イシューを開く](https://github.com/epicsagas/Episteme/issues)
 
 ---
 
@@ -432,7 +432,7 @@ cargo clippy -- -D warnings
 cargo fmt
 ```
 
-質問がありますか？[ディスカッションを開く](https://github.com/epicsagas/Syntagma/discussions)か[イシューを提出](https://github.com/epicsagas/Syntagma/issues)してください。
+質問がありますか？[ディスカッションを開く](https://github.com/epicsagas/Episteme/discussions)か[イシューを提出](https://github.com/epicsagas/Episteme/issues)してください。
 
 ---
 

@@ -1,15 +1,15 @@
-//! Install command: install Syntagma into AI tools.
+//! Install command: install Episteme into AI tools.
 
 use std::io::Write;
 use std::path::PathBuf;
 
 use anyhow::Result;
 
-use syntagma_engine::adapters::config::SyntagmaConfig;
+use episteme::adapters::config::EpistemeConfig;
 
 pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> Result<()> {
     use std::io::{self, IsTerminal};
-    use syntagma_engine::adapters::installer;
+    use episteme::adapters::installer;
 
     // --- Data seeding ---
     let seeded = if local {
@@ -48,13 +48,13 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     };
 
     // --- Build RAG index (skip if DB already provided by archive) ---
-    if seeded && !dry_run && !syntagma_engine::adapters::paths::db_path().exists() {
+    if seeded && !dry_run && !episteme::adapters::paths::db_path().exists() {
         println!("\nBuilding RAG index...");
         super::build::cmd_build(None, None, false, false, 64, true, false)?;
     }
 
     // --- Tool installation ---
-    use syntagma_engine::adapters::installer::ClaudeTransport;
+    use episteme::adapters::installer::ClaudeTransport;
 
     let mut selected: Vec<String> = if all || tools.iter().any(|t| t == "all") {
         vec!["claude", "cursor", "codex", "gemini", "opencode", "cline"]
@@ -64,18 +64,18 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     } else if tools.is_empty() && io::stdin().is_terminal() {
         let installed: Vec<&str> = detect_installed_tools().into_iter().collect();
         let selected =
-            match syntagma_engine::adapters::install_wizard::interactive_select_tools(&installed) {
+            match episteme::adapters::install_wizard::interactive_select_tools(&installed) {
                 Ok(s) if !s.is_empty() => s,
                 Ok(_) => anyhow::bail!("install cancelled"),
                 Err(e) => {
                     eprintln!("Interactive UI failed ({e}); falling back to text prompt.");
-                    syntagma_engine::adapters::install_wizard::fallback_select_tools()
+                    episteme::adapters::install_wizard::fallback_select_tools()
                 }
             };
 
-        let cfg = SyntagmaConfig::load().unwrap_or_default();
-        if let Some(redis) = syntagma_engine::adapters::install_wizard::configure_redis_tui(
-            syntagma_engine::adapters::install_wizard::RedisConfig {
+        let cfg = EpistemeConfig::load().unwrap_or_default();
+        if let Some(redis) = episteme::adapters::install_wizard::configure_redis_tui(
+            episteme::adapters::install_wizard::RedisConfig {
                 enabled: cfg.redis_enabled,
                 host: cfg.redis_host.clone(),
                 port: cfg.redis_port,
@@ -88,9 +88,9 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
             upsert_config_yaml(redis.enabled, &redis.host, redis.port, redis.db, redis.ttl)?;
         }
 
-        let telemetry_enabled = syntagma_engine::adapters::install_wizard::configure_telemetry_tui()
+        let telemetry_enabled = episteme::adapters::install_wizard::configure_telemetry_tui()
             .map_err(|e| anyhow::anyhow!(e))?;
-        syntagma_engine::adapters::telemetry::write_consent(telemetry_enabled)
+        episteme::adapters::telemetry::write_consent(telemetry_enabled)
             .map_err(|e| anyhow::anyhow!(e))?;
 
         selected
@@ -103,7 +103,7 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     // --- Claude transport selection (TTY only; non-TTY defaults to HTTP + 43175) ---
     let claude_transport: ClaudeTransport =
         if selected.contains(&"claude".to_string()) && io::stdin().is_terminal() {
-            syntagma_engine::adapters::install_wizard::select_claude_transport()
+            episteme::adapters::install_wizard::select_claude_transport()
                 .map_err(|e| anyhow::anyhow!(e))?
         } else {
             ClaudeTransport::default()
@@ -135,24 +135,24 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
         && !dry_run
         && io::stdin().is_terminal()
     {
-        print!("\nEnable syntagma MCP as login item and start now? [Y/n]: ");
+        print!("\nEnable episteme MCP as login item and start now? [Y/n]: ");
         io::stdout().flush().ok();
         let mut line = String::new();
         io::stdin().read_line(&mut line).ok();
         if !line.trim().eq_ignore_ascii_case("n") {
-            match syntagma_engine::adapters::service::enable_launchd(true) {
+            match episteme::adapters::service::enable_launchd(true) {
                 Ok(msg) => println!("  {msg}"),
                 Err(e) => eprintln!("  Warning: {e}"),
             }
         }
     }
 
-    syntagma_engine::adapters::telemetry::track_install_completed(selected.len());
+    episteme::adapters::telemetry::track_install_completed(selected.len());
 
     Ok(())
 }
 
-/// Find the newest `syntagma-data-*.tar.gz` in `dist/`.
+/// Find the newest `episteme-data-*.tar.gz` in `dist/`.
 fn find_dist_archive(cwd: &std::path::Path) -> Option<PathBuf> {
     let dist_dir = cwd.join("dist");
     if !dist_dir.is_dir() {
@@ -165,7 +165,7 @@ fn find_dist_archive(cwd: &std::path::Path) -> Option<PathBuf> {
     for entry in entries.flatten() {
         let name = entry.file_name();
         let name_str = name.to_string_lossy();
-        if name_str.starts_with("syntagma-data-")
+        if name_str.starts_with("episteme-data-")
             && name_str.ends_with(".tar.gz")
             && let Ok(meta) = entry.metadata()
             && let Ok(modified) = meta.modified()
@@ -180,8 +180,8 @@ fn find_dist_archive(cwd: &std::path::Path) -> Option<PathBuf> {
 /// Resolve the GitHub release download URL for the current version.
 fn resolve_release_url() -> Result<String> {
     let version = get_package_version();
-    let repo = "epicsagas/Syntagma";
-    let prefix = "syntagma-data-";
+    let repo = "epicsagas/Episteme";
+    let prefix = "episteme-data-";
 
     // Try exact version tag first, then latest
     for endpoint in [
@@ -197,7 +197,7 @@ fn resolve_release_url() -> Result<String> {
 }
 
 fn get_package_version() -> String {
-    std::env::var("SYNTAGMA_VERSION").unwrap_or_else(|_| env!("CARGO_PKG_VERSION").to_owned())
+    std::env::var("EPISTEME_VERSION").unwrap_or_else(|_| env!("CARGO_PKG_VERSION").to_owned())
 }
 
 fn fetch_release_asset_url(api_url: &str, prefix: &str) -> Result<String> {
@@ -256,21 +256,21 @@ pub fn detect_installed_tools() -> std::collections::HashSet<&'static str> {
     if has_json_path(
         &PathBuf::from(&home).join(".claude.json"),
         "mcpServers",
-        "syntagma",
+        "epis",
     ) {
         installed.insert("claude");
     }
     if has_json_path(
         &PathBuf::from(&home).join(".cursor").join("mcp.json"),
         "mcpServers",
-        "syntagma",
+        "epis",
     ) {
         installed.insert("cursor");
     }
     if has_json_path(
         &PathBuf::from(&home).join(".gemini").join("mcp.json"),
         "mcpServers",
-        "syntagma",
+        "epis",
     ) {
         installed.insert("gemini");
     }
@@ -280,7 +280,7 @@ pub fn detect_installed_tools() -> std::collections::HashSet<&'static str> {
             .join("opencode")
             .join("opencode.json"),
         "mcp",
-        "syntagma",
+        "epis",
     ) {
         installed.insert("opencode");
     }
@@ -294,7 +294,7 @@ pub fn detect_installed_tools() -> std::collections::HashSet<&'static str> {
         installed.insert("cline");
     }
     if let Ok(content) = std::fs::read_to_string(cwd.join("AGENTS.md"))
-        && (content.contains("SYNTAGMA-BEGIN") || content.contains("syntagma-mcp"))
+        && (content.contains("EPISTEME-BEGIN") || content.contains("episteme-mcp"))
     {
         installed.insert("codex");
     }
@@ -309,7 +309,7 @@ fn upsert_config_yaml(
     redis_ttl: u64,
 ) -> Result<()> {
     use serde_yaml::{Mapping, Value};
-    let path = syntagma_engine::adapters::paths::syntagma_home().join("config.yaml");
+    let path = episteme::adapters::paths::episteme_home().join("config.yaml");
     let mut root = if path.exists() {
         let text = std::fs::read_to_string(&path)?;
         serde_yaml::from_str::<Value>(&text).unwrap_or_else(|_| Value::Mapping(Mapping::new()))
@@ -345,7 +345,7 @@ fn upsert_config_yaml(
     );
     root_map.insert(Value::String("redis".to_owned()), Value::Mapping(redis_map));
 
-    std::fs::create_dir_all(syntagma_engine::adapters::paths::syntagma_home())?;
+    std::fs::create_dir_all(episteme::adapters::paths::episteme_home())?;
     let yaml = serde_yaml::to_string(&root)?;
     std::fs::write(path, yaml)?;
     Ok(())

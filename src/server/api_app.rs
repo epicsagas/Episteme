@@ -2,7 +2,7 @@ use std::sync::Arc;
 use std::time::Instant;
 
 use crate::domain::graph::KnowledgeGraph;
-use crate::server::mcp_handler::SyntagmaMCP;
+use crate::server::mcp_handler::EpistemeMCP;
 use axum::{Extension, Router, middleware as axum_mw, routing::get, routing::post};
 use tower_http::catch_panic::CatchPanicLayer;
 use tower_http::trace::TraceLayer;
@@ -79,7 +79,7 @@ pub async fn create_app(
         sentry_dsn,
     ));
 
-    let mut mcp = SyntagmaMCP::new(graph);
+    let mut mcp = EpistemeMCP::new(graph);
     mcp.try_attach_rag();
     let state: AppState = Arc::new(mcp);
     let api_keys_state = Arc::new(ApiKeys(api_keys));

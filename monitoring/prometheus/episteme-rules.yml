@@ -1,0 +1,109 @@
+groups:
+  - name: episteme_pattern_usage
+    interval: 60s
+    rules:
+      # Pattern usage rate
+      - record: Episteme:pattern_usage:rate5m
+        expr: rate(episteme_pattern_applied_total[5m])
+
+      - record: Episteme:pattern_usage:rate1h
+        expr: rate(episteme_pattern_applied_total[1h])
+
+      # Top patterns by usage
+      - record: Episteme:pattern_usage:top10_30d
+        expr: topk(10, increase(episteme_pattern_applied_total[30d]))
+
+      # Pattern diversity (unique patterns used per service)
+      - record: Episteme:pattern_diversity:by_service
+        expr: count by (service) (episteme_pattern_applied_total)
+
+  - name: episteme_alerts
+    interval: 30s
+    rules:
+      # Alert on banned pattern usage (e.g., Singleton - DP-006)
+      - alert: BannedPatternUsed
+        expr: increase(episteme_pattern_applied_total{entity_id="DP-006"}[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Banned pattern detected: {{ $labels.entity_id }}"
+          description: "Singleton pattern (DP-006) used in {{ $labels.context }}. See DR-091 for alternatives."
+          alcove_ref: "DR-091"
+
+      # Alert on anti-pattern detection
+      - alert: AntiPatternDetected
+        expr: increase(episteme_smell_detected_total{smell_id=~"SMELL-03|SMELL-08"}[10m]) > 5
+        for: 5m
+        labels:
+          severity: info
+          team: quality
+        annotations:
+          summary: "High anti-pattern detection rate"
+          description: "{{ $labels.smell_id }} detected {{ $value }} times in 10m"
+
+      # Alert on pattern usage spike (potential copy-paste)
+      - alert: PatternUsageSpike
+        expr: |
+          (
+            rate(episteme_pattern_applied_total[5m])
+            /
+            rate(episteme_pattern_applied_total[1h] offset 1h)
+          ) > 5
+        for: 10m
+        labels:
+          severity: info
+          team: quality
+        annotations:
+          summary: "Unusual pattern usage spike: {{ $labels.entity_id }}"
+          description: "Pattern {{ $labels.entity_id }} usage rate increased 5x (potential copy-paste)"
+
+  - name: episteme_smell_detection
+    interval: 60s
+    rules:
+      # Smell detection rate
+      - record: Episteme:smell_detected:rate1h
+        expr: rate(episteme_smell_detected_total[1h])
+
+      # Smell severity distribution
+      - record: Episteme:smell_severity:count
+        expr: sum by (severity) (episteme_smell_detected_total)
+
+      # Code health score (inverse of smell rate)
+      - record: Episteme:code_health:score
+        expr: |
+          100 - (
+            rate(episteme_smell_detected_total[1h]) * 10
+          )
+
+  - name: episteme_refactoring
+    interval: 60s
+    rules:
+      # Refactoring suggestion acceptance rate
+      - record: Episteme:refactoring:acceptance_rate
+        expr: |
+          sum(rate(episteme_refactoring_applied_total[1h]))
+          /
+          sum(rate(episteme_refactoring_suggested_total[1h]))
+
+      # Top refactoring techniques
+      - record: Episteme:refactoring:top10_30d
+        expr: topk(10, increase(episteme_refactoring_applied_total[30d]))
+
+  - name: episteme_api_performance
+    interval: 30s
+    rules:
+      # API latency percentiles
+      - record: Episteme:api:latency_p95
+        expr: histogram_quantile(0.95, rate(episteme_api_duration_seconds_bucket[5m]))
+
+      - record: Episteme:api:latency_p99
+        expr: histogram_quantile(0.99, rate(episteme_api_duration_seconds_bucket[5m]))
+
+      # Error rate by endpoint
+      - record: Episteme:api:error_rate
+        expr: |
+          sum by (endpoint) (rate(episteme_api_errors_total[5m]))
+          /
+          sum by (endpoint) (rate(episteme_api_requests_total[5m]))

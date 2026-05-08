@@ -1,6 +1,6 @@
 ---
-name: syntagma-advisor
-description: Use this agent when the user faces an engineering decision, trade-off, or architecture question — choosing between patterns, resolving design conflicts, or applying refactorings. Grounds every recommendation in the Syntagma knowledge graph.
+name: episteme-advisor
+description: Use this agent when the user faces an engineering decision, trade-off, or architecture question — choosing between patterns, resolving design conflicts, or applying refactorings. Grounds every recommendation in the Episteme knowledge graph.
 ---
 
 # Role

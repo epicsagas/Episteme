@@ -21,19 +21,19 @@ jobs:
         include:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
-            artifact: syntagma-linux-x86_64
+            artifact: Episteme-linux-x86_64
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
-            artifact: syntagma-linux-aarch64
+            artifact: Episteme-linux-aarch64
           - target: x86_64-apple-darwin
             os: macos-latest
-            artifact: syntagma-macos-x86_64
+            artifact: Episteme-macos-x86_64
           - target: aarch64-apple-darwin
             os: macos-latest
-            artifact: syntagma-macos-aarch64
+            artifact: Episteme-macos-aarch64
           - target: x86_64-pc-windows-msvc
             os: windows-latest
-            artifact: syntagma-windows-x86_64
+            artifact: Episteme-windows-x86_64
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -74,12 +74,12 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist
-          cp target/${{ matrix.target }}/release/syntagma dist/
-          cp target/${{ matrix.target }}/release/syntagma-mcp dist/ 2>/dev/null || true
+          cp target/${{ matrix.target }}/release/Episteme dist/
+          cp target/${{ matrix.target }}/release/Episteme-mcp dist/ 2>/dev/null || true
           cp LICENSE README.md dist/ 2>/dev/null || true
           cd dist
           files=""
-          for f in syntagma syntagma-mcp LICENSE README.md; do
+          for f in Episteme Episteme-mcp LICENSE README.md; do
             [ -f "$f" ] && files="$files $f"
           done
           tar czf ${{ matrix.artifact }}.tar.gz $files
@@ -89,12 +89,12 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist
-          cp target/${{ matrix.target }}/release/syntagma.exe dist/
-          cp target/${{ matrix.target }}/release/syntagma-mcp.exe dist/ 2>/dev/null || true
+          cp target/${{ matrix.target }}/release/Episteme.exe dist/
+          cp target/${{ matrix.target }}/release/Episteme-mcp.exe dist/ 2>/dev/null || true
           cp LICENSE README.md dist/ 2>/dev/null || true
           cd dist
           files=""
-          for f in syntagma.exe syntagma-mcp.exe LICENSE README.md; do
+          for f in Episteme.exe Episteme-mcp.exe LICENSE README.md; do
             [ -f "$f" ] && files="$files $f"
           done
           7z a ${{ matrix.artifact }}.zip $files
@@ -116,10 +116,10 @@ jobs:
 
       - name: Verify data archive exists
         run: |
-          ARCHIVE=$(ls dist/syntagma-data-*.tar.gz 2>/dev/null | head -1)
+          ARCHIVE=$(ls dist/Episteme-data-*.tar.gz 2>/dev/null | head -1)
           if [ -z "$ARCHIVE" ]; then
-            echo "ERROR: dist/syntagma-data-*.tar.gz not found in repo."
-            echo "Run 'syntagma dist' locally and commit the archive before tagging."
+            echo "ERROR: dist/Episteme-data-*.tar.gz not found in repo."
+            echo "Run 'Episteme dist' locally and commit the archive before tagging."
             exit 1
           fi
           echo "Found: $ARCHIVE ($(du -sh "$ARCHIVE" | cut -f1))"
@@ -128,7 +128,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: data-archive
-          path: dist/syntagma-data-*.tar.gz
+          path: dist/Episteme-data-*.tar.gz
 
   # ---------------------------------------------------------------------------
   # 3. Generate SBOM and SHA256 checksums
@@ -231,7 +231,7 @@ jobs:
       - name: Compute SHA256 from release assets
         id: sha
         run: |
-          BASE="https://github.com/epicsagas/Syntagma/releases/download/${GITHUB_REF_NAME}"
+          BASE="https://github.com/epicsagas/Episteme/releases/download/${GITHUB_REF_NAME}"
           dl() {
             for i in 1 2 3; do
               curl -sLf "${BASE}/$1" -o "$2" && return
@@ -239,10 +239,10 @@ jobs:
             done
             echo "ERROR: failed to download $1" && exit 1
           }
-          dl syntagma-macos-aarch64.tar.gz arm.tar.gz
-          dl syntagma-macos-x86_64.tar.gz intel.tar.gz
-          dl syntagma-linux-x86_64.tar.gz linux_x86_64.tar.gz
-          dl syntagma-linux-aarch64.tar.gz linux_aarch64.tar.gz
+          dl Episteme-macos-aarch64.tar.gz arm.tar.gz
+          dl Episteme-macos-x86_64.tar.gz intel.tar.gz
+          dl Episteme-linux-x86_64.tar.gz linux_x86_64.tar.gz
+          dl Episteme-linux-aarch64.tar.gz linux_aarch64.tar.gz
           echo "arm=$(sha256sum arm.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
           echo "intel=$(sha256sum intel.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
           echo "linux_x86_64=$(sha256sum linux_x86_64.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
@@ -262,40 +262,40 @@ jobs:
           SHA_LINUX_AARCH64: ${{ steps.sha.outputs.linux_aarch64 }}
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          cat > Formula/syntagma.rb << RUBY
-          class Syntagma < Formula
+          cat > Formula/Episteme.rb << RUBY
+          class Episteme < Formula
             desc "Software engineering knowledge graph for AI agents"
-            homepage "https://github.com/epicsagas/Syntagma"
+            homepage "https://github.com/epicsagas/Episteme"
             version "${VERSION}"
             license "Apache-2.0"
 
             on_macos do
               if Hardware::CPU.arm?
-                url "https://github.com/epicsagas/Syntagma/releases/download/v${VERSION}/syntagma-macos-aarch64.tar.gz"
+                url "https://github.com/epicsagas/Episteme/releases/download/v${VERSION}/Episteme-macos-aarch64.tar.gz"
                 sha256 "${SHA_ARM}"
               else
-                url "https://github.com/epicsagas/Syntagma/releases/download/v${VERSION}/syntagma-macos-x86_64.tar.gz"
+                url "https://github.com/epicsagas/Episteme/releases/download/v${VERSION}/Episteme-macos-x86_64.tar.gz"
                 sha256 "${SHA_INTEL}"
               end
             end
 
             on_linux do
               if Hardware::CPU.arm?
-                url "https://github.com/epicsagas/Syntagma/releases/download/v${VERSION}/syntagma-linux-aarch64.tar.gz"
+                url "https://github.com/epicsagas/Episteme/releases/download/v${VERSION}/Episteme-linux-aarch64.tar.gz"
                 sha256 "${SHA_LINUX_AARCH64}"
               else
-                url "https://github.com/epicsagas/Syntagma/releases/download/v${VERSION}/syntagma-linux-x86_64.tar.gz"
+                url "https://github.com/epicsagas/Episteme/releases/download/v${VERSION}/Episteme-linux-x86_64.tar.gz"
                 sha256 "${SHA_LINUX_X86_64}"
               end
             end
 
             def install
-              bin.install "syntagma"
-              bin.install "syntagma-mcp" if File.exist?("syntagma-mcp")
+              bin.install "Episteme"
+              bin.install "Episteme-mcp" if File.exist?("Episteme-mcp")
             end
 
             test do
-              assert_match version.to_s, shell_output("\#{bin}/syntagma --version")
+              assert_match version.to_s, shell_output("\#{bin}/Episteme --version")
             end
           end
           RUBY
@@ -304,6 +304,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Formula/syntagma.rb
-          git diff --cached --quiet || git commit -m "syntagma ${GITHUB_REF_NAME#v}"
+          git add Formula/Episteme.rb
+          git diff --cached --quiet || git commit -m "Episteme ${GITHUB_REF_NAME#v}"
           git push

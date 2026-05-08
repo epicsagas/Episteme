@@ -8,10 +8,10 @@ use axum::{
 use serde::Deserialize;
 use std::sync::Arc;
 
-use crate::server::mcp_handler::SyntagmaMCP;
+use crate::server::mcp_handler::EpistemeMCP;
 
 /// Build the web viewer router.
-pub fn web_router(handler: Arc<SyntagmaMCP>) -> Router {
+pub fn web_router(handler: Arc<EpistemeMCP>) -> Router {
     Router::new()
         .route("/", get(index))
         .route("/api/graph/full", get(graph_full))
@@ -28,7 +28,7 @@ async fn index() -> Html<&'static str> {
 }
 
 /// Full graph as Cytoscape.js elements.
-async fn graph_full(State(mcp): State<Arc<SyntagmaMCP>>) -> Json<serde_json::Value> {
+async fn graph_full(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Value> {
     let graph = mcp.graph();
     let mut nodes = Vec::new();
     let mut edges = Vec::new();
@@ -79,7 +79,7 @@ fn default_radius() -> usize {
 async fn graph_entity(
     Path(id): Path<String>,
     Query(params): Query<EntityParams>,
-    State(mcp): State<Arc<SyntagmaMCP>>,
+    State(mcp): State<Arc<EpistemeMCP>>,
 ) -> Result<Json<serde_json::Value>, StatusCode> {
     let graph = mcp.graph();
     let (ids, edges) = graph.extract_subgraph(&id, params.radius);
@@ -135,7 +135,7 @@ fn default_max_depth() -> usize {
 async fn graph_path(
     Path((from, to)): Path<(String, String)>,
     Query(params): Query<PathQueryParams>,
-    State(mcp): State<Arc<SyntagmaMCP>>,
+    State(mcp): State<Arc<EpistemeMCP>>,
 ) -> Json<serde_json::Value> {
     let graph = mcp.graph();
     match graph.find_shortest_path(&from, &to, params.max_depth) {
@@ -171,7 +171,7 @@ struct SearchParams {
 
 async fn entities_search(
     Query(params): Query<SearchParams>,
-    State(mcp): State<Arc<SyntagmaMCP>>,
+    State(mcp): State<Arc<EpistemeMCP>>,
 ) -> Json<Vec<serde_json::Value>> {
     let graph = mcp.graph();
     let query = params.q.to_lowercase();
@@ -217,7 +217,7 @@ fn type_label(t: &str) -> &str {
 }
 
 /// GET /api/graph/sankey -- aggregated flow data for a sankey diagram.
-async fn graph_sankey(State(mcp): State<Arc<SyntagmaMCP>>) -> Json<serde_json::Value> {
+async fn graph_sankey(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Value> {
     let graph = mcp.graph();
 
     // Count entities per type.
@@ -298,7 +298,7 @@ async fn graph_sankey(State(mcp): State<Arc<SyntagmaMCP>>) -> Json<serde_json::V
 }
 
 /// GET /api/graph/tree -- entity tree grouped by type then category.
-async fn graph_tree(State(mcp): State<Arc<SyntagmaMCP>>) -> Json<serde_json::Value> {
+async fn graph_tree(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Value> {
     use std::collections::HashMap;
 
     let graph = mcp.graph();
@@ -399,7 +399,7 @@ async fn graph_tree(State(mcp): State<Arc<SyntagmaMCP>>) -> Json<serde_json::Val
 }
 
 const GRAPH_HTML: &str = r#"<!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>Syntagma Knowledge Graph</title>
+<html><head><meta charset="utf-8"><title>Episteme Knowledge Graph</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -450,7 +450,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#0f1117;color:#e0
 svg text{font-family:system-ui,-apple-system,sans-serif}
 </style></head><body>
 <div id="toolbar">
-  <h1>Syntagma</h1>
+  <h1>Episteme</h1>
   <input id="search" placeholder="Search entities..." autocomplete="off">
   <button class="filter-btn active" data-rel="solves">solves</button>
   <button class="filter-btn active" data-rel="solved_by">solved_by</button>
@@ -950,15 +950,15 @@ mod tests {
         }
     }
 
-    /// Build an SyntagmaMCP handler from a vec of entities.
-    fn make_mcp(entities: Vec<Entity>) -> Arc<SyntagmaMCP> {
+    /// Build an EpistemeMCP handler from a vec of entities.
+    fn make_mcp(entities: Vec<Entity>) -> Arc<EpistemeMCP> {
         let map: HashMap<String, Entity> =
             entities.into_iter().map(|e| (e.id.clone(), e)).collect();
         let kg = KnowledgeGraph::from_entities(map);
-        Arc::new(SyntagmaMCP::new(kg))
+        Arc::new(EpistemeMCP::new(kg))
     }
 
-    fn test_app(mcp: Arc<SyntagmaMCP>) -> Router {
+    fn test_app(mcp: Arc<EpistemeMCP>) -> Router {
         web_router(mcp)
     }
 

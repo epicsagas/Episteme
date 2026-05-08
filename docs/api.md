@@ -1,4 +1,4 @@
-# Syntagma REST API Documentation
+# Episteme REST API Documentation
 
 **Version:** 0.1.0
 **Base URL:** `http://localhost:8000`
@@ -9,10 +9,10 @@
 
 ```bash
 # Start server
-syntagma api
+epis api
 
 # Or with custom host/port
-syntagma api --host 0.0.0.0 --port 8000
+epis api --host 0.0.0.0 --port 8000
 
 # Docker
 docker-compose up -d
@@ -30,12 +30,12 @@ All endpoints except `/`, `/health`, `/live`, `/ready` require API key authentic
 
 **Modes:**
 
-1. **Production Mode** - Set `SYNTAGMA_API_KEYS` environment variable
+1. **Production Mode** - Set `EPISTEME_API_KEYS` environment variable
    - Comma-separated list of valid API keys
    - All protected endpoints require valid key
    - Returns 401 Unauthorized if missing/invalid
 
-2. **Development Mode** - Leave `SYNTAGMA_API_KEYS` empty or unset
+2. **Development Mode** - Leave `EPISTEME_API_KEYS` empty or unset
    - No authentication required
 
 ### Generating API Keys
@@ -88,7 +88,7 @@ Service information.
 **Response:**
 ```json
 {
-  "name": "syntagma",
+  "name": "episteme",
   "version": "0.1.0",
   "description": "Software engineering knowledge graph",
   "endpoints": ["analyze", "search", "graph", "refactor", "stats"]
@@ -327,9 +327,9 @@ Infer transitive enforcement relationships.
 
 Prometheus-format metrics including:
 - `http_requests_total` — by method, endpoint, status
-- `syntagma_smells_detected_total` — by smell_id
-- `syntagma_searches_total` — by entity_type
-- `syntagma_analysis_duration_seconds` — histogram
+- `episteme_smells_detected_total` — by smell_id
+- `episteme_searches_total` — by entity_type
+- `episteme_analysis_duration_seconds` — histogram
 
 ---
 
@@ -362,13 +362,13 @@ Prometheus-format metrics including:
 
 ```bash
 # Server
-SYNTAGMA_API_HOST=0.0.0.0
-SYNTAGMA_API_PORT=8000
-SYNTAGMA_API_KEYS=key1,key2
+EPISTEME_API_HOST=0.0.0.0
+EPISTEME_API_PORT=8000
+EPISTEME_API_KEYS=key1,key2
 
 # Data
-SYNTAGMA_DATA_DIR=~/.syntagma/data
-SYNTAGMA_DB_PATH=~/.syntagma/db/syntagma.db
+EPISTEME_DATA_DIR=~/.episteme/data
+EPISTEME_DB_PATH=~/.episteme/db/episteme.db
 
 # Logging
 RUST_LOG=info

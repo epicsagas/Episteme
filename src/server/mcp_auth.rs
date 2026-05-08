@@ -9,7 +9,7 @@ pub fn validate_api_key(provided: &str, allowed_keys: &[String]) -> bool {
     allowed_keys.iter().any(|k| k == provided)
 }
 
-/// Parse a comma-separated `SYNTAGMA_API_KEYS` env value into a vec of trimmed keys.
+/// Parse a comma-separated `EPISTEME_API_KEYS` env value into a vec of trimmed keys.
 ///
 /// Empty segments are discarded.
 pub fn parse_api_keys(env_val: &str) -> Vec<String> {

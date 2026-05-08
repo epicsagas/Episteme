@@ -1,15 +1,15 @@
 services:
-  syntagma-api:
+  Episteme-api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: syntagma-api
+    container_name: Episteme-api
     ports:
       - "8000:8000"
     volumes:
-      - ~/.syntagma:/root/.syntagma:ro
+      - ~/.Episteme:/root/.Episteme:ro
     environment:
-      - SYNTAGMA_API_KEYS=${SYNTAGMA_API_KEYS:-}
+      - EPISTEME_API_KEYS=${EPISTEME_API_KEYS:-}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -20,4 +20,4 @@ services:
 
 networks:
   default:
-    name: syntagma-network
+    name: Episteme-network

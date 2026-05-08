@@ -6,8 +6,8 @@ use std::path::PathBuf;
 use anyhow::{Context, Result};
 use tracing::info;
 
-use syntagma_engine::adapters::config::SyntagmaConfig;
-use syntagma_engine::adapters::constants::EMBEDDING_DIMENSIONS;
+use episteme::adapters::config::EpistemeConfig;
+use episteme::adapters::constants::EMBEDDING_DIMENSIONS;
 
 use super::prelude::*;
 
@@ -20,13 +20,13 @@ pub fn cmd_build(
     rebuild: bool,
     print_stats: bool,
 ) -> Result<()> {
-    let config = SyntagmaConfig::load()?;
+    let config = EpistemeConfig::load()?;
 
     let data_dir = resolve_data_dir(data_dir);
     let raw_dir = raw_dir
         .map(std::path::PathBuf::from)
-        .unwrap_or_else(syntagma_engine::adapters::paths::raw_dir);
-    let db_path = syntagma_engine::adapters::paths::db_path();
+        .unwrap_or_else(episteme::adapters::paths::raw_dir);
+    let db_path = episteme::adapters::paths::db_path();
 
     // If --rebuild, delete the existing database.
     if rebuild && db_path.exists() {
@@ -56,11 +56,11 @@ pub fn cmd_build(
     );
     pb.set_message("Building RAG index...");
 
-    let provider: Box<dyn syntagma_engine::ports::embeddings::EmbeddingProvider> = {
+    let provider: Box<dyn episteme::ports::embeddings::EmbeddingProvider> = {
         #[cfg(feature = "openai-embeddings")]
         {
             let provider_pref = config.embedding_provider.to_lowercase();
-            let key = std::env::var("SYNTAGMA_OPENAI_API_KEY")
+            let key = std::env::var("EPISTEME_OPENAI_API_KEY")
                 .ok()
                 .filter(|k| !k.is_empty())
                 .or_else(|| {
@@ -70,29 +70,29 @@ pub fn cmd_build(
 
             if provider_pref == "openai" {
                 if let Some(key) = key {
-                    let model = std::env::var("SYNTAGMA_OPENAI_EMBED_MODEL")
+                    let model = std::env::var("EPISTEME_OPENAI_EMBED_MODEL")
                         .ok()
                         .filter(|m| !m.is_empty())
                         .unwrap_or(config.openai_embed_model.clone());
-                    let dim = std::env::var("SYNTAGMA_OPENAI_EMBED_DIM")
+                    let dim = std::env::var("EPISTEME_OPENAI_EMBED_DIM")
                         .ok()
                         .and_then(|s| s.parse().ok())
                         .unwrap_or(config.openai_embed_dim);
                     info!("Using OpenAI embedding provider (model={model}, dim={dim})");
                     Box::new(
-                        syntagma_engine::adapters::openai_embeddings::OpenAIEmbeddingProvider::new(
+                        episteme::adapters::openai_embeddings::OpenAIEmbeddingProvider::new(
                             key, model, dim,
                         ),
                     )
                 } else {
                     anyhow::bail!(
-                        "embedding provider is set to openai but no API key was found (set OPENAI_API_KEY or SYNTAGMA_OPENAI_API_KEY)"
+                        "embedding provider is set to openai but no API key was found (set OPENAI_API_KEY or EPISTEME_OPENAI_API_KEY)"
                     );
                 }
             } else {
                 info!("Using local embedding provider");
                 Box::new(
-                    syntagma_engine::adapters::local_embeddings::LocalEmbeddingProvider::new(
+                    episteme::adapters::local_embeddings::LocalEmbeddingProvider::new(
                         EMBEDDING_DIMENSIONS,
                     ),
                 )
@@ -103,7 +103,7 @@ pub fn cmd_build(
         {
             let _ = &config;
             Box::new(
-                syntagma_engine::adapters::local_embeddings::LocalEmbeddingProvider::new(
+                episteme::adapters::local_embeddings::LocalEmbeddingProvider::new(
                     EMBEDDING_DIMENSIONS,
                 ),
             )
@@ -119,7 +119,7 @@ pub fn cmd_build(
         info!("--no-gpu requested; CPU-only behavior applies for local embedding providers");
     }
 
-    let stats = syntagma_engine::adapters::builder::build(
+    let stats = episteme::adapters::builder::build(
         &db_path,
         &data_dir,
         &raw_dir,
@@ -159,13 +159,13 @@ pub fn cmd_build(
 
 pub fn cmd_dist(out_dir: &str, no_db: bool, skip_build: bool) -> Result<()> {
     let version = env!("CARGO_PKG_VERSION");
-    let package_name = format!("syntagma-data-{version}");
+    let package_name = format!("episteme-data-{version}");
     let out_dir = PathBuf::from(out_dir);
     std::fs::create_dir_all(&out_dir)
         .with_context(|| format!("failed to create output dir {}", out_dir.display()))?;
 
     let staging_root =
-        std::env::temp_dir().join(format!("syntagma-dist-{}-{}", std::process::id(), version));
+        std::env::temp_dir().join(format!("episteme-dist-{}-{}", std::process::id(), version));
     if staging_root.exists() {
         let _ = std::fs::remove_dir_all(&staging_root);
     }
@@ -188,7 +188,7 @@ pub fn cmd_dist(out_dir: &str, no_db: bool, skip_build: bool) -> Result<()> {
     }
 
     if !no_db {
-        let db_src = syntagma_engine::adapters::paths::db_path();
+        let db_src = episteme::adapters::paths::db_path();
         if !db_src.exists() && !skip_build {
             println!("Embedding DB not found. Running build...");
             let project_meta = cwd.join("meta").to_string_lossy().into_owned();
@@ -212,14 +212,14 @@ pub fn cmd_dist(out_dir: &str, no_db: bool, skip_build: bool) -> Result<()> {
         // Copy DB to project-local db/ for inclusion in archive
         let project_db_dir = cwd.join("db");
         std::fs::create_dir_all(&project_db_dir)?;
-        let project_db = project_db_dir.join("syntagma.db");
+        let project_db = project_db_dir.join("episteme.db");
         std::fs::copy(&db_src, &project_db)
             .with_context(|| format!("failed to copy db to {}", project_db.display()))?;
         println!("  db: copied to {}", project_db.display());
 
         let db_dst_dir = package_root.join("db");
         std::fs::create_dir_all(&db_dst_dir)?;
-        std::fs::copy(&db_src, db_dst_dir.join("syntagma.db"))
+        std::fs::copy(&db_src, db_dst_dir.join("episteme.db"))
             .with_context(|| format!("failed to copy db from {}", db_src.display()))?;
     }
 
@@ -239,7 +239,7 @@ pub fn cmd_dist(out_dir: &str, no_db: bool, skip_build: bool) -> Result<()> {
     println!("Created dist archive: {}", archive_path.display());
     println!(
         "Included: raw/meta/data{}",
-        if no_db { "" } else { ", db/syntagma.db" }
+        if no_db { "" } else { ", db/episteme.db" }
     );
     Ok(())
 }

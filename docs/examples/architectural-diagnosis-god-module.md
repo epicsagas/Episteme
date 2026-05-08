@@ -1,6 +1,6 @@
 # Architectural Diagnosis: Decomposing the God Module
 
-> Demonstrates using Syntagma to diagnose structural rot in a rapidly growing CLI project. Traces the path from identifying a **God Module** to proposing a **Domain-Module** (Modular Monolith) architecture based on SRP and Lehman’s Laws.
+> Demonstrates using Episteme to diagnose structural rot in a rapidly growing CLI project. Traces the path from identifying a **God Module** to proposing a **Domain-Module** (Modular Monolith) architecture based on SRP and Lehman’s Laws.
 
 ## Scenario
 
@@ -17,15 +17,15 @@ A developer realized they had been dumping all new features into `src/hooks/`, r
 
 ## Step-by-step Walkthrough
 
-⏺ **Searching for architecture-related concepts with Syntagma.**
+⏺ **Searching for architecture-related concepts with Episteme.**
 
-  *Called syntagma 3 times (ctrl+o to expand)*
+  *Called episteme 3 times (ctrl+o to expand)*
 
 ⏺ **Analyzing core files to identify actual module roles.**
 
-  *Read 3 files, called syntagma 2 times (ctrl+o to expand)*
+  *Read 3 files, called episteme 2 times (ctrl+o to expand)*
 
-⏺ **Analysis complete. Diagnosing based on Syntagma knowledge graph.**
+⏺ **Analysis complete. Diagnosing based on Episteme knowledge graph.**
 
   **Diagnosis: God Module (SMELL-21)**
 
@@ -49,7 +49,7 @@ Analyzing the contents of `src/hooks/` reveals several distinct domains that vio
 
 ### 3. Apply Architectural Laws
 
-The diagnosis is grounded in three core principles from the Syntagma knowledge graph:
+The diagnosis is grounded in three core principles from the Episteme knowledge graph:
 
 1. **SRP (LAW-042-S):** The current module has too many reasons to change (memory, hooks, installation, etc.).
 2. **Lehman’s Laws (LAW-034):** Boundaries must be established early to prevent complexity from propagating across the system.
@@ -59,7 +59,7 @@ The diagnosis is grounded in three core principles from the Syntagma knowledge g
 
 ## Proposed Architecture: Domain-Module
 
-The recommended structure is a **Modular Monolith**. Since Syntagma is a single Rust binary, we should decompose it by business domains rather than technical layers.
+The recommended structure is a **Modular Monolith**. Since Episteme is a single Rust binary, we should decompose it by business domains rather than technical layers.
 
 ### Target File Structure
 

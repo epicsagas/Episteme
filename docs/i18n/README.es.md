@@ -1,17 +1,17 @@
-<h1 align="center">Syntagma</h1>
+<h1 align="center">Episteme</h1>
 
 <p align="center"><b>Grafo de Conocimiento para Ingenieria de Software</b></p>
 
-<p align="center"><sub>Syntagma (συν ταγμα) — del griego "sistema organizado" o "discernimiento"</sub></p>
+<p align="center"><sub>Episteme (συν ταγμα) — del griego "sistema organizado" o "discernimiento"</sub></p>
 
 <p align="center">Un grafo de conocimiento offline-first y de unico binario que conecta patrones de diseno, tecnicas de refactoring y leyes de software a traves de relaciones semanticas.<br><b>Construido primero para agentes de IA</b> — integra la experiencia en ingenieria de software directamente en Claude Code, Cursor y otras herramientas compatibles con MCP.</p>
 
 <p align="center">Escrito en Rust · Unico binario · Completamente offline</p>
 
 <p align="center">
-    <a href="https://github.com/epicsagas/Syntagma/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Syntagma/ci.yml?branch=main&label=CI" alt="CI" /></a>
+    <a href="https://github.com/epicsagas/Episteme/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Episteme/ci.yml?branch=main&label=CI" alt="CI" /></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.95+-orange.svg" alt="rust-lang" /></a>
-    <a href="https://crates.io/crates/syntagma"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
+    <a href="https://crates.io/crates/episteme"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
     <a href="../../LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
     <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
 </p>
@@ -35,7 +35,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../assets/features.png">
-  <img src="../assets/features.png" align="center" width="100%" alt="Resumen de caracteristicas de Syntagma" />
+  <img src="../assets/features.png" align="center" width="100%" alt="Resumen de caracteristicas de Episteme" />
 </picture>
 
 ---
@@ -53,33 +53,33 @@
 
 Despues de instalar, abre una **nueva terminal** (o ejecuta `source "$HOME/.cargo/env"` en macOS/Linux).
 
-**2. Instalar Syntagma (la primera compilacion tarda 3-5 min)**
+**2. Instalar Episteme (la primera compilacion tarda 3-5 min)**
 
 ```bash
-cargo install --git https://github.com/epicsagas/Syntagma
+cargo install --git https://github.com/epicsagas/Episteme
 ```
 
 **3. Cargar datos y conectar tu herramienta de IA**
 
 ```bash
-syntagma install claude    # o: cursor, codex, gemini
+epis install claude    # o: cursor, codex, gemini
 ```
 
 **4. Verificar**
 
 ```bash
-syntagma --version
-syntagma stats
+epis --version
+epis stats
 ```
 
-Eso es todo. Reinicia Claude Code y las herramientas de Syntagma estaran listas.
+Eso es todo. Reinicia Claude Code y las herramientas de Episteme estaran listas.
 
 ### Pruébalo en 30 segundos
 
 **Opcion A — CLI:** Apuntalo a cualquier archivo de tu proyecto.
 
 ```bash
-syntagma analyze src/domain/engine.rs
+epis analyze src/domain/engine.rs
 ```
 
 ```
@@ -101,21 +101,21 @@ syntagma analyze src/domain/engine.rs
 Encuentra code smells en este proyecto y sugiere refactorings.
 ```
 
-Syntagma se activa automaticamente — no necesita sintaxis especial. Mapea tu descripcion al grafo de conocimiento y devuelve resultados clasificados y citables.
+Episteme se activa automaticamente — no necesita sintaxis especial. Mapea tu descripcion al grafo de conocimiento y devuelve resultados clasificados y citables.
 
 ---
 
-## Por que Syntagma?
+## Por que Episteme?
 
 Los LLMs ya saben que es el patron Strategy. Pueden recitar los principios SOLID, listar los patrones GoF y explicar los code smells. Entonces, por que existe este proyecto?
 
 **La brecha no es el conocimiento — es el razonamiento estructurado y conectado.**
 
-Cuando le preguntas a un LLM "como arreglo un God Object?", te da una respuesta razonable. Pero la respuesta cambia entre conversaciones, carece de trazabilidad y no conecta el problema con sus causas raiz ni sus consecuencias posteriores. Syntagma convierte hechos aislados en un grafo navegable donde cada recomendacion esta fundamentada, es citable y esta conectada al panorama de diseno mas amplio.
+Cuando le preguntas a un LLM "como arreglo un God Object?", te da una respuesta razonable. Pero la respuesta cambia entre conversaciones, carece de trazabilidad y no conecta el problema con sus causas raiz ni sus consecuencias posteriores. Episteme convierte hechos aislados en un grafo navegable donde cada recomendacion esta fundamentada, es citable y esta conectada al panorama de diseno mas amplio.
 
 ### En que se diferencia de simplemente hacerle un buen prompt a un LLM?
 
-| | Prompt bien elaborado para LLM | Syntagma + LLM |
+| | Prompt bien elaborado para LLM | Episteme + LLM |
 |---|---|---|
 | Deteccion proactiva | Solo si el usuario hace la pregunta correcta | Se activa automaticamente ante descripciones de problemas |
 | Eficiencia de tokens | Explicaciones largas + multiples turnos de seguimiento | Una sola llamada a herramienta devuelve un resultado estructurado |
@@ -130,31 +130,31 @@ Cuando le preguntas a un LLM "como arreglo un God Object?", te da una respuesta 
 <details>
 <summary><b>1. Cuando tu agente de IA deberia detectar problemas proactivamente, no esperar a que se lo pidan</b></summary>
 
-La integracion MCP se activa automaticamente ante descripciones de problemas. Cuando un usuario dice "esta clase hace demasiadas cosas", el agente no necesita saber que preguntar sobre God Object — Syntagma mapea la queja a `SMELL-03`, muestra refactorings clasificados y rastrea la violacion hasta los principios fundamentales. Esto convierte una queja vaga en un plan de remediacion estructurado.
+La integracion MCP se activa automaticamente ante descripciones de problemas. Cuando un usuario dice "esta clase hace demasiadas cosas", el agente no necesita saber que preguntar sobre God Object — Episteme mapea la queja a `SMELL-03`, muestra refactorings clasificados y rastrea la violacion hasta los principios fundamentales. Esto convierte una queja vaga en un plan de remediacion estructurado.
 </details>
 
 <details>
 <summary><b>2. Cuando quieres reducir el consumo de tokens — no gastarlos en explicaciones</b></summary>
 
-Sin Syntagma, un LLM responde "como arreglo un God Object?" explicando el smell, listando refactorings, describiendo los principios SOLID y repasando cada opcion — cientos de tokens por respuesta. Con Syntagma, una sola llamada a herramienta MCP devuelve `SMELL-03 → RF-018 (0.89) → LAW-001`. La misma experiencia con una fraccion del presupuesto de tokens.
+Sin Episteme, un LLM responde "como arreglo un God Object?" explicando el smell, listando refactorings, describiendo los principios SOLID y repasando cada opcion — cientos de tokens por respuesta. Con Episteme, una sola llamada a herramienta MCP devuelve `SMELL-03 → RF-018 (0.89) → LAW-001`. La misma experiencia con una fraccion del presupuesto de tokens.
 </details>
 
 <details>
 <summary><b>3. Cuando necesitas analisis de codigo conectado a la remediacion — no solo deteccion</b></summary>
 
-Herramientas como SonarQube detectan smells. Los LLMs pueden sugerir patrones. Syntagma hace ambas cosas y las conecta: detecta Long Method → rastrea las leyes que viola → clasifica los refactorings que lo resuelven → muestra que patrones refuerzan esos refactorings.
+Herramientas como SonarQube detectan smells. Los LLMs pueden sugerir patrones. Episteme hace ambas cosas y las conecta: detecta Long Method → rastrea las leyes que viola → clasifica los refactorings que lo resuelven → muestra que patrones refuerzan esos refactorings.
 </details>
 
 <details>
 <summary><b>4. Cuando el conocimiento aislado de patrones no es suficiente — necesitas las relaciones</b></summary>
 
-Saber que hace Extract Method es lo basico. Saber que *resuelve* Long Method (SMELL-01), que *viola* Single Responsibility (LAW-001), que es *reforzado por* Facade Pattern (DP-012) — esa es una cadena de razonamiento que un LLM no puede construir de forma fiable por si solo. Las 201 relaciones semanticas de Syntagma permiten a los agentes de IA recorrer estos caminos de forma determinista.
+Saber que hace Extract Method es lo basico. Saber que *resuelve* Long Method (SMELL-01), que *viola* Single Responsibility (LAW-001), que es *reforzado por* Facade Pattern (DP-012) — esa es una cadena de razonamiento que un LLM no puede construir de forma fiable por si solo. Las 201 relaciones semanticas de Episteme permiten a los agentes de IA recorrer estos caminos de forma determinista.
 </details>
 
 <details>
 <summary><b>5. Cuando estas tomando decisiones de arquitectura y necesitas evidencia, no opiniones</b></summary>
 
-"Deberia usar microservicios?" — Syntagma conecta la pregunta con la Ley de Conway (LAW-017), SRP (LAW-001) y el patron Strangler Fig (DP-026), luego muestra como se relacionan. Las decisiones se vuelven rastreables hasta leyes de ingenieria, no hasta publicaciones de blogs.
+"Deberia usar microservicios?" — Episteme conecta la pregunta con la Ley de Conway (LAW-017), SRP (LAW-001) y el patron Strangler Fig (DP-026), luego muestra como se relacionan. Las decisiones se vuelven rastreables hasta leyes de ingenieria, no hasta publicaciones de blogs.
 </details>
 
 <details>
@@ -166,7 +166,7 @@ Cada hallazgo hace referencia a IDs de entidad explicitos (`DP-005`, `RF-001`, `
 <details>
 <summary><b>7. Cuando trabajas en un entorno aislado o con red restringida</b></summary>
 
-Syntagma se ejecuta completamente offline: unico binario, base de datos SQLite local, embeddings locales via fastembed (ONNX Runtime). Sin telemetria, sin llamadas a servidores externos, sin API externas. Tu codigo y resultados de analisis nunca salen de tu maquina.
+Episteme se ejecuta completamente offline: unico binario, base de datos SQLite local, embeddings locales via fastembed (ONNX Runtime). Sin telemetria, sin llamadas a servidores externos, sin API externas. Tu codigo y resultados de analisis nunca salen de tu maquina.
 </details>
 
 ---
@@ -177,25 +177,25 @@ Syntagma se ejecuta completamente offline: unico binario, base de datos SQLite l
 
 ```bash
 # La primera compilacion tarda 3-5 minutos — esto es normal
-cargo install --git https://github.com/epicsagas/Syntagma
-syntagma install claude    # carga datos + configura MCP + instala agentes
+cargo install --git https://github.com/epicsagas/Episteme
+epis install claude    # carga datos + configura MCP + instala agentes
 ```
 
-> Despues de `syntagma install claude`, **reinicia Claude Code** para que aparezcan las herramientas y agentes MCP.
+> Despues de `epis install claude`, **reinicia Claude Code** para que aparezcan las herramientas y agentes MCP.
 
 ### Opcion 2: Desde el Codigo Fuente
 
 ```bash
-git clone https://github.com/epicsagas/Syntagma.git
-cd Syntagma && cargo build --release
+git clone https://github.com/epicsagas/Episteme.git
+cd Episteme && cargo build --release
 ```
 
 Luego ejecuta el binario para tu plataforma:
 
 | Plataforma | Comando |
 |------------|---------|
-| **macOS / Linux** | `./target/release/syntagma install --local claude` |
-| **Windows** | `.\target\release\syntagma.exe install --local claude` |
+| **macOS / Linux** | `./target/release/epis install --local claude` |
+| **Windows** | `.\target\release\episteme.exe install --local claude` |
 
 ### Opcion 3: Docker (No se requiere Rust)
 
@@ -214,9 +214,9 @@ Agrega a tu archivo de configuracion MCP:
 ```json
 {
   "mcpServers": {
-    "syntagma": {
+    "episteme": {
       "command": "docker",
-      "args": ["exec", "-i", "syntagma-api", "syntagma", "mcp"]
+      "args": ["exec", "-i", "episteme-api", "episteme", "mcp"]
     }
   }
 }
@@ -224,42 +224,42 @@ Agrega a tu archivo de configuracion MCP:
 
 ### Opcion 4: Binarios Precompilados (No se requiere Rust)
 
-Descarga el ultimo binario para tu plataforma desde [GitHub Releases](https://github.com/epicsagas/Syntagma/releases):
+Descarga el ultimo binario para tu plataforma desde [GitHub Releases](https://github.com/epicsagas/Episteme/releases):
 
 | Plataforma | Archivo |
 |------------|---------|
-| **macOS** (Apple Silicon) | `syntagma-aarch64-apple-darwin.tar.gz` |
-| **macOS** (Intel) | `syntagma-x86_64-apple-darwin.tar.gz` |
-| **Linux** (x86_64) | `syntagma-x86_64-unknown-linux-gnu.tar.gz` |
-| **Linux** (ARM64) | `syntagma-aarch64-unknown-linux-gnu.tar.gz` |
-| **Windows** (x86_64) | `syntagma-x86_64-pc-windows-msvc.zip` |
+| **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.gz` |
+| **macOS** (Intel) | `episteme-x86_64-apple-darwin.tar.gz` |
+| **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.gz` |
+| **Linux** (ARM64) | `episteme-aarch64-unknown-linux-gnu.tar.gz` |
+| **Windows** (x86_64) | `episteme-x86_64-pc-windows-msvc.zip` |
 
 ```bash
 # macOS / Linux
-tar xzf syntagma-*.tar.gz
-sudo mv syntagma /usr/local/bin/
+tar xzf episteme-*.tar.gz
+sudo mv episteme /usr/local/bin/
 
-# Windows — extrae el zip y agrega syntagma.exe a tu PATH
+# Windows — extrae el zip y agrega episteme.exe a tu PATH
 ```
 
 Luego instala:
 ```bash
-syntagma install claude    # o: cursor, codex, gemini
+epis install claude    # o: cursor, codex, gemini
 ```
 
 ### Verificar
 
 ```bash
-syntagma --version
-syntagma stats
-syntagma explore "strategy pattern"    # explora el grafo de conocimiento
+epis --version
+epis stats
+epis explore "strategy pattern"    # explora el grafo de conocimiento
 ```
 
 ---
 
 ## Herramientas MCP y Agentes
 
-> **Que es MCP?** El [Model Context Protocol](https://modelcontextprotocol.io) es un estandar abierto que permite a las herramientas de IA llamar a servicios externos. Syntagma expone su grafo de conocimiento como herramientas MCP que Claude Code, Cursor y otros editores compatibles pueden llamar automaticamente.
+> **Que es MCP?** El [Model Context Protocol](https://modelcontextprotocol.io) es un estandar abierto que permite a las herramientas de IA llamar a servicios externos. Episteme expone su grafo de conocimiento como herramientas MCP que Claude Code, Cursor y otros editores compatibles pueden llamar automaticamente.
 
 ### 6 Herramientas MCP
 
@@ -279,11 +279,11 @@ Los agentes trabajan juntos — cada analisis termina con opciones de **Proximos
 | Agente | Cuando Usarlo | Capacidad Clave | Se transfiere a |
 |--------|---------------|-----------------|-----------------|
 | **`code-reviewer`** | Code smells, violaciones SOLID | Analisis de causalidad (causa raiz → sintomas derivados) | advisor, architecture-analyst, refactoring-expert |
-| **`syntagma-advisor`** | Decisiones de ingenieria, compromisos | Cadenas de compromisos multi-entidad con planes de accion | code-reviewer, architecture-analyst, researcher |
-| **`syntagma-researcher`** | Exploracion del grafo de conocimiento | Mapas de conexion entre patrones, leyes, smells | advisor, code-reviewer |
+| **`episteme-advisor`** | Decisiones de ingenieria, compromisos | Cadenas de compromisos multi-entidad con planes de accion | code-reviewer, architecture-analyst, researcher |
+| **`episteme-researcher`** | Exploracion del grafo de conocimiento | Mapas de conexion entre patrones, leyes, smells | advisor, code-reviewer |
 | **`architecture-analyst`** | Evaluacion de arquitectura frente a leyes | Puntuacion de cumplimiento con evaluacion ponderada por riesgo | advisor, code-reviewer, researcher |
 
-**Ejemplo de flujo de trabajo**: `code-reviewer` detecta God Object → rastrea la causalidad hasta 3 smells derivados → ofrece "Aplicar RF-018" (→ refactoring-expert) o "Analisis profundo de causa raiz" (→ syntagma-advisor) o "Verificacion de arquitectura" (→ architecture-analyst).
+**Ejemplo de flujo de trabajo**: `code-reviewer` detecta God Object → rastrea la causalidad hasta 3 smells derivados → ofrece "Aplicar RF-018" (→ refactoring-expert) o "Analisis profundo de causa raiz" (→ episteme-advisor) o "Verificacion de arquitectura" (→ architecture-analyst).
 
 [Guia completa de integracion MCP](../../docs/mcp-integration-guide.md)
 
@@ -293,23 +293,23 @@ Los agentes trabajan juntos — cada analisis termina con opciones de **Proximos
 
 ```bash
 # Analizar codigo en busca de smells
-syntagma analyze my_code.py --language python --json
-syntagma infer my_code.py
+epis analyze my_code.py --language python --json
+episteme infer my_code.py
 
 # Explorar el grafo de conocimiento
-syntagma explore "strategy pattern"
-syntagma graph path DP-005 RF-001   # ej. Factory Method → Extract Method
+epis explore "strategy pattern"
+epis graph path DP-005 RF-001   # ej. Factory Method → Extract Method
 
 # Construir el indice RAG
-syntagma build
+epis build
 
 # Iniciar servidores
-syntagma api              # REST API en :8000
-syntagma mcp --http       # Servidor MCP en :43175
-syntagma web --port 8080  # Interfaz Web (explorador de grafos interactivo)
+epis api              # REST API en :8000
+episteme mcp --http       # Servidor MCP en :43175
+episteme web --port 8080  # Interfaz Web (explorador de grafos interactivo)
 
 # Empaquetado de distribucion
-syntagma dist --out-dir release/
+episteme dist --out-dir release/
 ```
 
 ---
@@ -355,24 +355,24 @@ syntagma dist --out-dir release/
 
 ```bash
 # Ubicaciones de datos
-SYNTAGMA_DATA_DIR=~/.syntagma/data
-SYNTAGMA_DB_PATH=~/.syntagma/db/syntagma.db
+EPISTEME_DATA_DIR=~/.episteme/data
+EPISTEME_DB_PATH=~/.episteme/db/episteme.db
 
 # Servidor API
-SYNTAGMA_API_HOST=0.0.0.0
-SYNTAGMA_API_PORT=8000
-SYNTAGMA_API_KEY=your-secret-key
+EPISTEME_API_HOST=0.0.0.0
+EPISTEME_API_PORT=8000
+EPISTEME_API_KEY=your-secret-key
 
 # Servidor MCP
-SYNTAGMA_MCP_HOST=127.0.0.1
-SYNTAGMA_MCP_PORT=43175
+EPISTEME_MCP_HOST=127.0.0.1
+EPISTEME_MCP_PORT=43175
 ```
 
 ---
 
 ## Solucion de Problemas
 
-**Comando `syntagma` no encontrado despues de instalar**
+**Comando `episteme` no encontrado despues de instalar**
 
 | Plataforma | Solucion |
 |------------|----------|
@@ -381,19 +381,19 @@ SYNTAGMA_MCP_PORT=43175
 
 **Las herramientas MCP no aparecen en Claude Code / Cursor**
 
-Reinicia el editor despues de ejecutar `syntagma install`. Si aun no aparecen, verifica que la configuracion se haya escrito:
+Reinicia el editor despues de ejecutar `epis install`. Si aun no aparecen, verifica que la configuracion se haya escrito:
 ```bash
 cat ~/.claude.json   # Claude Code
 ```
 
 **Puerto ya en uso**
 ```bash
-syntagma mcp --http --port 43176   # usa un puerto diferente
+episteme mcp --http --port 43176   # usa un puerto diferente
 ```
 
 **Primera ejecucion lenta**
 
-Syntagma construye un indice de embeddings local en la primera ejecucion. Esto tarda 30-60 segundos y es un costo unico. Las ejecuciones posteriores son instantaneas.
+Episteme construye un indice de embeddings local en la primera ejecucion. Esto tarda 30-60 segundos y es un costo unico. Las ejecuciones posteriores son instantaneas.
 
 **Errores de compilacion durante `cargo install`**
 
@@ -403,7 +403,7 @@ rustup update stable
 rustup show   # confirma el toolchain activo
 ```
 
-> Mas ayuda: [seccion de solucion de problemas en QUICKSTART.md](../../QUICKSTART.md#troubleshooting) · [Abrir un issue](https://github.com/epicsagas/Syntagma/issues)
+> Mas ayuda: [seccion de solucion de problemas en QUICKSTART.md](../../QUICKSTART.md#troubleshooting) · [Abrir un issue](https://github.com/epicsagas/Episteme/issues)
 
 ---
 
@@ -432,7 +432,7 @@ cargo clippy -- -D warnings
 cargo fmt
 ```
 
-Preguntas? [Abre una discusion](https://github.com/epicsagas/Syntagma/discussions) o [crea un issue](https://github.com/epicsagas/Syntagma/issues).
+Preguntas? [Abre una discusion](https://github.com/epicsagas/Episteme/discussions) o [crea un issue](https://github.com/epicsagas/Episteme/issues).
 
 ---
 

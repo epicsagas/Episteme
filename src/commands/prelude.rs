@@ -4,13 +4,13 @@ use std::path::PathBuf;
 
 use anyhow::{Context, Result};
 
-use syntagma_engine::adapters::paths;
-use syntagma_engine::domain::graph::KnowledgeGraph;
+use episteme::adapters::paths;
+use episteme::domain::graph::KnowledgeGraph;
 
 /// Load the knowledge graph from the default data directory.
 pub fn load_graph() -> Result<KnowledgeGraph> {
     let dir = paths::data_dir();
-    syntagma_engine::adapters::json_loader::load_graph(&dir)
+    episteme::adapters::json_loader::load_graph(&dir)
         .with_context(|| format!("failed to load knowledge graph from {}", dir.display()))
 }
 

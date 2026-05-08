@@ -47,32 +47,32 @@ pub fn init_metrics() -> Arc<MetricsHandle> {
 /// in the Prometheus output even before any values are recorded.
 fn describe_metrics() {
     metrics::describe_counter!(
-        "syntagma_smells_detected_total",
+        "episteme_smells_detected_total",
         metrics::Unit::Count,
         "Total number of code smells detected by the analyze endpoint"
     );
     metrics::describe_counter!(
-        "syntagma_searches_total",
+        "episteme_searches_total",
         metrics::Unit::Count,
         "Total number of search queries executed"
     );
     metrics::describe_counter!(
-        "syntagma_refactoring_suggestions_total",
+        "episteme_refactoring_suggestions_total",
         metrics::Unit::Count,
         "Total number of refactoring suggestions returned"
     );
     metrics::describe_histogram!(
-        "syntagma_analysis_duration_seconds",
+        "episteme_analysis_duration_seconds",
         metrics::Unit::Seconds,
         "Duration of code analysis requests"
     );
     metrics::describe_histogram!(
-        "syntagma_search_duration_seconds",
+        "episteme_search_duration_seconds",
         metrics::Unit::Seconds,
         "Duration of search requests"
     );
     metrics::describe_counter!(
-        "syntagma_rate_limit_rejected_total",
+        "episteme_rate_limit_rejected_total",
         metrics::Unit::Count,
         "Total number of requests rejected by the rate limiter"
     );
@@ -85,7 +85,7 @@ fn describe_metrics() {
 /// Record that one or more code smells were detected by the analyze endpoint.
 pub fn track_smell_detection(smell_id: &str, smell_name: &str) {
     metrics::counter!(
-        "syntagma_smells_detected_total",
+        "episteme_smells_detected_total",
         "smell_id" => smell_id.to_owned(),
         "smell_name" => smell_name.to_owned(),
     )
@@ -95,7 +95,7 @@ pub fn track_smell_detection(smell_id: &str, smell_name: &str) {
 /// Record a search query.
 pub fn track_search(entity_type: &str, has_filter: bool) {
     metrics::counter!(
-        "syntagma_searches_total",
+        "episteme_searches_total",
         "entity_type" => entity_type.to_owned(),
         "has_filter" => has_filter.to_string(),
     )
@@ -105,7 +105,7 @@ pub fn track_search(entity_type: &str, has_filter: bool) {
 /// Record a refactoring suggestion.
 pub fn track_refactoring_suggestion(refactoring_id: &str) {
     metrics::counter!(
-        "syntagma_refactoring_suggestions_total",
+        "episteme_refactoring_suggestions_total",
         "refactoring_id" => refactoring_id.to_owned(),
     )
     .increment(1);
@@ -114,7 +114,7 @@ pub fn track_refactoring_suggestion(refactoring_id: &str) {
 /// Record that a request was rejected by the rate limiter.
 pub fn track_rate_limit_rejected(path: &str) {
     metrics::counter!(
-        "syntagma_rate_limit_rejected_total",
+        "episteme_rate_limit_rejected_total",
         "path" => path.to_owned(),
     )
     .increment(1);
@@ -144,7 +144,7 @@ impl AnalysisTimer {
 impl Drop for AnalysisTimer {
     fn drop(&mut self) {
         let elapsed = self.start.elapsed().as_secs_f64();
-        metrics::histogram!("syntagma_analysis_duration_seconds").record(elapsed);
+        metrics::histogram!("episteme_analysis_duration_seconds").record(elapsed);
     }
 }
 
@@ -170,7 +170,7 @@ impl SearchTimer {
 impl Drop for SearchTimer {
     fn drop(&mut self) {
         let elapsed = self.start.elapsed().as_secs_f64();
-        metrics::histogram!("syntagma_search_duration_seconds").record(elapsed);
+        metrics::histogram!("episteme_search_duration_seconds").record(elapsed);
     }
 }
 

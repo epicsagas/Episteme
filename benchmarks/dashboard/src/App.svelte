@@ -59,7 +59,7 @@
 
 <div class="app">
   <header>
-    <h1>Syntagma <span class="accent">Benchmark</span> Dashboard</h1>
+    <h1>Episteme <span class="accent">Benchmark</span> Dashboard</h1>
     <p class="subtitle">{runs.length} runs loaded</p>
   </header>
 

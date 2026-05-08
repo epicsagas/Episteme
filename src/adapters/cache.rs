@@ -1,4 +1,4 @@
-//! Redis-backed response cache for the Syntagma API.
+//! Redis-backed response cache for the Episteme API.
 //!
 //! When the `redis-cache` feature is enabled, this module provides a
 //! [`CacheManager`] that connects to Redis and caches expensive API responses
@@ -75,7 +75,7 @@ impl CacheManager {
             pool: Arc::new(RwLock::new(None)),
             enabled,
             default_ttl,
-            prefix: "syntagma".to_owned(),
+            prefix: "episteme".to_owned(),
         }
     }
 
@@ -248,12 +248,12 @@ impl CacheManager {
             .query_async(&mut conn)
             .await
             .unwrap_or(0);
-        let syntagma_keys: Vec<String> = redis::cmd("KEYS")
+        let episteme_keys: Vec<String> = redis::cmd("KEYS")
             .arg(format!("{}:*", self.prefix))
             .query_async(&mut conn)
             .await
             .unwrap_or_default();
-        let keys = syntagma_keys.len() as u64;
+        let keys = episteme_keys.len() as u64;
         let hits = info
             .lines()
             .find(|l| l.starts_with("keyspace_hits:"))

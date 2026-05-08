@@ -254,4 +254,4 @@ Based on: Refactoring (Fowler, 1999) and community knowledge.
 
 - **Design Patterns** - See `../design-patterns/` for 22 Gang of Four design patterns
 - **Software Engineering Laws** - See `../software-engineering/` for 56 principles and laws
-- **Syntagma Knowledge Graph** - All techniques are indexed with semantic embeddings and relational metadata
+- **Episteme Knowledge Graph** - All techniques are indexed with semantic embeddings and relational metadata

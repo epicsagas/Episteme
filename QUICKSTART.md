@@ -1,6 +1,6 @@
-# Syntagma — Quick Start Guide
+# Episteme — Quick Start Guide
 
-Get up and running with Syntagma in under 2 minutes.
+Get up and running with Episteme in under 2 minutes.
 
 ---
 
@@ -16,20 +16,20 @@ Get up and running with Syntagma in under 2 minutes.
 **Perfect for:** Claude Code, Cursor, Codex, Gemini users
 
 ```bash
-# 1. Install Syntagma
-cargo install --git https://github.com/epicsagas/Syntagma
+# 1. Install Episteme
+cargo install --git https://github.com/epicsagas/Episteme
 
 # 2. Install into your AI tool (downloads data, configures MCP, copies agents)
-syntagma install claude      # Claude Code
-syntagma install cursor      # Cursor
-syntagma install codex       # OpenAI Codex
-syntagma install gemini      # Gemini CLI
-syntagma install all         # All tools at once
+epis install claude      # Claude Code
+epis install cursor      # Cursor
+epis install codex       # OpenAI Codex
+epis install gemini      # Gemini CLI
+epis install all         # All tools at once
 ```
 
-> If `syntagma install claude` fails to download data, use the source install below instead.
+> If `epis install claude` fails to download data, use the source install below instead.
 
-**That's it.** Restart your AI tool and Syntagma is active.
+**That's it.** Restart your AI tool and Episteme is active.
 
 ---
 
@@ -47,9 +47,9 @@ For MCP integration via Docker, add to your MCP config:
 ```json
 {
   "mcpServers": {
-    "syntagma": {
+    "episteme": {
       "command": "docker",
-      "args": ["exec", "-i", "syntagma-api", "syntagma", "mcp"]
+      "args": ["exec", "-i", "episteme-api", "episteme", "mcp"]
     }
   }
 }
@@ -60,26 +60,26 @@ For MCP integration via Docker, add to your MCP config:
 ## Option 3: From Source
 
 ```bash
-git clone https://github.com/epicsagas/Syntagma.git
-cd Syntagma
+git clone https://github.com/epicsagas/Episteme.git
+cd Episteme
 
 # Build
 cargo build --release
 
 # Seed data and build vector DB (build runs automatically)
-./target/release/syntagma install --local
+./target/release/epis install --local
 ```
 
 ---
 
 ## Graph Visualization
 
-Syntagma includes an interactive D3-force graph viewer:
+Episteme includes an interactive D3-force graph viewer:
 
 ```bash
-syntagma web               # default: http://localhost:8080
-syntagma web --port 9001   # custom port
-syntagma web --host 0.0.0.0 --port 8080  # expose to network
+episteme web               # default: http://localhost:8080
+episteme web --port 9001   # custom port
+episteme web --host 0.0.0.0 --port 8080  # expose to network
 ```
 
 ---
@@ -88,28 +88,28 @@ syntagma web --host 0.0.0.0 --port 8080  # expose to network
 
 ```bash
 # Analyze code for smells
-syntagma analyze my_code.py --language python
-syntagma analyze my_code.py --json
+epis analyze my_code.py --language python
+epis analyze my_code.py --json
 
 # Get refactoring suggestions
-syntagma infer my_code.py --top-k 5
+episteme infer my_code.py --top-k 5
 
 # Explore the knowledge graph
-syntagma explore "strategy pattern"
-syntagma graph path DP-005 RF-001
+epis explore "strategy pattern"
+epis graph path DP-005 RF-001
 
 # Start servers
-syntagma api              # REST API on :8000
-syntagma mcp --http       # MCP server on :43175
-syntagma web --port 8080  # Web UI
+epis api              # REST API on :8000
+episteme mcp --http       # MCP server on :43175
+episteme web --port 8080  # Web UI
 
 # Background MCP daemon (HTTP proxy)
-syntagma service start
-syntagma service status
-syntagma service stop
+epis service start
+epis service status
+epis service stop
 
 # Create release archive
-syntagma dist --out-dir release
+episteme dist --out-dir release
 ```
 
 ---
@@ -118,15 +118,15 @@ syntagma dist --out-dir release
 
 ### "Database not found"
 ```bash
-syntagma install claude   # re-download data archive
+epis install claude   # re-download data archive
 # or
-syntagma install --local
+epis install --local
 ```
 
 ### "Port already in use"
 ```bash
-syntagma web --port 9001
-syntagma api --port 9000
+episteme web --port 9001
+epis api --port 9000
 ```
 
 ---

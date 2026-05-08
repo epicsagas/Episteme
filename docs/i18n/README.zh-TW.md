@@ -1,8 +1,8 @@
-<h1 align="center">Syntagma</h1>
+<h1 align="center">Episteme</h1>
 
 <p align="center"><b>軟體工程的知識圖譜</b></p>
 
-<p align="center"><sub>Syntagma (συν τᾰγμᾰ) — 希臘文，意為「有組織的系統」或「判斷力」</sub></p>
+<p align="center"><sub>Episteme (συν τᾰγμᾰ) — 希臘文，意為「有組織的系統」或「判斷力」</sub></p>
 
 <p align="center">一個離線優先、單一二進位檔的知識圖譜，透過語意關係連結設計模式、重構技巧與軟體法則。<br><b>以 AI 代理為核心設計</b> — 將軟體工程專業知識直接整合至 Claude Code、Cursor 及其他相容 MCP 的工具中。</p>
 
@@ -11,9 +11,9 @@
 ---
 
 <p align="center">
-    <a href="https://github.com/epicsagas/Syntagma/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Syntagma/ci.yml?branch=main&label=CI" alt="CI" /></a>
+    <a href="https://github.com/epicsagas/Episteme/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Episteme/ci.yml?branch=main&label=CI" alt="CI" /></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.95+-orange.svg" alt="rust-lang" /></a>
-    <a href="https://crates.io/crates/syntagma"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
+    <a href="https://crates.io/crates/episteme"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
     <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
 </p>
@@ -37,7 +37,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../assets/features.png">
-  <img src="../assets/features.png" align="center" width="100%" alt="Syntagma 功能總覽" />
+  <img src="../assets/features.png" align="center" width="100%" alt="Episteme 功能總覽" />
 </picture>
 
 ---
@@ -55,33 +55,33 @@
 
 安裝完成後，開啟**新的終端機**（或在 macOS/Linux 上執行 `source "$HOME/.cargo/env"`）。
 
-**2. 安裝 Syntagma（首次建置約需 3–5 分鐘）**
+**2. 安裝 Episteme（首次建置約需 3–5 分鐘）**
 
 ```bash
-cargo install --git https://github.com/epicsagas/Syntagma
+cargo install --git https://github.com/epicsagas/Episteme
 ```
 
 **3. 載入資料 + 設定你的 AI 工具**
 
 ```bash
-syntagma install claude    # 或：cursor、codex、gemini
+epis install claude    # 或：cursor、codex、gemini
 ```
 
 **4. 驗證安裝**
 
 ```bash
-syntagma --version
-syntagma stats
+epis --version
+epis stats
 ```
 
-就是這樣。重新啟動 Claude Code，Syntagma 工具即可使用。
+就是這樣。重新啟動 Claude Code，Episteme 工具即可使用。
 
 ### 30 秒內試用
 
 **方式 A — CLI：** 指向專案中的任何檔案。
 
 ```bash
-syntagma analyze src/domain/engine.rs
+epis analyze src/domain/engine.rs
 ```
 
 ```
@@ -103,21 +103,21 @@ syntagma analyze src/domain/engine.rs
 Find code smells in this project and suggest refactorings.
 ```
 
-Syntagma 會自動觸發 — 不需要特殊語法。它會將你的描述對應到知識圖譜，並返回帶有排序與引用的結果。
+Episteme 會自動觸發 — 不需要特殊語法。它會將你的描述對應到知識圖譜，並返回帶有排序與引用的結果。
 
 ---
 
-## 為什麼需要 Syntagma？
+## 為什麼需要 Episteme？
 
 大型語言模型（LLM）已經知道什麼是策略模式（Strategy Pattern）。它們能背誦 SOLID 原則、列舉 GoF 設計模式、解釋程式碼壞味道。那麼這個專案為什麼存在？
 
 **差距不在於知識 — 而在於結構化、相互連結的推理能力。**
 
-當你問 LLM「如何修正 God Object？」時，它會給你一個合理的答案。但這個答案在不同對話中會改變、缺乏可追溯性，且未將問題與其根本原因或後續影響連結起來。Syntagma 將孤立的知識轉化為可遍歷的圖譜，讓每個建議都有根據、可引用，並與更廣泛的設計脈絡相連。
+當你問 LLM「如何修正 God Object？」時，它會給你一個合理的答案。但這個答案在不同對話中會改變、缺乏可追溯性，且未將問題與其根本原因或後續影響連結起來。Episteme 將孤立的知識轉化為可遍歷的圖譜，讓每個建議都有根據、可引用，並與更廣泛的設計脈絡相連。
 
 ### 這與直接向 LLM 提問有何不同？
 
-| | 精心設計的 LLM 提示 | Syntagma + LLM |
+| | 精心設計的 LLM 提示 | Episteme + LLM |
 |---|---|---|
 | 主動偵測 | 僅在使用者問對問題時才會觸發 | 在問題描述時自動觸發 |
 | Token 效率 | 冗長的解釋 + 多次追問 | 一次工具呼叫即返回結構化結果 |
@@ -132,31 +132,31 @@ Syntagma 會自動觸發 — 不需要特殊語法。它會將你的描述對應
 <details>
 <summary><b>1. 當你的 AI 代理應主動偵測問題，而非被動等待詢問時</b></summary>
 
-MCP 整合會在問題描述時自動觸發。當使用者說「這個類別做了太多事情」時，代理不需要知道要問關於 God Object 的問題 — Syntagma 會將這個描述對應到 `SMELL-03`，呈現排序後的重構建議，並將違規追溯到基本原則。這將模糊的抱怨轉化為結構化的修正計畫。
+MCP 整合會在問題描述時自動觸發。當使用者說「這個類別做了太多事情」時，代理不需要知道要問關於 God Object 的問題 — Episteme 會將這個描述對應到 `SMELL-03`，呈現排序後的重構建議，並將違規追溯到基本原則。這將模糊的抱怨轉化為結構化的修正計畫。
 </details>
 
 <details>
 <summary><b>2. 當你想減少 Token 消耗 — 而非浪費在冗長解釋上時</b></summary>
 
-沒有 Syntagma 時，LLM 回答「如何修正 God Object？」會解釋壞味道、列出重構方法、描述 SOLID 原則，並逐一說明每個選項 — 每次回應消耗數百個 Token。有了 Syntagma，一次 MCP 工具呼叫即返回 `SMELL-03 → RF-018 (0.89) → LAW-001`。以極少的 Token 預算獲得同樣的專業知識。
+沒有 Episteme 時，LLM 回答「如何修正 God Object？」會解釋壞味道、列出重構方法、描述 SOLID 原則，並逐一說明每個選項 — 每次回應消耗數百個 Token。有了 Episteme，一次 MCP 工具呼叫即返回 `SMELL-03 → RF-018 (0.89) → LAW-001`。以極少的 Token 預算獲得同樣的專業知識。
 </details>
 
 <details>
 <summary><b>3. 當你需要將程式碼分析連結到修正建議 — 而非僅止於偵測時</b></summary>
 
-像 SonarQube 這樣的工具能偵測壞味道。LLM 能建議模式。Syntagma 兩者皆做並將其連結：偵測 Long Method → 追蹤它違反的法則 → 對解決它的重構方法排序 → 顯示哪些模式強化了這些重構。
+像 SonarQube 這樣的工具能偵測壞味道。LLM 能建議模式。Episteme 兩者皆做並將其連結：偵測 Long Method → 追蹤它違反的法則 → 對解決它的重構方法排序 → 顯示哪些模式強化了這些重構。
 </details>
 
 <details>
 <summary><b>4. 當孤立的模式知識不夠用 — 你需要的是關係時</b></summary>
 
-知道 Extract Method 做什麼只是基本要求。知道它*解決* Long Method (SMELL-01)、而 Long Method *違反* Single Responsibility (LAW-001)、而 Single Responsibility 由 Facade Pattern (DP-012) *強制執行* — 這是一條 LLM 無法自行可靠建構的推理鏈。Syntagma 的 201 條語意關係讓 AI 代理能以確定性的方式遍歷這些路徑。
+知道 Extract Method 做什麼只是基本要求。知道它*解決* Long Method (SMELL-01)、而 Long Method *違反* Single Responsibility (LAW-001)、而 Single Responsibility 由 Facade Pattern (DP-012) *強制執行* — 這是一條 LLM 無法自行可靠建構的推理鏈。Episteme 的 201 條語意關係讓 AI 代理能以確定性的方式遍歷這些路徑。
 </details>
 
 <details>
 <summary><b>5. 當你在做架構決策並需要證據而非意見時</b></summary>
 
-「我應該使用微服務嗎？」— Syntagma 將這個問題連結到 Conway's Law (LAW-017)、SRP (LAW-001) 和 Strangler Fig 模式 (DP-026)，然後展示它們之間的關係。決策可追溯到工程法則，而非部落格文章。
+「我應該使用微服務嗎？」— Episteme 將這個問題連結到 Conway's Law (LAW-017)、SRP (LAW-001) 和 Strangler Fig 模式 (DP-026)，然後展示它們之間的關係。決策可追溯到工程法則，而非部落格文章。
 </details>
 
 <details>
@@ -168,7 +168,7 @@ MCP 整合會在問題描述時自動觸發。當使用者說「這個類別做�
 <details>
 <summary><b>7. 當你在空氣隔離或受限網路環境中工作時</b></summary>
 
-Syntagma 完全離線運作：單一二進位檔、本機 SQLite 資料庫、透過 fastembed (ONNX Runtime) 的本機嵌入。無遙測、無回傳資料、無外部 API 呼叫。你的程式碼和分析結果永遠不會離開你的機器。
+Episteme 完全離線運作：單一二進位檔、本機 SQLite 資料庫、透過 fastembed (ONNX Runtime) 的本機嵌入。無遙測、無回傳資料、無外部 API 呼叫。你的程式碼和分析結果永遠不會離開你的機器。
 </details>
 
 ---
@@ -179,25 +179,25 @@ Syntagma 完全離線運作：單一二進位檔、本機 SQLite 資料庫、透
 
 ```bash
 # 首次建置約需 3–5 分鐘 — 這是正常的
-cargo install --git https://github.com/epicsagas/Syntagma
-syntagma install claude    # 載入資料 + 設定 MCP + 安裝代理
+cargo install --git https://github.com/epicsagas/Episteme
+epis install claude    # 載入資料 + 設定 MCP + 安裝代理
 ```
 
-> 執行 `syntagma install claude` 後，**重新啟動 Claude Code**，MCP 工具和代理才會出現。
+> 執行 `epis install claude` 後，**重新啟動 Claude Code**，MCP 工具和代理才會出現。
 
 ### 選項 2：從原始碼建置
 
 ```bash
-git clone https://github.com/epicsagas/Syntagma.git
-cd Syntagma && cargo build --release
+git clone https://github.com/epicsagas/Episteme.git
+cd Episteme && cargo build --release
 ```
 
 然後執行適合你平台的二進位檔：
 
 | 平台 | 指令 |
 |------|------|
-| **macOS / Linux** | `./target/release/syntagma install --local claude` |
-| **Windows** | `.\target\release\syntagma.exe install --local claude` |
+| **macOS / Linux** | `./target/release/epis install --local claude` |
+| **Windows** | `.\target\release\episteme.exe install --local claude` |
 
 ### 選項 3：Docker（無需 Rust）
 
@@ -216,9 +216,9 @@ docker-compose up -d
 ```json
 {
   "mcpServers": {
-    "syntagma": {
+    "episteme": {
       "command": "docker",
-      "args": ["exec", "-i", "syntagma-api", "syntagma", "mcp"]
+      "args": ["exec", "-i", "episteme-api", "episteme", "mcp"]
     }
   }
 }
@@ -226,42 +226,42 @@ docker-compose up -d
 
 ### 選項 4：預建二進位檔（無需 Rust）
 
-從 [GitHub Releases](https://github.com/epicsagas/Syntagma/releases) 下載適合你平台的最新二進位檔：
+從 [GitHub Releases](https://github.com/epicsagas/Episteme/releases) 下載適合你平台的最新二進位檔：
 
 | 平台 | 檔案 |
 |------|------|
-| **macOS**（Apple Silicon） | `syntagma-aarch64-apple-darwin.tar.gz` |
-| **macOS**（Intel） | `syntagma-x86_64-apple-darwin.tar.gz` |
-| **Linux**（x86_64） | `syntagma-x86_64-unknown-linux-gnu.tar.gz` |
-| **Linux**（ARM64） | `syntagma-aarch64-unknown-linux-gnu.tar.gz` |
-| **Windows**（x86_64） | `syntagma-x86_64-pc-windows-msvc.zip` |
+| **macOS**（Apple Silicon） | `episteme-aarch64-apple-darwin.tar.gz` |
+| **macOS**（Intel） | `episteme-x86_64-apple-darwin.tar.gz` |
+| **Linux**（x86_64） | `episteme-x86_64-unknown-linux-gnu.tar.gz` |
+| **Linux**（ARM64） | `episteme-aarch64-unknown-linux-gnu.tar.gz` |
+| **Windows**（x86_64） | `episteme-x86_64-pc-windows-msvc.zip` |
 
 ```bash
 # macOS / Linux
-tar xzf syntagma-*.tar.gz
-sudo mv syntagma /usr/local/bin/
+tar xzf episteme-*.tar.gz
+sudo mv episteme /usr/local/bin/
 
-# Windows — 解壓縮 zip 並將 syntagma.exe 加入你的 PATH
+# Windows — 解壓縮 zip 並將 episteme.exe 加入你的 PATH
 ```
 
 然後安裝：
 ```bash
-syntagma install claude    # 或：cursor、codex、gemini
+epis install claude    # 或：cursor、codex、gemini
 ```
 
 ### 驗證安裝
 
 ```bash
-syntagma --version
-syntagma stats
-syntagma explore "strategy pattern"    # 探索知識圖譜
+epis --version
+epis stats
+epis explore "strategy pattern"    # 探索知識圖譜
 ```
 
 ---
 
 ## MCP 工具與代理
 
-> **什麼是 MCP？** [Model Context Protocol](https://modelcontextprotocol.io) 是一個開放標準，讓 AI 工具能呼叫外部服務。Syntagma 將其知識圖譜暴露為 MCP 工具，Claude Code、Cursor 及其他相容編輯器可以自動呼叫。
+> **什麼是 MCP？** [Model Context Protocol](https://modelcontextprotocol.io) 是一個開放標準，讓 AI 工具能呼叫外部服務。Episteme 將其知識圖譜暴露為 MCP 工具，Claude Code、Cursor 及其他相容編輯器可以自動呼叫。
 
 ### 6 個 MCP 工具
 
@@ -281,11 +281,11 @@ syntagma explore "strategy pattern"    # 探索知識圖譜
 | 代理 | 使用時機 | 核心能力 | 交接給 |
 |------|----------|----------|--------|
 | **`code-reviewer`** | 程式碼壞味道、SOLID 違規 | 因果分析（根本原因 → 下游症狀） | advisor、architecture-analyst、refactoring-expert |
-| **`syntagma-advisor`** | 工程決策、取捨評估 | 多實體取捨鏈與行動計畫 | code-reviewer、architecture-analyst、researcher |
-| **`syntagma-researcher`** | 知識圖譜探索 | 模式、法則、壞味道之間的連結地圖 | advisor、code-reviewer |
+| **`episteme-advisor`** | 工程決策、取捨評估 | 多實體取捨鏈與行動計畫 | code-reviewer、architecture-analyst、researcher |
+| **`episteme-researcher`** | 知識圖譜探索 | 模式、法則、壞味道之間的連結地圖 | advisor、code-reviewer |
 | **`architecture-analyst`** | 針對法則的架構評估 | 含風險加權評估的合規性評分 | advisor、code-reviewer、researcher |
 
-**工作流程範例**：`code-reviewer` 偵測到 God Object → 追蹤因果關係至 3 個下游壞味道 → 提供「套用 RF-018」（→ refactoring-expert）或「深入分析根本原因」（→ syntagma-advisor）或「架構檢查」（→ architecture-analyst）。
+**工作流程範例**：`code-reviewer` 偵測到 God Object → 追蹤因果關係至 3 個下游壞味道 → 提供「套用 RF-018」（→ refactoring-expert）或「深入分析根本原因」（→ episteme-advisor）或「架構檢查」（→ architecture-analyst）。
 
 [完整 MCP 整合指南](../../docs/mcp-integration-guide.md)
 
@@ -295,23 +295,23 @@ syntagma explore "strategy pattern"    # 探索知識圖譜
 
 ```bash
 # 分析程式碼的壞味道
-syntagma analyze my_code.py --language python --json
-syntagma infer my_code.py
+epis analyze my_code.py --language python --json
+episteme infer my_code.py
 
 # 探索知識圖譜
-syntagma explore "strategy pattern"
-syntagma graph path DP-005 RF-001   # 例如：Factory Method → Extract Method
+epis explore "strategy pattern"
+epis graph path DP-005 RF-001   # 例如：Factory Method → Extract Method
 
 # 建置 RAG 索引
-syntagma build
+epis build
 
 # 啟動伺服器
-syntagma api              # REST API，連接埠 :8000
-syntagma mcp --http       # MCP 伺服器，連接埠 :43175
-syntagma web --port 8080  # Web UI（互動式圖譜瀏覽器）
+epis api              # REST API，連接埠 :8000
+episteme mcp --http       # MCP 伺服器，連接埠 :43175
+episteme web --port 8080  # Web UI（互動式圖譜瀏覽器）
 
 # 發行打包
-syntagma dist --out-dir release/
+episteme dist --out-dir release/
 ```
 
 ---
@@ -357,24 +357,24 @@ syntagma dist --out-dir release/
 
 ```bash
 # 資料位置
-SYNTAGMA_DATA_DIR=~/.syntagma/data
-SYNTAGMA_DB_PATH=~/.syntagma/db/syntagma.db
+EPISTEME_DATA_DIR=~/.episteme/data
+EPISTEME_DB_PATH=~/.episteme/db/episteme.db
 
 # API 伺服器
-SYNTAGMA_API_HOST=0.0.0.0
-SYNTAGMA_API_PORT=8000
-SYNTAGMA_API_KEY=your-secret-key
+EPISTEME_API_HOST=0.0.0.0
+EPISTEME_API_PORT=8000
+EPISTEME_API_KEY=your-secret-key
 
 # MCP 伺服器
-SYNTAGMA_MCP_HOST=127.0.0.1
-SYNTAGMA_MCP_PORT=43175
+EPISTEME_MCP_HOST=127.0.0.1
+EPISTEME_MCP_PORT=43175
 ```
 
 ---
 
 ## 疑難排解
 
-**安裝後找不到 `syntagma` 指令**
+**安裝後找不到 `episteme` 指令**
 
 | 平台 | 解決方法 |
 |------|----------|
@@ -383,19 +383,19 @@ SYNTAGMA_MCP_PORT=43175
 
 **MCP 工具未出現在 Claude Code / Cursor 中**
 
-執行 `syntagma install` 後重新啟動編輯器。若仍無法使用，檢查設定檔是否已寫入：
+執行 `epis install` 後重新啟動編輯器。若仍無法使用，檢查設定檔是否已寫入：
 ```bash
 cat ~/.claude.json   # Claude Code
 ```
 
 **連接埠已被佔用**
 ```bash
-syntagma mcp --http --port 43176   # 使用其他連接埠
+episteme mcp --http --port 43176   # 使用其他連接埠
 ```
 
 **首次啟動緩慢**
 
-Syntagma 在首次執行時會建置本機嵌入索引。這需要 30–60 秒，且僅此一次。後續啟動將即時完成。
+Episteme 在首次執行時會建置本機嵌入索引。這需要 30–60 秒，且僅此一次。後續啟動將即時完成。
 
 **`cargo install` 時出現編譯錯誤**
 
@@ -405,7 +405,7 @@ rustup update stable
 rustup show   # 確認使用中的工具鏈
 ```
 
-> 更多協助：[QUICKSTART.md 疑難排解章節](../../QUICKSTART.md#troubleshooting) · [提交問題](https://github.com/epicsagas/Syntagma/issues)
+> 更多協助：[QUICKSTART.md 疑難排解章節](../../QUICKSTART.md#troubleshooting) · [提交問題](https://github.com/epicsagas/Episteme/issues)
 
 ---
 
@@ -434,7 +434,7 @@ cargo clippy -- -D warnings
 cargo fmt
 ```
 
-有任何問題？[開啟討論](https://github.com/epicsagas/Syntagma/discussions) 或 [提交問題](https://github.com/epicsagas/Syntagma/issues)。
+有任何問題？[開啟討論](https://github.com/epicsagas/Episteme/discussions) 或 [提交問題](https://github.com/epicsagas/Episteme/issues)。
 
 ---
 

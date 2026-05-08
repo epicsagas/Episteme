@@ -1,6 +1,6 @@
 {
   "version": "0.0.1",
-  "description": "Auto-generated relational mapping for Syntagma RAG knowledge graph",
+  "description": "Auto-generated relational mapping for Episteme RAG knowledge graph",
   "last_updated": "2026-04-28",
   "DP-001": {
     "id": "DP-001",

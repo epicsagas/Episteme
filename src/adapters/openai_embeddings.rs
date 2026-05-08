@@ -191,12 +191,12 @@ mod tests {
     ///
     /// Run with: `cargo test --features openai-embeddings -- --ignored openai_live`
     ///
-    /// Requires `SYNTAGMA_OPENAI_API_KEY` to be set in the environment.
+    /// Requires `EPISTEME_OPENAI_API_KEY` to be set in the environment.
     #[test]
     #[ignore]
     fn openai_live_embed_single() {
-        let key = std::env::var("SYNTAGMA_OPENAI_API_KEY")
-            .expect("SYNTAGMA_OPENAI_API_KEY must be set for live test");
+        let key = std::env::var("EPISTEME_OPENAI_API_KEY")
+            .expect("EPISTEME_OPENAI_API_KEY must be set for live test");
         let provider = OpenAIEmbeddingProvider::new(key, "text-embedding-3-small".to_owned(), 1536);
         let vec = provider.embed("hello world").expect("embed should succeed");
         assert_eq!(vec.len(), 1536);
@@ -207,8 +207,8 @@ mod tests {
     #[test]
     #[ignore]
     fn openai_live_embed_batch() {
-        let key = std::env::var("SYNTAGMA_OPENAI_API_KEY")
-            .expect("SYNTAGMA_OPENAI_API_KEY must be set for live test");
+        let key = std::env::var("EPISTEME_OPENAI_API_KEY")
+            .expect("EPISTEME_OPENAI_API_KEY must be set for live test");
         let provider = OpenAIEmbeddingProvider::new(key, "text-embedding-3-small".to_owned(), 1536);
         let texts = ["first sentence", "second sentence", "third sentence"];
         let results = provider

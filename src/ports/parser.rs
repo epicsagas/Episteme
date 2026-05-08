@@ -4,7 +4,7 @@ use std::path::Path;
 
 /// Trait for language-specific code parsers.
 ///
-/// Ported from `syntagma.parsers.base.LanguageParser`.
+/// Ported from `episteme.parsers.base.LanguageParser`.
 pub trait CodeParser: Send + Sync {
     /// Parse source code and return detected smells.
     fn parse_code(&self, code: &str, file_name: &str) -> Vec<SmellDetection>;

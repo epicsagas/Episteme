@@ -4,8 +4,8 @@ use std::path::PathBuf;
 
 use anyhow::{Context, Result};
 
-use syntagma_engine::adapters::regex_parsers::get_parser;
-use syntagma_engine::domain::engine::RefactoringInferenceEngine;
+use episteme::adapters::regex_parsers::get_parser;
+use episteme::domain::engine::RefactoringInferenceEngine;
 
 use super::prelude::*;
 

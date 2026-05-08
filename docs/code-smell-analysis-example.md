@@ -1,6 +1,6 @@
 # Code Smell Analysis Example: Claudy
 
-> Real-world analysis of a Rust hexagonal-architecture CLI using Syntagma MCP tools. Demonstrates how to systematically detect, categorize, and plan refactoring for code smells in a production codebase.
+> Real-world analysis of a Rust hexagonal-architecture CLI using Episteme MCP tools. Demonstrates how to systematically detect, categorize, and plan refactoring for code smells in a production codebase.
 
 ## Target Project
 
@@ -151,7 +151,7 @@ find src -name "*.rs" -exec wc -l {} + | sort -rn | head -25
 find src -name "*.rs" | xargs grep -l "pub fn " | while read f; do \
   echo "$(grep -c 'pub fn ' $f) $f"; done | sort -rn | head -15
 
-# Step 3: Knowledge graph queries (Syntagma MCP)
+# Step 3: Knowledge graph queries (Episteme MCP)
 search_knowledge("god class large class single responsibility", entity_type="smell")
 search_knowledge("long method function too many parameters", entity_type="smell")
 

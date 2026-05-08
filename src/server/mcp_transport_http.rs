@@ -13,9 +13,9 @@ use std::sync::Arc;
 
 use crate::adapters::constants::MAX_REQUEST_BYTES;
 use crate::server::mcp_dispatcher::dispatch;
-use crate::server::mcp_handler::SyntagmaMCP;
+use crate::server::mcp_handler::EpistemeMCP;
 
-pub type SharedMCP = Arc<SyntagmaMCP>;
+pub type SharedMCP = Arc<EpistemeMCP>;
 #[derive(Clone)]
 pub struct McpAuthKeys(pub Vec<String>);
 
@@ -27,7 +27,7 @@ pub struct McpAuthKeys(pub Vec<String>);
 /// - `GET  /tools` — tool schema list
 /// - `GET  /resources` — resource schema list
 /// - `POST /tool` — convenience tool-call (no JSON-RPC envelope required)
-pub fn mcp_http_router(mcp: SyntagmaMCP, allowed_api_keys: Vec<String>) -> Router {
+pub fn mcp_http_router(mcp: EpistemeMCP, allowed_api_keys: Vec<String>) -> Router {
     let state: SharedMCP = Arc::new(mcp);
     Router::new()
         .route("/mcp", post(handle_mcp_post))
@@ -157,7 +157,7 @@ mod tests {
     fn test_router(keys: Vec<String>) -> Router {
         let graph =
             crate::domain::graph::KnowledgeGraph::from_entities(std::collections::HashMap::new());
-        let mcp = crate::server::mcp_handler::SyntagmaMCP::new(graph);
+        let mcp = crate::server::mcp_handler::EpistemeMCP::new(graph);
         mcp_http_router(mcp, keys)
     }
 

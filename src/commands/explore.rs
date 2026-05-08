@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 
-use syntagma_engine::server::mcp_handler::SyntagmaMCP;
+use episteme::server::mcp_handler::EpistemeMCP;
 
 use super::prelude::*;
 
@@ -23,7 +23,7 @@ pub fn cmd_explore(
     // Use the MCP server's keyword search to find matching entities.
     // Attach the RAG database (FTS5 + embeddings) when available for
     // higher-quality hybrid search results.
-    let mut mcp = SyntagmaMCP::new(graph);
+    let mut mcp = EpistemeMCP::new(graph);
     mcp.try_attach_rag();
     let result = mcp.search_knowledge(&query, Some(limit), entity_type);
 
@@ -81,17 +81,17 @@ pub fn cmd_explore(
 /// Interactive REPL for exploring the knowledge graph.
 fn cmd_explore_repl(limit: usize, entity_type: Option<&str>) -> Result<()> {
     let graph = load_graph()?;
-    let mut mcp = SyntagmaMCP::new(graph);
+    let mut mcp = EpistemeMCP::new(graph);
     mcp.try_attach_rag();
     let mut rl = rustyline::DefaultEditor::new()?;
 
-    println!("syntagma interactive explorer");
+    println!("episteme interactive explorer");
     println!("Commands: search <query>, entity <id>, neighbors <id>, path <from> <to>,");
     println!("          stats, contradictions, quit/exit");
     println!();
 
     loop {
-        let line = match rl.readline("syntagma> ") {
+        let line = match rl.readline("epis> ") {
             Ok(line) => line,
             Err(rustyline::error::ReadlineError::Eof) => break,
             Err(rustyline::error::ReadlineError::Interrupted) => break,
@@ -186,11 +186,11 @@ fn cmd_explore_repl(limit: usize, entity_type: Option<&str>) -> Result<()> {
                 }
             }
             "stats" => {
-                let result = mcp.handle_resource_read("syntagma://stats");
+                let result = mcp.handle_resource_read("episteme://stats");
                 println!("{}", serde_json::to_string_pretty(&result)?);
             }
             "contradictions" => {
-                let result = mcp.handle_resource_read("syntagma://contradictions");
+                let result = mcp.handle_resource_read("episteme://contradictions");
                 let contradictions = result.as_array();
                 match contradictions {
                     Some(c) if c.is_empty() => println!("No contradictions found."),

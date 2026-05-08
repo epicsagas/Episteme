@@ -160,7 +160,7 @@ mod tests {
     #[test]
     fn single_section_overview() {
         let md = "# Singleton\n\nThis is the singleton pattern. It ensures only one instance exists and provides a global point of access to it.";
-        let dir = std::env::temp_dir().join("syntagma_test_chunker_overview");
+        let dir = std::env::temp_dir().join("episteme_test_chunker_overview");
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("singleton.md");
         std::fs::write(&path, md).unwrap();
@@ -175,7 +175,7 @@ mod tests {
     #[test]
     fn multiple_sections() {
         let md = "# Singleton\n\nSome intro text that is long enough to pass the minimum threshold.\n\n## Intent\n\nThe intent section describes what the pattern does and why you would use it.\n\n## Structure\n\nThe structure section describes the class diagram and relationships.";
-        let dir = std::env::temp_dir().join("syntagma_test_chunker_multi");
+        let dir = std::env::temp_dir().join("episteme_test_chunker_multi");
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("singleton.md");
         std::fs::write(&path, md).unwrap();
@@ -192,7 +192,7 @@ mod tests {
     #[test]
     fn short_section_discarded() {
         let md = "# Test\n\nThis is long enough for the overview section to pass minimum threshold check.\n\n## Tiny\n\nhi";
-        let dir = std::env::temp_dir().join("syntagma_test_chunker_short");
+        let dir = std::env::temp_dir().join("episteme_test_chunker_short");
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("test.md");
         std::fs::write(&path, md).unwrap();

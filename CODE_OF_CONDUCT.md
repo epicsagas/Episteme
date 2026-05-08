@@ -19,7 +19,7 @@ We as contributors and maintainers pledge to make participation in this project 
 
 ## Enforcement
 
-Instances of unacceptable behavior may be reported by opening a [GitHub issue](https://github.com/epicsagas/Syntagma/issues) or contacting the maintainers directly. All complaints will be reviewed and investigated promptly and fairly.
+Instances of unacceptable behavior may be reported by opening a [GitHub issue](https://github.com/epicsagas/Episteme/issues) or contacting the maintainers directly. All complaints will be reviewed and investigated promptly and fairly.
 
 ## Attribution
 

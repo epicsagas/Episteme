@@ -8,7 +8,7 @@
 
 ## Project Structure
 - `src/main.rs` — CLI entry point (clap derive, 15 subcommands)
-- `src/bin/syntagma-mcp.rs` — Standalone MCP stdio binary (JSON-RPC over stdin/stdout)
+- `src/bin/episteme-mcp.rs` — Standalone MCP stdio binary (JSON-RPC over stdin/stdout)
 - `src/lib.rs` — Library root, re-exports primary types
 - `src/cli.rs` — Clap command enum definitions
 - `src/commands/` — CLI subcommand handlers (`analysis`, `build`, `explore`, `graph`, `install`, `service`, `other`)
@@ -21,7 +21,7 @@
 - `docs/` — User documentation: `api.md`, `mcp-integration-guide.md`, `distribution.md`, `alcove-integration.md`
 - `benchmarks/` — Search quality benchmarks and evaluation
 - `monitoring/` — Prometheus + Grafana + Alertmanager config
-- `db/` — Pre-built SQLite database (`syntagma.db`)
+- `db/` — Pre-built SQLite database (`episteme.db`)
 - `dist/` — Release packaging artifacts
 
 ## Code Style
@@ -30,7 +30,7 @@
 - Error handling: `thiserror` for domain errors (`GraphError`), `InfraError` for adapters; `anyhow::Result` in CLI/main; domain uses manual `Display` + `Error` impls (no thiserror dep)
 - Imports: `use crate::domain::...` for domain, `use crate::ports::...` for traits, `use crate::adapters::...` for infra; grouped by source
 - Async: `tokio` runtime; axum handlers are async; domain logic is synchronous
-- State: `KnowledgeGraph` is the central in-memory data structure; `SyntagmaMCP` wraps it with optional RAG
+- State: `KnowledgeGraph` is the central in-memory data structure; `EpistemeMCP` wraps it with optional RAG
 - Regex: `OnceLock<Regex>` for cached static patterns; `GenericParser` with `ParserConfig` for language-specific parsers
 - Architecture: Hexagonal (ports & adapters) — `domain/` has zero external deps, `ports/` defines traits, `adapters/` implements them
 - Tests: Inline `#[cfg(test)] mod tests` at bottom of each file; `tempfile` for FS tests, `proptest` for property tests
@@ -72,5 +72,5 @@ fn detect_long_method(metrics: &CodeMetrics, loc: &str, name: &str) -> Option<Sm
 - Never: Import adapter types from `domain/` — depend on port traits instead
 - Never: Use `unwrap()` in production code — use `?`, `ok_or`, or proper error handling
 - Never: Use `#[allow(...)]` to suppress warnings — fix the root cause; use `#[expect(...)]` only with a tracking issue comment
-- Never: Modify `dist/` or `db/` directly — use `syntagma dist` and `syntagma build` commands
+- Never: Modify `dist/` or `db/` directly — use `episteme dist` and `epis build` commands
 - Never: Commit `target/` or `.env` files

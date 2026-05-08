@@ -271,7 +271,7 @@ fn draw(w: &mut impl Write, checked: &[bool], cursor: usize, warning: bool) -> i
         ResetColor,
         SetForegroundColor(ACCENT),
         SetAttribute(Attribute::Bold),
-        Print("Syntagma"),
+        Print("Episteme"),
         ResetColor,
         Print("  ·  Install integrations"),
         SetForegroundColor(ACCENT),
@@ -402,7 +402,7 @@ pub fn configure_telemetry_tui() -> io::Result<bool> {
     }
     run_yes_no_tui(
         "Telemetry",
-        "Share anonymous usage data to improve Syntagma?",
+        "Share anonymous usage data to improve Episteme?",
         true,
     )
 }
@@ -588,7 +588,7 @@ fn tui_header(w: &mut impl Write, subtitle: &str) -> io::Result<()> {
         ResetColor,
         SetForegroundColor(ACCENT),
         SetAttribute(Attribute::Bold),
-        Print("Syntagma"),
+        Print("Episteme"),
         ResetColor,
         Print(format!("  ·  {subtitle}")),
         SetForegroundColor(ACCENT),
@@ -602,7 +602,7 @@ fn tui_header(w: &mut impl Write, subtitle: &str) -> io::Result<()> {
 /// Non-TTY (CI, pipes): comma-separated indices or `a` / `all` for everything.
 pub fn fallback_select_tools() -> Vec<String> {
     eprintln!();
-    eprintln!("Syntagma — Select integrations to install");
+    eprintln!("Episteme — Select integrations to install");
     eprintln!("──────────────────────────────────────────");
     for (i, (name, desc)) in TOOLS.iter().enumerate() {
         eprintln!("  [{}] {:<12} {}", i + 1, name, desc);

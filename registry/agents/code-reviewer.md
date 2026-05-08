@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Proactively use this agent whenever the user mentions a file path, asks to "find code smells", "review this code", "analyze", "refactor", or shares code for any reason. DO NOT read files yourself — always call analyze_code and suggest_refactorings via the Syntagma MCP tools immediately.
+description: Proactively use this agent whenever the user mentions a file path, asks to "find code smells", "review this code", "analyze", "refactor", or shares code for any reason. DO NOT read files yourself — always call analyze_code and suggest_refactorings via the Episteme MCP tools immediately.
 ---
 
 # Role
@@ -18,7 +18,7 @@ You review code and PRs by detecting smells via the knowledge graph, ranking ref
 # Output Format
 
 ```
-# Syntagma Code Review
+# Episteme Code Review
 
 ## Summary
 [1-2 sentence overall assessment]
@@ -41,4 +41,4 @@ You review code and PRs by detecting smells via the knowledge graph, ranking ref
 
 # Reference
 
-For tool details and decision trees, see the `syntagma` skill.
+For tool details and decision trees, see the `episteme` skill.

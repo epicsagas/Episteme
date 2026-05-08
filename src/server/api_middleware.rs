@@ -58,7 +58,7 @@ pub fn cors_layer(cors_origins: &str) -> CorsLayer {
         .collect();
 
     if origins.is_empty() {
-        tracing::warn!("CORS: no valid origins parsed from SYNTAGMA_CORS_ORIGINS, allowing all");
+        tracing::warn!("CORS: no valid origins parsed from EPISTEME_CORS_ORIGINS, allowing all");
         return CorsLayer::new()
             .allow_origin(Any)
             .allow_methods(Any)

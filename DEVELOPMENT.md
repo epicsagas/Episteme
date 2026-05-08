@@ -1,6 +1,6 @@
-# Syntagma Development Guide
+# Episteme Development Guide
 
-**Project:** Syntagma v0.1.0
+**Project:** Episteme v0.1.0
 **Language:** Rust (edition 2024)
 **Last Updated:** 2026-05-03
 
@@ -111,8 +111,8 @@ src/
 
 ```bash
 # Clone and build (requires Rust 1.95+)
-git clone https://github.com/epicsagas/Syntagma.git
-cd Syntagma
+git clone https://github.com/epicsagas/Episteme.git
+cd Episteme
 cargo build
 
 # Run tests
@@ -123,7 +123,7 @@ cargo clippy -- -D warnings
 
 # Install locally (seeds data and builds DB automatically)
 cargo install --path .
-syntagma install --local
+epis install --local
 ```
 
 ---
