@@ -82,7 +82,12 @@ impl KnowledgeGraph {
     // -----------------------------------------------------------------------
 
     /// Build a knowledge graph from an existing HashMap of entities (pure, no I/O).
-    pub fn from_entities(entities: HashMap<String, Entity>) -> Self {
+    ///
+    /// Derives `solved_by` from forward `solves` edges so that `solves` is the
+    /// single source of truth. Any stale `solved_by` in the data is overwritten.
+    pub fn from_entities(mut entities: HashMap<String, Entity>) -> Self {
+        Self::derive_inverse_relations(&mut entities, "solves", "solved_by");
+
         let reverse_relations = Self::build_reverse_index(&entities);
 
         tracing::info!(
@@ -93,6 +98,37 @@ impl KnowledgeGraph {
         Self {
             entities,
             reverse_relations,
+        }
+    }
+
+    /// Scan all entities for `forward_key` edges and inject the corresponding
+    /// `inverse_key` into each target entity, overwriting any existing value.
+    fn derive_inverse_relations(
+        entities: &mut HashMap<String, Entity>,
+        forward_key: &str,
+        inverse_key: &str,
+    ) {
+        let mut inverse_map: HashMap<String, Vec<String>> = HashMap::new();
+
+        for (entity_id, entity) in entities.iter() {
+            if let Some(targets) = entity.relations.get(forward_key) {
+                for target_id in targets {
+                    inverse_map
+                        .entry(target_id.clone())
+                        .or_default()
+                        .push(entity_id.clone());
+                }
+            }
+        }
+
+        for (target_id, mut sources) in inverse_map {
+            sources.sort();
+            sources.dedup();
+            if let Some(entity) = entities.get_mut(&target_id) {
+                entity
+                    .relations
+                    .insert(inverse_key.to_owned(), sources);
+            }
         }
     }
 
@@ -857,5 +893,59 @@ pub(crate) mod tests {
         let contradictions = kg.find_contradictions();
         assert_eq!(contradictions.len(), 1);
         assert_eq!(contradictions[0].conflicts, vec!["LAW-001".to_owned()]);
+    }
+
+    #[test]
+    fn derive_solved_by_from_solves() {
+        // RF-001 solves SMELL-01 and SMELL-02
+        let mut rf1 = blank_entity("RF-001");
+        rf1.relations
+            .insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
+        let mut rf2 = blank_entity("RF-002");
+        rf2.relations
+            .insert("solves".to_owned(), vec!["SMELL-01".to_owned(), "SMELL-02".to_owned()]);
+
+        let smell1 = blank_entity("SMELL-01");
+        let smell2 = blank_entity("SMELL-02");
+
+        let kg = build_graph_from_entities(vec![rf1, rf2, smell1, smell2]);
+
+        let solved_by_1 = kg.get_neighbors("SMELL-01", Some("solved_by"));
+        let solved_by_2 = kg.get_neighbors("SMELL-02", Some("solved_by"));
+
+        let mut s1 = solved_by_1.clone();
+        s1.sort();
+        assert_eq!(s1, vec!["RF-001".to_owned(), "RF-002".to_owned()]);
+
+        let mut s2 = solved_by_2.clone();
+        s2.sort();
+        assert_eq!(s2, vec!["RF-002".to_owned()]);
+    }
+
+    #[test]
+    fn derive_solved_by_overwrites_stale_data() {
+        // SMELL-01 has stale solved_by: [RF-099], but RF-001 actually solves it
+        let mut smell = blank_entity("SMELL-01");
+        smell
+            .relations
+            .insert("solved_by".to_owned(), vec!["RF-099".to_owned()]);
+        let mut rf = blank_entity("RF-001");
+        rf.relations
+            .insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
+
+        let kg = build_graph_from_entities(vec![smell, rf]);
+
+        let solved_by = kg.get_neighbors("SMELL-01", Some("solved_by"));
+        assert_eq!(solved_by, vec!["RF-001".to_owned()]);
+    }
+
+    #[test]
+    fn derive_solved_by_empty_when_no_solves() {
+        let smell = blank_entity("SMELL-01");
+        let rf = blank_entity("RF-001"); // no solves relation
+
+        let kg = build_graph_from_entities(vec![smell, rf]);
+        let solved_by = kg.get_neighbors("SMELL-01", Some("solved_by"));
+        assert!(solved_by.is_empty());
     }
 }
