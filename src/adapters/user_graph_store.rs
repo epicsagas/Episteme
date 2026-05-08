@@ -444,9 +444,7 @@ impl MutableGraphRepository for UserGraphStore {
         };
         // Get the target's neighbor targets as a flat set
         let target_targets: std::collections::HashSet<String> = {
-            let mut stmt = match conn
-                .prepare("SELECT to_id FROM user_relations WHERE from_id=?1")
-            {
+            let mut stmt = match conn.prepare("SELECT to_id FROM user_relations WHERE from_id=?1") {
                 Ok(s) => s,
                 Err(_) => return Vec::new(),
             };
@@ -477,10 +475,7 @@ impl MutableGraphRepository for UserGraphStore {
         let mut entity_targets: HashMap<String, std::collections::HashSet<String>> = HashMap::new();
         if let Ok(rows) = rows {
             for r in rows.flatten() {
-                entity_targets
-                    .entry(r.0)
-                    .or_default()
-                    .insert(r.1);
+                entity_targets.entry(r.0).or_default().insert(r.1);
             }
         }
 

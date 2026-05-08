@@ -178,7 +178,10 @@ pub fn install_cursor(dry_run: bool, transport: &Transport) -> Result<Vec<String
     let label = if existed { "updated" } else { "added" };
     let mut msgs = vec![format!("Cursor: MCP config {label}")];
     if !legacy_removed.is_empty() {
-        msgs.push(format!("Cursor: removed legacy key(s): {}", legacy_removed.join(", ")));
+        msgs.push(format!(
+            "Cursor: removed legacy key(s): {}",
+            legacy_removed.join(", ")
+        ));
     }
     Ok(msgs)
 }
@@ -236,7 +239,10 @@ pub fn install_gemini(dry_run: bool, transport: &Transport) -> Result<Vec<String
     let label = if existed { "updated" } else { "added" };
     let mut msgs = vec![format!("Gemini CLI: MCP config {label}")];
     if !legacy_removed.is_empty() {
-        msgs.push(format!("Gemini CLI: removed legacy key(s): {}", legacy_removed.join(", ")));
+        msgs.push(format!(
+            "Gemini CLI: removed legacy key(s): {}",
+            legacy_removed.join(", ")
+        ));
     }
     Ok(msgs)
 }
@@ -275,7 +281,10 @@ pub fn install_opencode(dry_run: bool, transport: &Transport) -> Result<Vec<Stri
     let label = if existed { "updated" } else { "added" };
     let mut msgs = vec![format!("OpenCode: MCP config {label}")];
     if !legacy_removed.is_empty() {
-        msgs.push(format!("OpenCode: removed legacy key(s): {}", legacy_removed.join(", ")));
+        msgs.push(format!(
+            "OpenCode: removed legacy key(s): {}",
+            legacy_removed.join(", ")
+        ));
     }
     Ok(msgs)
 }
@@ -310,7 +319,10 @@ pub fn install_cline(dry_run: bool, transport: &Transport) -> Result<Vec<String>
     let label = if existed { "updated" } else { "added" };
     let mut msgs = vec![format!("Cline: MCP config {label}")];
     if !legacy_removed.is_empty() {
-        msgs.push(format!("Cline: removed legacy key(s): {}", legacy_removed.join(", ")));
+        msgs.push(format!(
+            "Cline: removed legacy key(s): {}",
+            legacy_removed.join(", ")
+        ));
     }
     Ok(msgs)
 }
@@ -353,9 +365,8 @@ pub fn seed_data(dry_run: bool) -> Result<Vec<String>, String> {
     }
 
     if messages.is_empty() {
-        messages.push(
-            "No local data found to seed. Run 'epis build' after providing data.".to_owned(),
-        );
+        messages
+            .push("No local data found to seed. Run 'epis build' after providing data.".to_owned());
     }
 
     Ok(messages)
@@ -691,10 +702,7 @@ mod tests {
 
     #[test]
     fn transport_default_is_http_43175() {
-        assert_eq!(
-            Transport::default(),
-            Transport::Http { port: 43175 }
-        );
+        assert_eq!(Transport::default(), Transport::Http { port: 43175 });
     }
 
     #[test]
@@ -751,10 +759,7 @@ mod tests {
             .or_insert_with(|| json!({}))
             .as_object_mut()
             .unwrap();
-        servers.insert(
-            "episteme".to_owned(),
-            mcp_server_config(&Transport::Stdio),
-        );
+        servers.insert("episteme".to_owned(), mcp_server_config(&Transport::Stdio));
         write_json_file(&path, &config).unwrap();
 
         let reloaded = read_json_file(&path);
