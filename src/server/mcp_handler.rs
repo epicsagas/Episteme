@@ -6,6 +6,7 @@
 use std::sync::Mutex;
 use std::time::Instant;
 
+use crate::domain::composite_graph::CompositeGraph;
 use crate::domain::graph::KnowledgeGraph;
 use crate::ports::embeddings::EmbeddingProvider;
 
@@ -17,6 +18,7 @@ pub struct EpistemeMCP {
     graph: KnowledgeGraph,
     db: Option<Mutex<rusqlite::Connection>>,
     embedding_provider: Option<Box<dyn EmbeddingProvider>>,
+    composite: Option<Mutex<CompositeGraph>>,
 }
 
 // -- constructors & accessors ------------------------------------------------
@@ -27,6 +29,7 @@ impl EpistemeMCP {
             graph,
             db: None,
             embedding_provider: None,
+            composite: None,
         }
     }
 
@@ -40,6 +43,17 @@ impl EpistemeMCP {
             graph,
             db: Some(Mutex::new(db)),
             embedding_provider: Some(provider),
+            composite: None,
+        }
+    }
+
+    /// Create MCP handler with a composite graph for tacit knowledge support.
+    pub fn with_composite(graph: KnowledgeGraph, composite: CompositeGraph) -> Self {
+        Self {
+            graph,
+            db: None,
+            embedding_provider: None,
+            composite: Some(Mutex::new(composite)),
         }
     }
 
@@ -195,6 +209,64 @@ impl EpistemeMCP {
     ) -> serde_json::Value {
         super::mcp_analysis::suggest_refactorings(&self.graph, code, language, top_k)
     }
+
+    /// Add a user insight (delegates to `mcp_insight`).
+    pub fn add_insight(
+        &self,
+        text: &str,
+        tags: Option<Vec<String>>,
+        linked_entities: Option<Vec<String>>,
+        project: Option<&str>,
+    ) -> serde_json::Value {
+        let Some(composite_mutex) = &self.composite else {
+            return serde_json::json!({"error": "tacit knowledge not enabled (no composite graph)"});
+        };
+        let Ok(mut composite) = composite_mutex.lock() else {
+            return serde_json::json!({"error": "failed to acquire composite lock"});
+        };
+        super::mcp_insight::add_insight(
+            &mut composite,
+            &self.graph,
+            text,
+            tags,
+            linked_entities,
+            project,
+        )
+    }
+
+    /// Confirm auto-detected links for an insight (delegates to `mcp_insight`).
+    pub fn confirm_links(
+        &self,
+        insight_id: &str,
+        accepted: Vec<String>,
+        rejected: Vec<String>,
+        merged_with: Option<&str>,
+    ) -> serde_json::Value {
+        let Some(composite_mutex) = &self.composite else {
+            return serde_json::json!({"error": "tacit knowledge not enabled (no composite graph)"});
+        };
+        let Ok(mut composite) = composite_mutex.lock() else {
+            return serde_json::json!({"error": "failed to acquire composite lock"});
+        };
+        super::mcp_insight::confirm_links(
+            &mut composite,
+            insight_id,
+            accepted,
+            rejected,
+            merged_with,
+        )
+    }
+
+    /// Search user insights (delegates to `mcp_insight`).
+    pub fn search_insights(&self, query: &str, limit: Option<usize>) -> serde_json::Value {
+        let Some(composite_mutex) = &self.composite else {
+            return serde_json::json!({"error": "tacit knowledge not enabled (no composite graph)"});
+        };
+        let Ok(composite) = composite_mutex.lock() else {
+            return serde_json::json!({"error": "failed to acquire composite lock"});
+        };
+        super::mcp_insight::search_insights(composite.user_store(), query, limit)
+    }
 }
 
 // -- resource implementations ------------------------------------------------
@@ -253,6 +325,9 @@ impl EpistemeMCP {
             "find_path" => self.dispatch_find_path(args),
             "analyze_code" => self.dispatch_analyze_code(args),
             "suggest_refactorings" => self.dispatch_suggest_refactorings(args),
+            "add_insight" => self.dispatch_add_insight(args),
+            "confirm_links" => self.dispatch_confirm_links(args),
+            "search_insights" => self.dispatch_search_insights(args),
             _ => serde_json::json!({
                 "error": format!("Unknown tool '{}'.", name)
             }),
@@ -315,6 +390,61 @@ impl EpistemeMCP {
         self.suggest_refactorings(code, language, top_k)
     }
 
+    fn dispatch_add_insight(&self, args: &serde_json::Value) -> serde_json::Value {
+        let text = args.get("text").and_then(|v| v.as_str()).unwrap_or("");
+        let tags = args.get("tags").and_then(|v| v.as_array()).map(|arr| {
+            arr.iter()
+                .filter_map(|v| v.as_str().map(|s| s.to_owned()))
+                .collect()
+        });
+        let linked_entities = args
+            .get("linked_entities")
+            .and_then(|v| v.as_array())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|v| v.as_str().map(|s| s.to_owned()))
+                    .collect()
+            });
+        let project = args.get("project").and_then(|v| v.as_str());
+        self.add_insight(text, tags, linked_entities, project)
+    }
+
+    fn dispatch_confirm_links(&self, args: &serde_json::Value) -> serde_json::Value {
+        let insight_id = args
+            .get("insight_id")
+            .and_then(|v| v.as_str())
+            .unwrap_or("");
+        let accepted = args
+            .get("accepted")
+            .and_then(|v| v.as_array())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|v| v.as_str().map(|s| s.to_owned()))
+                    .collect()
+            })
+            .unwrap_or_default();
+        let rejected = args
+            .get("rejected")
+            .and_then(|v| v.as_array())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|v| v.as_str().map(|s| s.to_owned()))
+                    .collect()
+            })
+            .unwrap_or_default();
+        let merged_with = args.get("merged_with").and_then(|v| v.as_str());
+        self.confirm_links(insight_id, accepted, rejected, merged_with)
+    }
+
+    fn dispatch_search_insights(&self, args: &serde_json::Value) -> serde_json::Value {
+        let query = args.get("query").and_then(|v| v.as_str()).unwrap_or("");
+        let limit = args
+            .get("limit")
+            .and_then(|v| v.as_u64())
+            .map(|v| v as usize);
+        self.search_insights(query, limit)
+    }
+
     // -- telemetry helpers ---------------------------------------------------
 
     fn telemetry_tool_for(name: &str) -> Option<crate::adapters::telemetry::Tool> {
@@ -325,6 +455,9 @@ impl EpistemeMCP {
             "find_path" => Some(crate::adapters::telemetry::Tool::FindPath),
             "analyze_code" => Some(crate::adapters::telemetry::Tool::AnalyzeCode),
             "suggest_refactorings" => Some(crate::adapters::telemetry::Tool::SuggestRefactorings),
+            "add_insight" => Some(crate::adapters::telemetry::Tool::AddInsight),
+            "confirm_links" => Some(crate::adapters::telemetry::Tool::ConfirmLinks),
+            "search_insights" => Some(crate::adapters::telemetry::Tool::SearchInsights),
             _ => None,
         }
     }

@@ -6,7 +6,7 @@ use clap::Parser;
 mod cli;
 mod commands;
 
-use cli::{Commands, GraphCommands, HooksCommands, ServiceCommands};
+use cli::{Commands, GraphCommands, HooksCommands, InsightCommands, ServiceCommands};
 
 // ---------------------------------------------------------------------------
 // CLI top-level struct
@@ -122,6 +122,8 @@ fn dispatch(cli: Cli) -> Result<()> {
 
         Commands::Web { host, port } => commands::cmd_web(&host, port),
 
+        Commands::Insight { sub } => commands::cmd_insight(insight_op(sub)),
+
         Commands::Install {
             tools,
             all,
@@ -199,6 +201,24 @@ fn hooks_op(sub: HooksCommands) -> commands::HooksOp {
     }
 }
 
+fn insight_op(sub: InsightCommands) -> commands::InsightOp {
+    match sub {
+        InsightCommands::Add {
+            title,
+            content,
+            tags,
+            link,
+        } => commands::InsightOp::Add {
+            title,
+            content,
+            tags,
+            link,
+        },
+        InsightCommands::List { limit } => commands::InsightOp::List { limit },
+        InsightCommands::Search { query, limit } => commands::InsightOp::Search { query, limit },
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Telemetry mapping
 // ---------------------------------------------------------------------------
@@ -219,6 +239,7 @@ fn telemetry_command(cmd: &Commands) -> Option<episteme::adapters::telemetry::Co
         Commands::Mcp { .. } => Some(C::Mcp),
         Commands::Service { .. } => Some(C::Service),
         Commands::Telemetry { .. } => Some(C::Telemetry),
+        Commands::Insight { .. } => None, // insight commands are local-only, skip telemetry
         _ => None,
     }
 }

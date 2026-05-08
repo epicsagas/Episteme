@@ -133,6 +133,11 @@ pub enum Commands {
         #[arg(long, default_value_t = 8080)]
         port: u16,
     },
+    /// Manage user insights (tacit knowledge)
+    Insight {
+        #[command(subcommand)]
+        sub: InsightCommands,
+    },
     /// Install Episteme into AI tools
     Install {
         /// Tools to install (claude, cursor, codex, gemini, opencode, cline, all)
@@ -236,6 +241,37 @@ pub enum ServiceCommands {
         /// Stop immediately before disabling
         #[arg(long)]
         now: bool,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum InsightCommands {
+    /// Add a new insight to the user knowledge graph
+    Add {
+        /// Title of the insight
+        title: String,
+        /// Content / body of the insight
+        content: String,
+        /// Comma-separated tags
+        #[arg(long)]
+        tags: Option<String>,
+        /// Comma-separated entity IDs to link (e.g. DP-005,SMELL-01)
+        #[arg(long)]
+        link: Option<String>,
+    },
+    /// List all user insights
+    List {
+        /// Maximum number of results
+        #[arg(long, default_value_t = 20)]
+        limit: usize,
+    },
+    /// Search user insights by keyword
+    Search {
+        /// Search query
+        query: String,
+        /// Maximum number of results
+        #[arg(long, default_value_t = 10)]
+        limit: usize,
     },
 }
 

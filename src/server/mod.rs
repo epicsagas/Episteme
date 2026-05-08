@@ -8,6 +8,7 @@ pub mod mcp_auth;
 pub mod mcp_dispatcher;
 pub mod mcp_graph;
 pub mod mcp_handler;
+pub mod mcp_insight;
 pub mod mcp_schemas;
 pub mod mcp_search;
 pub mod mcp_transport_http;

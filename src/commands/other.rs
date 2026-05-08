@@ -1,10 +1,16 @@
-//! Other commands: stats, hooks, telemetry.
+//! Other commands: stats, hooks, telemetry, insight.
 
+use std::collections::HashMap;
 use std::io::Read;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 use episteme::adapters::hooks;
+use episteme::adapters::insight_utils;
+use episteme::adapters::paths;
+use episteme::adapters::user_graph_store::UserGraphStore;
+use episteme::domain::types::UserEntity;
+use episteme::ports::graph::MutableGraphRepository;
 
 use super::prelude::*;
 
@@ -26,6 +32,165 @@ pub enum HooksOp {
         file: Option<String>,
         _json: bool,
     },
+}
+
+/// Dispatch type for insight subcommands.
+pub enum InsightOp {
+    Add {
+        title: String,
+        content: String,
+        tags: Option<String>,
+        link: Option<String>,
+    },
+    List {
+        limit: usize,
+    },
+    Search {
+        query: String,
+        limit: usize,
+    },
+}
+
+// ---------------------------------------------------------------------------
+// Insight command handler
+// ---------------------------------------------------------------------------
+
+fn open_user_store() -> Result<UserGraphStore> {
+    let db_path = paths::episteme_home().join("user_knowledge.db");
+    if let Some(parent) = db_path.parent() {
+        std::fs::create_dir_all(parent)
+            .with_context(|| format!("failed to create directory {}", parent.display()))?;
+    }
+    UserGraphStore::open(&db_path).map_err(|e| anyhow::anyhow!(e))
+}
+
+pub fn cmd_insight(op: InsightOp) -> Result<()> {
+    match op {
+        InsightOp::Add {
+            title,
+            content,
+            tags,
+            link,
+        } => {
+            let store = open_user_store()?;
+            let id =
+                insight_utils::next_insight_id_atomic(&store).map_err(|e| anyhow::anyhow!(e))?;
+
+            let tags = tags
+                .as_deref()
+                .map(insight_utils::parse_comma_list)
+                .unwrap_or_default();
+
+            let mut relations: HashMap<String, Vec<String>> = HashMap::new();
+            if let Some(link_str) = link.as_deref() {
+                let linked_ids = insight_utils::parse_comma_list(link_str);
+                if !linked_ids.is_empty() {
+                    relations.insert("derives_from".to_owned(), linked_ids);
+                }
+            }
+
+            let now = insight_utils::format_timestamp();
+            let entity = UserEntity {
+                id: id.clone(),
+                title,
+                content,
+                author: "user".to_owned(),
+                confidence: 0.5,
+                evidence_count: 0,
+                last_validated: String::new(),
+                tags,
+                relations,
+                created_at: now.clone(),
+                updated_at: now,
+            };
+
+            store.add_entity(entity).map_err(|e| anyhow::anyhow!(e))?;
+
+            println!("Added insight [{}]", id);
+            println!(
+                "  Title: {}",
+                store
+                    .get_user_entity(&id)
+                    .map(|e| e.title)
+                    .unwrap_or_default()
+            );
+
+            let count = store.user_entity_count();
+            println!("  Total insights: {}", count);
+            Ok(())
+        }
+        InsightOp::List { limit } => {
+            let store = open_user_store()?;
+            let entities = store.all_user_entities();
+
+            if entities.is_empty() {
+                println!("No insights found.");
+                return Ok(());
+            }
+
+            let display_count = entities.len().min(limit);
+            println!("Insights (showing {}/{})", display_count, entities.len());
+            println!();
+            println!("{:<10} {:<40} {:<10} Created", "ID", "Title", "Tags");
+            println!("{}", "-".repeat(80));
+
+            for entity in entities.iter().take(limit) {
+                let title_display = insight_utils::truncate_text(&entity.title, 38);
+                let tags_display = if entity.tags.is_empty() {
+                    "-".to_owned()
+                } else {
+                    entity.tags.join(",")
+                };
+                let created = if entity.created_at.len() >= 10 {
+                    &entity.created_at[..10]
+                } else {
+                    &entity.created_at
+                };
+                println!(
+                    "{:<10} {:<40} {:<10} {}",
+                    entity.id, title_display, tags_display, created
+                );
+            }
+
+            Ok(())
+        }
+        InsightOp::Search { query, limit } => {
+            let store = open_user_store()?;
+            let results = store.search_user_entities(&query, limit);
+
+            if results.is_empty() {
+                println!("No insights matching '{}'.", query);
+                return Ok(());
+            }
+
+            println!("Search results for '{}' ({} found):", query, results.len());
+            println!();
+            for entity in &results {
+                println!("  [{}] {}", entity.id, entity.title);
+                if !entity.content.is_empty() {
+                    let preview = insight_utils::truncate_text(&entity.content, 100);
+                    println!("    {}", preview);
+                }
+                if !entity.tags.is_empty() {
+                    println!("    Tags: {}", entity.tags.join(", "));
+                }
+                let linked: Vec<&String> = entity.relations.values().flatten().collect();
+                if !linked.is_empty() {
+                    println!(
+                        "    Linked: {}",
+                        linked
+                            .iter()
+                            .map(|s| s.as_str())
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    );
+                }
+                println!();
+            }
+
+            Ok(())
+        }
+    }
 }
 
 pub fn cmd_stats() -> Result<()> {

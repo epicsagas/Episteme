@@ -8,8 +8,8 @@ use anyhow::Result;
 use episteme::adapters::config::EpistemeConfig;
 
 pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> Result<()> {
-    use std::io::{self, IsTerminal};
     use episteme::adapters::installer;
+    use std::io::{self, IsTerminal};
 
     // --- Data seeding ---
     let seeded = if local {
@@ -101,13 +101,11 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     selected.dedup();
 
     // --- Transport selection (TTY only; non-TTY defaults to HTTP + 43175) ---
-    let transport: Transport =
-        if io::stdin().is_terminal() {
-            episteme::adapters::install_wizard::select_transport()
-                .map_err(|e| anyhow::anyhow!(e))?
-        } else {
-            Transport::default()
-        };
+    let transport: Transport = if io::stdin().is_terminal() {
+        episteme::adapters::install_wizard::select_transport().map_err(|e| anyhow::anyhow!(e))?
+    } else {
+        Transport::default()
+    };
 
     for tool in &selected {
         let result = match tool.as_str() {
@@ -130,10 +128,7 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     }
 
     // --- Enable launchd for HTTP transport ---
-    if matches!(transport, Transport::Http { .. })
-        && !dry_run
-        && io::stdin().is_terminal()
-    {
+    if matches!(transport, Transport::Http { .. }) && !dry_run && io::stdin().is_terminal() {
         print!("\nEnable episteme MCP as login item and start now? [Y/n]: ");
         io::stdout().flush().ok();
         let mut line = String::new();
