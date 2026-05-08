@@ -329,8 +329,7 @@ fn expand_with_related_entities(
             // Boost existing low-ranked result instead of skipping
             if existing_ids.contains(&neighbor_id) {
                 if !boosted_ids.contains(&neighbor_id)
-                    && let Some(existing) =
-                        results.iter_mut().find(|r| r.entity_id == neighbor_id)
+                    && let Some(existing) = results.iter_mut().find(|r| r.entity_id == neighbor_id)
                     && existing.score < expansion_score
                 {
                     existing.score = expansion_score;
