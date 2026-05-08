@@ -47,6 +47,7 @@
     ndcg: r.summary.quality['ndcg@5'],
     queries: r.summary.queries,
     latencyMean: r.summary.latency_ms.mean,
+    latencyP95: r.summary.latency_ms.p95,
     topK: r.summary.top_k,
   }));
 
@@ -62,13 +63,19 @@
     <p class="subtitle">{runs.length} runs loaded</p>
   </header>
 
-  <!-- Section 1: Trend -->
+  <!-- Section 1: Quality Trend -->
   <section class="section">
-    <h2>Trend</h2>
+    <h2>Quality Trend</h2>
     <TrendChart runs={trendRuns} />
   </section>
 
-  <!-- Section 2: Latest Run -->
+  <!-- Section 2: Latency Trend -->
+  <section class="section">
+    <h2>Latency Trend</h2>
+    <LatencyTrend runs={trendRuns} />
+  </section>
+
+  <!-- Section 3: Selected Run -->
   <section class="section">
     <div class="section-header">
       <h2>Run Details</h2>
@@ -83,7 +90,15 @@
     {/if}
   </section>
 
-  <!-- Section 3: Per-Query -->
+  <!-- Section 4: Tier Breakdown -->
+  <section class="section">
+    <h2>Tier Breakdown</h2>
+    {#if selectedRun}
+      <TierBreakdown summary={selectedRun.summary} />
+    {/if}
+  </section>
+
+  <!-- Section 5: Per-Query -->
   <section class="section">
     <h2>Per-Query Results</h2>
     {#if selectedRun}
