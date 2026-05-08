@@ -1,6 +1,6 @@
-<h1 align="center">Episteme</h1>
-
-<p align="center"><b>軟體工程的知識圖譜</b></p>
+<p align="center">
+<img src="../assets/icon.png" alt="Episteme" width="60%" />
+</p>
 
 <p align="center"><sub>Episteme (συν τᾰγμᾰ) — 希臘文，意為「有組織的系統」或「判斷力」</sub></p>
 

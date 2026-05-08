@@ -1,6 +1,6 @@
-<h1 align="center">Episteme</h1>
-
-<p align="center"><b>सॉफ्टवेयर इंजीनियरिंग के लिए ज्ञान ग्राफ</b></p>
+<p align="center">
+<img src="../assets/icon.png" alt="Episteme" width="60%" />
+</p>
 
 <p align="center"><sub>Episteme (συν ταγμα) — यूनानी भाषा में "संगठित प्रणाली" या "विवेक" का अर्थ</sub></p>
 

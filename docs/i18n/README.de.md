@@ -1,6 +1,6 @@
-<h1 align="center">Episteme</h1>
-
-<p align="center"><b>Wissensgraph fuer Software Engineering</b></p>
+<p align="center">
+<img src="../assets/icon.png" alt="Episteme" width="60%" />
+</p>
 
 <p align="center"><sub>Episteme (συνταγμα) — Griechisch fuer "organisiertes System" oder "Unterscheidungsvermoegen"</sub></p>
 

@@ -1,6 +1,6 @@
-<h1 align="center">Episteme</h1>
-
-<p align="center"><b>软件工程知识图谱</b></p>
+<p align="center">
+<img src="../assets/icon.png" alt="Episteme" width="60%" />
+</p>
 
 <p align="center"><sub>Episteme (συνταγμα) —— 希腊语中意为"有组织的系统"或"辨识力"</sub></p>
 

@@ -1,6 +1,6 @@
-<h1 align="center">Episteme</h1>
-
-<p align="center"><b>ソフトウェアエンジニアリングのためのナレッジグラフ</b></p>
+<p align="center">
+<img src="../assets/icon.png" alt="Episteme" width="60%" />
+</p>
 
 <p align="center"><sub>Episteme (συν ταγμα) — ギリシャ語で「組織化された体系」または「識別力」を意味する</sub></p>
 

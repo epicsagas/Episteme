@@ -1,6 +1,6 @@
-<h1 align="center">Episteme</h1>
-
-<p align="center"><b>Knowledge Graph for Software Engineering</b></p>
+<p align="center">
+<img src="docs/assets/icon.png" alt="Episteme" width="60%" />
+</p>
 
 <p align="center"><sub>Episteme (ἐπιστήμη) — Greek for "systematic knowledge, scientific understanding"</sub></p>
 

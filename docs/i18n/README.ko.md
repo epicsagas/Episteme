@@ -1,6 +1,6 @@
-<h1 align="center">Episteme</h1>
-
-<p align="center"><b>소프트웨어 엔지니어링을 위한 지식 그래프</b></p>
+<p align="center">
+<img src="../assets/icon.png" alt="Episteme" width="60%" />
+</p>
 
 <p align="center"><sub>Episteme (σύνταγμα) — 그리스어로 "조직화된 체계" 또는 "분별력"</sub></p>
 

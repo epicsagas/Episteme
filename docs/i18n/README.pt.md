@@ -1,6 +1,6 @@
-<h1 align="center">Episteme</h1>
-
-<p align="center"><b>Grafo de Conhecimento para Engenharia de Software</b></p>
+<p align="center">
+<img src="../assets/icon.png" alt="Episteme" width="60%" />
+</p>
 
 <p align="center"><sub>Episteme (συν ταγμα) — do grego para "sistema organizado" ou "discernimento"</sub></p>
 
