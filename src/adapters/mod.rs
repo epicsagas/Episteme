@@ -5,6 +5,7 @@ pub mod config;
 pub mod constants;
 pub mod error;
 pub mod hooks;
+pub mod insight_utils;
 pub mod install_wizard;
 pub mod installer;
 pub mod json_loader;

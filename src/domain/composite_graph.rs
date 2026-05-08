@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
+use crate::adapters::user_graph_store::user_entity_to_entity;
 use crate::domain::graph::KnowledgeGraph;
 use crate::domain::types::*;
 use crate::ports::graph::{GraphRepository, MutableGraphRepository};
@@ -162,40 +163,6 @@ impl CompositeGraph {
             }
         }
         neighbors
-    }
-}
-
-/// Convert a UserEntity to a canonical Entity for unified graph operations.
-fn user_entity_to_entity(ue: &UserEntity) -> Entity {
-    Entity {
-        id: ue.id.clone(),
-        r#type: "insight".to_owned(),
-        title: ue.title.clone(),
-        description: ue.content.clone(),
-        name: ue.title.clone(),
-        category: String::new(),
-        tags: ue.tags.clone(),
-        relations: ue.relations.clone(),
-        context: {
-            let mut ctx = HashMap::new();
-            ctx.insert("author".to_owned(), vec![ue.author.clone()]);
-            ctx.insert(
-                "confidence".to_owned(),
-                vec![format!("{:.2}", ue.confidence)],
-            );
-            ctx.insert(
-                "evidence_count".to_owned(),
-                vec![ue.evidence_count.to_string()],
-            );
-            ctx.insert("last_validated".to_owned(), vec![ue.last_validated.clone()]);
-            ctx
-        },
-        file_path: String::new(),
-        source: serde_json::json!({
-            "source": "user",
-            "confidence": ue.confidence,
-            "author": ue.author,
-        }),
     }
 }
 

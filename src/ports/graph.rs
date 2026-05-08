@@ -93,4 +93,18 @@ pub trait MutableGraphRepository: Send + Sync {
 
     /// Return count of user entities.
     fn user_entity_count(&self) -> usize;
+
+    /// Atomically generate the next insight ID.
+    /// Implementations should use a persistent sequence (e.g. SQLite counter)
+    /// to prevent duplicate IDs under concurrent writes.
+    fn next_insight_id(&self) -> Result<String, String> {
+        // Default: scan existing IDs (non-atomic, but always available)
+        let ids = self.all_user_entity_ids();
+        let max_num = ids
+            .iter()
+            .filter_map(|id| id.strip_prefix("TK-").and_then(|n| n.parse::<u32>().ok()))
+            .max()
+            .unwrap_or(0);
+        Ok(format!("TK-{:03}", max_num + 1))
+    }
 }

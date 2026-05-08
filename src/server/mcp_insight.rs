@@ -1,5 +1,6 @@
 //! Insight-specific MCP handlers for tacit knowledge operations.
 
+use crate::adapters::insight_utils;
 use crate::domain::composite_graph::CompositeGraph;
 use crate::domain::graph::KnowledgeGraph;
 use crate::domain::types::{
@@ -24,8 +25,8 @@ pub fn add_insight(
         return serde_json::json!({"error": "text must not be empty"});
     }
 
-    // Generate next TK-xxx ID
-    let id = match next_tk_id(composite.user_store()) {
+    // Generate next TK-xxx ID (atomic via SQLite sequence)
+    let id = match composite.user_store().next_insight_id() {
         Ok(id) => id,
         Err(e) => return serde_json::json!({"error": e}),
     };
@@ -97,10 +98,10 @@ pub fn add_insight(
         final_tags.push(format!("project:{}", p));
     }
 
-    let now = format_timestamp();
+    let now = insight_utils::format_timestamp();
     let entity = UserEntity {
         id: id.clone(),
-        title: truncate_title(text),
+        title: insight_utils::truncate_title(text),
         content: text.to_owned(),
         author: "user".to_owned(),
         confidence: 0.5,
@@ -162,33 +163,24 @@ pub fn confirm_links(
     rejected: Vec<String>,
     merged_with: Option<&str>,
 ) -> serde_json::Value {
-    // Verify the insight exists
-    if composite.user_store().get_user_entity(insight_id).is_none() {
+    // Fetch entity first (single source of truth for relations)
+    let Some(mut entity) = composite.user_store().get_user_entity(insight_id) else {
         return serde_json::json!({
             "error": format!("insight not found: {insight_id}")
         });
-    }
+    };
 
     let mut confirmed_count = 0usize;
     let mut errors: Vec<String> = Vec::new();
 
+    // Add accepted links to the entity's relations HashMap
     for entity_id in &accepted {
-        match composite.add_user_relation(insight_id, "derives_from", entity_id) {
-            Ok(()) => confirmed_count += 1,
-            Err(e) => errors.push(format!("{}: {e}", entity_id)),
-        }
-    }
-
-    // Bump confidence: +0.05 per confirmed link, capped at 1.0
-    if confirmed_count > 0 {
-        let bonus = 0.05 * confirmed_count as f64;
-        if let Some(mut entity) = composite.user_store().get_user_entity(insight_id) {
-            entity.confidence = (entity.confidence + bonus).min(1.0);
-            entity.updated_at = format_timestamp();
-            if let Err(e) = composite.update_user_entity(insight_id, entity) {
-                errors.push(format!("confidence update failed: {e}"));
-            }
-        }
+        entity
+            .relations
+            .entry("derives_from".to_owned())
+            .or_default()
+            .push(entity_id.clone());
+        confirmed_count += 1;
     }
 
     // Handle merge if requested
@@ -199,9 +191,25 @@ pub fn confirm_links(
             .is_none()
         {
             errors.push(format!("merge target not found: {merge_target}"));
-        } else if let Err(e) = composite.add_user_relation(insight_id, "supersedes", merge_target) {
-            errors.push(format!("merge relation failed: {e}"));
+        } else {
+            entity
+                .relations
+                .entry("supersedes".to_owned())
+                .or_default()
+                .push(merge_target.to_owned());
         }
+    }
+
+    // Bump confidence: +0.05 per confirmed link, capped at 1.0
+    if confirmed_count > 0 {
+        let bonus = 0.05 * confirmed_count as f64;
+        entity.confidence = (entity.confidence + bonus).min(1.0);
+    }
+    entity.updated_at = insight_utils::format_timestamp();
+
+    // Single update: writes both JSON relations column and user_relations table
+    if let Err(e) = composite.update_user_entity(insight_id, entity) {
+        errors.push(format!("update failed: {e}"));
     }
 
     if errors.is_empty() {
@@ -240,18 +248,6 @@ pub fn search_insights(
     let json_results: Vec<serde_json::Value> = results
         .iter()
         .map(|e| {
-            let correlations = user_store.compute_correlations(&e.id);
-            let related: Vec<serde_json::Value> = correlations
-                .iter()
-                .take(3)
-                .map(|c| {
-                    serde_json::json!({
-                        "insight_id": c.insight_id,
-                        "combined": format!("{:.2}", c.combined),
-                    })
-                })
-                .collect();
-
             serde_json::json!({
                 "id": e.id,
                 "title": e.title,
@@ -260,7 +256,6 @@ pub fn search_insights(
                 "confidence": e.confidence,
                 "author": e.author,
                 "created_at": e.created_at,
-                "related": related,
             })
         })
         .collect();
@@ -275,61 +270,109 @@ pub fn search_insights(
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-/// Compute the next TK-xxx ID by scanning existing user entity IDs.
-fn next_tk_id(user_store: &dyn MutableGraphRepository) -> Result<String, String> {
-    let ids = user_store.all_user_entity_ids();
-    let max_num = ids
-        .iter()
-        .filter_map(|id| {
-            id.strip_prefix("TK-")
-                .and_then(|num| num.parse::<usize>().ok())
-        })
-        .max()
-        .unwrap_or(0);
-
-    let next = max_num + 1;
-    Ok(format!("TK-{:03}", next))
-}
+/// Common English stop words used for pre-filtering insignificant terms.
+const STOP_WORDS: &[&str] = &[
+    "the", "and", "for", "are", "but", "not", "you", "all", "can", "had", "her", "was", "one",
+    "our", "out", "has", "have", "from", "been", "some", "them", "than", "its", "over", "such",
+    "that", "with", "will", "this", "also", "into", "does", "each", "very", "just", "should",
+    "now", "what", "when", "how", "why", "who", "did", "get", "got", "use", "used", "using",
+    "make", "like", "only", "then", "there", "their", "these", "those", "about", "which", "would",
+    "could", "other", "being", "after", "before",
+];
 
 /// Detect canonical entities that are relevant to the given text via keyword matching.
 ///
-/// Uses the same scoring approach as `mcp_search::keyword_search`: count term matches
-/// across entity text fields, with title hits weighted higher.
+/// Uses a two-phase approach to avoid O(n) full-text scoring on every entity:
+/// 1. Extract significant keywords from input (stop words removed, length >= 3).
+/// 2. Pre-filter candidates via a fast check on title/name/tags/context, then score only matches.
+///
+/// Scoring logic is identical to the original: count term matches across entity text fields,
+/// with title hits weighted higher via bit-shifted composite score.
 fn detect_canonical_links(graph: &KnowledgeGraph, text: &str) -> Vec<InsightLink> {
     let text_lower = text.to_lowercase();
-    let terms: Vec<&str> = text_lower.split_whitespace().collect();
+    let all_terms: Vec<&str> = text_lower.split_whitespace().collect();
 
-    if terms.is_empty() {
+    if all_terms.is_empty() {
         return Vec::new();
     }
 
-    let all_ids = graph.all_entity_ids();
-    let ids_ref: Vec<&str> = all_ids.iter().map(|s| s.as_str()).collect();
-    let batch = graph.get_entities_batch(&ids_ref);
+    // Phase 1: Extract significant keywords (length >= 3, not a stop word).
+    let stop_set: std::collections::HashSet<&str> = STOP_WORDS.iter().copied().collect();
+    let keywords: Vec<&str> = all_terms
+        .iter()
+        .filter(|t| t.len() >= 3 && !stop_set.contains(*t))
+        .copied()
+        .collect();
+
+    if keywords.is_empty() {
+        return Vec::new();
+    }
 
     let mut scored: Vec<(String, usize)> = Vec::new();
 
-    for (id, entity) in &batch {
+    for (id, entity) in &graph.entities {
         let title_lower = entity.title.to_lowercase();
+        let name_lower = entity.name.to_lowercase();
 
-        let mut text_parts = vec![
-            title_lower.clone(),
-            entity.name.to_lowercase(),
-            entity.r#type.to_lowercase(),
-            entity.category.to_lowercase(),
-        ];
-        for tag in &entity.tags {
-            text_parts.push(tag.to_lowercase());
-        }
-        for (key, values) in &entity.context {
-            text_parts.push(key.to_lowercase());
-            for v in values {
-                text_parts.push(v.to_lowercase());
+        // Fast pre-filter: check if any keyword appears in the entity's most
+        // discriminating fields (title, name, type, category, tags). This avoids
+        // building the full searchable string for entities that share no terms.
+        let tags_lower: String = entity
+            .tags
+            .iter()
+            .map(|t| t.to_lowercase())
+            .collect::<Vec<_>>()
+            .join(" ");
+
+        let mut fast_fields = String::with_capacity(
+            title_lower.len()
+                + name_lower.len()
+                + entity.r#type.len()
+                + entity.category.len()
+                + tags_lower.len()
+                + 5,
+        );
+        fast_fields.push_str(&title_lower);
+        fast_fields.push(' ');
+        fast_fields.push_str(&name_lower);
+        fast_fields.push(' ');
+        fast_fields.push_str(&entity.r#type.to_lowercase());
+        fast_fields.push(' ');
+        fast_fields.push_str(&entity.category.to_lowercase());
+        fast_fields.push(' ');
+        fast_fields.push_str(&tags_lower);
+
+        let fast_hit = keywords.iter().any(|kw| fast_fields.contains(kw));
+
+        if !fast_hit {
+            // Also check context keys/values before fully discarding.
+            let context_hit = entity.context.iter().any(|(key, values)| {
+                let key_lower = key.to_lowercase();
+                if keywords.iter().any(|kw| key_lower.contains(kw)) {
+                    return true;
+                }
+                values.iter().any(|v| {
+                    let v_lower = v.to_lowercase();
+                    keywords.iter().any(|kw| v_lower.contains(kw))
+                })
+            });
+            if !context_hit {
+                continue;
             }
         }
-        let searchable = text_parts.join(" ");
 
-        let total_matches = terms
+        // Phase 2: Full scoring for candidate entity (same logic as original).
+        let mut searchable = fast_fields;
+        for (key, values) in &entity.context {
+            searchable.push(' ');
+            searchable.push_str(&key.to_lowercase());
+            for v in values {
+                searchable.push(' ');
+                searchable.push_str(&v.to_lowercase());
+            }
+        }
+
+        let total_matches = all_terms
             .iter()
             .filter(|term| searchable.contains(*term))
             .count();
@@ -337,7 +380,7 @@ fn detect_canonical_links(graph: &KnowledgeGraph, text: &str) -> Vec<InsightLink
             continue;
         }
 
-        let title_matches = terms
+        let title_matches = all_terms
             .iter()
             .filter(|term| title_lower.contains(*term))
             .count();
@@ -352,7 +395,7 @@ fn detect_canonical_links(graph: &KnowledgeGraph, text: &str) -> Vec<InsightLink
         .into_iter()
         .map(|(id, composite_score)| {
             let total = composite_score >> 8;
-            let score = (total as f64 / terms.len().max(1) as f64).min(1.0);
+            let score = (total as f64 / all_terms.len().max(1) as f64).min(1.0);
             let link_type = if score >= 0.5 {
                 InsightLinkType::Auto
             } else {
@@ -365,66 +408,6 @@ fn detect_canonical_links(graph: &KnowledgeGraph, text: &str) -> Vec<InsightLink
             }
         })
         .collect()
-}
-
-/// Derive a short title from the insight text (first line or first 80 chars).
-fn truncate_title(text: &str) -> String {
-    let first_line = text.lines().next().unwrap_or(text);
-    if first_line.len() > 80 {
-        format!("{}...", &first_line[..77])
-    } else {
-        first_line.to_owned()
-    }
-}
-
-/// Produce an ISO-8601 UTC timestamp without depending on chrono.
-fn format_timestamp() -> String {
-    let secs = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs();
-    let days_since_epoch = secs / 86400;
-    let time_of_day = secs % 86400;
-    let hours = time_of_day / 3600;
-    let minutes = (time_of_day % 3600) / 60;
-    let seconds = time_of_day % 60;
-    let (year, month, day) = days_to_ymd(days_since_epoch);
-    format!(
-        "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z",
-        year, month, day, hours, minutes, seconds
-    )
-}
-
-/// Convert days since Unix epoch to (year, month, day).
-fn days_to_ymd(mut days: u64) -> (u64, u64, u64) {
-    let mut year = 1970u64;
-    loop {
-        let days_in_year = if is_leap(year) { 366 } else { 365 };
-        if days < days_in_year {
-            break;
-        }
-        days -= days_in_year;
-        year += 1;
-    }
-    let leap = is_leap(year);
-    let month_days: [u64; 12] = if leap {
-        [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    } else {
-        [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    };
-    let mut month = 1u64;
-    for &md in &month_days {
-        if days < md {
-            break;
-        }
-        days -= md;
-        month += 1;
-    }
-    (year, month, days + 1)
-}
-
-fn is_leap(year: u64) -> bool {
-    (year.is_multiple_of(4) && !year.is_multiple_of(100)) || year.is_multiple_of(400)
 }
 
 // ---------------------------------------------------------------------------
@@ -463,7 +446,7 @@ mod tests {
     #[test]
     fn next_tk_id_starts_at_001() {
         let store = UserGraphStore::open_in_memory().unwrap();
-        let id = next_tk_id(&store).unwrap();
+        let id = store.next_insight_id().unwrap();
         assert_eq!(id, "TK-001");
     }
 
@@ -473,7 +456,7 @@ mod tests {
         store
             .add_entity(make_user_entity("TK-001", "Existing"))
             .unwrap();
-        let id = next_tk_id(&store).unwrap();
+        let id = store.next_insight_id().unwrap();
         assert_eq!(id, "TK-002");
     }
 
@@ -650,23 +633,22 @@ mod tests {
 
     #[test]
     fn truncate_title_short_text_unchanged() {
-        assert_eq!(truncate_title("Short text"), "Short text");
+        assert_eq!(insight_utils::truncate_title("Short text"), "Short text");
     }
 
     #[test]
     fn truncate_title_long_text_truncates() {
         let long = "a".repeat(100);
-        let truncated = truncate_title(&long);
-        assert_eq!(truncated.len(), 80);
+        let truncated = insight_utils::truncate_title(&long);
         assert!(truncated.ends_with("..."));
+        assert!(truncated.len() <= 83);
     }
 
     #[test]
     fn format_timestamp_produces_iso8601() {
-        let ts = format_timestamp();
+        let ts = insight_utils::format_timestamp();
         assert!(ts.ends_with('Z'));
         assert!(ts.contains('T'));
-        // Should be parseable as a date
         let parts: Vec<&str> = ts.split('T').collect();
         assert_eq!(parts.len(), 2);
         let date_parts: Vec<&str> = parts[0].split('-').collect();

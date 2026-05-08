@@ -3,7 +3,7 @@ use std::sync::Mutex;
 
 use rusqlite::{Connection, params};
 
-use crate::domain::types::{CorrelationScore, GraphEdge, UserEntity};
+use crate::domain::types::{CorrelationScore, Entity, GraphEdge, UserEntity};
 use crate::ports::graph::MutableGraphRepository;
 
 // ---------------------------------------------------------------------------
@@ -84,6 +84,10 @@ fn init_schema(conn: &Connection) -> Result<(), String> {
         CREATE INDEX IF NOT EXISTS idx_user_relations_from ON user_relations(from_id);
         CREATE INDEX IF NOT EXISTS idx_user_relations_to ON user_relations(to_id);
 
+        -- Sequence counter for atomic TK-xxx ID generation
+        CREATE TABLE IF NOT EXISTS insight_seq (key TEXT PRIMARY KEY, val INTEGER NOT NULL);
+        INSERT OR IGNORE INTO insight_seq (key, val) VALUES ('tk', 0);
+
         -- FTS5 content-sync triggers (required for content= tables)
         CREATE TRIGGER IF NOT EXISTS user_entities_ai AFTER INSERT ON user_entities BEGIN
             INSERT INTO user_entities_fts(rowid, title, content, tags)
@@ -111,6 +115,44 @@ fn init_schema(conn: &Connection) -> Result<(), String> {
 // UserGraphStore
 // ---------------------------------------------------------------------------
 
+/// Convert a [`UserEntity`] to a canonical [`Entity`] for unified graph operations.
+///
+/// This function lives in the adapter layer because it uses `serde_json::json!`
+/// to construct the `source` metadata, keeping the domain free of direct
+/// `serde_json` usage.
+pub fn user_entity_to_entity(ue: &UserEntity) -> Entity {
+    Entity {
+        id: ue.id.clone(),
+        r#type: "insight".to_owned(),
+        title: ue.title.clone(),
+        description: ue.content.clone(),
+        name: ue.title.clone(),
+        category: String::new(),
+        tags: ue.tags.clone(),
+        relations: ue.relations.clone(),
+        context: {
+            let mut ctx = HashMap::new();
+            ctx.insert("author".to_owned(), vec![ue.author.clone()]);
+            ctx.insert(
+                "confidence".to_owned(),
+                vec![format!("{:.2}", ue.confidence)],
+            );
+            ctx.insert(
+                "evidence_count".to_owned(),
+                vec![ue.evidence_count.to_string()],
+            );
+            ctx.insert("last_validated".to_owned(), vec![ue.last_validated.clone()]);
+            ctx
+        },
+        file_path: String::new(),
+        source: serde_json::json!({
+            "source": "user",
+            "confidence": ue.confidence,
+            "author": ue.author,
+        }),
+    }
+}
+
 pub struct UserGraphStore {
     conn: Mutex<Connection>,
 }
@@ -132,6 +174,43 @@ impl UserGraphStore {
         Ok(Self {
             conn: Mutex::new(conn),
         })
+    }
+
+    /// Atomically generate the next TK-xxx ID using a SQLite sequence counter.
+    /// Syncs the counter with any manually-added entities to prevent collisions.
+    /// Safe under concurrent writes (MCP server + CLI simultaneously).
+    pub fn next_insight_id_atomic(&self) -> Result<String, String> {
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| format!("mutex poisoned: {e}"))?;
+
+        // Sync: ensure sequence is at least as high as any existing TK-xxx entity
+        let max_existing: i64 = conn
+            .query_row(
+                "SELECT COALESCE(MAX(CAST(SUBSTR(id, 4) AS INTEGER)), 0) \
+                 FROM user_entities WHERE id LIKE 'TK-%'",
+                [],
+                |row| row.get::<_, i64>(0),
+            )
+            .unwrap_or(0);
+        if max_existing > 0 {
+            conn.execute(
+                "UPDATE insight_seq SET val = MAX(val, ?1) WHERE key = 'tk'",
+                params![max_existing],
+            )
+            .map_err(|e| format!("sync sequence: {e}"))?;
+        }
+
+        // Atomic increment and return
+        let next: i64 = conn
+            .query_row(
+                "UPDATE insight_seq SET val = val + 1 WHERE key = 'tk' RETURNING val",
+                [],
+                |row| row.get(0),
+            )
+            .map_err(|e| format!("next insight id: {e}"))?;
+        Ok(format!("TK-{:03}", next))
     }
 }
 
@@ -552,6 +631,11 @@ impl MutableGraphRepository for UserGraphStore {
         .ok()
         .and_then(|c| usize::try_from(c).ok())
         .unwrap_or(0)
+    }
+
+    /// Override: use atomic SQLite sequence counter instead of scanning.
+    fn next_insight_id(&self) -> Result<String, String> {
+        self.next_insight_id_atomic()
     }
 }
 

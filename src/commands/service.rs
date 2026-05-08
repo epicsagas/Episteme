@@ -5,6 +5,9 @@ use std::net::SocketAddr;
 use anyhow::{Context, Result};
 
 use episteme::adapters::config::EpistemeConfig;
+use episteme::adapters::paths;
+use episteme::adapters::user_graph_store::UserGraphStore;
+use episteme::domain::composite_graph::CompositeGraph;
 use episteme::server::mcp_handler::EpistemeMCP;
 
 use super::prelude::*;
@@ -100,7 +103,7 @@ pub fn cmd_mcp(http: bool, host: &str, port: u16) -> Result<()> {
     }
 
     let graph = load_graph()?;
-    let mut mcp = EpistemeMCP::new(graph);
+    let mut mcp = build_mcp(graph);
     mcp.try_attach_rag();
 
     eprintln!("episteme MCP server (stdio transport)");
@@ -136,7 +139,7 @@ fn cmd_mcp_http(host: &str, port: u16) -> Result<()> {
     let cfg = EpistemeConfig::load()?;
     let allowed_api_keys = episteme::server::mcp_auth::parse_api_keys(&cfg.api_keys);
     let graph = load_graph()?;
-    let mut mcp = EpistemeMCP::new(graph);
+    let mut mcp = build_mcp(graph);
     mcp.try_attach_rag();
 
     let addr: SocketAddr = format!("{host}:{port}")
@@ -158,7 +161,7 @@ fn cmd_mcp_http(host: &str, port: u16) -> Result<()> {
 
 pub fn cmd_web(host: &str, port: u16) -> Result<()> {
     let graph = load_graph()?;
-    let handler = std::sync::Arc::new(EpistemeMCP::new(graph));
+    let handler = std::sync::Arc::new(build_mcp(graph));
     let app = episteme::server::web_viewer::web_router(handler);
 
     let addr = format!("{host}:{port}");
@@ -170,4 +173,15 @@ pub fn cmd_web(host: &str, port: u16) -> Result<()> {
         axum::serve(listener, app).await?;
         Ok(())
     })
+}
+
+fn build_mcp(graph: episteme::domain::graph::KnowledgeGraph) -> EpistemeMCP {
+    let db_path = paths::episteme_home().join("user_knowledge.db");
+    match UserGraphStore::open(&db_path) {
+        Ok(store) => {
+            let composite = CompositeGraph::new(graph.clone(), Box::new(store));
+            EpistemeMCP::with_composite(graph, composite)
+        }
+        Err(_) => EpistemeMCP::new(graph),
+    }
 }

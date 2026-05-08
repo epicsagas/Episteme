@@ -6,6 +6,7 @@ use std::io::Read;
 use anyhow::{Context, Result};
 
 use episteme::adapters::hooks;
+use episteme::adapters::insight_utils;
 use episteme::adapters::paths;
 use episteme::adapters::user_graph_store::UserGraphStore;
 use episteme::domain::types::UserEntity;
@@ -63,78 +64,6 @@ fn open_user_store() -> Result<UserGraphStore> {
     UserGraphStore::open(&db_path).map_err(|e| anyhow::anyhow!(e))
 }
 
-/// Generate the next sequential insight ID (TK-xxx).
-fn next_insight_id(store: &UserGraphStore) -> String {
-    let existing = store.all_user_entity_ids();
-    let max_num = existing
-        .iter()
-        .filter_map(|id| id.strip_prefix("TK-").and_then(|n| n.parse::<u32>().ok()))
-        .max()
-        .unwrap_or(0);
-    format!("TK-{:03}", max_num + 1)
-}
-
-fn parse_comma_list(input: &str) -> Vec<String> {
-    input
-        .split(',')
-        .map(|s| s.trim().to_owned())
-        .filter(|s| !s.is_empty())
-        .collect()
-}
-
-/// Produce an ISO-8601 UTC timestamp without depending on chrono.
-fn format_timestamp() -> String {
-    let secs = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs();
-    // Simple UTC conversion from epoch seconds
-    let days_since_epoch = secs / 86400;
-    let time_of_day = secs % 86400;
-    let hours = time_of_day / 3600;
-    let minutes = (time_of_day % 3600) / 60;
-    let seconds = time_of_day % 60;
-
-    // Calculate year, month, day from days since epoch
-    let (year, month, day) = days_to_ymd(days_since_epoch);
-    format!(
-        "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z",
-        year, month, day, hours, minutes, seconds
-    )
-}
-
-/// Convert days since Unix epoch to (year, month, day).
-fn days_to_ymd(mut days: u64) -> (u64, u64, u64) {
-    let mut year = 1970u64;
-    loop {
-        let days_in_year = if is_leap(year) { 366 } else { 365 };
-        if days < days_in_year {
-            break;
-        }
-        days -= days_in_year;
-        year += 1;
-    }
-    let leap = is_leap(year);
-    let month_days: [u64; 12] = if leap {
-        [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    } else {
-        [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    };
-    let mut month = 1u64;
-    for &md in &month_days {
-        if days < md {
-            break;
-        }
-        days -= md;
-        month += 1;
-    }
-    (year, month, days + 1)
-}
-
-fn is_leap(year: u64) -> bool {
-    (year.is_multiple_of(4) && !year.is_multiple_of(100)) || year.is_multiple_of(400)
-}
-
 pub fn cmd_insight(op: InsightOp) -> Result<()> {
     match op {
         InsightOp::Add {
@@ -144,19 +73,23 @@ pub fn cmd_insight(op: InsightOp) -> Result<()> {
             link,
         } => {
             let store = open_user_store()?;
-            let id = next_insight_id(&store);
+            let id =
+                insight_utils::next_insight_id_atomic(&store).map_err(|e| anyhow::anyhow!(e))?;
 
-            let tags = tags.as_deref().map(parse_comma_list).unwrap_or_default();
+            let tags = tags
+                .as_deref()
+                .map(insight_utils::parse_comma_list)
+                .unwrap_or_default();
 
             let mut relations: HashMap<String, Vec<String>> = HashMap::new();
             if let Some(link_str) = link.as_deref() {
-                let linked_ids = parse_comma_list(link_str);
+                let linked_ids = insight_utils::parse_comma_list(link_str);
                 if !linked_ids.is_empty() {
                     relations.insert("derives_from".to_owned(), linked_ids);
                 }
             }
 
-            let now = format_timestamp();
+            let now = insight_utils::format_timestamp();
             let entity = UserEntity {
                 id: id.clone(),
                 title,
@@ -188,41 +121,35 @@ pub fn cmd_insight(op: InsightOp) -> Result<()> {
         }
         InsightOp::List { limit } => {
             let store = open_user_store()?;
-            let ids = store.all_user_entity_ids();
+            let entities = store.all_user_entities();
 
-            if ids.is_empty() {
+            if entities.is_empty() {
                 println!("No insights found.");
                 return Ok(());
             }
 
-            let display_count = ids.len().min(limit);
-            println!("Insights (showing {}/{})", display_count, ids.len());
+            let display_count = entities.len().min(limit);
+            println!("Insights (showing {}/{})", display_count, entities.len());
             println!();
             println!("{:<10} {:<40} {:<10} Created", "ID", "Title", "Tags");
             println!("{}", "-".repeat(80));
 
-            for id in ids.iter().take(limit) {
-                if let Some(entity) = store.get_user_entity(id) {
-                    let title_display = if entity.title.len() > 38 {
-                        format!("{}...", &entity.title[..35])
-                    } else {
-                        entity.title.clone()
-                    };
-                    let tags_display = if entity.tags.is_empty() {
-                        "-".to_owned()
-                    } else {
-                        entity.tags.join(",")
-                    };
-                    let created = if entity.created_at.len() >= 10 {
-                        &entity.created_at[..10]
-                    } else {
-                        &entity.created_at
-                    };
-                    println!(
-                        "{:<10} {:<40} {:<10} {}",
-                        id, title_display, tags_display, created
-                    );
-                }
+            for entity in entities.iter().take(limit) {
+                let title_display = insight_utils::truncate_text(&entity.title, 38);
+                let tags_display = if entity.tags.is_empty() {
+                    "-".to_owned()
+                } else {
+                    entity.tags.join(",")
+                };
+                let created = if entity.created_at.len() >= 10 {
+                    &entity.created_at[..10]
+                } else {
+                    &entity.created_at
+                };
+                println!(
+                    "{:<10} {:<40} {:<10} {}",
+                    entity.id, title_display, tags_display, created
+                );
             }
 
             Ok(())
@@ -241,11 +168,7 @@ pub fn cmd_insight(op: InsightOp) -> Result<()> {
             for entity in &results {
                 println!("  [{}] {}", entity.id, entity.title);
                 if !entity.content.is_empty() {
-                    let preview = if entity.content.len() > 100 {
-                        format!("{}...", &entity.content[..97])
-                    } else {
-                        entity.content.clone()
-                    };
+                    let preview = insight_utils::truncate_text(&entity.content, 100);
                     println!("    {}", preview);
                 }
                 if !entity.tags.is_empty() {
