@@ -29,8 +29,6 @@
   हिन्दी
 </p>
 
-
-
 ---
 
 <picture>
@@ -56,6 +54,13 @@
 **2. Episteme इंस्टॉल करें (पहली बिल्ड में 3–5 मिनट लगते हैं)**
 
 ```bash
+# Install cargo-binstall if missing
+cargo install cargo-binstall
+
+# Fast path (downloads prebuilt binary when available)
+cargo binstall episteme
+
+# Fallback (build from source)
 cargo install --git https://github.com/epicsagas/Episteme
 ```
 

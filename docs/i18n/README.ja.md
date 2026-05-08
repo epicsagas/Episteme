@@ -29,8 +29,6 @@
   <a href="README.hi.md">हिन्दी</a>
 </p>
 
-
-
 ---
 
 <picture>
@@ -56,6 +54,13 @@
 **2. Epistemeのインストール（初回ビルドは3〜5分）**
 
 ```bash
+# Install cargo-binstall if missing
+cargo install cargo-binstall
+
+# Fast path (downloads prebuilt binary when available)
+cargo binstall episteme
+
+# Fallback (build from source)
 cargo install --git https://github.com/epicsagas/Episteme
 ```
 

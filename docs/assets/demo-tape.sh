@@ -70,3 +70,18 @@ echo "$ epis explore \"extract method\""
 epis explore "extract method"
 
 sleep 2
+
+# --- Convert to GIF ---
+echo ""
+echo "# Converting demo.cast -> demo.gif ..."
+agg \
+  --theme dracula \
+  --font-size 20 \
+  --line-height 1.5 \
+  --fps-cap 30 \
+  --speed 1.2 \
+  --idle-time-limit 2 \
+  --last-frame-duration 2 \
+  docs/assets/demo.cast \
+  docs/assets/demo.gif
+echo "Done: docs/assets/demo.gif ($(du -h docs/assets/demo.gif | cut -f1))"

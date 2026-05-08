@@ -61,6 +61,13 @@ After installing, open a **new terminal** (or run `source "$HOME/.cargo/env"` on
 **2. Install Episteme (first build takes 3–5 min)**
 
 ```bash
+# Install cargo-binstall if missing
+cargo install cargo-binstall
+
+# Fast path (downloads prebuilt binary when available)
+cargo binstall episteme
+
+# Fallback (build from source)
 cargo install --git https://github.com/epicsagas/Episteme
 ```
 
@@ -181,8 +188,15 @@ Episteme runs entirely offline: single binary, local SQLite database, local embe
 ### Option 1: One Command (Recommended)
 
 ```bash
-# First build takes 3–5 minutes — this is normal
+# Install cargo-binstall if missing
+cargo install cargo-binstall
+
+# Fast path (downloads prebuilt binary when available)
+cargo binstall episteme
+
+# Fallback: build from source (first build takes 3–5 minutes)
 cargo install --git https://github.com/epicsagas/Episteme
+
 epis install claude    # seeds data + wires up MCP + installs agents
 ```
 

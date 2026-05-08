@@ -29,8 +29,6 @@
   <a href="README.hi.md">हिन्दी</a>
 </p>
 
-
-
 ---
 
 <picture>
@@ -56,6 +54,13 @@ Despues de instalar, abre una **nueva terminal** (o ejecuta `source "$HOME/.carg
 **2. Instalar Episteme (la primera compilacion tarda 3-5 min)**
 
 ```bash
+# Install cargo-binstall if missing
+cargo install cargo-binstall
+
+# Fast path (downloads prebuilt binary when available)
+cargo binstall episteme
+
+# Fallback (build from source)
 cargo install --git https://github.com/epicsagas/Episteme
 ```
 
