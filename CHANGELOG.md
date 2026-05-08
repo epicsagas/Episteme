@@ -5,6 +5,38 @@ All notable changes to Syntagma will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **MCP HTTP transport for Claude Code** — transport selector TUI, HTTP as default, launchd auto-enable
+- **Agent prompt auto-install** — `syntagma install` copies Syntagma agent prompts into `~/.claude/agents/`
+- **Entity descriptions** — description field auto-extracted from markdown source files, shown in web viewer detail panel
+- **Benchmark visualization SPA** — trend analysis, query breakdown dashboard
+- **Web viewer redesign** — Sankey diagram layout, sidebar tree, detail panel, subgraph readability improvements
+- **MCP config upsert** — re-running `syntagma install` updates transport when config differs (stdio ↔ HTTP)
+- **MCP yaml config** — `mcp.host` / `mcp.port` in `config.yaml` (yaml → env fallback)
+- **Monitoring** — native and remote Prometheus scrape target support via env
+- **CI hardening** — cargo audit, gitleaks, SBOM generation, pinned action SHAs
+- **Release pipeline** — Windows target, crates.io publishing, Homebrew tap
+- **God module architectural diagnosis example** in `examples/`
+
+### Changed
+
+- **Install wizard** — all steps (transport, Redis, telemetry) migrated to fullscreen TUI
+- **Install flow** — auto-builds RAG index after seeding, skips when DB already exists
+- **Knowledge graph** — enriched with cross-entity semantic relations
+- **License** — MIT → Apache-2.0
+
+### Fixed
+
+- Tokio runtime panic in synchronous `main()` for telemetry
+- Search quality — NDCG measurement bug resolved, hit@1 accuracy improved to 100%
+- Search recall — cross-type boosting, sparse entity handling, intent synonyms
+- fastembed model cache pinned to `~/.syntagma/models`
+- launchd bootstrap UID substitution and port-in-use handling
+- CORS origins now configurable via `SYNTAGMA_CORS_ORIGINS`
+
 ## [0.1.0] - 2026-05-03
 
 ### Added
