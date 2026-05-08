@@ -152,13 +152,16 @@ fn env_bool_or(key: &str, default: bool) -> bool {
         .unwrap_or(default)
 }
 
-fn cfg_val(yaml: &YamlConfig, _section: &str, key: &str, env_var: &str, default: &str) -> String {
+fn cfg_val(yaml: &YamlConfig, section: &str, key: &str, env_var: &str, default: &str) -> String {
     if let Ok(v) = std::env::var(env_var) {
         return v;
     }
-    yaml.redis
-        .as_ref()
-        .and_then(|m| m.get(key))
+    let map = match section {
+        "redis" => yaml.redis.as_ref(),
+        "mcp" => yaml.mcp.as_ref(),
+        _ => None,
+    };
+    map.and_then(|m| m.get(key))
         .and_then(|v| v.as_str())
         .map(|s| s.to_owned())
         .unwrap_or_else(|| default.to_owned())
@@ -166,7 +169,7 @@ fn cfg_val(yaml: &YamlConfig, _section: &str, key: &str, env_var: &str, default:
 
 fn cfg_parse_val<T: std::str::FromStr>(
     yaml: &YamlConfig,
-    _section: &str,
+    section: &str,
     key: &str,
     env_var: &str,
     default: T,
@@ -176,9 +179,12 @@ fn cfg_parse_val<T: std::str::FromStr>(
     {
         return parsed;
     }
-    yaml.redis
-        .as_ref()
-        .and_then(|m| m.get(key))
+    let map = match section {
+        "redis" => yaml.redis.as_ref(),
+        "mcp" => yaml.mcp.as_ref(),
+        _ => None,
+    };
+    map.and_then(|m| m.get(key))
         .and_then(|v| {
             if let Some(i) = v.as_i64() {
                 i.to_string().parse().ok()
