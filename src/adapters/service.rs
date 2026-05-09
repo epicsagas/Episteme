@@ -193,7 +193,7 @@ fn get_port(kind: ServiceKind) -> u16 {
 }
 
 /// Return a human-readable label for the service kind.
-fn kind_label(kind: ServiceKind) -> &'static str {
+pub fn kind_label(kind: ServiceKind) -> &'static str {
     match kind {
         ServiceKind::Mcp => "MCP",
         ServiceKind::Api => "API",
@@ -594,15 +594,15 @@ pub fn disable_launchd(now: bool) -> Result<String, String> {
 // ---------------------------------------------------------------------------
 
 #[cfg(target_os = "linux")]
-fn systemd_unit_path(kind: ServiceKind) -> PathBuf {
+fn systemd_unit_path(kind: ServiceKind) -> Result<PathBuf, String> {
     let home = std::env::var("HOME").map_err(|_| {
         "HOME environment variable not set; cannot determine systemd user unit path".to_owned()
     })?;
-    PathBuf::from(home)
+    Ok(PathBuf::from(home)
         .join(".config")
         .join("systemd")
         .join("user")
-        .join(format!("{}.service", systemd_unit_label(kind)))
+        .join(format!("{}.service", systemd_unit_label(kind))))
 }
 
 #[cfg(target_os = "linux")]
@@ -617,7 +617,7 @@ fn systemd_unit_label(kind: ServiceKind) -> &'static str {
 #[cfg(target_os = "linux")]
 pub fn install_systemd_unit(kind: ServiceKind, host: &str, port: u16) -> Result<String, String> {
     let exe = std::env::current_exe().map_err(|e| e.to_string())?;
-    let unit_path = systemd_unit_path(kind);
+    let unit_path = systemd_unit_path(kind)?;
     if let Some(parent) = unit_path.parent() {
         fs::create_dir_all(parent).map_err(|e| e.to_string())?;
     }
@@ -634,15 +634,17 @@ pub fn install_systemd_unit(kind: ServiceKind, host: &str, port: u16) -> Result<
 
     let unit = format!(
         "[Unit]\n\
-         Description=Episteme {description} Server\n\
-         After=network.target\n\n\
-         [Service]\n\
-         Type=simple\n\
-         ExecStart={exec_start}\n\
-         Restart=on-failure\n\
-         RestartSec=5\n\n\
-         [Install]\n\
-         WantedBy=default.target\n",
+Description=Episteme {description} Server\n\
+After=network.target\n\
+\n\
+[Service]\n\
+Type=simple\n\
+ExecStart={exec_start}\n\
+Restart=on-failure\n\
+RestartSec=5\n\
+\n\
+[Install]\n\
+WantedBy=default.target\n"
     );
 
     fs::write(&unit_path, unit).map_err(|e| e.to_string())?;
@@ -684,7 +686,7 @@ pub fn uninstall_systemd_unit(kind: ServiceKind) -> Result<String, String> {
         .args(["--user", "disable", &format!("{label}.service")])
         .status();
 
-    let unit_path = systemd_unit_path(kind);
+    let unit_path = systemd_unit_path(kind)?;
     if unit_path.exists() {
         fs::remove_file(&unit_path).map_err(|e| e.to_string())?;
     }

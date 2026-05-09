@@ -114,10 +114,7 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
 }
 
 fn kind_label(kind: ServiceKind) -> &'static str {
-    match kind {
-        ServiceKind::Mcp => "MCP",
-        ServiceKind::Api => "REST API",
-    }
+    episteme::adapters::service::kind_label(kind)
 }
 
 pub fn cmd_api(host: &str, port: u16) -> Result<()> {

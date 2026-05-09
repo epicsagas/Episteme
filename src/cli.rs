@@ -109,14 +109,14 @@ pub enum Commands {
         /// MCP server lifecycle management
         #[command(subcommand)]
         sub: Option<McpCommands>,
-        /// (deprecated) Serve MCP over HTTP -- use 'mcp start' instead
-        #[arg(long)]
+        /// Internal: spawn HTTP transport (used by enable/disable daemon)
+        #[arg(long, hide = true)]
         http: bool,
-        /// (deprecated) Bind host -- use 'mcp start --host' instead
-        #[arg(long, default_value_t = String::from("127.0.0.1"))]
+        /// Internal: bind host for HTTP transport
+        #[arg(long, default_value_t = String::from("127.0.0.1"), hide = true)]
         host: String,
-        /// (deprecated) Bind port -- use 'mcp start --port' instead
-        #[arg(long, default_value_t = 43175)]
+        /// Internal: bind port for HTTP transport
+        #[arg(long, default_value_t = 43175, hide = true)]
         port: u16,
     },
     /// Telemetry consent management

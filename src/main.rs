@@ -135,12 +135,7 @@ fn dispatch(cli: Cli) -> Result<()> {
             port,
         } => match sub {
             Some(mcp_sub) => commands::cmd_service(mcp_service_op(mcp_sub)),
-            None => {
-                if http {
-                    eprintln!("[deprecated] 'mcp --http' is deprecated, use 'mcp start' instead.");
-                }
-                commands::cmd_mcp(http, &host, port)
-            }
+            None => commands::cmd_mcp(http, &host, port),
         },
 
         Commands::Telemetry { action } => commands::cmd_telemetry(&action),
