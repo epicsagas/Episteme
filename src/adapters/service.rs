@@ -215,8 +215,7 @@ pub fn cmd_start(kind: ServiceKind, host: &str, port: u16) -> Result<u32, String
         return Err(format!("Port {port} is already in use"));
     }
 
-    let exe =
-        std::env::current_exe().map_err(|e| format!("cannot determine current exe: {e}"))?;
+    let exe = std::env::current_exe().map_err(|e| format!("cannot determine current exe: {e}"))?;
 
     let log_dir = paths::log_dir();
     fs::create_dir_all(&log_dir).map_err(|e| format!("cannot create log dir: {e}"))?;
@@ -272,8 +271,7 @@ pub fn cmd_start(kind: ServiceKind, host: &str, port: u16) -> Result<u32, String
 
 /// Stop the running server for the given `kind` (SIGTERM, then SIGKILL on timeout).
 pub fn cmd_stop(kind: ServiceKind) -> Result<(), String> {
-    let pid =
-        read_pid_for(kind).ok_or("No PID file found -- is the server running?")?;
+    let pid = read_pid_for(kind).ok_or("No PID file found -- is the server running?")?;
 
     if !is_running(pid) {
         clear_pid_for(kind).ok();
@@ -313,9 +311,7 @@ pub fn cmd_stop(kind: ServiceKind) -> Result<(), String> {
     }
     #[cfg(not(unix))]
     {
-        let _ = Command::new("kill")
-            .args(["-9", &pid.to_string()])
-            .output();
+        let _ = Command::new("kill").args(["-9", &pid.to_string()]).output();
     }
 
     // Give it a moment, then clean up PID file regardless.
@@ -617,11 +613,7 @@ fn systemd_unit_label(kind: ServiceKind) -> &'static str {
 
 /// Install a systemd user unit for the given service kind (Linux only).
 #[cfg(target_os = "linux")]
-pub fn install_systemd_unit(
-    kind: ServiceKind,
-    host: &str,
-    port: u16,
-) -> Result<String, String> {
+pub fn install_systemd_unit(kind: ServiceKind, host: &str, port: u16) -> Result<String, String> {
     let exe = std::env::current_exe().map_err(|e| e.to_string())?;
     let unit_path = systemd_unit_path(kind);
     if let Some(parent) = unit_path.parent() {
@@ -694,11 +686,7 @@ pub fn uninstall_systemd_unit(kind: ServiceKind) -> Result<String, String> {
 
 // Stubs for non-Linux targets so callers can compile unconditionally.
 #[cfg(not(target_os = "linux"))]
-pub fn install_systemd_unit(
-    kind: ServiceKind,
-    host: &str,
-    port: u16,
-) -> Result<String, String> {
+pub fn install_systemd_unit(kind: ServiceKind, host: &str, port: u16) -> Result<String, String> {
     let _ = (kind, host, port);
     Err("systemd integration is only supported on Linux".to_owned())
 }

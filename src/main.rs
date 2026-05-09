@@ -8,7 +8,10 @@ mod commands;
 
 use episteme::adapters::service::ServiceKind;
 
-use cli::{ApiCommands, Commands, GraphCommands, HooksCommands, InsightCommands, McpCommands, ServiceCommands};
+use cli::{
+    ApiCommands, Commands, GraphCommands, HooksCommands, InsightCommands, McpCommands,
+    ServiceCommands,
+};
 
 // ---------------------------------------------------------------------------
 // CLI top-level struct
@@ -125,13 +128,16 @@ fn dispatch(cli: Cli) -> Result<()> {
             commands::cmd_service(service_op(sub))
         }
 
-        Commands::Mcp { sub, http, host, port } => match sub {
+        Commands::Mcp {
+            sub,
+            http,
+            host,
+            port,
+        } => match sub {
             Some(mcp_sub) => commands::cmd_service(mcp_service_op(mcp_sub)),
             None => {
                 if http {
-                    eprintln!(
-                        "[deprecated] 'mcp --http' is deprecated, use 'mcp start' instead."
-                    );
+                    eprintln!("[deprecated] 'mcp --http' is deprecated, use 'mcp start' instead.");
                 }
                 commands::cmd_mcp(http, &host, port)
             }
@@ -183,39 +189,93 @@ fn service_op(sub: ServiceCommands) -> commands::ServiceOp {
     // Legacy 'service' commands always target MCP.
     match sub {
         ServiceCommands::Serve { host, port } => commands::ServiceOp::Serve { host, port },
-        ServiceCommands::Start { host, port } => commands::ServiceOp::Start { host, port, kind: ServiceKind::Mcp },
-        ServiceCommands::Stop => commands::ServiceOp::Stop { kind: ServiceKind::Mcp },
-        ServiceCommands::Restart { host, port } => commands::ServiceOp::Restart { host, port, kind: ServiceKind::Mcp },
-        ServiceCommands::Status => commands::ServiceOp::Status { kind: ServiceKind::Mcp },
+        ServiceCommands::Start { host, port } => commands::ServiceOp::Start {
+            host,
+            port,
+            kind: ServiceKind::Mcp,
+        },
+        ServiceCommands::Stop => commands::ServiceOp::Stop {
+            kind: ServiceKind::Mcp,
+        },
+        ServiceCommands::Restart { host, port } => commands::ServiceOp::Restart {
+            host,
+            port,
+            kind: ServiceKind::Mcp,
+        },
+        ServiceCommands::Status => commands::ServiceOp::Status {
+            kind: ServiceKind::Mcp,
+        },
         ServiceCommands::LaunchdInstall { host, port } => {
             commands::ServiceOp::LaunchdInstall { host, port }
         }
         ServiceCommands::LaunchdUninstall => commands::ServiceOp::LaunchdUninstall,
         ServiceCommands::LaunchdStatus => commands::ServiceOp::LaunchdStatus,
-        ServiceCommands::Enable { now } => commands::ServiceOp::Enable { now, kind: ServiceKind::Mcp },
-        ServiceCommands::Disable { now } => commands::ServiceOp::Disable { now, kind: ServiceKind::Mcp },
+        ServiceCommands::Enable { now } => commands::ServiceOp::Enable {
+            now,
+            kind: ServiceKind::Mcp,
+        },
+        ServiceCommands::Disable { now } => commands::ServiceOp::Disable {
+            now,
+            kind: ServiceKind::Mcp,
+        },
     }
 }
 
 fn mcp_service_op(sub: McpCommands) -> commands::ServiceOp {
     match sub {
-        McpCommands::Start { host, port } => commands::ServiceOp::Start { host, port, kind: ServiceKind::Mcp },
-        McpCommands::Stop => commands::ServiceOp::Stop { kind: ServiceKind::Mcp },
-        McpCommands::Restart { host, port } => commands::ServiceOp::Restart { host, port, kind: ServiceKind::Mcp },
-        McpCommands::Status => commands::ServiceOp::Status { kind: ServiceKind::Mcp },
-        McpCommands::Enable { now } => commands::ServiceOp::Enable { now, kind: ServiceKind::Mcp },
-        McpCommands::Disable { now } => commands::ServiceOp::Disable { now, kind: ServiceKind::Mcp },
+        McpCommands::Start { host, port } => commands::ServiceOp::Start {
+            host,
+            port,
+            kind: ServiceKind::Mcp,
+        },
+        McpCommands::Stop => commands::ServiceOp::Stop {
+            kind: ServiceKind::Mcp,
+        },
+        McpCommands::Restart { host, port } => commands::ServiceOp::Restart {
+            host,
+            port,
+            kind: ServiceKind::Mcp,
+        },
+        McpCommands::Status => commands::ServiceOp::Status {
+            kind: ServiceKind::Mcp,
+        },
+        McpCommands::Enable { now } => commands::ServiceOp::Enable {
+            now,
+            kind: ServiceKind::Mcp,
+        },
+        McpCommands::Disable { now } => commands::ServiceOp::Disable {
+            now,
+            kind: ServiceKind::Mcp,
+        },
     }
 }
 
 fn api_service_op(sub: ApiCommands) -> commands::ServiceOp {
     match sub {
-        ApiCommands::Start { host, port } => commands::ServiceOp::Start { host, port, kind: ServiceKind::Api },
-        ApiCommands::Stop => commands::ServiceOp::Stop { kind: ServiceKind::Api },
-        ApiCommands::Restart { host, port } => commands::ServiceOp::Restart { host, port, kind: ServiceKind::Api },
-        ApiCommands::Status => commands::ServiceOp::Status { kind: ServiceKind::Api },
-        ApiCommands::Enable { now } => commands::ServiceOp::Enable { now, kind: ServiceKind::Api },
-        ApiCommands::Disable { now } => commands::ServiceOp::Disable { now, kind: ServiceKind::Api },
+        ApiCommands::Start { host, port } => commands::ServiceOp::Start {
+            host,
+            port,
+            kind: ServiceKind::Api,
+        },
+        ApiCommands::Stop => commands::ServiceOp::Stop {
+            kind: ServiceKind::Api,
+        },
+        ApiCommands::Restart { host, port } => commands::ServiceOp::Restart {
+            host,
+            port,
+            kind: ServiceKind::Api,
+        },
+        ApiCommands::Status => commands::ServiceOp::Status {
+            kind: ServiceKind::Api,
+        },
+        ApiCommands::Enable { now } => commands::ServiceOp::Enable {
+            now,
+            kind: ServiceKind::Api,
+        },
+        ApiCommands::Disable { now } => commands::ServiceOp::Disable {
+            now,
+            kind: ServiceKind::Api,
+        },
     }
 }
 

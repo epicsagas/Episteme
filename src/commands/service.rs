@@ -15,16 +15,40 @@ use super::prelude::*;
 
 /// Dispatch type for service subcommands, avoiding direct clap enum coupling.
 pub enum ServiceOp {
-    Serve { host: String, port: u16 },
-    Start { host: String, port: u16, kind: ServiceKind },
-    Stop { kind: ServiceKind },
-    Restart { host: String, port: u16, kind: ServiceKind },
-    Status { kind: ServiceKind },
-    LaunchdInstall { host: String, port: u16 },
+    Serve {
+        host: String,
+        port: u16,
+    },
+    Start {
+        host: String,
+        port: u16,
+        kind: ServiceKind,
+    },
+    Stop {
+        kind: ServiceKind,
+    },
+    Restart {
+        host: String,
+        port: u16,
+        kind: ServiceKind,
+    },
+    Status {
+        kind: ServiceKind,
+    },
+    LaunchdInstall {
+        host: String,
+        port: u16,
+    },
     LaunchdUninstall,
     LaunchdStatus,
-    Enable { now: bool, kind: ServiceKind },
-    Disable { now: bool, kind: ServiceKind },
+    Enable {
+        now: bool,
+        kind: ServiceKind,
+    },
+    Disable {
+        now: bool,
+        kind: ServiceKind,
+    },
 }
 
 pub fn cmd_service(sub: ServiceOp) -> Result<()> {
@@ -32,16 +56,14 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
         ServiceOp::Serve { host, port } => cmd_mcp(true, &host, port),
         ServiceOp::Start { host, port, kind } => {
             let label = kind_label(kind);
-            let pid =
-                episteme::adapters::service::cmd_start(kind, &host, port)
-                    .map_err(|e| anyhow::anyhow!(e))?;
+            let pid = episteme::adapters::service::cmd_start(kind, &host, port)
+                .map_err(|e| anyhow::anyhow!(e))?;
             println!("{label} server started (PID {pid})");
             Ok(())
         }
         ServiceOp::Stop { kind } => {
             let label = kind_label(kind);
-            episteme::adapters::service::cmd_stop(kind)
-                .map_err(|e| anyhow::anyhow!(e))?;
+            episteme::adapters::service::cmd_stop(kind).map_err(|e| anyhow::anyhow!(e))?;
             println!("{label} server stopped");
             Ok(())
         }
@@ -49,9 +71,8 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
             let label = kind_label(kind);
             // Best-effort stop; ignore errors if nothing was running.
             let _ = episteme::adapters::service::cmd_stop(kind);
-            let pid =
-                episteme::adapters::service::cmd_start(kind, &host, port)
-                    .map_err(|e| anyhow::anyhow!(e))?;
+            let pid = episteme::adapters::service::cmd_start(kind, &host, port)
+                .map_err(|e| anyhow::anyhow!(e))?;
             println!("{label} server restarted (PID {pid})");
             Ok(())
         }
@@ -78,8 +99,8 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
             Ok(())
         }
         ServiceOp::Enable { now, kind } => {
-            let msg =
-                episteme::adapters::service::enable_service(kind, now).map_err(|e| anyhow::anyhow!(e))?;
+            let msg = episteme::adapters::service::enable_service(kind, now)
+                .map_err(|e| anyhow::anyhow!(e))?;
             println!("{msg}");
             Ok(())
         }
