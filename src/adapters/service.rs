@@ -595,7 +595,9 @@ pub fn disable_launchd(now: bool) -> Result<String, String> {
 
 #[cfg(target_os = "linux")]
 fn systemd_unit_path(kind: ServiceKind) -> PathBuf {
-    let home = std::env::var("HOME").unwrap_or_else(|_| "/tmp".to_owned());
+    let home = std::env::var("HOME").map_err(|_| {
+        "HOME environment variable not set; cannot determine systemd user unit path".to_owned()
+    })?;
     PathBuf::from(home)
         .join(".config")
         .join("systemd")
@@ -646,9 +648,23 @@ pub fn install_systemd_unit(kind: ServiceKind, host: &str, port: u16) -> Result<
     fs::write(&unit_path, unit).map_err(|e| e.to_string())?;
 
     // Reload systemd user daemon.
-    let _ = Command::new("systemctl")
+    let reload_st = Command::new("systemctl")
         .args(["--user", "daemon-reload"])
-        .status();
+        .status()
+        .map_err(|e| format!("failed to run systemctl daemon-reload: {e}"))?;
+    if !reload_st.success() {
+        return Err("systemctl --user daemon-reload failed".to_owned());
+    }
+
+    // Enable the unit so it starts automatically on login.
+    let label = systemd_unit_label(kind);
+    let enable_st = Command::new("systemctl")
+        .args(["--user", "enable", &format!("{label}.service")])
+        .status()
+        .map_err(|e| format!("failed to enable systemd unit: {e}"))?;
+    if !enable_st.success() {
+        return Err(format!("failed to enable {label}.service"));
+    }
 
     Ok(format!(
         "{kind} systemd unit installed: {path}",
