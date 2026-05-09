@@ -4,9 +4,15 @@ use crate::adapters::insight_utils;
 use crate::domain::composite_graph::CompositeGraph;
 use crate::domain::graph::KnowledgeGraph;
 use crate::domain::types::{
-    DuplicateCandidate, InsightLink, InsightLinkType, OverlapKind, UserEntity,
+    DuplicateCandidate, InsightLink, InsightLinkType, LinkProvenance, OverlapKind, UserEntity,
 };
 use crate::ports::graph::MutableGraphRepository;
+
+const REL_DERIVES_FROM: &str = "derives_from";
+const REL_APPLIES_TO: &str = "applies_to";
+const REL_SUPERSEDES: &str = "supersedes";
+const DEFAULT_MANUAL_SCORE: f64 = 0.5;
+const DEFAULT_CONFIDENCE: f64 = 0.5;
 
 /// Create a new user insight from free text, auto-detecting links to canonical entities.
 ///
@@ -78,7 +84,7 @@ pub fn add_insight(
     for link in &auto_links {
         if matches!(link.link_type, InsightLinkType::Auto) {
             relations
-                .entry("derives_from".to_owned())
+                .entry(REL_DERIVES_FROM.to_owned())
                 .or_insert_with(Vec::new)
                 .push(link.entity_id.clone());
         }
@@ -86,7 +92,7 @@ pub fn add_insight(
     if let Some(ref entity_ids) = linked_entities {
         for eid in entity_ids {
             relations
-                .entry("applies_to".to_owned())
+                .entry(REL_APPLIES_TO.to_owned())
                 .or_insert_with(Vec::new)
                 .push(eid.clone());
         }
@@ -99,16 +105,45 @@ pub fn add_insight(
     }
 
     let now = insight_utils::format_timestamp();
+
+    // Build link provenance
+    let mut link_provenance = std::collections::HashMap::new();
+    for link in &auto_links {
+        if matches!(link.link_type, InsightLinkType::Auto) {
+            link_provenance.insert(
+                format!("{}:{}", REL_DERIVES_FROM, link.entity_id),
+                LinkProvenance {
+                    source: link.link_type.to_string(),
+                    score: link.score,
+                    recorded_at: now.clone(),
+                },
+            );
+        }
+    }
+    if let Some(ref entity_ids) = linked_entities {
+        for eid in entity_ids {
+            link_provenance.insert(
+                format!("{}:{}", REL_APPLIES_TO, eid),
+                LinkProvenance {
+                    source: "manual".to_owned(),
+                    score: DEFAULT_MANUAL_SCORE,
+                    recorded_at: now.clone(),
+                },
+            );
+        }
+    }
+
     let entity = UserEntity {
         id: id.clone(),
         title: insight_utils::truncate_title(text),
         content: text.to_owned(),
         author: "user".to_owned(),
-        confidence: 0.5,
+        confidence: DEFAULT_CONFIDENCE,
         evidence_count: 0,
         last_validated: String::new(),
         tags: final_tags,
         relations,
+        link_provenance,
         created_at: now.clone(),
         updated_at: now,
     };
@@ -149,7 +184,7 @@ pub fn add_insight(
         "suggested_links": suggested_links,
         "related_insights": related_insights,
         "duplicates": duplicates,
-        "confidence": 0.5,
+        "confidence": DEFAULT_CONFIDENCE,
     })
 }
 
@@ -174,12 +209,30 @@ pub fn confirm_links(
     let mut errors: Vec<String> = Vec::new();
 
     // Add accepted links to the entity's relations HashMap
+    let confirm_ts = insight_utils::format_timestamp();
     for entity_id in &accepted {
         entity
             .relations
-            .entry("derives_from".to_owned())
+            .entry(REL_DERIVES_FROM.to_owned())
             .or_default()
             .push(entity_id.clone());
+        let prov_key = format!("{}:{}", REL_DERIVES_FROM, entity_id);
+        entity
+            .link_provenance
+            .entry(prov_key)
+            .and_modify(|existing| {
+                // Preserve the higher score from auto-detection
+                if existing.score < DEFAULT_MANUAL_SCORE {
+                    existing.source = "manual".to_owned();
+                    existing.score = DEFAULT_MANUAL_SCORE;
+                    existing.recorded_at = confirm_ts.clone();
+                }
+            })
+            .or_insert_with(|| LinkProvenance {
+                source: "manual".to_owned(),
+                score: DEFAULT_MANUAL_SCORE,
+                recorded_at: confirm_ts.clone(),
+            });
         confirmed_count += 1;
     }
 
@@ -194,7 +247,7 @@ pub fn confirm_links(
         } else {
             entity
                 .relations
-                .entry("supersedes".to_owned())
+                .entry(REL_SUPERSEDES.to_owned())
                 .or_default()
                 .push(merge_target.to_owned());
         }
@@ -433,11 +486,12 @@ mod tests {
             title: title.to_owned(),
             content: format!("Content for {title}"),
             author: "test".to_owned(),
-            confidence: 0.5,
+            confidence: DEFAULT_CONFIDENCE,
             evidence_count: 0,
             last_validated: String::new(),
             tags: vec![],
             relations: std::collections::HashMap::new(),
+            link_provenance: std::collections::HashMap::new(),
             created_at: "2026-01-01T00:00:00Z".to_owned(),
             updated_at: "2026-01-01T00:00:00Z".to_owned(),
         }

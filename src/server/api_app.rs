@@ -126,6 +126,8 @@ pub async fn create_app(
             "/graph/infer",
             get(crate::server::api_routes::infer_transitive),
         )
+        // Insight creation
+        .route("/insights", post(crate::server::api_routes::create_insight))
         // Prometheus metrics endpoint
         .route("/metrics", get(metrics_endpoint));
 

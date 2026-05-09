@@ -11,6 +11,9 @@ import type {
   TreeNode,
   SankeyData,
   EntityType,
+  SchemaResponse,
+  CreateInsightRequest,
+  CreateInsightResponse,
 } from './types.ts';
 
 export function health(baseUrl: string): Promise<HealthResponse> {
@@ -53,8 +56,8 @@ export function getContradictions(baseUrl: string): Promise<Array<{ entity_id: s
 }
 
 // Web Viewer API (port 8080)
-export function getFullGraph(webUrl: string): Promise<CytoscapeGraph> {
-  return apiGet<CytoscapeGraph>(webUrl, '/api/graph/full');
+export function getFullGraph(webUrl: string, signal?: AbortSignal): Promise<CytoscapeGraph> {
+  return apiGet<CytoscapeGraph>(webUrl, '/api/graph/full', signal);
 }
 
 export function getTree(webUrl: string): Promise<{ tree: TreeNode[] }> {
@@ -63,4 +66,18 @@ export function getTree(webUrl: string): Promise<{ tree: TreeNode[] }> {
 
 export function getSankey(webUrl: string): Promise<SankeyData> {
   return apiGet<SankeyData>(webUrl, '/api/graph/sankey');
+}
+
+export function getSchema(webUrl: string): Promise<SchemaResponse> {
+  return apiGet<SchemaResponse>(webUrl, '/api/graph/schema');
+}
+
+export function createInsight(
+  baseUrl: string,
+  text: string,
+  tags?: string[],
+  linkedEntities?: string[],
+): Promise<CreateInsightResponse> {
+  const body: CreateInsightRequest = { text, tags, linked_entities: linkedEntities };
+  return apiPost<CreateInsightRequest, CreateInsightResponse>(baseUrl, '/insights', body);
 }

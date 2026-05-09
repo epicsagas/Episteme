@@ -1,25 +1,31 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { getTree } from '../api/endpoints.ts';
+  import { getTree, getSchema } from '../api/endpoints.ts';
   import { getWebUrl } from '../stores/connection.svelte.ts';
   import Badge from '../ui/Badge.svelte';
   import Skeleton from '../ui/Skeleton.svelte';
   import EmptyState from '../ui/EmptyState.svelte';
-  import { ENTITY_TYPE_ICONS, ENTITY_TYPE_COLORS, ENTITY_TYPE_LABELS } from '../api/types.ts';
-  import type { TreeNode, EntityType } from '../api/types.ts';
+  import { ENTITY_TYPE_ICONS, ENTITY_TYPE_COLORS, ENTITY_TYPE_LABELS, RELATION_TYPE_COLORS, RELATION_DESCRIPTIONS, DATA_SOURCES, ENTITY_TYPE_HEX_COLORS } from '../api/types.ts';
+  import type { TreeNode, EntityType, SchemaRelationType } from '../api/types.ts';
   import { navigate } from '../router/index.svelte.ts';
 
   let trees: TreeNode[] = $state([]);
   let loading = $state(true);
   let error: string | null = $state(null);
   let expandedTypes = $state<Set<string>>(new Set());
+  let relationTypes: SchemaRelationType[] = $state([]);
+  let schemaEntityCounts: Map<string, number> = $state(new Map());
 
   onMount(async () => {
     try {
       const webUrl = getWebUrl();
-      const res = await getTree(webUrl);
-      trees = res.tree;
-      // Expand all types by default
+      const [treeRes, schema] = await Promise.all([
+        getTree(webUrl),
+        getSchema(webUrl),
+      ]);
+      trees = treeRes.tree;
+      relationTypes = schema.relation_types;
+      schemaEntityCounts = new Map(schema.entity_types.map(e => [e.key, e.count]));
       expandedTypes = new Set(trees.map(t => t.type));
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to load ontology';
@@ -134,23 +140,12 @@
             Relation Types
           </h3>
           <div class="space-y-2">
-            {#each [
-              { label: 'solves', color: 'var(--color-rel-solves)', desc: 'Pattern/Refactoring solves a Smell' },
-              { label: 'solved_by', color: 'var(--color-rel-solved-by)', desc: 'Smell is solved by a Pattern/Refactoring' },
-              { label: 'enforces', color: 'var(--color-rel-enforces)', desc: 'Pattern enforces a Law' },
-              { label: 'enforced_by', color: 'var(--color-rel-enforced-by)', desc: 'Law is enforced by a Pattern' },
-              { label: 'violates', color: 'var(--color-rel-violates)', desc: 'Pattern violates a Law' },
-              { label: 'violated_by', color: 'var(--color-rel-violated-by)', desc: 'Law is violated by a Smell/Anti-pattern' },
-              { label: 'related_to', color: 'var(--color-rel-related-to)', desc: 'General relationship' },
-              { label: 'derives_from', color: '#9575cd', desc: 'Derived from another concept' },
-              { label: 'applies_to', color: '#4db6ac', desc: 'Applies to a context' },
-              { label: 'supersedes', color: '#ff8a65', desc: 'Supersedes an older concept' },
-            ] as rel}
+            {#each relationTypes as rel}
               <div class="flex items-start gap-3 py-1.5">
-                <div class="w-5 h-1 rounded-full mt-1.5 shrink-0" style="background: {rel.color}"></div>
+                <div class="w-5 h-1 rounded-full mt-1.5 shrink-0" style="background: {RELATION_TYPE_COLORS[rel.key] || '#78909c'}"></div>
                 <div>
-                  <p class="text-xs font-mono font-bold text-[var(--color-on-surface)]">{rel.label}</p>
-                  <p class="text-[10px] text-[var(--color-on-surface-variant)]">{rel.desc}</p>
+                  <p class="text-xs font-mono font-bold text-[var(--color-on-surface)]">{rel.key}</p>
+                  <p class="text-[10px] text-[var(--color-on-surface-variant)]">{RELATION_DESCRIPTIONS[rel.key] || ''}</p>
                 </div>
               </div>
             {/each}
@@ -164,16 +159,13 @@
             Data Sources
           </h3>
           <div class="space-y-3">
-            {#each [
-              { name: 'GoF Design Patterns', icon: 'menu_book' },
-              { name: 'Refactoring Catalog (Fowler)', icon: 'auto_fix_high' },
-              { name: 'Software Laws & Principles', icon: 'gavel' },
-              { name: 'Code Smells Catalog', icon: 'warning' },
-              { name: 'Tacit Knowledge Insights', icon: 'lightbulb' },
-            ] as source}
+            {#each DATA_SOURCES as source}
               <div class="flex items-center gap-3 py-1">
                 <span class="material-symbols-outlined text-sm text-[var(--color-on-surface-variant)]">{source.icon}</span>
-                <span class="text-sm text-[var(--color-on-surface)]">{source.name}</span>
+                <div class="flex-1 min-w-0">
+                  <span class="text-sm text-[var(--color-on-surface)]">{source.name}</span>
+                  <span class="text-[10px] text-[var(--color-on-surface-variant)] ml-1">({schemaEntityCounts.get(source.entityType) || 0})</span>
+                </div>
               </div>
             {/each}
           </div>

@@ -24,7 +24,8 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:8000 http://localhost:8080 https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com"
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; connect-src 'self' http://localhost:*; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; object-src 'none'; base-uri 'self'",
+      "devCsp": "default-src 'self' http://localhost:5173; script-src 'self' 'unsafe-inline' http://localhost:5173; style-src 'self' 'unsafe-inline' http://localhost:5173; connect-src 'self' http://localhost:* ws://localhost:5173; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; object-src 'none'; base-uri 'self'"
     }
   },
   "bundle": {

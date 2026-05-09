@@ -28,6 +28,13 @@ pub type AppState = Arc<EpistemeMCP>;
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Deserialize)]
+pub struct CreateInsightRequest {
+    pub text: String,
+    pub tags: Option<Vec<String>>,
+    pub linked_entities: Option<Vec<String>>,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct SearchQuery {
     pub q: String,
     pub limit: Option<usize>,
@@ -622,4 +629,22 @@ pub async fn debug_profile() -> Json<serde_json::Value> {
             "debug_assertions": cfg!(debug_assertions),
         },
     }))
+}
+
+/// POST /insights -- create a tacit knowledge insight.
+pub async fn create_insight(
+    State(mcp): State<AppState>,
+    Json(body): Json<CreateInsightRequest>,
+) -> impl IntoResponse {
+    if body.text.trim().is_empty() {
+        return (StatusCode::BAD_REQUEST, Json(serde_json::json!({"error": "text must not be empty"})));
+    }
+
+    let result = mcp.add_insight(&body.text, body.tags, body.linked_entities, None);
+
+    if result.get("error").is_some() {
+        (StatusCode::UNPROCESSABLE_ENTITY, Json(result))
+    } else {
+        (StatusCode::CREATED, Json(result))
+    }
 }

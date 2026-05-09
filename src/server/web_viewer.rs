@@ -18,6 +18,7 @@ pub fn web_router(handler: Arc<EpistemeMCP>) -> Router {
         .route("/api/graph/entity/{id}", get(graph_entity))
         .route("/api/graph/path/{from}/{to}", get(graph_path))
         .route("/api/graph/sankey", get(graph_sankey))
+        .route("/api/graph/schema", get(graph_schema))
         .route("/api/graph/tree", get(graph_tree))
         .route("/api/entities/search", get(entities_search))
         .with_state(handler)
@@ -196,6 +197,63 @@ async fn entities_search(
         .take(20)
         .collect();
     Json(results)
+}
+
+// ---------------------------------------------------------------------------
+// Schema API endpoint
+// ---------------------------------------------------------------------------
+
+/// GET /api/graph/schema -- entity types, relation types, and data sources with counts.
+///
+/// Returns type keys and counts only. Colors/icons/labels are the frontend's concern.
+async fn graph_schema(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Value> {
+    let graph = mcp.graph();
+
+    // Count entities per type
+    let mut type_counts: std::collections::HashMap<String, usize> =
+        std::collections::HashMap::new();
+    for id in graph.all_entity_ids() {
+        if let Some(entity) = graph.get_entity(&id) {
+            let t = if entity.r#type.is_empty() {
+                "unknown"
+            } else {
+                &entity.r#type
+            };
+            *type_counts.entry(t.to_owned()).or_insert(0) += 1;
+        }
+    }
+
+    // Add insight count from user store if available
+    let insight_count = mcp.user_entity_count();
+    type_counts.entry("insight".to_owned()).or_insert(insight_count);
+
+    let entity_types: Vec<serde_json::Value> = type_counts
+        .iter()
+        .map(|(t, count)| {
+            serde_json::json!({
+                "key": t,
+                "count": count,
+            })
+        })
+        .collect();
+
+    let relation_types = serde_json::json!([
+        { "key": "solves", "inverse": "solved_by" },
+        { "key": "solved_by", "inverse": "solves" },
+        { "key": "enforces", "inverse": "enforced_by" },
+        { "key": "enforced_by", "inverse": "enforces" },
+        { "key": "violates", "inverse": "violated_by" },
+        { "key": "violated_by", "inverse": "violates" },
+        { "key": "related_to", "inverse": null },
+        { "key": "derives_from", "inverse": null },
+        { "key": "applies_to", "inverse": null },
+        { "key": "supersedes", "inverse": null }
+    ]);
+
+    Json(serde_json::json!({
+        "entity_types": entity_types,
+        "relation_types": relation_types,
+    }))
 }
 
 // ---------------------------------------------------------------------------

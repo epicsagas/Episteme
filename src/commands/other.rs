@@ -100,6 +100,7 @@ pub fn cmd_insight(op: InsightOp) -> Result<()> {
                 last_validated: String::new(),
                 tags,
                 relations,
+                link_provenance: std::collections::HashMap::new(),
                 created_at: now.clone(),
                 updated_at: now,
             };

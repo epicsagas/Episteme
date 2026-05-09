@@ -144,6 +144,14 @@ impl EpistemeMCP {
         &self.graph
     }
 
+    /// Return the number of user entities (insights) in the composite graph.
+    pub fn user_entity_count(&self) -> usize {
+        self.composite
+            .as_ref()
+            .map(|c| c.lock().map(|g| g.user_entity_count()).unwrap_or(0))
+            .unwrap_or(0)
+    }
+
     /// Check whether a RAG database is attached.
     pub fn has_db(&self) -> bool {
         self.db.is_some()

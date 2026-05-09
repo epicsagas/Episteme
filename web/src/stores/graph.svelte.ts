@@ -6,8 +6,9 @@ import type { Neighbor } from '../api/types.ts';
 let selectedEntity: Entity | null = $state(null);
 let neighbors: Neighbor[] = $state([]);
 let graphData: CytoscapeGraph | null = $state(null);
+let version: number = $state(0);
 let loading = $state(false);
-let error: string | null = $state(null);
+let errorMsg: string | null = $state(null);
 
 export function getSelectedEntity(): Entity | null {
   return selectedEntity;
@@ -21,17 +22,26 @@ export function getGraphData(): CytoscapeGraph | null {
   return graphData;
 }
 
+export function getVersion(): number {
+  return version;
+}
+
 export function isLoading(): boolean {
   return loading;
 }
 
+export function getError(): string | null {
+  return errorMsg;
+}
+
 export async function loadFullGraph(): Promise<void> {
   loading = true;
-  error = null;
+  errorMsg = null;
   try {
     graphData = await getFullGraph(getWebUrl());
+    version++;
   } catch {
-    error = 'Failed to load graph data';
+    errorMsg = 'Failed to load graph data';
   } finally {
     loading = false;
   }
@@ -39,7 +49,7 @@ export async function loadFullGraph(): Promise<void> {
 
 export async function selectEntity(id: string): Promise<void> {
   loading = true;
-  error = null;
+  errorMsg = null;
   try {
     const [entity, neighborhood] = await Promise.all([
       getEntity(getBaseUrl(), id),
@@ -48,7 +58,7 @@ export async function selectEntity(id: string): Promise<void> {
     selectedEntity = entity;
     neighbors = neighborhood.neighbors;
   } catch (e) {
-    error = e instanceof Error ? e.message : 'Failed to load entity';
+    errorMsg = e instanceof Error ? e.message : 'Failed to load entity';
   } finally {
     loading = false;
   }
