@@ -10,8 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - CLI: `explore` renamed to `search` (old name works as deprecated alias)
+- CLI: `mcp` and `api` now own their full service lifecycle (`start`, `stop`, `restart`, `status`, `enable [--now]`, `disable [--now]`)
+- CLI: `service` top-level command deprecated — use `mcp start/stop/restart/status/enable/disable` instead
+- CLI: `mcp --http` deprecated — use `mcp start` for HTTP daemon mode
+- CLI: `launchd-install/uninstall/status` deprecated — use `mcp enable/disable/status` instead
+- `enable/disable` now cross-platform: macOS (launchd) and Linux (systemd user unit)
 
 ### Added
+
+- `api start/stop/restart/status/enable/disable` — REST API daemon lifecycle management
+- Linux systemd user unit generation for `mcp enable`
 
 - **MCP HTTP transport for Claude Code** — transport selector TUI, HTTP as default, launchd auto-enable
 - **Agent prompt auto-install** — `epis install` copies Episteme agent prompts into `~/.claude/agents/`
