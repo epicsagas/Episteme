@@ -145,6 +145,14 @@ export const ENTITY_TYPE_COLORS: Record<EntityType, string> = {
   insight: 'var(--color-insight)',
 };
 
+export const ENTITY_TYPE_HEX_COLORS: Record<string, string> = {
+  pattern: '#4caf50',
+  refactoring: '#2196f3',
+  law: '#ff9800',
+  smell: '#f44336',
+  insight: '#ab47bc',
+};
+
 export const ENTITY_TYPE_ICONS: Record<EntityType, string> = {
   pattern: 'design_services',
   refactoring: 'build',

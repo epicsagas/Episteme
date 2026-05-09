@@ -4,6 +4,11 @@ let status: ConnectionStatus = $state('disconnected');
 let baseUrl: string = $state('http://localhost:8000');
 let webPort: number = $state(8080);
 
+let readyResolve: (() => void) | null = null;
+let readyPromise = new Promise<void>((resolve) => {
+  readyResolve = resolve;
+});
+
 export function getStatus(): ConnectionStatus {
   return status;
 }
@@ -24,6 +29,26 @@ export function setBaseUrl(url: string) {
 
 export function setWebPort(port: number) {
   webPort = port;
+  notifyReady();
+}
+
+export function waitForReady(): Promise<void> {
+  return Promise.race([
+    readyPromise,
+    new Promise<void>((resolve) => setTimeout(resolve, 8000)),
+  ]);
+}
+
+function notifyReady() {
+  if (readyResolve) {
+    readyResolve();
+    readyResolve = null;
+  }
+}
+
+/** Resolve the ready promise immediately (used in non-Tauri mode). */
+export function markReady() {
+  notifyReady();
 }
 
 export async function checkHealth(maxRetries = 3): Promise<boolean> {

@@ -2,24 +2,13 @@
   import cytoscape from 'cytoscape';
   import type { Core, NodeSingular } from 'cytoscape';
   import { onMount, onDestroy } from 'svelte';
-  import { loadFullGraph, getGraphData, isLoading } from '../stores/graph.svelte.ts';
+  import { loadFullGraph, getGraphData, isLoading, getVersion } from '../stores/graph.svelte.ts';
   import { selectEntity } from '../stores/graph.svelte.ts';
-  import {
-    ENTITY_TYPE_COLORS,
-    ENTITY_TYPE_ICONS,
-  } from '../api/types.ts';
-  import type { EntityType } from '../api/types.ts';
+  import { waitForReady } from '../stores/connection.svelte.ts';
+  import { ENTITY_TYPE_HEX_COLORS } from '../api/types.ts';
 
   let container: HTMLDivElement | undefined = $state();
   let cy: Core | null = null;
-
-  const TYPE_COLORS: Record<string, string> = {
-    pattern: '#4caf50',
-    refactoring: '#2196f3',
-    law: '#ff9800',
-    smell: '#f44336',
-    insight: '#ab47bc',
-  };
 
   const REL_COLORS: Record<string, string> = {
     solves: '#66bb6a',
@@ -34,21 +23,21 @@
     supersedes: '#ff8a65',
   };
 
-  let lastNodeCount = 0;
-  let lastEdgeCount = 0;
+  let lastVersion = 0;
 
-  onMount(() => {
+  onMount(async () => {
+    await waitForReady();
     loadFullGraph();
   });
 
   $effect(() => {
     const data = getGraphData();
+    const currentVersion = getVersion();
     if (!data || !container) return;
 
     // Skip recreation if data hasn't changed
-    if (data.nodes.length === lastNodeCount && data.edges.length === lastEdgeCount && cy) return;
-    lastNodeCount = data.nodes.length;
-    lastEdgeCount = data.edges.length;
+    if (currentVersion === lastVersion && cy) return;
+    lastVersion = currentVersion;
 
     if (cy) {
       cy.destroy();
@@ -93,7 +82,7 @@
             'border-opacity': 0.3,
           },
         },
-        ...Object.entries(TYPE_COLORS).map(([type, color]) => ({
+        ...Object.entries(ENTITY_TYPE_HEX_COLORS).map(([type, color]) => ({
           selector: `node[type="${type}"]`,
           style: { 'background-color': color },
         })),
