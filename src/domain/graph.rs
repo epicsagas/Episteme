@@ -173,13 +173,43 @@ impl KnowledgeGraph {
     }
 
     /// Get all neighbor IDs of `entity_id`, optionally filtered by `relation_type`.
+    ///
+    /// When `relation_type` is `Some(rt)` and `rt` has a defined inverse (e.g.
+    /// `solved_by` ↔ `solves`), this method also derives neighbors from the
+    /// reverse index, effectively traversing incoming edges.
+    ///
+    /// When `relation_type` is `None`, only **outgoing** edges are returned.
+    /// For full bidirectional traversal, use `get_neighborhood()` or combine
+    /// with explicit reverse queries.
+    ///
+    /// **Note:** `find_shortest_path()` and `extract_subgraph()` call this with
+    /// `None` and therefore traverse only directed (outgoing) edges. Inverse
+    /// derivation is intentionally limited to the `Some(rt)` path to keep BFS
+    /// semantics predictable.
     pub fn get_neighbors(&self, entity_id: &str, relation_type: Option<&str>) -> Vec<String> {
         let Some(entity) = self.entities.get(entity_id) else {
             return Vec::new();
         };
 
         if let Some(rt) = relation_type {
-            entity.relations.get(rt).cloned().unwrap_or_default()
+            let mut results = entity.relations.get(rt).cloned().unwrap_or_default();
+
+            // Derive inverse relations from the reverse index.
+            if let Some(inverse) = Self::inverse_relation(rt) {
+                if let Some(reverse_map) = self.reverse_relations.get(entity_id) {
+                    if let Some(sources) = reverse_map.get(&inverse) {
+                        let seen: HashSet<String> = results.iter().cloned().collect();
+                        for source in sources {
+                            if !seen.contains(source) {
+                                results.push(source.clone());
+                            }
+                        }
+                    }
+                }
+            }
+
+            results.sort();
+            results
         } else {
             let mut seen = HashSet::new();
             let mut neighbors = Vec::new();
@@ -192,6 +222,15 @@ impl KnowledgeGraph {
             }
             neighbors
         }
+    }
+
+    /// Return the inverse relation type, delegating to `RelationType::inverse_of()`.
+    fn inverse_relation(relation_type: &str) -> Option<String> {
+        relation_type
+            .parse::<RelationType>()
+            .ok()
+            .and_then(|rt| rt.inverse_of())
+            .map(|rt| rt.to_string())
     }
 
     /// All outgoing edges from `entity_id`.
@@ -843,6 +882,43 @@ pub(crate) mod tests {
         assert_eq!(rf_id, "RF-001");
         assert_eq!(smell_id, "SMELL-01");
         assert_eq!(law_id, "LAW-001");
+    }
+
+    #[test]
+    fn get_neighbors_derives_inverse_solved_by() {
+        // RF-001 solves SMELL-01, but SMELL-01 has no explicit solved_by.
+        // get_neighbors("SMELL-01", Some("solved_by")) should still find RF-001
+        // via the reverse index.
+        let mut rf = blank_entity("RF-001");
+        rf.relations
+            .insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
+        let smell = blank_entity("SMELL-01");
+        let kg = build_graph_from_entities(vec![rf, smell]);
+
+        let neighbors = kg.get_neighbors("SMELL-01", Some("solved_by"));
+        assert!(
+            neighbors.contains(&"RF-001".to_owned()),
+            "solved_by should derive from reverse index, got: {:?}",
+            neighbors
+        );
+    }
+
+    #[test]
+    fn get_neighbors_derives_inverse_violated_by() {
+        // SMELL-01 violates LAW-001, but LAW-001 has no explicit violated_by.
+        let mut smell = blank_entity("SMELL-01");
+        smell
+            .relations
+            .insert("violates".to_owned(), vec!["LAW-001".to_owned()]);
+        let law = blank_entity("LAW-001");
+        let kg = build_graph_from_entities(vec![smell, law]);
+
+        let neighbors = kg.get_neighbors("LAW-001", Some("violated_by"));
+        assert!(
+            neighbors.contains(&"SMELL-01".to_owned()),
+            "violated_by should derive from reverse index, got: {:?}",
+            neighbors
+        );
     }
 
     #[test]

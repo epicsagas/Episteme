@@ -68,6 +68,8 @@ pub enum RelationType {
     DerivesFrom,
     AppliesTo,
     Supersedes,
+    EnforcedBy,
+    ViolatedBy,
 }
 
 impl fmt::Display for RelationType {
@@ -81,6 +83,8 @@ impl fmt::Display for RelationType {
             RelationType::DerivesFrom => write!(f, "derives_from"),
             RelationType::AppliesTo => write!(f, "applies_to"),
             RelationType::Supersedes => write!(f, "supersedes"),
+            RelationType::EnforcedBy => write!(f, "enforced_by"),
+            RelationType::ViolatedBy => write!(f, "violated_by"),
         }
     }
 }
@@ -97,7 +101,27 @@ impl FromStr for RelationType {
             "derives_from" => Ok(RelationType::DerivesFrom),
             "applies_to" => Ok(RelationType::AppliesTo),
             "supersedes" => Ok(RelationType::Supersedes),
+            "enforced_by" => Ok(RelationType::EnforcedBy),
+            "violated_by" => Ok(RelationType::ViolatedBy),
             other => Err(format!("unknown relation type: {other}")),
+        }
+    }
+}
+
+impl RelationType {
+    /// Return the inverse relation, if one exists.
+    pub fn inverse_of(&self) -> Option<RelationType> {
+        match self {
+            RelationType::Solves => Some(RelationType::SolvedBy),
+            RelationType::SolvedBy => Some(RelationType::Solves),
+            RelationType::Enforces => Some(RelationType::EnforcedBy),
+            RelationType::Violates => Some(RelationType::ViolatedBy),
+            RelationType::ViolatedBy => Some(RelationType::Violates),
+            RelationType::RelatedTo => None,
+            RelationType::DerivesFrom => None,
+            RelationType::AppliesTo => None,
+            RelationType::Supersedes => None,
+            RelationType::EnforcedBy => Some(RelationType::Enforces),
         }
     }
 }
@@ -124,6 +148,13 @@ pub enum SmellType {
     FeatureEnvy,
     MessageChains,
     GodObject,
+    TemporaryField,
+    ParallelInheritance,
+    Comments,
+    DeadCode,
+    InappropriateIntimacy,
+    RefusedBequest,
+    AlternativeClasses,
 }
 
 impl SmellType {
@@ -145,6 +176,13 @@ impl SmellType {
             SmellType::FeatureEnvy => "SMELL-18",
             SmellType::MessageChains => "SMELL-20",
             SmellType::GodObject => "SMELL-21",
+            SmellType::TemporaryField => "SMELL-08",
+            SmellType::ParallelInheritance => "SMELL-15",
+            SmellType::Comments => "SMELL-16",
+            SmellType::DeadCode => "SMELL-17",
+            SmellType::InappropriateIntimacy => "SMELL-19",
+            SmellType::RefusedBequest => "SMELL-22",
+            SmellType::AlternativeClasses => "SMELL-23",
         }
     }
 }
@@ -168,6 +206,15 @@ impl fmt::Display for SmellType {
             SmellType::FeatureEnvy => write!(f, "Feature Envy"),
             SmellType::MessageChains => write!(f, "Message Chains"),
             SmellType::GodObject => write!(f, "God Object"),
+            SmellType::TemporaryField => write!(f, "Temporary Field"),
+            SmellType::ParallelInheritance => write!(f, "Parallel Inheritance Hierarchies"),
+            SmellType::Comments => write!(f, "Comments"),
+            SmellType::DeadCode => write!(f, "Dead Code"),
+            SmellType::InappropriateIntimacy => write!(f, "Inappropriate Intimacy"),
+            SmellType::RefusedBequest => write!(f, "Refused Bequest"),
+            SmellType::AlternativeClasses => {
+                write!(f, "Alternative Classes with Different Interfaces")
+            }
         }
     }
 }
@@ -204,6 +251,23 @@ impl FromStr for SmellType {
             "Feature Envy" | "FeatureEnvy" | "feature_envy" => Ok(SmellType::FeatureEnvy),
             "Message Chains" | "MessageChains" | "message_chains" => Ok(SmellType::MessageChains),
             "God Object" | "GodObject" | "god_object" => Ok(SmellType::GodObject),
+            "Temporary Field" | "TemporaryField" | "temporary_field" => {
+                Ok(SmellType::TemporaryField)
+            }
+            "Parallel Inheritance Hierarchies" | "ParallelInheritance" | "parallel_inheritance" => {
+                Ok(SmellType::ParallelInheritance)
+            }
+            "Comments" | "comments" => Ok(SmellType::Comments),
+            "Dead Code" | "DeadCode" | "dead_code" => Ok(SmellType::DeadCode),
+            "Inappropriate Intimacy" | "InappropriateIntimacy" | "inappropriate_intimacy" => {
+                Ok(SmellType::InappropriateIntimacy)
+            }
+            "Refused Bequest" | "RefusedBequest" | "refused_bequest" => {
+                Ok(SmellType::RefusedBequest)
+            }
+            "Alternative Classes with Different Interfaces"
+            | "AlternativeClasses"
+            | "alternative_classes" => Ok(SmellType::AlternativeClasses),
             other => Err(format!("unknown smell type: {other}")),
         }
     }
@@ -433,4 +497,253 @@ pub enum OverlapKind {
     Exact,
     Partial,
     None,
+}
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // -- SmellType: new variants id() -------------------------------------
+
+    #[test]
+    fn smell_temporary_field_id() {
+        assert_eq!(SmellType::TemporaryField.id(), "SMELL-08");
+    }
+
+    #[test]
+    fn smell_parallel_inheritance_id() {
+        assert_eq!(SmellType::ParallelInheritance.id(), "SMELL-15");
+    }
+
+    #[test]
+    fn smell_comments_id() {
+        assert_eq!(SmellType::Comments.id(), "SMELL-16");
+    }
+
+    #[test]
+    fn smell_dead_code_id() {
+        assert_eq!(SmellType::DeadCode.id(), "SMELL-17");
+    }
+
+    #[test]
+    fn smell_inappropriate_intimacy_id() {
+        assert_eq!(SmellType::InappropriateIntimacy.id(), "SMELL-19");
+    }
+
+    #[test]
+    fn smell_refused_bequest_id() {
+        assert_eq!(SmellType::RefusedBequest.id(), "SMELL-22");
+    }
+
+    #[test]
+    fn smell_alternative_classes_id() {
+        assert_eq!(SmellType::AlternativeClasses.id(), "SMELL-23");
+    }
+
+    // -- SmellType: new variants Display ----------------------------------
+
+    #[test]
+    fn smell_temporary_field_display() {
+        assert_eq!(format!("{}", SmellType::TemporaryField), "Temporary Field");
+    }
+
+    #[test]
+    fn smell_parallel_inheritance_display() {
+        assert_eq!(
+            format!("{}", SmellType::ParallelInheritance),
+            "Parallel Inheritance Hierarchies"
+        );
+    }
+
+    #[test]
+    fn smell_comments_display() {
+        assert_eq!(format!("{}", SmellType::Comments), "Comments");
+    }
+
+    #[test]
+    fn smell_dead_code_display() {
+        assert_eq!(format!("{}", SmellType::DeadCode), "Dead Code");
+    }
+
+    #[test]
+    fn smell_inappropriate_intimacy_display() {
+        assert_eq!(
+            format!("{}", SmellType::InappropriateIntimacy),
+            "Inappropriate Intimacy"
+        );
+    }
+
+    #[test]
+    fn smell_refused_bequest_display() {
+        assert_eq!(format!("{}", SmellType::RefusedBequest), "Refused Bequest");
+    }
+
+    #[test]
+    fn smell_alternative_classes_display() {
+        assert_eq!(
+            format!("{}", SmellType::AlternativeClasses),
+            "Alternative Classes with Different Interfaces"
+        );
+    }
+
+    // -- SmellType: new variants FromStr (all three forms) ----------------
+
+    #[test]
+    fn smell_temporary_field_from_str() {
+        assert_eq!("Temporary Field".parse::<SmellType>().unwrap(), SmellType::TemporaryField);
+        assert_eq!("TemporaryField".parse::<SmellType>().unwrap(), SmellType::TemporaryField);
+        assert_eq!("temporary_field".parse::<SmellType>().unwrap(), SmellType::TemporaryField);
+    }
+
+    #[test]
+    fn smell_parallel_inheritance_from_str() {
+        assert_eq!("Parallel Inheritance Hierarchies".parse::<SmellType>().unwrap(), SmellType::ParallelInheritance);
+        assert_eq!("ParallelInheritance".parse::<SmellType>().unwrap(), SmellType::ParallelInheritance);
+        assert_eq!("parallel_inheritance".parse::<SmellType>().unwrap(), SmellType::ParallelInheritance);
+    }
+
+    #[test]
+    fn smell_comments_from_str() {
+        assert_eq!("Comments".parse::<SmellType>().unwrap(), SmellType::Comments);
+        assert_eq!("comments".parse::<SmellType>().unwrap(), SmellType::Comments);
+    }
+
+    #[test]
+    fn smell_dead_code_from_str() {
+        assert_eq!("Dead Code".parse::<SmellType>().unwrap(), SmellType::DeadCode);
+        assert_eq!("DeadCode".parse::<SmellType>().unwrap(), SmellType::DeadCode);
+        assert_eq!("dead_code".parse::<SmellType>().unwrap(), SmellType::DeadCode);
+    }
+
+    #[test]
+    fn smell_inappropriate_intimacy_from_str() {
+        assert_eq!("Inappropriate Intimacy".parse::<SmellType>().unwrap(), SmellType::InappropriateIntimacy);
+        assert_eq!("InappropriateIntimacy".parse::<SmellType>().unwrap(), SmellType::InappropriateIntimacy);
+        assert_eq!("inappropriate_intimacy".parse::<SmellType>().unwrap(), SmellType::InappropriateIntimacy);
+    }
+
+    #[test]
+    fn smell_refused_bequest_from_str() {
+        assert_eq!("Refused Bequest".parse::<SmellType>().unwrap(), SmellType::RefusedBequest);
+        assert_eq!("RefusedBequest".parse::<SmellType>().unwrap(), SmellType::RefusedBequest);
+        assert_eq!("refused_bequest".parse::<SmellType>().unwrap(), SmellType::RefusedBequest);
+    }
+
+    #[test]
+    fn smell_alternative_classes_from_str() {
+        assert_eq!("Alternative Classes with Different Interfaces".parse::<SmellType>().unwrap(), SmellType::AlternativeClasses);
+        assert_eq!("AlternativeClasses".parse::<SmellType>().unwrap(), SmellType::AlternativeClasses);
+        assert_eq!("alternative_classes".parse::<SmellType>().unwrap(), SmellType::AlternativeClasses);
+    }
+
+    // -- RelationType: new variants Display/FromStr -----------------------
+
+    #[test]
+    fn relation_enforced_by_display() {
+        assert_eq!(format!("{}", RelationType::EnforcedBy), "enforced_by");
+    }
+
+    #[test]
+    fn relation_violated_by_display() {
+        assert_eq!(format!("{}", RelationType::ViolatedBy), "violated_by");
+    }
+
+    #[test]
+    fn relation_enforced_by_from_str() {
+        assert_eq!("enforced_by".parse::<RelationType>().unwrap(), RelationType::EnforcedBy);
+    }
+
+    #[test]
+    fn relation_violated_by_from_str() {
+        assert_eq!("violated_by".parse::<RelationType>().unwrap(), RelationType::ViolatedBy);
+    }
+
+    // -- RelationType::inverse_of -----------------------------------------
+
+    #[test]
+    fn inverse_of_solves() {
+        assert_eq!(RelationType::Solves.inverse_of(), Some(RelationType::SolvedBy));
+    }
+
+    #[test]
+    fn inverse_of_solved_by() {
+        assert_eq!(RelationType::SolvedBy.inverse_of(), Some(RelationType::Solves));
+    }
+
+    #[test]
+    fn inverse_of_enforces() {
+        assert_eq!(RelationType::Enforces.inverse_of(), Some(RelationType::EnforcedBy));
+    }
+
+    #[test]
+    fn inverse_of_violates() {
+        assert_eq!(RelationType::Violates.inverse_of(), Some(RelationType::ViolatedBy));
+    }
+
+    #[test]
+    fn inverse_of_enforced_by() {
+        assert_eq!(RelationType::EnforcedBy.inverse_of(), Some(RelationType::Enforces));
+    }
+
+    #[test]
+    fn inverse_of_violated_by() {
+        assert_eq!(RelationType::ViolatedBy.inverse_of(), Some(RelationType::Violates));
+    }
+
+    #[test]
+    fn inverse_of_related_to_is_none() {
+        assert_eq!(RelationType::RelatedTo.inverse_of(), None);
+    }
+
+    #[test]
+    fn inverse_of_derives_from_is_none() {
+        assert_eq!(RelationType::DerivesFrom.inverse_of(), None);
+    }
+
+    #[test]
+    fn inverse_of_applies_to_is_none() {
+        assert_eq!(RelationType::AppliesTo.inverse_of(), None);
+    }
+
+    #[test]
+    fn inverse_of_supersedes_is_none() {
+        assert_eq!(RelationType::Supersedes.inverse_of(), None);
+    }
+
+    // -- SmellType: total count is 23 -------------------------------------
+
+    #[test]
+    fn smell_type_count_is_23() {
+        // Ensures all 23 variants are accounted for by spot-checking each new one
+        let all_ids: Vec<&str> = vec![
+            SmellType::LongMethod.id(),
+            SmellType::LongParameterList.id(),
+            SmellType::PrimitiveObsession.id(),
+            SmellType::LargeClass.id(),
+            SmellType::DataClumps.id(),
+            SmellType::SwitchStatements.id(),
+            SmellType::DataClass.id(),
+            SmellType::TemporaryField.id(),
+            SmellType::ShotgunSurgery.id(),
+            SmellType::DivergentChange.id(),
+            SmellType::LazyClass.id(),
+            SmellType::SpeculativeGenerality.id(),
+            SmellType::DuplicateCode.id(),
+            SmellType::MiddleMan.id(),
+            SmellType::ParallelInheritance.id(),
+            SmellType::Comments.id(),
+            SmellType::DeadCode.id(),
+            SmellType::FeatureEnvy.id(),
+            SmellType::InappropriateIntimacy.id(),
+            SmellType::MessageChains.id(),
+            SmellType::GodObject.id(),
+            SmellType::RefusedBequest.id(),
+            SmellType::AlternativeClasses.id(),
+        ];
+        assert_eq!(all_ids.len(), 23);
+    }
 }
