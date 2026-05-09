@@ -41,7 +41,12 @@
           "items": { "type": "string" }
         },
         "source": {
-          "description": "Source metadata (string, object, or null)"
+          "oneOf": [
+            { "type": "string" },
+            { "type": "object" },
+            { "type": "null" }
+          ],
+          "description": "Source metadata"
         }
       }
     },

@@ -180,8 +180,12 @@ impl KnowledgeGraph {
     ///
     /// When `relation_type` is `None`, only **outgoing** edges are returned.
     /// For full bidirectional traversal, use `get_neighborhood()` or combine
-    /// with explicit reverse queries. This affects `find_shortest_path()` and
-    /// `extract_subgraph()` which use the `None` variant for directed BFS.
+    /// with explicit reverse queries.
+    ///
+    /// **Note:** `find_shortest_path()` and `extract_subgraph()` call this with
+    /// `None` and therefore traverse only directed (outgoing) edges. Inverse
+    /// derivation is intentionally limited to the `Some(rt)` path to keep BFS
+    /// semantics predictable.
     pub fn get_neighbors(&self, entity_id: &str, relation_type: Option<&str>) -> Vec<String> {
         let Some(entity) = self.entities.get(entity_id) else {
             return Vec::new();
@@ -193,7 +197,7 @@ impl KnowledgeGraph {
             // Derive inverse relations from the reverse index.
             if let Some(inverse) = Self::inverse_relation(rt) {
                 if let Some(reverse_map) = self.reverse_relations.get(entity_id) {
-                    if let Some(sources) = reverse_map.get(inverse) {
+                    if let Some(sources) = reverse_map.get(&inverse) {
                         let seen: HashSet<String> = results.iter().cloned().collect();
                         for source in sources {
                             if !seen.contains(source) {
@@ -204,6 +208,7 @@ impl KnowledgeGraph {
                 }
             }
 
+            results.sort();
             results
         } else {
             let mut seen = HashSet::new();
@@ -220,20 +225,12 @@ impl KnowledgeGraph {
     }
 
     /// Return the inverse relation type, delegating to `RelationType::inverse_of()`.
-    fn inverse_relation(relation_type: &str) -> Option<&'static str> {
+    fn inverse_relation(relation_type: &str) -> Option<String> {
         relation_type
             .parse::<RelationType>()
             .ok()
             .and_then(|rt| rt.inverse_of())
-            .map(|rt| match rt {
-                RelationType::Solves => "solves",
-                RelationType::SolvedBy => "solved_by",
-                RelationType::Enforces => "enforces",
-                RelationType::EnforcedBy => "enforced_by",
-                RelationType::Violates => "violates",
-                RelationType::ViolatedBy => "violated_by",
-                _ => unreachable!("inverse_of only returns the above variants"),
-            })
+            .map(|rt| rt.to_string())
     }
 
     /// All outgoing edges from `entity_id`.
