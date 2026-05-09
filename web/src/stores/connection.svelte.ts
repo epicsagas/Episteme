@@ -13,7 +13,9 @@ export function getBaseUrl(): string {
 }
 
 export function getWebUrl(): string {
-  return baseUrl.replace(/:\d+/, `:${webPort}`);
+  const url = new URL(baseUrl);
+  url.port = String(webPort);
+  return url.origin;
 }
 
 export function setBaseUrl(url: string) {

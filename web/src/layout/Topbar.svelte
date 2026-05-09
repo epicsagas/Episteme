@@ -34,7 +34,15 @@
   function selectResult(id: string) {
     showDropdown = false;
     searchQuery = '';
+    searchResults = [];
     navigate({ page: 'entity', id });
+  }
+
+  function closeDropdownOnFocusout(event: FocusEvent) {
+    if (event.relatedTarget && (event.relatedTarget as HTMLElement).closest('[data-search-dropdown]')) {
+      return;
+    }
+    showDropdown = false;
   }
 </script>
 
@@ -50,7 +58,7 @@
         type="text"
         bind:value={searchQuery}
         oninput={handleSearchInput}
-        onblur={() => setTimeout(() => showDropdown = false, 200)}
+        onblur={closeDropdownOnFocusout}
         placeholder="Search entities... (⌘K)"
         class="bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)]
           rounded-full pl-10 pr-10 py-1.5 text-sm w-80 outline-none
@@ -60,11 +68,11 @@
       <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono
         text-[var(--color-outline)] border border-[var(--color-outline-variant)] px-1 rounded">⌘K</span>
       {#if showDropdown && searchResults.length > 0}
-        <div class="absolute top-full left-0 mt-2 w-80 bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+        <div data-search-dropdown class="absolute top-full left-0 mt-2 w-80 bg-[var(--color-surface-container)] border border-[var(--color-outline-variant)] rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
           {#each searchResults as result}
             <button
               class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[var(--color-surface-container-high)]/50 transition-colors border-b border-[var(--color-outline-variant)]/20 last:border-0"
-              onmousedown={() => selectResult(result.entity_id)}
+              onclick={() => selectResult(result.entity_id)}
             >
               <span class="text-xs font-mono text-[var(--color-on-surface-variant)]">{result.entity_id}</span>
               <span class="text-sm text-[var(--color-on-surface)] flex-1 truncate">{result.title}</span>

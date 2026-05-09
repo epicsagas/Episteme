@@ -7,11 +7,21 @@
   import EntityDetail from './pages/EntityDetail.svelte';
   import Ontology from './pages/Ontology.svelte';
   import { getCurrentRoute, navigate } from './router/index.svelte.ts';
-  import { checkHealth } from './stores/connection.svelte.ts';
+  import { checkHealth, setBaseUrl, setWebPort } from './stores/connection.svelte.ts';
   import { clearSelection } from './stores/graph.svelte.ts';
   import { onMount } from 'svelte';
 
-  onMount(() => {
+  onMount(async () => {
+    try {
+      const { listen } = await import('@tauri-apps/api/event');
+      await listen<{ api_port: number; web_port: number }>('backend-ready', (event) => {
+        setBaseUrl(`http://localhost:${event.payload.api_port}`);
+        setWebPort(event.payload.web_port);
+      });
+    } catch {
+      // Not running in Tauri — use defaults
+    }
+
     checkHealth();
 
     function handleKeydown(e: KeyboardEvent) {

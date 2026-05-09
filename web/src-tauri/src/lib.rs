@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use tauri::{Manager, State};
+use tauri::{Emitter, Manager, State};
 
 use episteme::adapters::user_graph_store::UserGraphStore;
 use episteme::domain::composite_graph::CompositeGraph;
@@ -162,8 +162,13 @@ pub fn run() {
             let handle = app.handle().clone();
             tokio::spawn(async move {
                 let state: State<'_, ServerState> = handle.state();
-                if let Err(e) = start_backend(state).await {
-                    tracing::error!("failed to start backend: {e}");
+                match start_backend(state).await {
+                    Ok(ports) => {
+                        let _ = handle.emit("backend-ready", ports);
+                    }
+                    Err(e) => {
+                        tracing::error!("failed to start backend: {e}");
+                    }
                 }
             });
             Ok(())
