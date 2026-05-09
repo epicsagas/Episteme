@@ -26,16 +26,21 @@ export function setWebPort(port: number) {
   webPort = port;
 }
 
-export async function checkHealth(): Promise<boolean> {
+export async function checkHealth(maxRetries = 3): Promise<boolean> {
   status = 'connecting';
-  try {
-    const res = await fetch(`${baseUrl}/health`, { signal: AbortSignal.timeout(3000) });
-    if (res.ok) {
-      status = 'connected';
-      return true;
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const res = await fetch(`${baseUrl}/health`, { signal: AbortSignal.timeout(3000) });
+      if (res.ok) {
+        status = 'connected';
+        return true;
+      }
+    } catch {
+      // server not reachable yet
     }
-  } catch {
-    // server not reachable
+    if (attempt < maxRetries - 1) {
+      await new Promise((r) => setTimeout(r, 1000));
+    }
   }
   status = 'disconnected';
   return false;

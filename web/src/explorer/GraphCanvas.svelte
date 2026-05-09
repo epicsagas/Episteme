@@ -34,6 +34,9 @@
     supersedes: '#ff8a65',
   };
 
+  let lastNodeCount = 0;
+  let lastEdgeCount = 0;
+
   onMount(() => {
     loadFullGraph();
   });
@@ -41,6 +44,11 @@
   $effect(() => {
     const data = getGraphData();
     if (!data || !container) return;
+
+    // Skip recreation if data hasn't changed
+    if (data.nodes.length === lastNodeCount && data.edges.length === lastEdgeCount && cy) return;
+    lastNodeCount = data.nodes.length;
+    lastEdgeCount = data.edges.length;
 
     if (cy) {
       cy.destroy();
