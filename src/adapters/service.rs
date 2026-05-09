@@ -1,10 +1,12 @@
-//! Daemon management: start / stop / status helpers for MCP HTTP.
+//! Daemon management: start / stop / status helpers for MCP HTTP and API servers.
 //!
-//! Ported from Python `cli/service.py`.
+//! Ported from Python `cli/service.py`. Supports dual PID files via
+//! [`ServiceKind`] and cross-platform OS service registration (macOS launchd,
+//! Linux systemd).
 
 use std::fs;
 use std::net::TcpListener;
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "linux"))]
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use std::time::{Duration, Instant};
@@ -12,34 +14,73 @@ use std::time::{Duration, Instant};
 use crate::adapters::paths;
 
 // ---------------------------------------------------------------------------
-// PID file helpers
+// ServiceKind
 // ---------------------------------------------------------------------------
 
-/// Read the PID from the standard PID file, if present and valid.
-pub fn read_pid() -> Option<u32> {
-    let path = paths::pid_file();
+/// Discriminates between the two background daemon types Episteme manages.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ServiceKind {
+    Mcp,
+    Api,
+}
+
+/// Return the PID file path for the given service kind.
+pub fn pid_file_for(kind: ServiceKind) -> PathBuf {
+    let name = match kind {
+        ServiceKind::Mcp => "mcp.pid",
+        ServiceKind::Api => "api.pid",
+    };
+    paths::episteme_home().join(name)
+}
+
+// ---------------------------------------------------------------------------
+// PID file helpers (ServiceKind-aware)
+// ---------------------------------------------------------------------------
+
+/// Read the PID from the kind-specific PID file, if present and valid.
+pub fn read_pid_for(kind: ServiceKind) -> Option<u32> {
+    let path = pid_file_for(kind);
     fs::read_to_string(&path)
         .ok()
         .and_then(|s| s.trim().parse().ok())
 }
 
-/// Write `pid` to the PID file.
-pub fn write_pid(pid: u32) -> std::io::Result<()> {
-    // Ensure the parent directory exists.
-    if let Some(parent) = paths::pid_file().parent() {
+/// Write `pid` to the kind-specific PID file.
+pub fn write_pid_for(kind: ServiceKind, pid: u32) -> std::io::Result<()> {
+    let path = pid_file_for(kind);
+    if let Some(parent) = path.parent() {
         fs::create_dir_all(parent)?;
     }
-    fs::write(paths::pid_file(), pid.to_string())
+    fs::write(path, pid.to_string())
 }
 
-/// Remove the PID file (idempotent).
-pub fn clear_pid() -> std::io::Result<()> {
-    let path = paths::pid_file();
+/// Remove the kind-specific PID file (idempotent).
+pub fn clear_pid_for(kind: ServiceKind) -> std::io::Result<()> {
+    let path = pid_file_for(kind);
     if path.exists() {
         fs::remove_file(path)
     } else {
         Ok(())
     }
+}
+
+// ---------------------------------------------------------------------------
+// PID file helpers (backward-compat wrappers defaulting to Mcp)
+// ---------------------------------------------------------------------------
+
+/// Read the PID from the MCP PID file. Backward-compatible wrapper.
+pub fn read_pid() -> Option<u32> {
+    read_pid_for(ServiceKind::Mcp)
+}
+
+/// Write `pid` to the MCP PID file. Backward-compatible wrapper.
+pub fn write_pid(pid: u32) -> std::io::Result<()> {
+    write_pid_for(ServiceKind::Mcp, pid)
+}
+
+/// Remove the MCP PID file. Backward-compatible wrapper.
+pub fn clear_pid() -> std::io::Result<()> {
+    clear_pid_for(ServiceKind::Mcp)
 }
 
 // ---------------------------------------------------------------------------
@@ -114,13 +155,59 @@ pub fn wait_port_open(port: u16, timeout_secs: u64) -> bool {
 }
 
 // ---------------------------------------------------------------------------
-// High-level service commands
+// Config helpers per ServiceKind
 // ---------------------------------------------------------------------------
 
-/// Spawn the MCP HTTP server in the background.
+/// Resolve the configured MCP host.
+pub fn get_mcp_host() -> String {
+    crate::adapters::config::EpistemeConfig::load()
+        .map(|c| c.mcp_host)
+        .unwrap_or_else(|_| "127.0.0.1".to_owned())
+}
+
+/// Return the MCP port from config (or the default).
+pub fn get_mcp_port() -> u16 {
+    crate::adapters::config::EpistemeConfig::load()
+        .map(|c| c.mcp_port)
+        .unwrap_or(43175)
+}
+
+/// Resolve the configured host for the given service kind.
+fn get_host(kind: ServiceKind) -> String {
+    match kind {
+        ServiceKind::Mcp => get_mcp_host(),
+        ServiceKind::Api => crate::adapters::config::EpistemeConfig::load()
+            .map(|c| c.api_host.clone())
+            .unwrap_or_else(|_| "0.0.0.0".to_owned()),
+    }
+}
+
+/// Resolve the configured port for the given service kind.
+fn get_port(kind: ServiceKind) -> u16 {
+    match kind {
+        ServiceKind::Mcp => get_mcp_port(),
+        ServiceKind::Api => crate::adapters::config::EpistemeConfig::load()
+            .map(|c| c.api_port)
+            .unwrap_or(8000),
+    }
+}
+
+/// Return a human-readable label for the service kind.
+fn kind_label(kind: ServiceKind) -> &'static str {
+    match kind {
+        ServiceKind::Mcp => "MCP",
+        ServiceKind::Api => "API",
+    }
+}
+
+// ---------------------------------------------------------------------------
+// High-level service commands (ServiceKind-aware)
+// ---------------------------------------------------------------------------
+
+/// Spawn the server in the background for the given `kind`.
 ///
 /// Returns the child PID on success.
-pub fn cmd_start(host: &str, port: u16) -> Result<u32, String> {
+pub fn cmd_start(kind: ServiceKind, host: &str, port: u16) -> Result<u32, String> {
     if is_port_in_use(port) {
         if let Some(existing) = find_pid_by_port(port) {
             return Err(format!("Port {port} is already in use (PID {existing})"));
@@ -128,48 +215,72 @@ pub fn cmd_start(host: &str, port: u16) -> Result<u32, String> {
         return Err(format!("Port {port} is already in use"));
     }
 
-    let exe = std::env::current_exe().map_err(|e| format!("cannot determine current exe: {e}"))?;
+    let exe =
+        std::env::current_exe().map_err(|e| format!("cannot determine current exe: {e}"))?;
 
     let log_dir = paths::log_dir();
     fs::create_dir_all(&log_dir).map_err(|e| format!("cannot create log dir: {e}"))?;
 
-    let stdout_path = log_dir.join("mcp.log");
-    let stderr_path = log_dir.join("mcp.err");
+    let (log_name, err_name) = match kind {
+        ServiceKind::Mcp => ("mcp.log", "mcp.err"),
+        ServiceKind::Api => ("api.log", "api.err"),
+    };
+    let stdout_path = log_dir.join(log_name);
+    let stderr_path = log_dir.join(err_name);
 
     let stdout = fs::File::create(&stdout_path)
         .map_err(|e| format!("cannot create {}: {e}", stdout_path.display()))?;
     let stderr = fs::File::create(&stderr_path)
         .map_err(|e| format!("cannot create {}: {e}", stderr_path.display()))?;
 
+    let args: Vec<String> = match kind {
+        ServiceKind::Mcp => vec![
+            "mcp".into(),
+            "--http".into(),
+            "--host".into(),
+            host.into(),
+            "--port".into(),
+            port.to_string(),
+        ],
+        ServiceKind::Api => vec![
+            "api".into(),
+            "--host".into(),
+            host.into(),
+            "--port".into(),
+            port.to_string(),
+        ],
+    };
+
     let child = Command::new(&exe)
-        .args(["mcp", "--http", "--host", host, "--port", &port.to_string()])
+        .args(&args)
         .stdout(Stdio::from(stdout))
         .stderr(Stdio::from(stderr))
         .spawn()
         .map_err(|e| format!("failed to spawn server: {e}"))?;
 
     let pid = child.id();
-    write_pid(pid).map_err(|e| format!("failed to write PID file: {e}"))?;
+    write_pid_for(kind, pid).map_err(|e| format!("failed to write PID file: {e}"))?;
 
     if wait_port_open(port, 10) {
         Ok(pid)
     } else {
         // Best-effort cleanup.
-        let _ = clear_pid();
+        let _ = clear_pid_for(kind);
         Err("Server failed to start within 10 seconds".to_owned())
     }
 }
 
-/// Stop the running MCP HTTP server (SIGTERM, then SIGKILL on timeout).
-pub fn cmd_stop() -> Result<(), String> {
-    let pid = read_pid().ok_or("No PID file found -- is the server running?")?;
+/// Stop the running server for the given `kind` (SIGTERM, then SIGKILL on timeout).
+pub fn cmd_stop(kind: ServiceKind) -> Result<(), String> {
+    let pid =
+        read_pid_for(kind).ok_or("No PID file found -- is the server running?")?;
 
     if !is_running(pid) {
-        clear_pid().ok();
+        clear_pid_for(kind).ok();
         return Ok(());
     }
 
-    let port = get_mcp_port();
+    let port = get_port(kind);
 
     // Graceful SIGTERM.
     #[cfg(unix)]
@@ -187,7 +298,7 @@ pub fn cmd_stop() -> Result<(), String> {
     }
 
     if wait_port_free(port, 5) {
-        clear_pid().ok();
+        clear_pid_for(kind).ok();
         return Ok(());
     }
 
@@ -202,27 +313,23 @@ pub fn cmd_stop() -> Result<(), String> {
     }
     #[cfg(not(unix))]
     {
-        let _ = Command::new("kill").args(["-9", &pid.to_string()]).output();
+        let _ = Command::new("kill")
+            .args(["-9", &pid.to_string()])
+            .output();
     }
 
     // Give it a moment, then clean up PID file regardless.
     std::thread::sleep(Duration::from_millis(500));
-    clear_pid().ok();
+    clear_pid_for(kind).ok();
     Ok(())
 }
 
-/// Return the MCP port from config (or the default).
-pub fn get_mcp_port() -> u16 {
-    crate::adapters::config::EpistemeConfig::load()
-        .map(|c| c.mcp_port)
-        .unwrap_or(43175)
-}
+/// Print a human-readable status line for `kind` and return `true` if up.
+pub fn cmd_status(kind: ServiceKind) -> bool {
+    let port = get_port(kind);
+    let label = kind_label(kind);
 
-/// Print a human-readable status line and return `true` if the server is up.
-pub fn cmd_status() -> bool {
-    let port = get_mcp_port();
-
-    match read_pid() {
+    match read_pid_for(kind) {
         Some(pid) => {
             if is_running(pid) {
                 let port_status = if is_port_in_use(port) {
@@ -230,11 +337,11 @@ pub fn cmd_status() -> bool {
                 } else {
                     format!("not yet listening on port {port}")
                 };
-                println!("episteme server is running (PID {pid}, {port_status})");
+                println!("{label} server is running (PID {pid}, {port_status})");
                 true
             } else {
-                println!("episteme server is NOT running (stale PID {pid})");
-                clear_pid().ok();
+                println!("{label} server is NOT running (stale PID {pid})");
+                clear_pid_for(kind).ok();
                 false
             }
         }
@@ -244,21 +351,33 @@ pub fn cmd_status() -> bool {
                 && let Some(pid) = find_pid_by_port(port)
             {
                 println!(
-                    "episteme server appears to be running (PID {pid} on port {port}), but no PID file"
+                    "{label} server appears to be running (PID {pid} on port {port}), but no PID file"
                 );
                 return true;
             }
-            println!("episteme server is stopped");
+            println!("{label} server is stopped");
             false
         }
     }
 }
 
-/// Resolve the configured API host.
-pub fn get_mcp_host() -> String {
-    crate::adapters::config::EpistemeConfig::load()
-        .map(|c| c.mcp_host)
-        .unwrap_or_else(|_| "127.0.0.1".to_owned())
+// ---------------------------------------------------------------------------
+// Backward-compat wrappers (no ServiceKind arg)
+// ---------------------------------------------------------------------------
+
+/// Spawn the MCP HTTP server in the background. Backward-compatible wrapper.
+pub fn cmd_start_mcp(host: &str, port: u16) -> Result<u32, String> {
+    cmd_start(ServiceKind::Mcp, host, port)
+}
+
+/// Stop the running MCP server. Backward-compatible wrapper.
+pub fn cmd_stop_mcp() -> Result<(), String> {
+    cmd_stop(ServiceKind::Mcp)
+}
+
+/// Print MCP status. Backward-compatible wrapper.
+pub fn cmd_status_mcp() -> bool {
+    cmd_status(ServiceKind::Mcp)
 }
 
 // ---------------------------------------------------------------------------
@@ -266,34 +385,74 @@ pub fn get_mcp_host() -> String {
 // ---------------------------------------------------------------------------
 
 #[cfg(target_os = "macos")]
-fn launch_agent_label() -> &'static str {
-    "io.episteme.api"
+fn launch_agent_label(kind: ServiceKind) -> &'static str {
+    match kind {
+        ServiceKind::Mcp => "io.episteme.mcp",
+        ServiceKind::Api => "io.episteme.api",
+    }
 }
 
 #[cfg(target_os = "macos")]
-fn launch_agent_plist_path() -> PathBuf {
-    let home = crate::adapters::paths::episteme_home()
+fn launch_agent_plist_path(kind: ServiceKind) -> PathBuf {
+    let home = paths::episteme_home()
         .parent()
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from("/tmp"));
     home.join("Library")
         .join("LaunchAgents")
-        .join(format!("{}.plist", launch_agent_label()))
+        .join(format!("{}.plist", launch_agent_label(kind)))
 }
 
-pub fn install_launchd_agent(host: &str, port: u16) -> Result<String, String> {
+/// Install a launchd plist for the given service kind (macOS only).
+pub fn install_launchd_agent_for(
+    kind: ServiceKind,
+    host: &str,
+    port: u16,
+) -> Result<String, String> {
     #[cfg(not(target_os = "macos"))]
     {
-        let _ = (host, port);
+        let _ = (kind, host, port);
         Err("launchd integration is only supported on macOS".to_owned())
     }
     #[cfg(target_os = "macos")]
     {
         let exe = std::env::current_exe().map_err(|e| e.to_string())?;
-        let plist_path = launch_agent_plist_path();
+        let plist_path = launch_agent_plist_path(kind);
         if let Some(parent) = plist_path.parent() {
             fs::create_dir_all(parent).map_err(|e| e.to_string())?;
         }
+
+        let label = launch_agent_label(kind);
+        let (log_name, err_name) = match kind {
+            ServiceKind::Mcp => ("launchd-mcp.log", "launchd-mcp.err"),
+            ServiceKind::Api => ("launchd-api.log", "launchd-api.err"),
+        };
+        let log_dir = paths::log_dir();
+        let stdout_log = log_dir.join(log_name);
+        let stderr_log = log_dir.join(err_name);
+
+        let exec_args = match kind {
+            ServiceKind::Mcp => format!(
+                r#"<string>{exe}</string>
+    <string>mcp</string>
+    <string>--http</string>
+    <string>--host</string>
+    <string>{host}</string>
+    <string>--port</string>
+    <string>{port}</string>"#,
+                exe = exe.display(),
+            ),
+            ServiceKind::Api => format!(
+                r#"<string>{exe}</string>
+    <string>api</string>
+    <string>--host</string>
+    <string>{host}</string>
+    <string>--port</string>
+    <string>{port}</string>"#,
+                exe = exe.display(),
+            ),
+        };
+
         let plist = format!(
             r#"<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -302,13 +461,7 @@ pub fn install_launchd_agent(host: &str, port: u16) -> Result<String, String> {
   <key>Label</key><string>{label}</string>
   <key>ProgramArguments</key>
   <array>
-    <string>{exe}</string>
-    <string>mcp</string>
-    <string>--http</string>
-    <string>--host</string>
-    <string>{host}</string>
-    <string>--port</string>
-    <string>{port}</string>
+    {exec_args}
   </array>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><true/>
@@ -316,19 +469,13 @@ pub fn install_launchd_agent(host: &str, port: u16) -> Result<String, String> {
   <key>StandardErrorPath</key><string>{stderr}</string>
 </dict>
 </plist>"#,
-            label = launch_agent_label(),
-            exe = exe.display(),
-            host = host,
-            port = port,
-            stdout = crate::adapters::paths::log_dir()
-                .join("launchd.log")
-                .display(),
-            stderr = crate::adapters::paths::log_dir()
-                .join("launchd.err")
-                .display(),
+            label = label,
+            stdout = stdout_log.display(),
+            stderr = stderr_log.display(),
         );
         fs::write(&plist_path, plist).map_err(|e| e.to_string())?;
-        let uid = std::process::Command::new("id")
+
+        let uid = Command::new("id")
             .arg("-u")
             .output()
             .ok()
@@ -343,22 +490,28 @@ pub fn install_launchd_agent(host: &str, port: u16) -> Result<String, String> {
             .status()
             .map_err(|e| e.to_string())?;
         if st.success() {
-            Ok(format!("launchd agent installed: {}", plist_path.display()))
+            Ok(format!(
+                "{kind} launchd agent installed: {path}",
+                kind = kind_label(kind),
+                path = plist_path.display(),
+            ))
         } else {
             Err("failed to bootstrap launchd agent".to_owned())
         }
     }
 }
 
-pub fn uninstall_launchd_agent() -> Result<String, String> {
+/// Uninstall the launchd plist for the given service kind (macOS only).
+pub fn uninstall_launchd_agent_for(kind: ServiceKind) -> Result<String, String> {
     #[cfg(not(target_os = "macos"))]
     {
+        let _ = kind;
         Err("launchd integration is only supported on macOS".to_owned())
     }
     #[cfg(target_os = "macos")]
     {
-        let plist_path = launch_agent_plist_path();
-        let uid = std::process::Command::new("id")
+        let plist_path = launch_agent_plist_path(kind);
+        let uid = Command::new("id")
             .arg("-u")
             .output()
             .ok()
@@ -374,42 +527,228 @@ pub fn uninstall_launchd_agent() -> Result<String, String> {
         if plist_path.exists() {
             fs::remove_file(&plist_path).map_err(|e| e.to_string())?;
         }
-        Ok(format!("launchd agent removed: {}", plist_path.display()))
+        Ok(format!(
+            "{kind} launchd agent removed: {path}",
+            kind = kind_label(kind),
+            path = plist_path.display(),
+        ))
     }
 }
 
-pub fn launchd_status() -> Result<String, String> {
+/// Return the launchd status for the given service kind (macOS only).
+pub fn launchd_status_for(kind: ServiceKind) -> Result<String, String> {
     #[cfg(not(target_os = "macos"))]
     {
+        let _ = kind;
         Err("launchd integration is only supported on macOS".to_owned())
     }
     #[cfg(target_os = "macos")]
     {
+        let label = launch_agent_label(kind);
         let output = Command::new("launchctl")
-            .args(["list", launch_agent_label()])
+            .args(["list", label])
             .output()
             .map_err(|e| e.to_string())?;
         if output.status.success() {
             Ok(format!(
-                "launchd active: {}",
-                String::from_utf8_lossy(&output.stdout).trim()
+                "{kind} launchd active: {detail}",
+                kind = kind_label(kind),
+                detail = String::from_utf8_lossy(&output.stdout).trim(),
             ))
         } else {
-            Ok("launchd agent not loaded".to_owned())
+            Ok(format!(
+                "{kind} launchd agent not loaded",
+                kind = kind_label(kind),
+            ))
         }
     }
 }
 
+// ---------------------------------------------------------------------------
+// macOS launchd backward-compat wrappers (default to Mcp)
+// ---------------------------------------------------------------------------
+
+/// Install the MCP launchd agent. Backward-compatible wrapper.
+pub fn install_launchd_agent(host: &str, port: u16) -> Result<String, String> {
+    install_launchd_agent_for(ServiceKind::Mcp, host, port)
+}
+
+/// Uninstall the MCP launchd agent. Backward-compatible wrapper.
+pub fn uninstall_launchd_agent() -> Result<String, String> {
+    uninstall_launchd_agent_for(ServiceKind::Mcp)
+}
+
+/// Return MCP launchd status. Backward-compatible wrapper.
+pub fn launchd_status() -> Result<String, String> {
+    launchd_status_for(ServiceKind::Mcp)
+}
+
+/// Enable the MCP launchd agent. Backward-compatible wrapper.
 pub fn enable_launchd(now: bool) -> Result<String, String> {
-    let host = get_mcp_host();
-    let port = get_mcp_port();
-    let mut msg = install_launchd_agent(&host, port)?;
+    enable_service(ServiceKind::Mcp, now)
+}
+
+/// Disable the MCP launchd agent. Backward-compatible wrapper.
+pub fn disable_launchd(now: bool) -> Result<String, String> {
+    disable_service(ServiceKind::Mcp, now)
+}
+
+// ---------------------------------------------------------------------------
+// Linux systemd integration
+// ---------------------------------------------------------------------------
+
+#[cfg(target_os = "linux")]
+fn systemd_unit_path(kind: ServiceKind) -> PathBuf {
+    let home = std::env::var("HOME").unwrap_or_else(|_| "/tmp".to_owned());
+    PathBuf::from(home)
+        .join(".config")
+        .join("systemd")
+        .join("user")
+        .join(format!("{}.service", systemd_unit_label(kind)))
+}
+
+#[cfg(target_os = "linux")]
+fn systemd_unit_label(kind: ServiceKind) -> &'static str {
+    match kind {
+        ServiceKind::Mcp => "episteme-mcp",
+        ServiceKind::Api => "episteme-api",
+    }
+}
+
+/// Install a systemd user unit for the given service kind (Linux only).
+#[cfg(target_os = "linux")]
+pub fn install_systemd_unit(
+    kind: ServiceKind,
+    host: &str,
+    port: u16,
+) -> Result<String, String> {
+    let exe = std::env::current_exe().map_err(|e| e.to_string())?;
+    let unit_path = systemd_unit_path(kind);
+    if let Some(parent) = unit_path.parent() {
+        fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+
+    let exec_start = match kind {
+        ServiceKind::Mcp => format!("{exe} mcp --http --host {host} --port {port}"),
+        ServiceKind::Api => format!("{exe} api --host {host} --port {port}"),
+    };
+
+    let description = match kind {
+        ServiceKind::Mcp => "MCP",
+        ServiceKind::Api => "API",
+    };
+
+    let unit = format!(
+        "[Unit]\n\
+         Description=Episteme {description} Server\n\
+         After=network.target\n\n\
+         [Service]\n\
+         Type=simple\n\
+         ExecStart={exec_start}\n\
+         Restart=on-failure\n\
+         RestartSec=5\n\n\
+         [Install]\n\
+         WantedBy=default.target\n",
+    );
+
+    fs::write(&unit_path, unit).map_err(|e| e.to_string())?;
+
+    // Reload systemd user daemon.
+    let _ = Command::new("systemctl")
+        .args(["--user", "daemon-reload"])
+        .status();
+
+    Ok(format!(
+        "{kind} systemd unit installed: {path}",
+        kind = kind_label(kind),
+        path = unit_path.display(),
+    ))
+}
+
+/// Uninstall the systemd user unit for the given service kind (Linux only).
+#[cfg(target_os = "linux")]
+pub fn uninstall_systemd_unit(kind: ServiceKind) -> Result<String, String> {
+    let label = systemd_unit_label(kind);
+    let _ = Command::new("systemctl")
+        .args(["--user", "stop", &format!("{label}.service")])
+        .status();
+    let _ = Command::new("systemctl")
+        .args(["--user", "disable", &format!("{label}.service")])
+        .status();
+
+    let unit_path = systemd_unit_path(kind);
+    if unit_path.exists() {
+        fs::remove_file(&unit_path).map_err(|e| e.to_string())?;
+    }
+
+    let _ = Command::new("systemctl")
+        .args(["--user", "daemon-reload"])
+        .status();
+
+    Ok(format!(
+        "{kind} systemd unit removed: {path}",
+        kind = kind_label(kind),
+        path = unit_path.display(),
+    ))
+}
+
+// Stubs for non-Linux targets so callers can compile unconditionally.
+#[cfg(not(target_os = "linux"))]
+pub fn install_systemd_unit(
+    kind: ServiceKind,
+    host: &str,
+    port: u16,
+) -> Result<String, String> {
+    let _ = (kind, host, port);
+    Err("systemd integration is only supported on Linux".to_owned())
+}
+
+#[cfg(not(target_os = "linux"))]
+pub fn uninstall_systemd_unit(kind: ServiceKind) -> Result<String, String> {
+    let _ = kind;
+    Err("systemd integration is only supported on Linux".to_owned())
+}
+
+// ---------------------------------------------------------------------------
+// Cross-platform enable / disable
+// ---------------------------------------------------------------------------
+
+/// Enable (install OS service unit and optionally start) the given service.
+pub fn enable_service(kind: ServiceKind, now: bool) -> Result<String, String> {
+    let host = get_host(kind);
+    let port = get_port(kind);
+
+    let mut msg = String::new();
+
+    #[cfg(target_os = "macos")]
+    {
+        let install_msg = install_launchd_agent_for(kind, &host, port)?;
+        msg.push_str(&install_msg);
+    }
+    #[cfg(target_os = "linux")]
+    {
+        let install_msg = install_systemd_unit(kind, &host, port)?;
+        msg.push_str(&install_msg);
+    }
+    #[cfg(not(any(target_os = "macos", target_os = "linux")))]
+    {
+        msg.push_str("OS service registration is not supported on this platform.");
+    }
+
     if now {
-        let _ = cmd_stop();
-        match cmd_start(&host, port) {
-            Ok(pid) => msg.push_str(&format!("\nServer started (PID {pid})")),
+        let _ = cmd_stop(kind);
+        match cmd_start(kind, &host, port) {
+            Ok(pid) => {
+                msg.push_str(&format!(
+                    "\n{label} started (PID {pid})",
+                    label = kind_label(kind),
+                ));
+            }
             Err(e) if e.contains("already in use") => {
-                msg.push_str(&format!("\nServer already running on port {port}"));
+                msg.push_str(&format!(
+                    "\n{label} already running on port {port}",
+                    label = kind_label(kind),
+                ));
             }
             Err(e) => return Err(e),
         }
@@ -417,13 +756,24 @@ pub fn enable_launchd(now: bool) -> Result<String, String> {
     Ok(msg)
 }
 
-pub fn disable_launchd(now: bool) -> Result<String, String> {
+/// Disable (stop and uninstall OS service unit) the given service.
+pub fn disable_service(kind: ServiceKind, now: bool) -> Result<String, String> {
     let mut msg = String::new();
     if now {
-        let _ = cmd_stop();
-        msg.push_str("Server stopped.\n");
+        let _ = cmd_stop(kind);
+        msg.push_str(&format!("{} stopped.\n", kind_label(kind)));
     }
-    let uninstall = uninstall_launchd_agent()?;
-    msg.push_str(&uninstall);
+
+    #[cfg(target_os = "macos")]
+    {
+        let uninstall_msg = uninstall_launchd_agent_for(kind)?;
+        msg.push_str(&uninstall_msg);
+    }
+    #[cfg(target_os = "linux")]
+    {
+        let uninstall_msg = uninstall_systemd_unit(kind)?;
+        msg.push_str(&uninstall_msg);
+    }
+
     Ok(msg)
 }

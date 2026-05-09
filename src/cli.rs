@@ -86,29 +86,36 @@ pub enum Commands {
         #[arg(long)]
         skip_build: bool,
     },
-    /// Start the REST API server
+    /// Start the REST API server (foreground when no subcommand given)
     Api {
-        /// Bind address
+        /// REST API server lifecycle management
+        #[command(subcommand)]
+        sub: Option<ApiCommands>,
+        /// Bind address (for foreground mode)
         #[arg(long, default_value_t = String::from("0.0.0.0"))]
         host: String,
-        /// Bind port
+        /// Bind port (for foreground mode)
         #[arg(long, default_value_t = 8000)]
         port: u16,
     },
-    /// Manage the MCP HTTP server daemon
+    /// (deprecated) Use 'mcp start/stop/restart/status/enable/disable' instead
+    #[command(name = "service", alias = "mcp-service")]
     Service {
         #[command(subcommand)]
         sub: ServiceCommands,
     },
-    /// Start the MCP server (stdio or HTTP)
+    /// Start the MCP server (stdio mode when no subcommand given)
     Mcp {
-        /// Serve MCP over HTTP instead of stdio
+        /// MCP server lifecycle management
+        #[command(subcommand)]
+        sub: Option<McpCommands>,
+        /// (deprecated) Serve MCP over HTTP -- use 'mcp start' instead
         #[arg(long)]
         http: bool,
-        /// Bind host for HTTP mode
+        /// (deprecated) Bind host -- use 'mcp start --host' instead
         #[arg(long, default_value_t = String::from("127.0.0.1"))]
         host: String,
-        /// Bind port for HTTP mode
+        /// (deprecated) Bind port -- use 'mcp start --port' instead
         #[arg(long, default_value_t = 43175)]
         port: u16,
     },
@@ -186,8 +193,76 @@ pub enum GraphCommands {
 }
 
 #[derive(Subcommand)]
+pub enum McpCommands {
+    /// Start MCP HTTP daemon in background
+    Start {
+        #[arg(long, default_value_t = String::from("127.0.0.1"))]
+        host: String,
+        #[arg(long, default_value_t = 43175)]
+        port: u16,
+    },
+    /// Stop running MCP HTTP daemon
+    Stop,
+    /// Restart MCP HTTP daemon
+    Restart {
+        #[arg(long, default_value_t = String::from("127.0.0.1"))]
+        host: String,
+        #[arg(long, default_value_t = 43175)]
+        port: u16,
+    },
+    /// Show MCP daemon status
+    Status,
+    /// Register MCP as OS login service (macOS: launchd, Linux: systemd)
+    Enable {
+        /// Start immediately after enabling
+        #[arg(long)]
+        now: bool,
+    },
+    /// Unregister MCP OS login service
+    Disable {
+        /// Stop immediately before disabling
+        #[arg(long)]
+        now: bool,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum ApiCommands {
+    /// Start REST API daemon in background
+    Start {
+        #[arg(long, default_value_t = String::from("0.0.0.0"))]
+        host: String,
+        #[arg(long, default_value_t = 8000)]
+        port: u16,
+    },
+    /// Stop running REST API daemon
+    Stop,
+    /// Restart REST API daemon
+    Restart {
+        #[arg(long, default_value_t = String::from("0.0.0.0"))]
+        host: String,
+        #[arg(long, default_value_t = 8000)]
+        port: u16,
+    },
+    /// Show REST API daemon status
+    Status,
+    /// Register REST API as OS login service (macOS: launchd)
+    Enable {
+        /// Start immediately after enabling
+        #[arg(long)]
+        now: bool,
+    },
+    /// Unregister REST API OS login service
+    Disable {
+        /// Stop immediately before disabling
+        #[arg(long)]
+        now: bool,
+    },
+}
+
+#[derive(Subcommand)]
 pub enum ServiceCommands {
-    /// Run MCP HTTP server in foreground
+    /// (deprecated) Use 'mcp start' instead
     Serve {
         /// Bind address
         #[arg(long, default_value_t = String::from("127.0.0.1"))]
@@ -196,7 +271,7 @@ pub enum ServiceCommands {
         #[arg(long, default_value_t = 43175)]
         port: u16,
     },
-    /// Start MCP HTTP server in background
+    /// (deprecated) Use 'mcp start' instead
     Start {
         /// Bind address
         #[arg(long, default_value_t = String::from("127.0.0.1"))]
@@ -205,9 +280,9 @@ pub enum ServiceCommands {
         #[arg(long, default_value_t = 43175)]
         port: u16,
     },
-    /// Stop running MCP HTTP server
+    /// (deprecated) Use 'mcp stop' instead
     Stop,
-    /// Restart MCP HTTP server
+    /// (deprecated) Use 'mcp restart' instead
     Restart {
         /// Bind address
         #[arg(long, default_value_t = String::from("127.0.0.1"))]
@@ -216,9 +291,9 @@ pub enum ServiceCommands {
         #[arg(long, default_value_t = 43175)]
         port: u16,
     },
-    /// Show server status
+    /// (deprecated) Use 'mcp status' instead
     Status,
-    /// Install macOS launchd LaunchAgent
+    /// (deprecated) Use 'mcp enable' instead
     LaunchdInstall {
         /// Bind address
         #[arg(long, default_value_t = String::from("127.0.0.1"))]
@@ -227,17 +302,17 @@ pub enum ServiceCommands {
         #[arg(long, default_value_t = 43175)]
         port: u16,
     },
-    /// Remove macOS launchd LaunchAgent
+    /// (deprecated) Use 'mcp disable' instead
     LaunchdUninstall,
-    /// Show macOS launchd LaunchAgent status
+    /// (deprecated) Use 'mcp status' instead
     LaunchdStatus,
-    /// Enable launchd login item (Python parity)
+    /// (deprecated) Use 'mcp enable' instead
     Enable {
         /// Start immediately after enabling
         #[arg(long)]
         now: bool,
     },
-    /// Disable launchd login item (Python parity)
+    /// (deprecated) Use 'mcp disable' instead
     Disable {
         /// Stop immediately before disabling
         #[arg(long)]

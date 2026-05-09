@@ -6,7 +6,9 @@ use clap::Parser;
 mod cli;
 mod commands;
 
-use cli::{Commands, GraphCommands, HooksCommands, InsightCommands, ServiceCommands};
+use episteme::adapters::service::ServiceKind;
+
+use cli::{ApiCommands, Commands, GraphCommands, HooksCommands, InsightCommands, McpCommands, ServiceCommands};
 
 // ---------------------------------------------------------------------------
 // CLI top-level struct
@@ -111,11 +113,29 @@ fn dispatch(cli: Cli) -> Result<()> {
             skip_build,
         } => commands::cmd_dist(&out_dir, no_db, skip_build),
 
-        Commands::Api { host, port } => commands::cmd_api(&host, port),
+        Commands::Api { sub, host, port } => match sub {
+            Some(api_sub) => commands::cmd_service(api_service_op(api_sub)),
+            None => commands::cmd_api(&host, port),
+        },
 
-        Commands::Service { sub } => commands::cmd_service(service_op(sub)),
+        Commands::Service { sub } => {
+            eprintln!(
+                "[deprecated] 'service' is deprecated, use 'mcp start/stop/restart/status/enable/disable' instead."
+            );
+            commands::cmd_service(service_op(sub))
+        }
 
-        Commands::Mcp { http, host, port } => commands::cmd_mcp(http, &host, port),
+        Commands::Mcp { sub, http, host, port } => match sub {
+            Some(mcp_sub) => commands::cmd_service(mcp_service_op(mcp_sub)),
+            None => {
+                if http {
+                    eprintln!(
+                        "[deprecated] 'mcp --http' is deprecated, use 'mcp start' instead."
+                    );
+                }
+                commands::cmd_mcp(http, &host, port)
+            }
+        },
 
         Commands::Telemetry { action } => commands::cmd_telemetry(&action),
 
@@ -160,19 +180,42 @@ fn graph_op(sub: GraphCommands) -> commands::GraphOp {
 }
 
 fn service_op(sub: ServiceCommands) -> commands::ServiceOp {
+    // Legacy 'service' commands always target MCP.
     match sub {
         ServiceCommands::Serve { host, port } => commands::ServiceOp::Serve { host, port },
-        ServiceCommands::Start { host, port } => commands::ServiceOp::Start { host, port },
-        ServiceCommands::Stop => commands::ServiceOp::Stop,
-        ServiceCommands::Restart { host, port } => commands::ServiceOp::Restart { host, port },
-        ServiceCommands::Status => commands::ServiceOp::Status,
+        ServiceCommands::Start { host, port } => commands::ServiceOp::Start { host, port, kind: ServiceKind::Mcp },
+        ServiceCommands::Stop => commands::ServiceOp::Stop { kind: ServiceKind::Mcp },
+        ServiceCommands::Restart { host, port } => commands::ServiceOp::Restart { host, port, kind: ServiceKind::Mcp },
+        ServiceCommands::Status => commands::ServiceOp::Status { kind: ServiceKind::Mcp },
         ServiceCommands::LaunchdInstall { host, port } => {
             commands::ServiceOp::LaunchdInstall { host, port }
         }
         ServiceCommands::LaunchdUninstall => commands::ServiceOp::LaunchdUninstall,
         ServiceCommands::LaunchdStatus => commands::ServiceOp::LaunchdStatus,
-        ServiceCommands::Enable { now } => commands::ServiceOp::Enable { now },
-        ServiceCommands::Disable { now } => commands::ServiceOp::Disable { now },
+        ServiceCommands::Enable { now } => commands::ServiceOp::Enable { now, kind: ServiceKind::Mcp },
+        ServiceCommands::Disable { now } => commands::ServiceOp::Disable { now, kind: ServiceKind::Mcp },
+    }
+}
+
+fn mcp_service_op(sub: McpCommands) -> commands::ServiceOp {
+    match sub {
+        McpCommands::Start { host, port } => commands::ServiceOp::Start { host, port, kind: ServiceKind::Mcp },
+        McpCommands::Stop => commands::ServiceOp::Stop { kind: ServiceKind::Mcp },
+        McpCommands::Restart { host, port } => commands::ServiceOp::Restart { host, port, kind: ServiceKind::Mcp },
+        McpCommands::Status => commands::ServiceOp::Status { kind: ServiceKind::Mcp },
+        McpCommands::Enable { now } => commands::ServiceOp::Enable { now, kind: ServiceKind::Mcp },
+        McpCommands::Disable { now } => commands::ServiceOp::Disable { now, kind: ServiceKind::Mcp },
+    }
+}
+
+fn api_service_op(sub: ApiCommands) -> commands::ServiceOp {
+    match sub {
+        ApiCommands::Start { host, port } => commands::ServiceOp::Start { host, port, kind: ServiceKind::Api },
+        ApiCommands::Stop => commands::ServiceOp::Stop { kind: ServiceKind::Api },
+        ApiCommands::Restart { host, port } => commands::ServiceOp::Restart { host, port, kind: ServiceKind::Api },
+        ApiCommands::Status => commands::ServiceOp::Status { kind: ServiceKind::Api },
+        ApiCommands::Enable { now } => commands::ServiceOp::Enable { now, kind: ServiceKind::Api },
+        ApiCommands::Disable { now } => commands::ServiceOp::Disable { now, kind: ServiceKind::Api },
     }
 }
 
@@ -261,7 +304,7 @@ fn install_tracing() {
 }
 
 fn warn_deprecated(old: &str, new: &str) {
-    if std::env::args().any(|arg| arg == old) {
+    if std::env::args().nth(1).is_some_and(|arg| arg == old) {
         eprintln!(
             "[deprecated] '{}' is deprecated, use '{}' instead.",
             old, new

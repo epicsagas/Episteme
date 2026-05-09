@@ -6,6 +6,7 @@ use anyhow::{Context, Result};
 
 use episteme::adapters::config::EpistemeConfig;
 use episteme::adapters::paths;
+use episteme::adapters::service::ServiceKind;
 use episteme::adapters::user_graph_store::UserGraphStore;
 use episteme::domain::composite_graph::CompositeGraph;
 use episteme::server::mcp_handler::EpistemeMCP;
@@ -15,41 +16,47 @@ use super::prelude::*;
 /// Dispatch type for service subcommands, avoiding direct clap enum coupling.
 pub enum ServiceOp {
     Serve { host: String, port: u16 },
-    Start { host: String, port: u16 },
-    Stop,
-    Restart { host: String, port: u16 },
-    Status,
+    Start { host: String, port: u16, kind: ServiceKind },
+    Stop { kind: ServiceKind },
+    Restart { host: String, port: u16, kind: ServiceKind },
+    Status { kind: ServiceKind },
     LaunchdInstall { host: String, port: u16 },
     LaunchdUninstall,
     LaunchdStatus,
-    Enable { now: bool },
-    Disable { now: bool },
+    Enable { now: bool, kind: ServiceKind },
+    Disable { now: bool, kind: ServiceKind },
 }
 
 pub fn cmd_service(sub: ServiceOp) -> Result<()> {
     match sub {
         ServiceOp::Serve { host, port } => cmd_mcp(true, &host, port),
-        ServiceOp::Start { host, port } => {
-            let pid = episteme::adapters::service::cmd_start(&host, port)
+        ServiceOp::Start { host, port, kind } => {
+            let label = kind_label(kind);
+            let pid =
+                episteme::adapters::service::cmd_start(kind, &host, port)
+                    .map_err(|e| anyhow::anyhow!(e))?;
+            println!("{label} server started (PID {pid})");
+            Ok(())
+        }
+        ServiceOp::Stop { kind } => {
+            let label = kind_label(kind);
+            episteme::adapters::service::cmd_stop(kind)
                 .map_err(|e| anyhow::anyhow!(e))?;
-            println!("MCP server started (PID {pid})");
+            println!("{label} server stopped");
             Ok(())
         }
-        ServiceOp::Stop => {
-            episteme::adapters::service::cmd_stop().map_err(|e| anyhow::anyhow!(e))?;
-            println!("MCP server stopped");
-            Ok(())
-        }
-        ServiceOp::Restart { host, port } => {
+        ServiceOp::Restart { host, port, kind } => {
+            let label = kind_label(kind);
             // Best-effort stop; ignore errors if nothing was running.
-            let _ = episteme::adapters::service::cmd_stop();
-            let pid = episteme::adapters::service::cmd_start(&host, port)
-                .map_err(|e| anyhow::anyhow!(e))?;
-            println!("MCP server restarted (PID {pid})");
+            let _ = episteme::adapters::service::cmd_stop(kind);
+            let pid =
+                episteme::adapters::service::cmd_start(kind, &host, port)
+                    .map_err(|e| anyhow::anyhow!(e))?;
+            println!("{label} server restarted (PID {pid})");
             Ok(())
         }
-        ServiceOp::Status => {
-            episteme::adapters::service::cmd_status();
+        ServiceOp::Status { kind } => {
+            episteme::adapters::service::cmd_status(kind);
             Ok(())
         }
         ServiceOp::LaunchdInstall { host, port } => {
@@ -70,18 +77,25 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
             println!("{msg}");
             Ok(())
         }
-        ServiceOp::Enable { now } => {
+        ServiceOp::Enable { now, kind } => {
             let msg =
-                episteme::adapters::service::enable_launchd(now).map_err(|e| anyhow::anyhow!(e))?;
+                episteme::adapters::service::enable_service(kind, now).map_err(|e| anyhow::anyhow!(e))?;
             println!("{msg}");
             Ok(())
         }
-        ServiceOp::Disable { now } => {
-            let msg = episteme::adapters::service::disable_launchd(now)
+        ServiceOp::Disable { now, kind } => {
+            let msg = episteme::adapters::service::disable_service(kind, now)
                 .map_err(|e| anyhow::anyhow!(e))?;
             println!("{msg}");
             Ok(())
         }
+    }
+}
+
+fn kind_label(kind: ServiceKind) -> &'static str {
+    match kind {
+        ServiceKind::Mcp => "MCP",
+        ServiceKind::Api => "REST API",
     }
 }
 
