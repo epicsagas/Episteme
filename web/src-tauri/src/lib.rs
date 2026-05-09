@@ -28,11 +28,11 @@ fn build_mcp(graph: KnowledgeGraph) -> EpistemeMCP {
 }
 
 #[tauri::command]
-async fn start_backend(state: State<'_, ServerState>) -> Result<String, String> {
+async fn start_backend(state: State<'_, ServerState>) -> Result<serde_json::Value, String> {
     let mut guard = state.lock().await;
 
     if guard.is_some() {
-        return Ok("already running".into());
+        return Ok(serde_json::json!({"status": "already running"}));
     }
 
     let config = episteme::EpistemeConfig::load().map_err(|e| e.to_string())?;
@@ -90,7 +90,7 @@ async fn start_backend(state: State<'_, ServerState>) -> Result<String, String> 
     let (web_tx, web_rx) = tokio::sync::oneshot::channel::<()>();
     let web_handler = handler.clone();
     let web_host = config.api_host.clone();
-    let web_port = 8080u16;
+    let web_port = config.web_port;
     tokio::spawn(async move {
         let app = episteme::web_viewer::web_router(web_handler);
         let addr = format!("{}:{}", web_host, web_port);
@@ -119,7 +119,11 @@ async fn start_backend(state: State<'_, ServerState>) -> Result<String, String> 
         web_shutdown: web_tx,
     });
 
-    Ok("started".into())
+    Ok(serde_json::json!({
+        "status": "started",
+        "api_port": config.api_port,
+        "web_port": config.web_port,
+    }))
 }
 
 #[tauri::command]

@@ -19,7 +19,7 @@
   let circumference = $derived(2 * Math.PI * radius);
   let total = $derived(segments.reduce((sum, s) => sum + s.value, 0));
 
-  let offsets = $derived(() => {
+  let offsets = $derived.by(() => {
     let offset = 0;
     return segments.map((s) => {
       const dash = (s.value / total) * circumference;
@@ -46,8 +46,8 @@
         fill="transparent"
         stroke={seg.color}
         stroke-width={strokeWidth}
-        stroke-dasharray="{offsets()[i].dash} {offsets()[i].gap}"
-        stroke-dashoffset={-offsets()[i].offset}
+        stroke-dasharray="{offsets[i].dash} {offsets[i].gap}"
+        stroke-dashoffset={-offsets[i].offset}
         stroke-linecap="round"
       />
     {/each}

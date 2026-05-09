@@ -46,13 +46,13 @@
   </nav>
 
   <div class="p-4 space-y-1 border-t border-[var(--color-outline-variant)]">
-    <button class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm
-      text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-high)]/50 transition-colors">
+    <button disabled title="Coming soon" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm
+      text-[var(--color-on-surface-variant)] opacity-50 cursor-not-allowed">
       <span class="material-symbols-outlined">settings</span>
       <span>Settings</span>
     </button>
-    <button class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm
-      text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-high)]/50 transition-colors">
+    <button disabled title="Coming soon" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm
+      text-[var(--color-on-surface-variant)] opacity-50 cursor-not-allowed">
       <span class="material-symbols-outlined">help</span>
       <span>Support</span>
     </button>

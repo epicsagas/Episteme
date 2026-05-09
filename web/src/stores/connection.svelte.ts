@@ -2,6 +2,7 @@ export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected';
 
 let status: ConnectionStatus = $state('disconnected');
 let baseUrl: string = $state('http://localhost:8000');
+let webPort: number = $state(8080);
 
 export function getStatus(): ConnectionStatus {
   return status;
@@ -12,13 +13,15 @@ export function getBaseUrl(): string {
 }
 
 export function getWebUrl(): string {
-  const url = new URL(getBaseUrl());
-  url.port = '8080';
-  return url.toString().replace(/\/$/, '');
+  return baseUrl.replace(/:\d+/, `:${webPort}`);
 }
 
 export function setBaseUrl(url: string) {
   baseUrl = url;
+}
+
+export function setWebPort(port: number) {
+  webPort = port;
 }
 
 export async function checkHealth(): Promise<boolean> {

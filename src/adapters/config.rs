@@ -27,6 +27,7 @@ pub struct EpistemeConfig {
     pub posthog_host: String,
     pub sentry_dsn: String,
     pub cors_origins: String,
+    pub web_port: u16,
 }
 
 impl Default for EpistemeConfig {
@@ -54,6 +55,7 @@ impl Default for EpistemeConfig {
             posthog_host: "https://app.posthog.com".into(),
             sentry_dsn: String::new(),
             cors_origins: String::new(),
+            web_port: 8080,
         }
     }
 }
@@ -120,6 +122,7 @@ impl EpistemeConfig {
         config.posthog_host = env_or("EPISTEME_POSTHOG_HOST", &config.posthog_host);
         config.sentry_dsn = env_or("EPISTEME_SENTRY_DSN", &config.sentry_dsn);
         config.cors_origins = env_or("EPISTEME_CORS_ORIGINS", &config.cors_origins);
+        config.web_port = env_parse_or("EPISTEME_WEB_PORT", config.web_port);
 
         Ok(config)
     }
