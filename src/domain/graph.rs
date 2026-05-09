@@ -195,15 +195,14 @@ impl KnowledgeGraph {
             let mut results = entity.relations.get(rt).cloned().unwrap_or_default();
 
             // Derive inverse relations from the reverse index.
-            if let Some(inverse) = Self::inverse_relation(rt) {
-                if let Some(reverse_map) = self.reverse_relations.get(entity_id) {
-                    if let Some(sources) = reverse_map.get(&inverse) {
-                        let seen: HashSet<String> = results.iter().cloned().collect();
-                        for source in sources {
-                            if !seen.contains(source) {
-                                results.push(source.clone());
-                            }
-                        }
+            if let Some(inverse) = Self::inverse_relation(rt)
+                && let Some(reverse_map) = self.reverse_relations.get(entity_id)
+                && let Some(sources) = reverse_map.get(&inverse)
+            {
+                let seen: HashSet<String> = results.iter().cloned().collect();
+                for source in sources {
+                    if !seen.contains(source) {
+                        results.push(source.clone());
                     }
                 }
             }
