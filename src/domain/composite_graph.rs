@@ -38,6 +38,11 @@ impl CompositeGraph {
         self.user_store.as_ref()
     }
 
+    /// Return the number of user entities currently stored.
+    pub fn user_entity_count(&self) -> usize {
+        self.user_entities.len()
+    }
+
     /// Add a user entity to both the in-memory cache and persistent store.
     pub fn add_user_entity(&mut self, entity: UserEntity) -> Result<(), String> {
         let id = entity.id.clone();
@@ -410,6 +415,7 @@ mod tests {
             last_validated: String::new(),
             tags: vec![],
             relations: HashMap::new(),
+            link_provenance: HashMap::new(),
             created_at: "2026-01-01T00:00:00Z".to_owned(),
             updated_at: "2026-01-01T00:00:00Z".to_owned(),
         }

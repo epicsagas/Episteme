@@ -18,6 +18,7 @@ pub fn web_router(handler: Arc<EpistemeMCP>) -> Router {
         .route("/api/graph/entity/{id}", get(graph_entity))
         .route("/api/graph/path/{from}/{to}", get(graph_path))
         .route("/api/graph/sankey", get(graph_sankey))
+        .route("/api/graph/schema", get(graph_schema))
         .route("/api/graph/tree", get(graph_tree))
         .route("/api/entities/search", get(entities_search))
         .with_state(handler)
@@ -196,6 +197,68 @@ async fn entities_search(
         .take(20)
         .collect();
     Json(results)
+}
+
+// ---------------------------------------------------------------------------
+// Schema API endpoint
+// ---------------------------------------------------------------------------
+
+/// GET /api/graph/schema -- entity types, relation types, and data sources with counts.
+async fn graph_schema(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Value> {
+    let graph = mcp.graph();
+
+    // Count entities per type
+    let mut type_counts: std::collections::HashMap<String, usize> =
+        std::collections::HashMap::new();
+    for id in graph.all_entity_ids() {
+        if let Some(entity) = graph.get_entity(&id) {
+            let t = if entity.r#type.is_empty() {
+                "unknown"
+            } else {
+                &entity.r#type
+            };
+            *type_counts.entry(t.to_owned()).or_insert(0) += 1;
+        }
+    }
+
+    // Add insight count from user store if available
+    let insight_count = mcp.user_entity_count();
+    type_counts.entry("insight".to_owned()).or_insert(insight_count);
+
+    let entity_types = serde_json::json!([
+        { "key": "pattern", "label": "Design Patterns", "prefix": "DP-", "color": "#4caf50", "icon": "design_services", "count": type_counts.get("pattern").copied().unwrap_or(0) },
+        { "key": "refactoring", "label": "Refactorings", "prefix": "RF-", "color": "#2196f3", "icon": "build", "count": type_counts.get("refactoring").copied().unwrap_or(0) },
+        { "key": "law", "label": "Laws & Principles", "prefix": "LAW-", "color": "#ff9800", "icon": "gavel", "count": type_counts.get("law").copied().unwrap_or(0) },
+        { "key": "smell", "label": "Code Smells", "prefix": "SMELL-", "color": "#f44336", "icon": "warning", "count": type_counts.get("smell").copied().unwrap_or(0) },
+        { "key": "insight", "label": "Insights", "prefix": "TK-", "color": "#ab47bc", "icon": "lightbulb", "count": type_counts.get("insight").copied().unwrap_or(0) },
+    ]);
+
+    let relation_types = serde_json::json!([
+        { "key": "solves", "color": "#66bb6a", "description": "Pattern/Refactoring solves a Smell", "inverse": "solved_by" },
+        { "key": "solved_by", "color": "#81c784", "description": "Smell is solved by a Pattern/Refactoring", "inverse": "solves" },
+        { "key": "enforces", "color": "#42a5f5", "description": "Pattern enforces a Law", "inverse": "enforced_by" },
+        { "key": "enforced_by", "color": "#64b5f6", "description": "Law is enforced by a Pattern", "inverse": "enforces" },
+        { "key": "violates", "color": "#ef5350", "description": "Pattern violates a Law", "inverse": "violated_by" },
+        { "key": "violated_by", "color": "#e57373", "description": "Law is violated by a Smell/Anti-pattern", "inverse": "violates" },
+        { "key": "related_to", "color": "#78909c", "description": "General relationship", "inverse": null },
+        { "key": "derives_from", "color": "#9575cd", "description": "Derived from another concept", "inverse": null },
+        { "key": "applies_to", "color": "#4db6ac", "description": "Applies to a context", "inverse": null },
+        { "key": "supersedes", "color": "#ff8a65", "description": "Supersedes an older concept", "inverse": null }
+    ]);
+
+    let data_sources = serde_json::json!([
+        { "name": "GoF Design Patterns", "icon": "menu_book", "count": type_counts.get("pattern").copied().unwrap_or(0) },
+        { "name": "Refactoring Catalog (Fowler)", "icon": "auto_fix_high", "count": type_counts.get("refactoring").copied().unwrap_or(0) },
+        { "name": "Software Laws & Principles", "icon": "gavel", "count": type_counts.get("law").copied().unwrap_or(0) },
+        { "name": "Code Smells Catalog", "icon": "warning", "count": type_counts.get("smell").copied().unwrap_or(0) },
+        { "name": "Tacit Knowledge Insights", "icon": "lightbulb", "count": type_counts.get("insight").copied().unwrap_or(0) }
+    ]);
+
+    Json(serde_json::json!({
+        "entity_types": entity_types,
+        "relation_types": relation_types,
+        "data_sources": data_sources,
+    }))
 }
 
 // ---------------------------------------------------------------------------

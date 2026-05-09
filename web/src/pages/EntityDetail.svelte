@@ -6,8 +6,9 @@
   import Badge from '../ui/Badge.svelte';
   import EmptyState from '../ui/EmptyState.svelte';
   import Skeleton from '../ui/Skeleton.svelte';
+  import InsightForm from '../components/InsightForm.svelte';
   import { ENTITY_TYPE_ICONS, ENTITY_TYPE_COLORS } from '../api/types.ts';
-  import type { EntityType } from '../api/types.ts';
+  import type { EntityType, Entity } from '../api/types.ts';
 
   let route = $derived(getCurrentRoute());
   let entity = $derived(getSelectedEntity());
@@ -26,6 +27,17 @@
 
   function goBack() {
     navigate({ page: 'explorer' });
+  }
+
+  function getProvenance(entity: Entity, neighborId: string): string | null {
+    const entries = entity.context?.['link_provenance'];
+    if (!entries) return null;
+    const match = entries.find(e => e.includes(`:${neighborId}:`));
+    if (!match) return null;
+    if (match.includes('source=auto')) return 'auto';
+    if (match.includes('source=manual')) return 'manual';
+    if (match.includes('source=suggested')) return 'suggested';
+    return null;
   }
 </script>
 
@@ -138,6 +150,15 @@
         {/if}
       </div>
 
+      <!-- Add Insight -->
+      <div class="glass-panel p-6">
+        <h3 class="font-bold text-[var(--color-on-surface)] flex items-center gap-2 mb-4">
+          <span class="material-symbols-outlined text-[var(--color-insight)] text-sm">lightbulb</span>
+          Add Insight
+        </h3>
+        <InsightForm oncreated={(id) => handleNavigate(id)} />
+      </div>
+
       <!-- Right: Relations -->
       <div class="col-span-12 lg:col-span-8 space-y-6">
         <!-- Relations Grid -->
@@ -166,7 +187,16 @@
                         style="color: {ENTITY_TYPE_COLORS[neighbor.type]}">{ENTITY_TYPE_ICONS[neighbor.type]}</span>
                     </div>
                     <div class="flex-1 min-w-0">
-                      <p class="font-bold text-sm text-[var(--color-on-surface)] truncate">{neighbor.title}</p>
+                      <div class="flex items-center gap-1.5">
+                        <p class="font-bold text-sm text-[var(--color-on-surface)] truncate">{neighbor.title}</p>
+                        {#if entity && getProvenance(entity, neighbor.id)}
+                          <span class="text-[9px] px-1.5 py-0.5 rounded shrink-0
+                            bg-[var(--color-surface-container-high)]
+                            text-[var(--color-on-surface-variant)]">
+                            {getProvenance(entity, neighbor.id)}
+                          </span>
+                        {/if}
+                      </div>
                       <p class="text-[11px] text-[var(--color-on-surface-variant)]">{neighbor.type}</p>
                     </div>
                     <span class="material-symbols-outlined text-sm text-[var(--color-outline)]

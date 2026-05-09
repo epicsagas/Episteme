@@ -108,6 +108,12 @@ fn init_schema(conn: &Connection) -> Result<(), String> {
         ",
     )
     .map_err(|e| format!("user graph schema init: {e}"))?;
+
+    // Migrations: add columns that may not exist in older databases
+    let _: Result<(), _> = conn.execute_batch(
+        "ALTER TABLE user_entities ADD COLUMN link_provenance TEXT NOT NULL DEFAULT '{}'",
+    );
+
     Ok(())
 }
 
@@ -142,6 +148,14 @@ pub fn user_entity_to_entity(ue: &UserEntity) -> Entity {
                 vec![ue.evidence_count.to_string()],
             );
             ctx.insert("last_validated".to_owned(), vec![ue.last_validated.clone()]);
+            if !ue.link_provenance.is_empty() {
+                let prov_entries: Vec<String> = ue
+                    .link_provenance
+                    .iter()
+                    .map(|(k, v)| format!("{}:source={},score={:.2}", k, v.source, v.score))
+                    .collect();
+                ctx.insert("link_provenance".to_owned(), prov_entries);
+            }
             ctx
         },
         file_path: String::new(),
@@ -221,6 +235,7 @@ impl UserGraphStore {
 fn row_to_user_entity(row: &rusqlite::Row<'_>) -> rusqlite::Result<UserEntity> {
     let tags_str: String = row.get(7)?;
     let rels_str: String = row.get(8)?;
+    let prov_str: String = row.get(11)?;
     Ok(UserEntity {
         id: row.get(0)?,
         title: row.get(1)?,
@@ -231,6 +246,7 @@ fn row_to_user_entity(row: &rusqlite::Row<'_>) -> rusqlite::Result<UserEntity> {
         last_validated: row.get(6)?,
         tags: serde_json::from_str(&tags_str).unwrap_or_default(),
         relations: serde_json::from_str(&rels_str).unwrap_or_default(),
+        link_provenance: serde_json::from_str(&prov_str).unwrap_or_default(),
         created_at: row.get(9)?,
         updated_at: row.get(10)?,
     })
@@ -248,13 +264,14 @@ impl MutableGraphRepository for UserGraphStore {
             .map_err(|e| format!("mutex poisoned: {e}"))?;
         let tags = serde_json::to_string(&entity.tags).unwrap_or_else(|_| "[]".to_owned());
         let rels = serde_json::to_string(&entity.relations).unwrap_or_else(|_| "{}".to_owned());
+        let prov = serde_json::to_string(&entity.link_provenance).unwrap_or_else(|_| "{}".to_owned());
         conn.execute(
-            "INSERT INTO user_entities (id, title, content, author, confidence, evidence_count, last_validated, tags, relations, created_at, updated_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)",
+            "INSERT INTO user_entities (id, title, content, author, confidence, evidence_count, last_validated, tags, relations, link_provenance, created_at, updated_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
             params![
                 entity.id, entity.title, entity.content, entity.author,
                 entity.confidence, entity.evidence_count, entity.last_validated,
-                tags, rels, entity.created_at, entity.updated_at,
+                tags, rels, prov, entity.created_at, entity.updated_at,
             ],
         )
         .map_err(|e| format!("insert user entity: {e}"))?;
@@ -279,11 +296,12 @@ impl MutableGraphRepository for UserGraphStore {
             .map_err(|e| format!("mutex poisoned: {e}"))?;
         let tags = serde_json::to_string(&entity.tags).unwrap_or_else(|_| "[]".to_owned());
         let rels = serde_json::to_string(&entity.relations).unwrap_or_else(|_| "{}".to_owned());
+        let prov = serde_json::to_string(&entity.link_provenance).unwrap_or_else(|_| "{}".to_owned());
         let rows = conn
             .execute(
                 "UPDATE user_entities SET title=?1, content=?2, author=?3, confidence=?4,
-                 evidence_count=?5, last_validated=?6, tags=?7, relations=?8, updated_at=?9
-                 WHERE id=?10",
+                 evidence_count=?5, last_validated=?6, tags=?7, relations=?8, link_provenance=?9, updated_at=?10
+                 WHERE id=?11",
                 params![
                     entity.title,
                     entity.content,
@@ -293,6 +311,7 @@ impl MutableGraphRepository for UserGraphStore {
                     entity.last_validated,
                     tags,
                     rels,
+                    prov,
                     entity.updated_at,
                     id,
                 ],
@@ -371,7 +390,7 @@ impl MutableGraphRepository for UserGraphStore {
         let conn = self.conn.lock().ok()?;
         let mut stmt = conn
             .prepare(
-                "SELECT id, title, content, author, confidence, evidence_count, last_validated, tags, relations, created_at, updated_at FROM user_entities WHERE id=?1",
+                "SELECT id, title, content, author, confidence, evidence_count, last_validated, tags, relations, created_at, updated_at, link_provenance FROM user_entities WHERE id=?1",
             )
             .ok()?;
         stmt.query_row(params![id], row_to_user_entity).ok()
@@ -400,7 +419,7 @@ impl MutableGraphRepository for UserGraphStore {
         };
         let mut stmt = match conn.prepare(
             "SELECT id, title, content, author, confidence, evidence_count,
-                    last_validated, tags, relations, created_at, updated_at
+                    last_validated, tags, relations, created_at, updated_at, link_provenance
              FROM user_entities",
         ) {
             Ok(s) => s,
@@ -499,7 +518,7 @@ impl MutableGraphRepository for UserGraphStore {
         };
         let mut stmt = match conn.prepare(
             "SELECT u.id, u.title, u.content, u.author, u.confidence, u.evidence_count,
-                    u.last_validated, u.tags, u.relations, u.created_at, u.updated_at
+                    u.last_validated, u.tags, u.relations, u.created_at, u.updated_at, u.link_provenance
              FROM user_entities_fts f
              JOIN user_entities u ON u.rowid = f.rowid
              WHERE user_entities_fts MATCH ?1
@@ -658,6 +677,7 @@ mod tests {
             last_validated: String::new(),
             tags: vec!["test".to_owned()],
             relations: HashMap::new(),
+            link_provenance: HashMap::new(),
             created_at: "2026-01-01T00:00:00Z".to_owned(),
             updated_at: "2026-01-01T00:00:00Z".to_owned(),
         }

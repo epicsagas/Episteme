@@ -48,6 +48,9 @@
     --color-rel-violates: #ef5350;
     --color-rel-violated-by: #e57373;
     --color-rel-related-to: #78909c;
+    --color-rel-derives-from: #9575cd;
+    --color-rel-applies-to: #4db6ac;
+    --color-rel-supersedes: #ff8a65;
 
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(114, 119, 133, 0.15);

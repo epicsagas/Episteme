@@ -15,6 +15,8 @@ export interface Entity {
     when_to_use?: string[];
     drawbacks?: string[];
     consequences?: string[];
+    link_provenance?: string[];
+    [key: string]: string[] | undefined;
   };
   file_path: string;
   source: string | null;
@@ -159,4 +161,58 @@ export const ENTITY_TYPE_ICONS: Record<EntityType, string> = {
   law: 'gavel',
   smell: 'warning',
   insight: 'lightbulb',
+}
+
+// Schema types for dynamic ontology loading
+
+export interface SchemaEntityType {
+  key: string;
+  label: string;
+  prefix: string;
+  color: string;
+  icon: string;
+  count: number;
+}
+
+export interface SchemaRelationType {
+  key: string;
+  color: string;
+  description: string;
+  inverse: string | null;
+}
+
+export interface SchemaDataSource {
+  name: string;
+  icon: string;
+  count: number;
+}
+
+export interface SchemaResponse {
+  entity_types: SchemaEntityType[];
+  relation_types: SchemaRelationType[];
+  data_sources: SchemaDataSource[];
+}
+
+// Insight creation types
+
+export interface CreateInsightRequest {
+  text: string;
+  tags?: string[];
+  linked_entities?: string[];
+}
+
+export interface InsightAutoLink {
+  entity_id: string;
+  score: string;
+  link_type: 'auto' | 'suggested' | 'manual';
+}
+
+export interface CreateInsightResponse {
+  id: string;
+  auto_links: InsightAutoLink[];
+  suggested_links: InsightAutoLink[];
+  related_insights: Array<{ insight_id: string; combined: string }>;
+  duplicates: Array<{ insight_id: string; overlap: string; note: string }>;
+  confidence: number;
+  error?: string;
 };

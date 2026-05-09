@@ -431,6 +431,14 @@ pub struct GraphStats {
 // User insight types (tacit knowledge layer)
 // ---------------------------------------------------------------------------
 
+/// Provenance metadata for a single user-entity relation link.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LinkProvenance {
+    pub source: String,
+    pub score: f64,
+    pub recorded_at: String,
+}
+
 /// A user-contributed insight linked to canonical knowledge graph entities.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserEntity {
@@ -443,6 +451,8 @@ pub struct UserEntity {
     pub last_validated: String,
     pub tags: Vec<String>,
     pub relations: HashMap<String, Vec<String>>,
+    #[serde(default)]
+    pub link_provenance: HashMap<String, LinkProvenance>,
     pub created_at: String,
     pub updated_at: String,
 }

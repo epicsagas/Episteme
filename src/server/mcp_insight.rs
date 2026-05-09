@@ -4,7 +4,7 @@ use crate::adapters::insight_utils;
 use crate::domain::composite_graph::CompositeGraph;
 use crate::domain::graph::KnowledgeGraph;
 use crate::domain::types::{
-    DuplicateCandidate, InsightLink, InsightLinkType, OverlapKind, UserEntity,
+    DuplicateCandidate, InsightLink, InsightLinkType, LinkProvenance, OverlapKind, UserEntity,
 };
 use crate::ports::graph::MutableGraphRepository;
 
@@ -99,6 +99,34 @@ pub fn add_insight(
     }
 
     let now = insight_utils::format_timestamp();
+
+    // Build link provenance
+    let mut link_provenance = std::collections::HashMap::new();
+    for link in &auto_links {
+        if matches!(link.link_type, InsightLinkType::Auto) {
+            link_provenance.insert(
+                format!("derives_from:{}", link.entity_id),
+                LinkProvenance {
+                    source: link.link_type.to_string(),
+                    score: link.score,
+                    recorded_at: now.clone(),
+                },
+            );
+        }
+    }
+    if let Some(ref entity_ids) = linked_entities {
+        for eid in entity_ids {
+            link_provenance.insert(
+                format!("applies_to:{}", eid),
+                LinkProvenance {
+                    source: "manual".to_owned(),
+                    score: 0.5,
+                    recorded_at: now.clone(),
+                },
+            );
+        }
+    }
+
     let entity = UserEntity {
         id: id.clone(),
         title: insight_utils::truncate_title(text),
@@ -109,6 +137,7 @@ pub fn add_insight(
         last_validated: String::new(),
         tags: final_tags,
         relations,
+        link_provenance,
         created_at: now.clone(),
         updated_at: now,
     };
@@ -174,12 +203,21 @@ pub fn confirm_links(
     let mut errors: Vec<String> = Vec::new();
 
     // Add accepted links to the entity's relations HashMap
+    let confirm_ts = insight_utils::format_timestamp();
     for entity_id in &accepted {
         entity
             .relations
             .entry("derives_from".to_owned())
             .or_default()
             .push(entity_id.clone());
+        entity.link_provenance.insert(
+            format!("derives_from:{}", entity_id),
+            LinkProvenance {
+                source: "manual".to_owned(),
+                score: 0.5,
+                recorded_at: confirm_ts.clone(),
+            },
+        );
         confirmed_count += 1;
     }
 
@@ -438,6 +476,7 @@ mod tests {
             last_validated: String::new(),
             tags: vec![],
             relations: std::collections::HashMap::new(),
+            link_provenance: std::collections::HashMap::new(),
             created_at: "2026-01-01T00:00:00Z".to_owned(),
             updated_at: "2026-01-01T00:00:00Z".to_owned(),
         }
