@@ -637,7 +637,10 @@ pub async fn create_insight(
     Json(body): Json<CreateInsightRequest>,
 ) -> impl IntoResponse {
     if body.text.trim().is_empty() {
-        return (StatusCode::BAD_REQUEST, Json(serde_json::json!({"error": "text must not be empty"})));
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(serde_json::json!({"error": "text must not be empty"})),
+        );
     }
 
     let result = mcp.add_insight(&body.text, body.tags, body.linked_entities, None);

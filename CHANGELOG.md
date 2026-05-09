@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- CLI: `explore` renamed to `search` (old name works as deprecated alias)
+
 ### Added
 
 - **MCP HTTP transport for Claude Code** — transport selector TUI, HTTP as default, launchd auto-enable

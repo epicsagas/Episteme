@@ -1,16 +1,42 @@
 use std::sync::Arc;
 use tauri::{Emitter, Manager, State};
 
-use episteme::adapters::user_graph_store::UserGraphStore;
-use episteme::domain::composite_graph::CompositeGraph;
 use episteme::EpistemeMCP;
 use episteme::KnowledgeGraph;
+use episteme::adapters::user_graph_store::UserGraphStore;
+use episteme::domain::composite_graph::CompositeGraph;
 
 type ServerState = Arc<tokio::sync::Mutex<Option<ServerHandles>>>;
 
 struct ServerHandles {
     api_shutdown: tokio::sync::oneshot::Sender<()>,
     web_shutdown: tokio::sync::oneshot::Sender<()>,
+}
+
+async fn spawn_server(
+    label: &str,
+    addr: String,
+    app: axum::Router,
+    shutdown_rx: tokio::sync::oneshot::Receiver<()>,
+) {
+    let listener = match tokio::net::TcpListener::bind(&addr).await {
+        Ok(l) => l,
+        Err(e) => {
+            tracing::error!("failed to bind {label} on {addr}: {e}");
+            return;
+        }
+    };
+
+    tracing::info!("{label} listening on {}", addr);
+
+    if let Err(e) = axum::serve(listener, app)
+        .with_graceful_shutdown(async {
+            let _ = shutdown_rx.await;
+        })
+        .await
+    {
+        tracing::error!("{label} error: {e}");
+    }
 }
 
 fn build_mcp(graph: KnowledgeGraph) -> EpistemeMCP {
@@ -66,24 +92,7 @@ async fn start_backend(state: State<'_, ServerState>) -> Result<serde_json::Valu
         )
         .await;
 
-        let listener = match tokio::net::TcpListener::bind(&addr).await {
-            Ok(l) => l,
-            Err(e) => {
-                tracing::error!("failed to bind API server on {addr}: {e}");
-                return;
-            }
-        };
-
-        tracing::info!("API server listening on {}", addr);
-
-        if let Err(e) = axum::serve(listener, app)
-            .with_graceful_shutdown(async {
-                let _ = api_rx.await;
-            })
-            .await
-        {
-            tracing::error!("API server error: {e}");
-        }
+        spawn_server("API server", addr, app, api_rx).await;
     });
 
     // --- Start Web Viewer server (port 8080) ---
@@ -94,24 +103,7 @@ async fn start_backend(state: State<'_, ServerState>) -> Result<serde_json::Valu
     tokio::spawn(async move {
         let app = episteme::web_viewer::web_router(web_handler);
         let addr = format!("{}:{}", web_host, web_port);
-        let listener = match tokio::net::TcpListener::bind(&addr).await {
-            Ok(l) => l,
-            Err(e) => {
-                tracing::error!("failed to bind web viewer on {addr}: {e}");
-                return;
-            }
-        };
-
-        tracing::info!("Web viewer listening on {}", addr);
-
-        if let Err(e) = axum::serve(listener, app)
-            .with_graceful_shutdown(async {
-                let _ = web_rx.await;
-            })
-            .await
-        {
-            tracing::error!("web viewer error: {e}");
-        }
+        spawn_server("Web viewer", addr, app, web_rx).await;
     });
 
     *guard = Some(ServerHandles {
@@ -174,5 +166,8 @@ pub fn run() {
             Ok(())
         })
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .unwrap_or_else(|e| {
+            eprintln!("fatal: failed to run tauri application: {e}");
+            std::process::exit(1);
+        });
 }

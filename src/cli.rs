@@ -33,6 +33,7 @@ pub enum Commands {
         json: bool,
     },
     /// Explore the knowledge graph by keyword search or interactive REPL
+    #[command(name = "search", alias = "explore")]
     Explore {
         /// Search query (omit for interactive REPL)
         #[arg(required = false)]

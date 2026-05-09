@@ -5,24 +5,11 @@
   import { loadFullGraph, getGraphData, isLoading, getError, getVersion } from '../stores/graph.svelte.ts';
   import { selectEntity } from '../stores/graph.svelte.ts';
   import { waitForReady } from '../stores/connection.svelte.ts';
-  import { ENTITY_TYPE_HEX_COLORS } from '../api/types.ts';
+  import { ENTITY_TYPE_HEX_COLORS, RELATION_TYPE_COLORS } from '../api/types.ts';
 
   let container: HTMLDivElement | undefined = $state();
   let cy: Core | null = null;
   let readyFailed = $state(false);
-
-  const REL_COLORS: Record<string, string> = {
-    solves: '#66bb6a',
-    solved_by: '#81c784',
-    enforces: '#42a5f5',
-    enforced_by: '#64b5f6',
-    violates: '#ef5350',
-    violated_by: '#e57373',
-    related_to: '#78909c',
-    derives_from: '#9575cd',
-    applies_to: '#4db6ac',
-    supersedes: '#ff8a65',
-  };
 
   let lastVersion = 0;
 
@@ -74,7 +61,7 @@
           'text-opacity': 0.6,
         },
       },
-      ...Object.entries(REL_COLORS).map(([rel, color]) => ({
+      ...Object.entries(RELATION_TYPE_COLORS).map(([rel, color]) => ({
         selector: `edge[label="${rel}"]`,
         style: { 'line-color': color },
       })),

@@ -2,6 +2,7 @@
   import { getSelectedEntity, getNeighborsList, clearSelection } from '../stores/graph.svelte.ts';
   import Badge from '../ui/Badge.svelte';
   import { navigate } from '../router/index.svelte.ts';
+  import { ENTITY_TYPE_ICONS } from '../api/types.ts';
 
   let entity = $derived(getSelectedEntity());
   let neighbors = $derived(getNeighborsList());
@@ -27,7 +28,7 @@
           style="background: color-mix(in srgb, var(--color-primary) 15%, transparent);
                  border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);">
           <span class="material-symbols-outlined text-[var(--color-primary)] text-2xl">
-            {entity.type === 'pattern' ? 'design_services' : entity.type === 'refactoring' ? 'build' : entity.type === 'law' ? 'gavel' : entity.type === 'smell' ? 'warning' : 'lightbulb'}
+            {ENTITY_TYPE_ICONS[entity.type]}
           </span>
         </div>
         <div class="flex-1 min-w-0">

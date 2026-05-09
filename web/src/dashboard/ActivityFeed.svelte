@@ -16,7 +16,7 @@
   let loading = $state(false);
   let feedError: string | null = $state(null);
 
-  async function loadRecent() {
+  async function loadTopEntities() {
     loading = true;
     feedError = null;
     try {
@@ -28,22 +28,22 @@
         category: r.category,
       }));
     } catch (e) {
-      feedError = e instanceof Error ? e.message : 'Failed to load recent entities';
+      feedError = e instanceof Error ? e.message : 'Failed to load entities';
     } finally {
       loading = false;
     }
   }
 
   $effect(() => {
-    if (getStats()) loadRecent();
+    if (getStats()) loadTopEntities();
   });
 </script>
 
 <div class="glass-panel rounded-xl flex flex-col overflow-hidden">
   <div class="p-4 flex justify-between items-center border-b border-[var(--color-outline-variant)]/30">
     <h3 class="font-bold text-[var(--color-on-surface)] flex items-center gap-2 text-sm">
-      <span class="material-symbols-outlined text-[var(--color-primary)] text-sm">update</span>
-      Recent Entities
+      <span class="material-symbols-outlined text-[var(--color-primary)] text-sm">category</span>
+      Top Entities
     </h3>
   </div>
 

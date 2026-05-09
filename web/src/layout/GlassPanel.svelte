@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { Component } from 'svelte';
 
   let {
     header,

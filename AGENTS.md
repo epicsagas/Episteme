@@ -10,7 +10,7 @@
 - `src/main.rs` — CLI entry point (clap derive, 13 subcommands)
 - `src/lib.rs` — Library root, re-exports primary types
 - `src/cli.rs` — Clap command enum definitions
-- `src/commands/` — CLI subcommand handlers: `analysis`, `build`, `explore`, `graph`, `install`, `service`, `other`
+- `src/commands/` — CLI subcommand handlers: `analysis`, `build`, `search`, `graph`, `install`, `service`, `other`
 - `src/domain/` — Business logic (no external deps): `graph` (KnowledgeGraph, BFS, inverse relation derivation), `detectors` (16 smell detectors), `engine` (RefactoringRanker), `inference`, `summarizer`, `problem_mapper`, `types` (Entity, EntityType, RelationType, SmellType), `metrics` (CodeMetrics, SmellDetection)
 - `src/ports/` — Traits (hexagonal boundaries): `parser` (CodeParser), `search` (SearchIndex), `graph` (GraphRepository), `embeddings` (EmbeddingProvider)
 - `src/adapters/` — Infrastructure: `regex_parsers` (GenericParser, 10 langs), `python_ast_parser` (rustpython-parser), `search_engines` (FTS5 + cosine), `sqlite_db`, `cache`, `local_embeddings` (fastembed/ONNX), `openai_embeddings`, `service` (MCP HTTP daemon), `installer` (Transport enum, upsert_dir, multi-tool seeding), `install_wizard` (TUI transport selection), `config`, `metrics`, `telemetry`, `paths`, `hooks`, `json_loader`, `constants`, `error`, `rate_limiter`, `structured_logging`, `chunker`, `builder`, `rate_limiter_mw`

@@ -225,7 +225,9 @@ async fn graph_schema(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::V
 
     // Add insight count from user store if available
     let insight_count = mcp.user_entity_count();
-    type_counts.entry("insight".to_owned()).or_insert(insight_count);
+    type_counts
+        .entry("insight".to_owned())
+        .or_insert(insight_count);
 
     let entity_types: Vec<serde_json::Value> = type_counts
         .iter()

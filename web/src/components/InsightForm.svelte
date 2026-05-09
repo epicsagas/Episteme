@@ -80,7 +80,7 @@
       <p class="text-xs font-bold text-[var(--color-on-surface)] mb-1">
         Created: <span class="font-mono text-[var(--color-insight)]">{result.id}</span>
       </p>
-      {#if result.auto_links.length > 0}
+      {#if (result.auto_links?.length ?? 0) > 0}
         <p class="text-[10px] uppercase tracking-wider text-[var(--color-on-surface-variant)] mt-2 mb-1">Auto-detected links</p>
         <div class="flex flex-wrap gap-1">
           {#each result.auto_links as link}

@@ -269,7 +269,8 @@ impl MutableGraphRepository for UserGraphStore {
             .map_err(|e| format!("mutex poisoned: {e}"))?;
         let tags = serde_json::to_string(&entity.tags).unwrap_or_else(|_| "[]".to_owned());
         let rels = serde_json::to_string(&entity.relations).unwrap_or_else(|_| "{}".to_owned());
-        let prov = serde_json::to_string(&entity.link_provenance).unwrap_or_else(|_| "{}".to_owned());
+        let prov =
+            serde_json::to_string(&entity.link_provenance).unwrap_or_else(|_| "{}".to_owned());
         conn.execute(
             "INSERT INTO user_entities (id, title, content, author, confidence, evidence_count, last_validated, tags, relations, link_provenance, created_at, updated_at)
              VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
@@ -301,7 +302,8 @@ impl MutableGraphRepository for UserGraphStore {
             .map_err(|e| format!("mutex poisoned: {e}"))?;
         let tags = serde_json::to_string(&entity.tags).unwrap_or_else(|_| "[]".to_owned());
         let rels = serde_json::to_string(&entity.relations).unwrap_or_else(|_| "{}".to_owned());
-        let prov = serde_json::to_string(&entity.link_provenance).unwrap_or_else(|_| "{}".to_owned());
+        let prov =
+            serde_json::to_string(&entity.link_provenance).unwrap_or_else(|_| "{}".to_owned());
         let rows = conn
             .execute(
                 "UPDATE user_entities SET title=?1, content=?2, author=?3, confidence=?4,

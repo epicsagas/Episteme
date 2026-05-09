@@ -81,7 +81,10 @@ fn dispatch(cli: Cli) -> Result<()> {
             limit,
             entity_type,
             interactive,
-        } => commands::cmd_explore(query, limit, entity_type.as_deref(), interactive),
+        } => {
+            warn_deprecated("explore", "search");
+            commands::cmd_explore(query, limit, entity_type.as_deref(), interactive)
+        }
 
         Commands::Graph { sub } => commands::cmd_graph(graph_op(sub)),
 
@@ -255,4 +258,13 @@ fn install_tracing() {
             EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("warn")),
         )
         .try_init();
+}
+
+fn warn_deprecated(old: &str, new: &str) {
+    if std::env::args().any(|arg| arg == old) {
+        eprintln!(
+            "[deprecated] '{}' is deprecated, use '{}' instead.",
+            old, new
+        );
+    }
 }
