@@ -251,7 +251,6 @@ fn service_lifecycle_op(sub: ServiceLifecycle, kind: ServiceKind) -> commands::S
     }
 }
 
-
 fn hooks_op(sub: HooksCommands) -> commands::HooksOp {
     match sub {
         HooksCommands::Ground {
