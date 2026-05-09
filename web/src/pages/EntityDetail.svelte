@@ -7,24 +7,12 @@
   import EmptyState from '../ui/EmptyState.svelte';
   import Skeleton from '../ui/Skeleton.svelte';
   import { ENTITY_TYPE_ICONS, ENTITY_TYPE_COLORS } from '../api/types.ts';
-  import type { EntityType, RelationType } from '../api/types.ts';
+  import type { EntityType } from '../api/types.ts';
 
   let route = $derived(getCurrentRoute());
   let entity = $derived(getSelectedEntity());
   let neighbors = $derived(getNeighborsList());
   let loading = $derived(isLoading());
-  let activeTab = $state<string>('all');
-
-  // Group neighbors by relation type
-  let groupedNeighbors = $derived(() => {
-    const groups: Record<string, typeof neighbors> = {};
-    for (const n of neighbors) {
-      // We don't have the relation type per neighbor here, use 'all'
-      if (!groups['all']) groups['all'] = [];
-      groups['all'].push(n);
-    }
-    return groups;
-  });
 
   $effect(() => {
     if (route.page === 'entity' && route.id) {

@@ -11,7 +11,6 @@
   const items: NavItem[] = [
     { page: 'dashboard', icon: 'dashboard', label: 'Insights' },
     { page: 'explorer', icon: 'hub', label: 'Explorer' },
-    { page: 'entity', icon: 'analytics', label: 'Intelligence' },
     { page: 'ontology', icon: 'schema', label: 'Ontology' },
   ];
 

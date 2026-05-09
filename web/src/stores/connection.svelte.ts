@@ -11,6 +11,12 @@ export function getBaseUrl(): string {
   return baseUrl;
 }
 
+export function getWebUrl(): string {
+  const url = new URL(getBaseUrl());
+  url.port = '8080';
+  return url.toString().replace(/\/$/, '');
+}
+
 export function setBaseUrl(url: string) {
   baseUrl = url;
 }

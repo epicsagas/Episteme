@@ -2,7 +2,6 @@ import { apiGet, apiPost } from './client.ts';
 import type {
   GraphStats,
   Entity,
-  EntitySummary,
   SearchResponse,
   Neighborhood,
   PathResult,
@@ -29,11 +28,11 @@ export function search(baseUrl: string, query: string, limit = 10, entityType?: 
 }
 
 export function getEntity(baseUrl: string, id: string, detail: 'minimal' | 'summary' | 'detailed' | 'full' = 'full'): Promise<Entity> {
-  return apiGet<Entity>(baseUrl, `/graph/${id}?detail=${detail}`);
+  return apiGet<Entity>(baseUrl, `/graph/${encodeURIComponent(id)}?detail=${detail}`);
 }
 
 export function getNeighbors(baseUrl: string, id: string, type?: string): Promise<Neighborhood> {
-  const path = type ? `/graph/${id}/neighbors?type=${type}` : `/graph/${id}/neighbors`;
+  const path = type ? `/graph/${encodeURIComponent(id)}/neighbors?type=${encodeURIComponent(type)}` : `/graph/${encodeURIComponent(id)}/neighbors`;
   return apiGet<Neighborhood>(baseUrl, path);
 }
 

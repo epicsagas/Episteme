@@ -20,7 +20,10 @@ fn build_mcp(graph: KnowledgeGraph) -> EpistemeMCP {
             let composite = CompositeGraph::new(graph.clone(), Box::new(store));
             EpistemeMCP::with_composite(graph, composite)
         }
-        Err(_) => EpistemeMCP::new(graph),
+        Err(e) => {
+            tracing::warn!("user graph store unavailable: {e}");
+            EpistemeMCP::new(graph)
+        }
     }
 }
 
@@ -63,18 +66,24 @@ async fn start_backend(state: State<'_, ServerState>) -> Result<String, String> 
         )
         .await;
 
-        let listener = tokio::net::TcpListener::bind(&addr)
-            .await
-            .expect("failed to bind API server");
+        let listener = match tokio::net::TcpListener::bind(&addr).await {
+            Ok(l) => l,
+            Err(e) => {
+                tracing::error!("failed to bind API server on {addr}: {e}");
+                return;
+            }
+        };
 
         tracing::info!("API server listening on {}", addr);
 
-        axum::serve(listener, app)
+        if let Err(e) = axum::serve(listener, app)
             .with_graceful_shutdown(async {
                 let _ = api_rx.await;
             })
             .await
-            .ok();
+        {
+            tracing::error!("API server error: {e}");
+        }
     });
 
     // --- Start Web Viewer server (port 8080) ---
@@ -85,18 +94,24 @@ async fn start_backend(state: State<'_, ServerState>) -> Result<String, String> 
     tokio::spawn(async move {
         let app = episteme::web_viewer::web_router(web_handler);
         let addr = format!("{}:{}", web_host, web_port);
-        let listener = tokio::net::TcpListener::bind(&addr)
-            .await
-            .expect("failed to bind web viewer");
+        let listener = match tokio::net::TcpListener::bind(&addr).await {
+            Ok(l) => l,
+            Err(e) => {
+                tracing::error!("failed to bind web viewer on {addr}: {e}");
+                return;
+            }
+        };
 
         tracing::info!("Web viewer listening on {}", addr);
 
-        axum::serve(listener, app)
+        if let Err(e) = axum::serve(listener, app)
             .with_graceful_shutdown(async {
                 let _ = web_rx.await;
             })
             .await
-            .ok();
+        {
+            tracing::error!("web viewer error: {e}");
+        }
     });
 
     *guard = Some(ServerHandles {

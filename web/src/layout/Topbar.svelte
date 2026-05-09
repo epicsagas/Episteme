@@ -1,6 +1,8 @@
 <script lang="ts">
   import { isDark, toggle } from '../stores/theme.svelte.ts';
   import { getStatus } from '../stores/connection.svelte.ts';
+
+  let status = $derived(getStatus());
 </script>
 
 <header class="flex justify-between items-center px-6 h-16 border-b shrink-0
@@ -38,10 +40,10 @@
 
     <div class="flex items-center gap-1 border-l border-[var(--color-outline-variant)] pl-4">
       <div class="w-2 h-2 rounded-full
-        {getStatus() === 'connected' ? 'bg-[var(--color-rel-solves)]' : getStatus() === 'connecting' ? 'bg-[var(--color-law)]' : 'bg-[var(--color-error)]'}">
+        {status === 'connected' ? 'bg-[var(--color-rel-solves)]' : status === 'connecting' ? 'bg-[var(--color-law)]' : 'bg-[var(--color-error)]'}">
       </div>
       <span class="text-[10px] text-[var(--color-on-surface-variant)]">
-        {getStatus() === 'connected' ? 'Connected' : getStatus() === 'connecting' ? 'Connecting...' : 'Offline'}
+        {status === 'connected' ? 'Connected' : status === 'connecting' ? 'Connecting...' : 'Offline'}
       </span>
     </div>
 

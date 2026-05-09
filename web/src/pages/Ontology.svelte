@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { getTree } from '../api/endpoints.ts';
-  import { getBaseUrl } from '../stores/connection.svelte.ts';
+  import { getWebUrl } from '../stores/connection.svelte.ts';
   import Badge from '../ui/Badge.svelte';
   import Skeleton from '../ui/Skeleton.svelte';
   import EmptyState from '../ui/EmptyState.svelte';
@@ -16,7 +16,7 @@
 
   onMount(async () => {
     try {
-      const webUrl = getBaseUrl().replace('8000', '8080');
+      const webUrl = getWebUrl();
       const res = await getTree(webUrl);
       trees = res.tree;
       // Expand all types by default

@@ -1,6 +1,6 @@
 import type { Entity, CytoscapeGraph } from '../api/types.ts';
 import { getEntity, getFullGraph, getNeighbors } from '../api/endpoints.ts';
-import { getBaseUrl } from './connection.svelte.ts';
+import { getBaseUrl, getWebUrl } from './connection.svelte.ts';
 import type { Neighbor } from '../api/types.ts';
 
 let selectedEntity: Entity | null = $state(null);
@@ -29,7 +29,7 @@ export async function loadFullGraph(): Promise<void> {
   loading = true;
   error = null;
   try {
-    graphData = await getFullGraph('http://localhost:8080');
+    graphData = await getFullGraph(getWebUrl());
   } catch {
     error = 'Failed to load graph data';
   } finally {
