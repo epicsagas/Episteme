@@ -173,6 +173,15 @@ impl KnowledgeGraph {
     }
 
     /// Get all neighbor IDs of `entity_id`, optionally filtered by `relation_type`.
+    ///
+    /// When `relation_type` is `Some(rt)` and `rt` has a defined inverse (e.g.
+    /// `solved_by` ↔ `solves`), this method also derives neighbors from the
+    /// reverse index, effectively traversing incoming edges.
+    ///
+    /// When `relation_type` is `None`, only **outgoing** edges are returned.
+    /// For full bidirectional traversal, use `get_neighborhood()` or combine
+    /// with explicit reverse queries. This affects `find_shortest_path()` and
+    /// `extract_subgraph()` which use the `None` variant for directed BFS.
     pub fn get_neighbors(&self, entity_id: &str, relation_type: Option<&str>) -> Vec<String> {
         let Some(entity) = self.entities.get(entity_id) else {
             return Vec::new();
@@ -210,17 +219,21 @@ impl KnowledgeGraph {
         }
     }
 
-    /// Return the inverse relation type, if one is defined.
+    /// Return the inverse relation type, delegating to `RelationType::inverse_of()`.
     fn inverse_relation(relation_type: &str) -> Option<&'static str> {
-        match relation_type {
-            "solved_by" => Some("solves"),
-            "solves" => Some("solved_by"),
-            "violated_by" => Some("violates"),
-            "violates" => Some("violated_by"),
-            "enforced_by" => Some("enforces"),
-            "enforces" => Some("enforced_by"),
-            _ => None,
-        }
+        relation_type
+            .parse::<RelationType>()
+            .ok()
+            .and_then(|rt| rt.inverse_of())
+            .map(|rt| match rt {
+                RelationType::Solves => "solves",
+                RelationType::SolvedBy => "solved_by",
+                RelationType::Enforces => "enforces",
+                RelationType::EnforcedBy => "enforced_by",
+                RelationType::Violates => "violates",
+                RelationType::ViolatedBy => "violated_by",
+                _ => unreachable!("inverse_of only returns the above variants"),
+            })
     }
 
     /// All outgoing edges from `entity_id`.
