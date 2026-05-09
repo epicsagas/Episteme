@@ -158,38 +158,33 @@ pub fn wait_port_open(port: u16, timeout_secs: u64) -> bool {
 // Config helpers per ServiceKind
 // ---------------------------------------------------------------------------
 
-/// Resolve the configured MCP host.
-pub fn get_mcp_host() -> String {
-    crate::adapters::config::EpistemeConfig::load()
-        .map(|c| c.mcp_host)
-        .unwrap_or_else(|_| "127.0.0.1".to_owned())
-}
-
-/// Return the MCP port from config (or the default).
-pub fn get_mcp_port() -> u16 {
-    crate::adapters::config::EpistemeConfig::load()
-        .map(|c| c.mcp_port)
-        .unwrap_or(43175)
-}
-
-/// Resolve the configured host for the given service kind.
-fn get_host(kind: ServiceKind) -> String {
+/// Resolve the configured host and port for the given service kind.
+/// Loads config once.
+fn get_host_port(kind: ServiceKind) -> (String, u16) {
+    let cfg = crate::adapters::config::EpistemeConfig::load().ok();
     match kind {
-        ServiceKind::Mcp => get_mcp_host(),
-        ServiceKind::Api => crate::adapters::config::EpistemeConfig::load()
-            .map(|c| c.api_host.clone())
-            .unwrap_or_else(|_| "0.0.0.0".to_owned()),
+        ServiceKind::Mcp => {
+            let host = cfg
+                .as_ref()
+                .map(|c| c.mcp_host.clone())
+                .unwrap_or_else(|| "127.0.0.1".to_owned());
+            let port = cfg.as_ref().map(|c| c.mcp_port).unwrap_or(43175);
+            (host, port)
+        }
+        ServiceKind::Api => {
+            let host = cfg
+                .as_ref()
+                .map(|c| c.api_host.clone())
+                .unwrap_or_else(|| "0.0.0.0".to_owned());
+            let port = cfg.as_ref().map(|c| c.api_port).unwrap_or(8000);
+            (host, port)
+        }
     }
 }
 
 /// Resolve the configured port for the given service kind.
 fn get_port(kind: ServiceKind) -> u16 {
-    match kind {
-        ServiceKind::Mcp => get_mcp_port(),
-        ServiceKind::Api => crate::adapters::config::EpistemeConfig::load()
-            .map(|c| c.api_port)
-            .unwrap_or(8000),
-    }
+    get_host_port(kind).1
 }
 
 /// Return a human-readable label for the service kind.
@@ -235,7 +230,7 @@ pub fn cmd_start(kind: ServiceKind, host: &str, port: u16) -> Result<u32, String
     let args: Vec<String> = match kind {
         ServiceKind::Mcp => vec![
             "mcp".into(),
-            "--http".into(),
+            "serve".into(),
             "--host".into(),
             host.into(),
             "--port".into(),
@@ -243,6 +238,7 @@ pub fn cmd_start(kind: ServiceKind, host: &str, port: u16) -> Result<u32, String
         ],
         ServiceKind::Api => vec![
             "api".into(),
+            "serve".into(),
             "--host".into(),
             host.into(),
             "--port".into(),
@@ -309,7 +305,13 @@ pub fn cmd_stop(kind: ServiceKind) -> Result<(), String> {
             libc::kill(pid as libc::pid_t, libc::SIGKILL);
         }
     }
-    #[cfg(not(unix))]
+    #[cfg(windows)]
+    {
+        let _ = Command::new("taskkill")
+            .args(["/F", "/PID", &pid.to_string()])
+            .output();
+    }
+    #[cfg(all(not(unix), not(windows)))]
     {
         let _ = Command::new("kill").args(["-9", &pid.to_string()]).output();
     }
@@ -405,6 +407,7 @@ pub fn install_launchd_agent_for(
     host: &str,
     port: u16,
 ) -> Result<String, String> {
+    validate_host_port(host, port)?;
     #[cfg(not(target_os = "macos"))]
     {
         let _ = (kind, host, port);
@@ -431,7 +434,7 @@ pub fn install_launchd_agent_for(
             ServiceKind::Mcp => format!(
                 r#"<string>{exe}</string>
     <string>mcp</string>
-    <string>--http</string>
+    <string>serve</string>
     <string>--host</string>
     <string>{host}</string>
     <string>--port</string>
@@ -441,6 +444,7 @@ pub fn install_launchd_agent_for(
             ServiceKind::Api => format!(
                 r#"<string>{exe}</string>
     <string>api</string>
+    <string>serve</string>
     <string>--host</string>
     <string>{host}</string>
     <string>--port</string>
@@ -616,21 +620,26 @@ fn systemd_unit_label(kind: ServiceKind) -> &'static str {
 /// Install a systemd user unit for the given service kind (Linux only).
 #[cfg(target_os = "linux")]
 pub fn install_systemd_unit(kind: ServiceKind, host: &str, port: u16) -> Result<String, String> {
+    validate_host_port(host, port)?;
     let exe = std::env::current_exe().map_err(|e| e.to_string())?;
     let unit_path = systemd_unit_path(kind)?;
     if let Some(parent) = unit_path.parent() {
         fs::create_dir_all(parent).map_err(|e| e.to_string())?;
     }
 
-    let exec_start = match kind {
-        ServiceKind::Mcp => format!("{exe} mcp --http --host {host} --port {port}"),
-        ServiceKind::Api => format!("{exe} api --host {host} --port {port}"),
+    let cmd = match kind {
+        ServiceKind::Mcp => "mcp",
+        ServiceKind::Api => "api",
     };
 
-    let description = match kind {
-        ServiceKind::Mcp => "MCP",
-        ServiceKind::Api => "API",
-    };
+    let log_dir = paths::log_dir();
+    let stdout_log = log_dir.join(format!("systemd-{}.log", cmd));
+    let stderr_log = log_dir.join(format!("systemd-{}.err", cmd));
+
+    // Ensure log directory exists.
+    fs::create_dir_all(&log_dir).map_err(|e| e.to_string())?;
+
+    let description = kind_label(kind);
 
     let unit = format!(
         "[Unit]\n\
@@ -639,12 +648,20 @@ After=network.target\n\
 \n\
 [Service]\n\
 Type=simple\n\
-ExecStart={exec_start}\n\
+ExecStart=\"{exe}\" {cmd} serve --host \"{host}\" --port {port}\n\
 Restart=on-failure\n\
 RestartSec=5\n\
+StandardOutput=append:{stdout}\n\
+StandardError=append:{stderr}\n\
 \n\
 [Install]\n\
-WantedBy=default.target\n"
+WantedBy=default.target\n",
+        exe = exe.display(),
+        cmd = cmd,
+        host = host,
+        port = port,
+        stdout = stdout_log.display(),
+        stderr = stderr_log.display(),
     );
 
     fs::write(&unit_path, unit).map_err(|e| e.to_string())?;
@@ -719,10 +736,21 @@ pub fn uninstall_systemd_unit(kind: ServiceKind) -> Result<String, String> {
 // Cross-platform enable / disable
 // ---------------------------------------------------------------------------
 
+/// Validate host and port for security and correctness.
+fn validate_host_port(host: &str, port: u16) -> Result<(), String> {
+    if host.contains(|c: char| !c.is_alphanumeric() && c != '.' && c != ':' && c != '-') {
+        return Err(format!("invalid host: {}", host));
+    }
+    if port == 0 {
+        return Err("port cannot be 0".to_owned());
+    }
+    Ok(())
+}
+
 /// Enable (install OS service unit and optionally start) the given service.
 pub fn enable_service(kind: ServiceKind, now: bool) -> Result<String, String> {
-    let host = get_host(kind);
-    let port = get_port(kind);
+    let (host, port) = get_host_port(kind);
+    validate_host_port(&host, port)?;
 
     let mut msg = String::new();
 
@@ -738,17 +766,24 @@ pub fn enable_service(kind: ServiceKind, now: bool) -> Result<String, String> {
     }
     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
     {
-        msg.push_str("OS service registration is not supported on this platform.");
+        msg.push_str("OS service registration (persistence) is not supported on this platform.");
     }
 
     if now {
         let _ = cmd_stop(kind);
         match cmd_start(kind, &host, port) {
             Ok(pid) => {
-                msg.push_str(&format!(
-                    "\n{label} started (PID {pid})",
-                    label = kind_label(kind),
-                ));
+                if msg.is_empty() {
+                    msg.push_str(&format!(
+                        "{label} started (PID {pid})",
+                        label = kind_label(kind),
+                    ));
+                } else {
+                    msg.push_str(&format!(
+                        "\n{label} started in background (PID {pid})",
+                        label = kind_label(kind),
+                    ));
+                }
             }
             Err(e) if e.contains("already in use") => {
                 msg.push_str(&format!(

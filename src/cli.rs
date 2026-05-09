@@ -90,7 +90,7 @@ pub enum Commands {
     Api {
         /// REST API server lifecycle management
         #[command(subcommand)]
-        sub: Option<ApiCommands>,
+        sub: Option<ServiceLifecycle>,
         /// Bind address (for foreground mode)
         #[arg(long, default_value_t = String::from("0.0.0.0"))]
         host: String,
@@ -108,14 +108,14 @@ pub enum Commands {
     Mcp {
         /// MCP server lifecycle management
         #[command(subcommand)]
-        sub: Option<McpCommands>,
-        /// Internal: spawn HTTP transport (used by enable/disable daemon)
+        sub: Option<ServiceLifecycle>,
+        /// (deprecated) Use 'mcp start' or 'mcp serve' instead
         #[arg(long, hide = true)]
         http: bool,
-        /// Internal: bind host for HTTP transport
+        /// Internal: bind host for background transport
         #[arg(long, default_value_t = String::from("127.0.0.1"), hide = true)]
         host: String,
-        /// Internal: bind port for HTTP transport
+        /// Internal: bind port for background transport
         #[arg(long, default_value_t = 43175, hide = true)]
         port: u16,
     },
@@ -193,70 +193,44 @@ pub enum GraphCommands {
 }
 
 #[derive(Subcommand)]
-pub enum McpCommands {
-    /// Start MCP HTTP daemon in background
+pub enum ServiceLifecycle {
+    /// Start daemon in background
     Start {
-        #[arg(long, default_value_t = String::from("127.0.0.1"))]
-        host: String,
-        #[arg(long, default_value_t = 43175)]
-        port: u16,
+        #[arg(long)]
+        host: Option<String>,
+        #[arg(long)]
+        port: Option<u16>,
     },
-    /// Stop running MCP HTTP daemon
+    /// Stop running daemon
     Stop,
-    /// Restart MCP HTTP daemon
+    /// Restart daemon
     Restart {
-        #[arg(long, default_value_t = String::from("127.0.0.1"))]
-        host: String,
-        #[arg(long, default_value_t = 43175)]
-        port: u16,
+        #[arg(long)]
+        host: Option<String>,
+        #[arg(long)]
+        port: Option<u16>,
     },
-    /// Show MCP daemon status
+    /// Show daemon status
     Status,
-    /// Register MCP as OS login service (macOS: launchd, Linux: systemd)
+    /// Register as OS login service (macOS: launchd, Linux: systemd)
     Enable {
         /// Start immediately after enabling
         #[arg(long)]
         now: bool,
     },
-    /// Unregister MCP OS login service
+    /// Unregister OS login service
     Disable {
         /// Stop immediately before disabling
         #[arg(long)]
         now: bool,
     },
-}
-
-#[derive(Subcommand)]
-pub enum ApiCommands {
-    /// Start REST API daemon in background
-    Start {
-        #[arg(long, default_value_t = String::from("0.0.0.0"))]
-        host: String,
-        #[arg(long, default_value_t = 8000)]
-        port: u16,
-    },
-    /// Stop running REST API daemon
-    Stop,
-    /// Restart REST API daemon
-    Restart {
-        #[arg(long, default_value_t = String::from("0.0.0.0"))]
-        host: String,
-        #[arg(long, default_value_t = 8000)]
-        port: u16,
-    },
-    /// Show REST API daemon status
-    Status,
-    /// Register REST API as OS login service (macOS: launchd)
-    Enable {
-        /// Start immediately after enabling
+    /// Internal use: run foreground server for background daemon
+    #[command(hide = true)]
+    Serve {
         #[arg(long)]
-        now: bool,
-    },
-    /// Unregister REST API OS login service
-    Disable {
-        /// Stop immediately before disabling
+        host: String,
         #[arg(long)]
-        now: bool,
+        port: u16,
     },
 }
 

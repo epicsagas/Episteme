@@ -18,6 +18,7 @@ pub enum ServiceOp {
     Serve {
         host: String,
         port: u16,
+        kind: ServiceKind,
     },
     Start {
         host: String,
@@ -53,7 +54,10 @@ pub enum ServiceOp {
 
 pub fn cmd_service(sub: ServiceOp) -> Result<()> {
     match sub {
-        ServiceOp::Serve { host, port } => cmd_mcp(true, &host, port),
+        ServiceOp::Serve { host, port, kind } => match kind {
+            ServiceKind::Mcp => cmd_mcp(true, &host, port),
+            ServiceKind::Api => cmd_api(&host, port),
+        },
         ServiceOp::Start { host, port, kind } => {
             let label = kind_label(kind);
             let pid = episteme::adapters::service::cmd_start(kind, &host, port)

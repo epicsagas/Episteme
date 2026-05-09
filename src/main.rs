@@ -9,8 +9,7 @@ mod commands;
 use episteme::adapters::service::ServiceKind;
 
 use cli::{
-    ApiCommands, Commands, GraphCommands, HooksCommands, InsightCommands, McpCommands,
-    ServiceCommands,
+    Commands, GraphCommands, HooksCommands, InsightCommands, ServiceCommands, ServiceLifecycle,
 };
 
 // ---------------------------------------------------------------------------
@@ -117,7 +116,7 @@ fn dispatch(cli: Cli) -> Result<()> {
         } => commands::cmd_dist(&out_dir, no_db, skip_build),
 
         Commands::Api { sub, host, port } => match sub {
-            Some(api_sub) => commands::cmd_service(api_service_op(api_sub)),
+            Some(api_sub) => commands::cmd_service(service_lifecycle_op(api_sub, ServiceKind::Api)),
             None => commands::cmd_api(&host, port),
         },
 
@@ -125,7 +124,7 @@ fn dispatch(cli: Cli) -> Result<()> {
             eprintln!(
                 "[deprecated] 'service' is deprecated, use 'mcp start/stop/restart/status/enable/disable' instead."
             );
-            commands::cmd_service(service_op(sub))
+            commands::cmd_service(legacy_service_op(sub))
         }
 
         Commands::Mcp {
@@ -134,7 +133,7 @@ fn dispatch(cli: Cli) -> Result<()> {
             host,
             port,
         } => match sub {
-            Some(mcp_sub) => commands::cmd_service(mcp_service_op(mcp_sub)),
+            Some(mcp_sub) => commands::cmd_service(service_lifecycle_op(mcp_sub, ServiceKind::Mcp)),
             None => commands::cmd_mcp(http, &host, port),
         },
 
@@ -180,10 +179,14 @@ fn graph_op(sub: GraphCommands) -> commands::GraphOp {
     }
 }
 
-fn service_op(sub: ServiceCommands) -> commands::ServiceOp {
+fn legacy_service_op(sub: ServiceCommands) -> commands::ServiceOp {
     // Legacy 'service' commands always target MCP.
     match sub {
-        ServiceCommands::Serve { host, port } => commands::ServiceOp::Serve { host, port },
+        ServiceCommands::Serve { host, port } => commands::ServiceOp::Serve {
+            host,
+            port,
+            kind: ServiceKind::Mcp,
+        },
         ServiceCommands::Start { host, port } => commands::ServiceOp::Start {
             host,
             port,
@@ -216,63 +219,38 @@ fn service_op(sub: ServiceCommands) -> commands::ServiceOp {
     }
 }
 
-fn mcp_service_op(sub: McpCommands) -> commands::ServiceOp {
+fn service_lifecycle_op(sub: ServiceLifecycle, kind: ServiceKind) -> commands::ServiceOp {
     match sub {
-        McpCommands::Start { host, port } => commands::ServiceOp::Start {
-            host,
-            port,
-            kind: ServiceKind::Mcp,
-        },
-        McpCommands::Stop => commands::ServiceOp::Stop {
-            kind: ServiceKind::Mcp,
-        },
-        McpCommands::Restart { host, port } => commands::ServiceOp::Restart {
-            host,
-            port,
-            kind: ServiceKind::Mcp,
-        },
-        McpCommands::Status => commands::ServiceOp::Status {
-            kind: ServiceKind::Mcp,
-        },
-        McpCommands::Enable { now } => commands::ServiceOp::Enable {
-            now,
-            kind: ServiceKind::Mcp,
-        },
-        McpCommands::Disable { now } => commands::ServiceOp::Disable {
-            now,
-            kind: ServiceKind::Mcp,
-        },
+        ServiceLifecycle::Start { host, port } => {
+            let (def_host, def_port) = match kind {
+                ServiceKind::Mcp => ("127.0.0.1", 43175),
+                ServiceKind::Api => ("0.0.0.0", 8000),
+            };
+            commands::ServiceOp::Start {
+                host: host.unwrap_or_else(|| def_host.to_string()),
+                port: port.unwrap_or(def_port),
+                kind,
+            }
+        }
+        ServiceLifecycle::Stop => commands::ServiceOp::Stop { kind },
+        ServiceLifecycle::Restart { host, port } => {
+            let (def_host, def_port) = match kind {
+                ServiceKind::Mcp => ("127.0.0.1", 43175),
+                ServiceKind::Api => ("0.0.0.0", 8000),
+            };
+            commands::ServiceOp::Restart {
+                host: host.unwrap_or_else(|| def_host.to_string()),
+                port: port.unwrap_or(def_port),
+                kind,
+            }
+        }
+        ServiceLifecycle::Status => commands::ServiceOp::Status { kind },
+        ServiceLifecycle::Enable { now } => commands::ServiceOp::Enable { now, kind },
+        ServiceLifecycle::Disable { now } => commands::ServiceOp::Disable { now, kind },
+        ServiceLifecycle::Serve { host, port } => commands::ServiceOp::Serve { host, port, kind },
     }
 }
 
-fn api_service_op(sub: ApiCommands) -> commands::ServiceOp {
-    match sub {
-        ApiCommands::Start { host, port } => commands::ServiceOp::Start {
-            host,
-            port,
-            kind: ServiceKind::Api,
-        },
-        ApiCommands::Stop => commands::ServiceOp::Stop {
-            kind: ServiceKind::Api,
-        },
-        ApiCommands::Restart { host, port } => commands::ServiceOp::Restart {
-            host,
-            port,
-            kind: ServiceKind::Api,
-        },
-        ApiCommands::Status => commands::ServiceOp::Status {
-            kind: ServiceKind::Api,
-        },
-        ApiCommands::Enable { now } => commands::ServiceOp::Enable {
-            now,
-            kind: ServiceKind::Api,
-        },
-        ApiCommands::Disable { now } => commands::ServiceOp::Disable {
-            now,
-            kind: ServiceKind::Api,
-        },
-    }
-}
 
 fn hooks_op(sub: HooksCommands) -> commands::HooksOp {
     match sub {
