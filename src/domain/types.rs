@@ -594,50 +594,114 @@ mod tests {
 
     #[test]
     fn smell_temporary_field_from_str() {
-        assert_eq!("Temporary Field".parse::<SmellType>().unwrap(), SmellType::TemporaryField);
-        assert_eq!("TemporaryField".parse::<SmellType>().unwrap(), SmellType::TemporaryField);
-        assert_eq!("temporary_field".parse::<SmellType>().unwrap(), SmellType::TemporaryField);
+        assert_eq!(
+            "Temporary Field".parse::<SmellType>().unwrap(),
+            SmellType::TemporaryField
+        );
+        assert_eq!(
+            "TemporaryField".parse::<SmellType>().unwrap(),
+            SmellType::TemporaryField
+        );
+        assert_eq!(
+            "temporary_field".parse::<SmellType>().unwrap(),
+            SmellType::TemporaryField
+        );
     }
 
     #[test]
     fn smell_parallel_inheritance_from_str() {
-        assert_eq!("Parallel Inheritance Hierarchies".parse::<SmellType>().unwrap(), SmellType::ParallelInheritance);
-        assert_eq!("ParallelInheritance".parse::<SmellType>().unwrap(), SmellType::ParallelInheritance);
-        assert_eq!("parallel_inheritance".parse::<SmellType>().unwrap(), SmellType::ParallelInheritance);
+        assert_eq!(
+            "Parallel Inheritance Hierarchies"
+                .parse::<SmellType>()
+                .unwrap(),
+            SmellType::ParallelInheritance
+        );
+        assert_eq!(
+            "ParallelInheritance".parse::<SmellType>().unwrap(),
+            SmellType::ParallelInheritance
+        );
+        assert_eq!(
+            "parallel_inheritance".parse::<SmellType>().unwrap(),
+            SmellType::ParallelInheritance
+        );
     }
 
     #[test]
     fn smell_comments_from_str() {
-        assert_eq!("Comments".parse::<SmellType>().unwrap(), SmellType::Comments);
-        assert_eq!("comments".parse::<SmellType>().unwrap(), SmellType::Comments);
+        assert_eq!(
+            "Comments".parse::<SmellType>().unwrap(),
+            SmellType::Comments
+        );
+        assert_eq!(
+            "comments".parse::<SmellType>().unwrap(),
+            SmellType::Comments
+        );
     }
 
     #[test]
     fn smell_dead_code_from_str() {
-        assert_eq!("Dead Code".parse::<SmellType>().unwrap(), SmellType::DeadCode);
-        assert_eq!("DeadCode".parse::<SmellType>().unwrap(), SmellType::DeadCode);
-        assert_eq!("dead_code".parse::<SmellType>().unwrap(), SmellType::DeadCode);
+        assert_eq!(
+            "Dead Code".parse::<SmellType>().unwrap(),
+            SmellType::DeadCode
+        );
+        assert_eq!(
+            "DeadCode".parse::<SmellType>().unwrap(),
+            SmellType::DeadCode
+        );
+        assert_eq!(
+            "dead_code".parse::<SmellType>().unwrap(),
+            SmellType::DeadCode
+        );
     }
 
     #[test]
     fn smell_inappropriate_intimacy_from_str() {
-        assert_eq!("Inappropriate Intimacy".parse::<SmellType>().unwrap(), SmellType::InappropriateIntimacy);
-        assert_eq!("InappropriateIntimacy".parse::<SmellType>().unwrap(), SmellType::InappropriateIntimacy);
-        assert_eq!("inappropriate_intimacy".parse::<SmellType>().unwrap(), SmellType::InappropriateIntimacy);
+        assert_eq!(
+            "Inappropriate Intimacy".parse::<SmellType>().unwrap(),
+            SmellType::InappropriateIntimacy
+        );
+        assert_eq!(
+            "InappropriateIntimacy".parse::<SmellType>().unwrap(),
+            SmellType::InappropriateIntimacy
+        );
+        assert_eq!(
+            "inappropriate_intimacy".parse::<SmellType>().unwrap(),
+            SmellType::InappropriateIntimacy
+        );
     }
 
     #[test]
     fn smell_refused_bequest_from_str() {
-        assert_eq!("Refused Bequest".parse::<SmellType>().unwrap(), SmellType::RefusedBequest);
-        assert_eq!("RefusedBequest".parse::<SmellType>().unwrap(), SmellType::RefusedBequest);
-        assert_eq!("refused_bequest".parse::<SmellType>().unwrap(), SmellType::RefusedBequest);
+        assert_eq!(
+            "Refused Bequest".parse::<SmellType>().unwrap(),
+            SmellType::RefusedBequest
+        );
+        assert_eq!(
+            "RefusedBequest".parse::<SmellType>().unwrap(),
+            SmellType::RefusedBequest
+        );
+        assert_eq!(
+            "refused_bequest".parse::<SmellType>().unwrap(),
+            SmellType::RefusedBequest
+        );
     }
 
     #[test]
     fn smell_alternative_classes_from_str() {
-        assert_eq!("Alternative Classes with Different Interfaces".parse::<SmellType>().unwrap(), SmellType::AlternativeClasses);
-        assert_eq!("AlternativeClasses".parse::<SmellType>().unwrap(), SmellType::AlternativeClasses);
-        assert_eq!("alternative_classes".parse::<SmellType>().unwrap(), SmellType::AlternativeClasses);
+        assert_eq!(
+            "Alternative Classes with Different Interfaces"
+                .parse::<SmellType>()
+                .unwrap(),
+            SmellType::AlternativeClasses
+        );
+        assert_eq!(
+            "AlternativeClasses".parse::<SmellType>().unwrap(),
+            SmellType::AlternativeClasses
+        );
+        assert_eq!(
+            "alternative_classes".parse::<SmellType>().unwrap(),
+            SmellType::AlternativeClasses
+        );
     }
 
     // -- RelationType: new variants Display/FromStr -----------------------
@@ -654,44 +718,68 @@ mod tests {
 
     #[test]
     fn relation_enforced_by_from_str() {
-        assert_eq!("enforced_by".parse::<RelationType>().unwrap(), RelationType::EnforcedBy);
+        assert_eq!(
+            "enforced_by".parse::<RelationType>().unwrap(),
+            RelationType::EnforcedBy
+        );
     }
 
     #[test]
     fn relation_violated_by_from_str() {
-        assert_eq!("violated_by".parse::<RelationType>().unwrap(), RelationType::ViolatedBy);
+        assert_eq!(
+            "violated_by".parse::<RelationType>().unwrap(),
+            RelationType::ViolatedBy
+        );
     }
 
     // -- RelationType::inverse_of -----------------------------------------
 
     #[test]
     fn inverse_of_solves() {
-        assert_eq!(RelationType::Solves.inverse_of(), Some(RelationType::SolvedBy));
+        assert_eq!(
+            RelationType::Solves.inverse_of(),
+            Some(RelationType::SolvedBy)
+        );
     }
 
     #[test]
     fn inverse_of_solved_by() {
-        assert_eq!(RelationType::SolvedBy.inverse_of(), Some(RelationType::Solves));
+        assert_eq!(
+            RelationType::SolvedBy.inverse_of(),
+            Some(RelationType::Solves)
+        );
     }
 
     #[test]
     fn inverse_of_enforces() {
-        assert_eq!(RelationType::Enforces.inverse_of(), Some(RelationType::EnforcedBy));
+        assert_eq!(
+            RelationType::Enforces.inverse_of(),
+            Some(RelationType::EnforcedBy)
+        );
     }
 
     #[test]
     fn inverse_of_violates() {
-        assert_eq!(RelationType::Violates.inverse_of(), Some(RelationType::ViolatedBy));
+        assert_eq!(
+            RelationType::Violates.inverse_of(),
+            Some(RelationType::ViolatedBy)
+        );
     }
 
     #[test]
     fn inverse_of_enforced_by() {
-        assert_eq!(RelationType::EnforcedBy.inverse_of(), Some(RelationType::Enforces));
+        assert_eq!(
+            RelationType::EnforcedBy.inverse_of(),
+            Some(RelationType::Enforces)
+        );
     }
 
     #[test]
     fn inverse_of_violated_by() {
-        assert_eq!(RelationType::ViolatedBy.inverse_of(), Some(RelationType::Violates));
+        assert_eq!(
+            RelationType::ViolatedBy.inverse_of(),
+            Some(RelationType::Violates)
+        );
     }
 
     #[test]

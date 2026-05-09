@@ -175,7 +175,11 @@ pub fn cmd_web(host: &str, port: u16) -> Result<()> {
     })
 }
 
-fn build_mcp(graph: episteme::domain::graph::KnowledgeGraph) -> EpistemeMCP {
+/// Build an [`EpistemeMCP`] handler from a knowledge graph.
+///
+/// Attempts to open the user knowledge database for composite graph support.
+/// Falls back to a basic handler if the database is unavailable.
+pub fn build_mcp(graph: episteme::domain::graph::KnowledgeGraph) -> EpistemeMCP {
     let db_path = paths::episteme_home().join("user_knowledge.db");
     match UserGraphStore::open(&db_path) {
         Ok(store) => {
