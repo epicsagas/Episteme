@@ -14,9 +14,11 @@
 
   let items: FeedItem[] = $state([]);
   let loading = $state(false);
+  let feedError: string | null = $state(null);
 
   async function loadRecent() {
     loading = true;
+    feedError = null;
     try {
       const res = await search(getBaseUrl(), '*', 8);
       items = res.results.map((r) => ({
@@ -25,8 +27,8 @@
         type: r.type,
         category: r.category,
       }));
-    } catch {
-      // fallback to empty
+    } catch (e) {
+      feedError = e instanceof Error ? e.message : 'Failed to load recent entities';
     } finally {
       loading = false;
     }
@@ -46,6 +48,9 @@
   </div>
 
   <div class="flex-1 overflow-y-auto">
+    {#if feedError}
+      <div class="p-4 text-xs text-[var(--color-error)]">{feedError}</div>
+    {:else}
     <table class="w-full text-left text-sm border-collapse">
       <thead class="sticky top-0 bg-[var(--color-surface-container-high)] z-10">
         <tr class="border-b border-[var(--color-outline-variant)]">
@@ -70,5 +75,6 @@
         {/each}
       </tbody>
     </table>
+    {/if}
   </div>
 </div>

@@ -5,8 +5,8 @@
   import Badge from '../ui/Badge.svelte';
   import Skeleton from '../ui/Skeleton.svelte';
   import EmptyState from '../ui/EmptyState.svelte';
-  import { ENTITY_TYPE_ICONS, ENTITY_TYPE_COLORS, ENTITY_TYPE_LABELS } from '../api/types.ts';
-  import type { TreeNode, EntityType, SchemaRelationType, SchemaDataSource } from '../api/types.ts';
+  import { ENTITY_TYPE_ICONS, ENTITY_TYPE_COLORS, ENTITY_TYPE_LABELS, RELATION_TYPE_COLORS, RELATION_DESCRIPTIONS, DATA_SOURCES, ENTITY_TYPE_HEX_COLORS } from '../api/types.ts';
+  import type { TreeNode, EntityType, SchemaRelationType } from '../api/types.ts';
   import { navigate } from '../router/index.svelte.ts';
 
   let trees: TreeNode[] = $state([]);
@@ -14,7 +14,7 @@
   let error: string | null = $state(null);
   let expandedTypes = $state<Set<string>>(new Set());
   let relationTypes: SchemaRelationType[] = $state([]);
-  let dataSources: SchemaDataSource[] = $state([]);
+  let schemaEntityCounts: Map<string, number> = $state(new Map());
 
   onMount(async () => {
     try {
@@ -25,7 +25,7 @@
       ]);
       trees = treeRes.tree;
       relationTypes = schema.relation_types;
-      dataSources = schema.data_sources;
+      schemaEntityCounts = new Map(schema.entity_types.map(e => [e.key, e.count]));
       expandedTypes = new Set(trees.map(t => t.type));
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to load ontology';
@@ -142,10 +142,10 @@
           <div class="space-y-2">
             {#each relationTypes as rel}
               <div class="flex items-start gap-3 py-1.5">
-                <div class="w-5 h-1 rounded-full mt-1.5 shrink-0" style="background: {rel.color}"></div>
+                <div class="w-5 h-1 rounded-full mt-1.5 shrink-0" style="background: {RELATION_TYPE_COLORS[rel.key] || '#78909c'}"></div>
                 <div>
                   <p class="text-xs font-mono font-bold text-[var(--color-on-surface)]">{rel.key}</p>
-                  <p class="text-[10px] text-[var(--color-on-surface-variant)]">{rel.description}</p>
+                  <p class="text-[10px] text-[var(--color-on-surface-variant)]">{RELATION_DESCRIPTIONS[rel.key] || ''}</p>
                 </div>
               </div>
             {/each}
@@ -159,12 +159,12 @@
             Data Sources
           </h3>
           <div class="space-y-3">
-            {#each dataSources as source}
+            {#each DATA_SOURCES as source}
               <div class="flex items-center gap-3 py-1">
                 <span class="material-symbols-outlined text-sm text-[var(--color-on-surface-variant)]">{source.icon}</span>
                 <div class="flex-1 min-w-0">
                   <span class="text-sm text-[var(--color-on-surface)]">{source.name}</span>
-                  <span class="text-[10px] text-[var(--color-on-surface-variant)] ml-1">({source.count})</span>
+                  <span class="text-[10px] text-[var(--color-on-surface-variant)] ml-1">({schemaEntityCounts.get(source.entityType) || 0})</span>
                 </div>
               </div>
             {/each}

@@ -147,7 +147,7 @@ export const ENTITY_TYPE_COLORS: Record<EntityType, string> = {
   insight: 'var(--color-insight)',
 };
 
-export const ENTITY_TYPE_HEX_COLORS: Record<string, string> = {
+export const ENTITY_TYPE_HEX_COLORS: Record<EntityType, string> = {
   pattern: '#4caf50',
   refactoring: '#2196f3',
   law: '#ff9800',
@@ -167,31 +167,52 @@ export const ENTITY_TYPE_ICONS: Record<EntityType, string> = {
 
 export interface SchemaEntityType {
   key: string;
-  label: string;
-  prefix: string;
-  color: string;
-  icon: string;
   count: number;
 }
 
 export interface SchemaRelationType {
   key: string;
-  color: string;
-  description: string;
   inverse: string | null;
-}
-
-export interface SchemaDataSource {
-  name: string;
-  icon: string;
-  count: number;
 }
 
 export interface SchemaResponse {
   entity_types: SchemaEntityType[];
   relation_types: SchemaRelationType[];
-  data_sources: SchemaDataSource[];
 }
+
+export const RELATION_TYPE_COLORS: Record<string, string> = {
+  solves: '#66bb6a',
+  solved_by: '#81c784',
+  enforces: '#42a5f5',
+  enforced_by: '#64b5f6',
+  violates: '#ef5350',
+  violated_by: '#e57373',
+  related_to: '#78909c',
+  derives_from: '#9575cd',
+  applies_to: '#4db6ac',
+  supersedes: '#ff8a65',
+};
+
+export const RELATION_DESCRIPTIONS: Record<string, string> = {
+  solves: 'Pattern/Refactoring solves a Smell',
+  solved_by: 'Smell is solved by a Pattern/Refactoring',
+  enforces: 'Pattern enforces a Law',
+  enforced_by: 'Law is enforced by a Pattern',
+  violates: 'Pattern violates a Law',
+  violated_by: 'Law is violated by a Smell/Anti-pattern',
+  related_to: 'General relationship',
+  derives_from: 'Derived from another concept',
+  applies_to: 'Applies to a context',
+  supersedes: 'Supersedes an older concept',
+};
+
+export const DATA_SOURCES: Array<{ name: string; icon: string; entityType: EntityType }> = [
+  { name: 'GoF Design Patterns', icon: 'menu_book', entityType: 'pattern' },
+  { name: 'Refactoring Catalog (Fowler)', icon: 'auto_fix_high', entityType: 'refactoring' },
+  { name: 'Software Laws & Principles', icon: 'gavel', entityType: 'law' },
+  { name: 'Code Smells Catalog', icon: 'warning', entityType: 'smell' },
+  { name: 'Tacit Knowledge Insights', icon: 'lightbulb', entityType: 'insight' },
+];
 
 // Insight creation types
 

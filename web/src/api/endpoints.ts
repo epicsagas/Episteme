@@ -56,8 +56,8 @@ export function getContradictions(baseUrl: string): Promise<Array<{ entity_id: s
 }
 
 // Web Viewer API (port 8080)
-export function getFullGraph(webUrl: string): Promise<CytoscapeGraph> {
-  return apiGet<CytoscapeGraph>(webUrl, '/api/graph/full');
+export function getFullGraph(webUrl: string, signal?: AbortSignal): Promise<CytoscapeGraph> {
+  return apiGet<CytoscapeGraph>(webUrl, '/api/graph/full', signal);
 }
 
 export function getTree(webUrl: string): Promise<{ tree: TreeNode[] }> {

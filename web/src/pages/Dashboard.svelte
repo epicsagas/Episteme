@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { loadStats, getStats, getError } from '../stores/stats.svelte.ts';
   import { getStatus } from '../stores/connection.svelte.ts';
   import HeroMetrics from '../dashboard/HeroMetrics.svelte';
@@ -10,10 +9,6 @@
   let stats = $derived(getStats());
   let status = $derived(getStatus());
   let error = $derived(getError());
-
-  onMount(() => {
-    if (status === 'connected') loadStats();
-  });
 
   $effect(() => {
     if (status === 'connected' && !stats) loadStats();

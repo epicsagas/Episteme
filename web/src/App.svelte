@@ -23,7 +23,7 @@
         // Not running in Tauri — use defaults and resolve ready immediately
         markReady();
       }
-      checkHealth();
+      await checkHealth();
     })();
 
     function handleKeydown(e: KeyboardEvent) {

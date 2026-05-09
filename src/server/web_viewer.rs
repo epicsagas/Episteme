@@ -204,6 +204,8 @@ async fn entities_search(
 // ---------------------------------------------------------------------------
 
 /// GET /api/graph/schema -- entity types, relation types, and data sources with counts.
+///
+/// Returns type keys and counts only. Colors/icons/labels are the frontend's concern.
 async fn graph_schema(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Value> {
     let graph = mcp.graph();
 
@@ -225,39 +227,32 @@ async fn graph_schema(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::V
     let insight_count = mcp.user_entity_count();
     type_counts.entry("insight".to_owned()).or_insert(insight_count);
 
-    let entity_types = serde_json::json!([
-        { "key": "pattern", "label": "Design Patterns", "prefix": "DP-", "color": "#4caf50", "icon": "design_services", "count": type_counts.get("pattern").copied().unwrap_or(0) },
-        { "key": "refactoring", "label": "Refactorings", "prefix": "RF-", "color": "#2196f3", "icon": "build", "count": type_counts.get("refactoring").copied().unwrap_or(0) },
-        { "key": "law", "label": "Laws & Principles", "prefix": "LAW-", "color": "#ff9800", "icon": "gavel", "count": type_counts.get("law").copied().unwrap_or(0) },
-        { "key": "smell", "label": "Code Smells", "prefix": "SMELL-", "color": "#f44336", "icon": "warning", "count": type_counts.get("smell").copied().unwrap_or(0) },
-        { "key": "insight", "label": "Insights", "prefix": "TK-", "color": "#ab47bc", "icon": "lightbulb", "count": type_counts.get("insight").copied().unwrap_or(0) },
-    ]);
+    let entity_types: Vec<serde_json::Value> = type_counts
+        .iter()
+        .map(|(t, count)| {
+            serde_json::json!({
+                "key": t,
+                "count": count,
+            })
+        })
+        .collect();
 
     let relation_types = serde_json::json!([
-        { "key": "solves", "color": "#66bb6a", "description": "Pattern/Refactoring solves a Smell", "inverse": "solved_by" },
-        { "key": "solved_by", "color": "#81c784", "description": "Smell is solved by a Pattern/Refactoring", "inverse": "solves" },
-        { "key": "enforces", "color": "#42a5f5", "description": "Pattern enforces a Law", "inverse": "enforced_by" },
-        { "key": "enforced_by", "color": "#64b5f6", "description": "Law is enforced by a Pattern", "inverse": "enforces" },
-        { "key": "violates", "color": "#ef5350", "description": "Pattern violates a Law", "inverse": "violated_by" },
-        { "key": "violated_by", "color": "#e57373", "description": "Law is violated by a Smell/Anti-pattern", "inverse": "violates" },
-        { "key": "related_to", "color": "#78909c", "description": "General relationship", "inverse": null },
-        { "key": "derives_from", "color": "#9575cd", "description": "Derived from another concept", "inverse": null },
-        { "key": "applies_to", "color": "#4db6ac", "description": "Applies to a context", "inverse": null },
-        { "key": "supersedes", "color": "#ff8a65", "description": "Supersedes an older concept", "inverse": null }
-    ]);
-
-    let data_sources = serde_json::json!([
-        { "name": "GoF Design Patterns", "icon": "menu_book", "count": type_counts.get("pattern").copied().unwrap_or(0) },
-        { "name": "Refactoring Catalog (Fowler)", "icon": "auto_fix_high", "count": type_counts.get("refactoring").copied().unwrap_or(0) },
-        { "name": "Software Laws & Principles", "icon": "gavel", "count": type_counts.get("law").copied().unwrap_or(0) },
-        { "name": "Code Smells Catalog", "icon": "warning", "count": type_counts.get("smell").copied().unwrap_or(0) },
-        { "name": "Tacit Knowledge Insights", "icon": "lightbulb", "count": type_counts.get("insight").copied().unwrap_or(0) }
+        { "key": "solves", "inverse": "solved_by" },
+        { "key": "solved_by", "inverse": "solves" },
+        { "key": "enforces", "inverse": "enforced_by" },
+        { "key": "enforced_by", "inverse": "enforces" },
+        { "key": "violates", "inverse": "violated_by" },
+        { "key": "violated_by", "inverse": "violates" },
+        { "key": "related_to", "inverse": null },
+        { "key": "derives_from", "inverse": null },
+        { "key": "applies_to", "inverse": null },
+        { "key": "supersedes", "inverse": null }
     ]);
 
     Json(serde_json::json!({
         "entity_types": entity_types,
         "relation_types": relation_types,
-        "data_sources": data_sources,
     }))
 }
 

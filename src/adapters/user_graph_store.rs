@@ -110,9 +110,14 @@ fn init_schema(conn: &Connection) -> Result<(), String> {
     .map_err(|e| format!("user graph schema init: {e}"))?;
 
     // Migrations: add columns that may not exist in older databases
-    let _: Result<(), _> = conn.execute_batch(
+    if let Err(e) = conn.execute_batch(
         "ALTER TABLE user_entities ADD COLUMN link_provenance TEXT NOT NULL DEFAULT '{}'",
-    );
+    ) {
+        let msg = e.to_string();
+        if !msg.contains("duplicate column") {
+            return Err(format!("migration link_provenance: {msg}"));
+        }
+    }
 
     Ok(())
 }
