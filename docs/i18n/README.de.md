@@ -268,16 +268,30 @@ epis explore "strategy pattern"    # den Wissensgraph erkunden
 
 > **Was ist MCP?** Das [Model Context Protocol](https://modelcontextprotocol.io) ist ein offener Standard, der es KI-Werkzeugen ermoeglicht, externe Dienste aufzurufen. Episteme stellt seinen Wissensgraph als MCP-Werkzeuge bereit, die Claude Code, Cursor und andere kompatible Editoren automatisch aufrufen koennen.
 
-### 6 MCP-Werkzeuge
+### 9 MCP-Werkzeuge
+
+#### Kanonisches Wissen (6 Werkzeuge)
 
 | Werkzeug | Zweck | Anwendungsbeispiel |
 |------|---------|-------------|
 | **`search_knowledge`** | Semantische Suche ueber alle Entitaeten | "Muster fuer Retry-Logik finden" |
-| **`get_entity`** | Details fuer eine bestimmte Entitaet nach ID | "Strategy Pattern (DP-023) erklaeren" |
+| **`get_entity`** | Details einer bestimmten Entitaet nach ID | "Strategy Pattern (DP-023) erklaeren" |
 | **`get_neighbors`** | Verwandte Entitaeten erkunden | "Welche Refactorings loesen Long Method?" |
 | **`find_path`** | Verbindung zwischen zwei Entitaeten finden | "Wie haengt SRP mit Extract Class zusammen?" |
-| **`analyze_code`** | Code Smells ueber Regex/AST-Analyse erkennen | "Diesen Zahlungsvalidierungscode pruefen" |
+| **`analyze_code`** | Code-Smells via Regex/AST erkennen | "Diesen Zahlungsvalidierungscode pruefen" |
 | **`suggest_refactorings`** | Bewertete Refactoring-Vorschlaege | "Was sollte ich in dieser Klasse refactoren?" |
+
+#### Implizites Wissen (3 Werkzeuge)
+
+| Werkzeug | Zweck | Anwendungsbeispiel |
+|------|---------|-------------|
+| **`add_insight`** | Teamentscheidungen und Lessons Learned erfassen | "Event-getrieben statt Polling aus Gruenden X gewaehlt" |
+| **`search_insights`** | Frueheres Teamwissen durchsuchen | "Was haben wir zur Auth-Middleware entschieden?" |
+| **`confirm_links`** | Automatisch erkannte Links zu kanonischen Entitaeten validieren | Bestaetigen, dass TK-001 mit SMELL-03 verknuepft ist |
+
+Episteme speichert implizites Wissen in einer separaten Datenbank (`~/.episteme/user_knowledge.db`) und fuegt es zur Laufzeit ueber eine Composite-Schicht mit dem kanonischen Graphen zusammen. Team-Einblicke werden automatisch mit Mustern, Gesetzen und Smells verknuepft — Erfahrung wird zu durchsuchbarem Wissen.
+
+Siehe [Architektur des impliziten Wissens](../../docs/tacit-knowledge.md) fuer das vollstaendige Design.
 
 ### 4 Spezialisierte Agenten (Vernetztes System)
 
@@ -330,7 +344,7 @@ episteme dist --out-dir release/
 | ⚖️ | **56 Software-Gesetze & Prinzipien** | SOLID, Conways Gesetz, CAP-Theorem u.a. |
 | 👃 | **17 Code-Smell-Typen** | Long Method, God Object, Feature Envy u.a. ¹ |
 | 🔗 | **201 semantische Beziehungen** | „löst", „erzwingt", „verletzt", „hängt zusammen mit" |
-| 🤖 | **6 MCP-Tools + 4 Agenten** | Hochwertige KI-Agenten-Interaktion mit Agenten-Übergaben |
+| 🤖 | **9 MCP-Tools + 4 Agenten** | Hochwertige KI-Agenten-Interaktion mit Agenten-Übergaben |
 | 🌍 | **10 Sprachunterstützung** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
 | 📊 | **Deterministische Analyse** | AST-basiertes Python + Regex-Multilanguage, jedes Mal gleiches Ergebnis |
 | 🏷️ | **Zitierbares Wissen** | Jeder Fund verweist auf explizite Entitäts-IDs (`RF-001`, `LAW-021`) |

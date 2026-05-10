@@ -268,16 +268,30 @@ epis explore "strategy pattern"    # 探索知識圖譜
 
 > **什麼是 MCP？** [Model Context Protocol](https://modelcontextprotocol.io) 是一個開放標準，讓 AI 工具能呼叫外部服務。Episteme 將其知識圖譜暴露為 MCP 工具，Claude Code、Cursor 及其他相容編輯器可以自動呼叫。
 
-### 6 個 MCP 工具
+### 9 個 MCP 工具
+
+#### 規範知識（6 個工具）
 
 | 工具 | 用途 | 使用範例 |
-|------|------|----------|
-| **`search_knowledge`** | 跨所有實體的語意搜尋 | 「尋找重試邏輯的模式」 |
-| **`get_entity`** | 透過 ID 取得特定實體的詳細資訊 | 「解釋策略模式 (DP-023)」 |
-| **`get_neighbors`** | 探索相關實體 | 「哪些重構方法可以解決 Long Method？」 |
-| **`find_path`** | 尋找兩個實體之間的連結 | 「SRP 與 Extract Class 有什麼關係？」 |
-| **`analyze_code`** | 透過 regex/AST 分析偵測程式碼壞味道 | 「審查這段付款驗證程式碼」 |
-| **`suggest_refactorings`** | 排序後的重構建議 | 「這個類別應該重構什麼？」 |
+|------|---------|-------------|
+| **`search_knowledge`** | 跨所有實體的語義搜尋 | "尋找重試邏輯的模式" |
+| **`get_entity`** | 按ID取得特定實體詳情 | "解釋策略模式 (DP-023)" |
+| **`get_neighbors`** | 探索相關實體 | "哪些重構能解決長方法？" |
+| **`find_path`** | 尋找兩個實體之間的連接 | "SRP與提取類有何關係？" |
+| **`analyze_code`** | 透過正則/AST分析檢測程式碼異味 | "審查此付款驗證程式碼" |
+| **`suggest_refactorings`** | 排序後的重構建議 | "這個類別應該重構什麼？" |
+
+#### 隱性知識（3 個工具）
+
+| 工具 | 用途 | 使用範例 |
+|------|---------|-------------|
+| **`add_insight`** | 記錄團隊決策、經驗教訓 | "選擇事件驅動而非輪詢的原因" |
+| **`search_insights`** | 搜尋過去的團隊知識 | "我們對認證中介軟體做了什麼決定？" |
+| **`confirm_links`** | 驗證自動偵測到的規範實體連結 | 確認 TK-001 與 SMELL-03 相關聯 |
+
+Episteme 將隱性知識儲存在獨立的資料庫（`~/.episteme/user_knowledge.db`）中，並在執行時透過組合層與規範圖合併。團隊洞察會自動連結到模式、法則和異味，將經驗轉化為可導航的知識。
+
+完整設計請參閱[隱性知識架構](../../docs/tacit-knowledge.md)。
 
 ### 4 個專用代理（互聯網路）
 
@@ -330,7 +344,7 @@ episteme dist --out-dir release/
 | ⚖️ | **56條軟體定律與原則** | SOLID、康威定律、CAP定理等 |
 | 👃 | **17種程式碼異味類型** | Long Method、God Object、Feature Envy等 ¹ |
 | 🔗 | **201條語意關係** | 「解決」、「強制」、「違反」、「關聯」 |
-| 🤖 | **6個MCP工具 + 4個代理** | 高保真AI代理互動，支援代理間交接 |
+| 🤖 | **9個MCP工具 + 4個代理** | 高保真AI代理互動，支援代理間交接 |
 | 🌍 | **10種語言支援** | Python（AST）、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin |
 | 📊 | **確定性分析** | 基於AST的Python + 正規表示式多語言，每次結果一致 |
 | 🏷️ | **可引用的知識** | 每個發現都連結到明確的實體ID（`RF-001`、`LAW-021`） |

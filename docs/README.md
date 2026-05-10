@@ -7,6 +7,7 @@
 
 ## Integration
 - [mcp-integration-guide.md](mcp-integration-guide.md) - MCP tools, agents, configuration
+- [tacit-knowledge.md](tacit-knowledge.md) - Two-database architecture, insight lifecycle, schema
 - [api.md](api.md) - REST API reference (17 endpoints, auth, rate limiting)
 - [distribution.md](distribution.md) - Release packaging (`episteme dist`)
 

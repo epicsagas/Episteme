@@ -280,7 +280,9 @@ epis explore "strategy pattern"    # explore the knowledge graph
 
 > **What is MCP?** The [Model Context Protocol](https://modelcontextprotocol.io) is an open standard that lets AI tools call external services. Episteme exposes its knowledge graph as MCP tools that Claude Code, Cursor, and other compatible editors can call automatically.
 
-### 6 MCP Tools
+### 9 MCP Tools
+
+#### Canonical Knowledge (6 tools)
 
 | Tool | Purpose | Example Use |
 |------|---------|-------------|
@@ -290,6 +292,18 @@ epis explore "strategy pattern"    # explore the knowledge graph
 | **`find_path`** | Find connection between two entities | "How does SRP relate to Extract Class?" |
 | **`analyze_code`** | Detect code smells via regex/AST analysis | "Review this payment validation code" |
 | **`suggest_refactorings`** | Ranked refactoring suggestions | "What should I refactor in this class?" |
+
+#### Tacit Knowledge (3 tools)
+
+| Tool | Purpose | Example Use |
+|------|---------|-------------|
+| **`add_insight`** | Record team decisions, lessons learned | "We chose event-driven over polling for X reason" |
+| **`search_insights`** | Search past team knowledge | "What did we decide about auth middleware?" |
+| **`confirm_links`** | Validate auto-detected links to canonical entities | Confirm TK-001 relates to SMELL-03 |
+
+Episteme stores tacit knowledge in a separate database (`~/.episteme/user_knowledge.db`) and merges it with the canonical graph at runtime via a composite layer. Team insights get auto-linked to patterns, laws, and smells — turning experience into traversable knowledge.
+
+See [Tacit Knowledge Architecture](docs/tacit-knowledge.md) for the full design.
 
 ### 4 Specialized Agents (Connected Network)
 
@@ -342,7 +356,7 @@ episteme dist --out-dir release/
 | ⚖️ | **56 Software Laws & Principles** | SOLID, Conway's Law, CAP Theorem, etc. |
 | 👃 | **17 Code Smell Types** | Long Method, God Object, Feature Envy, etc. ¹ |
 | 🔗 | **201 Semantic Relations** | "solves", "enforces", "violates", "relates_to" |
-| 🤖 | **6 MCP Tools + 4 Agents** | High-fidelity AI agent interaction with cross-agent handoffs |
+| 🤖 | **9 MCP Tools + 4 Agents** | High-fidelity AI agent interaction with cross-agent handoffs |
 | 🌍 | **10 Language Support** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
 | 📊 | **Deterministic Analysis** | AST-based Python + regex multi-language, same result every time |
 | 🏷️ | **Citable Knowledge** | Every finding links to explicit entity IDs (`RF-001`, `LAW-021`) |
@@ -361,6 +375,7 @@ episteme dist --out-dir release/
 |----------|-------------|
 | [Quick Start](QUICKSTART.md) | Step-by-step setup, first run, troubleshooting |
 | [MCP Integration Guide](docs/mcp-integration-guide.md) | Tool reference, agent examples, conversation flows |
+| [Tacit Knowledge Architecture](docs/tacit-knowledge.md) | Two-database design, insight lifecycle, schema |
 | [API Reference](docs/api.md) | REST endpoints, authentication, examples |
 | [Distribution](docs/distribution.md) | Release packaging and deployment |
 | [Development & Contributing](DEVELOPMENT.md) | Architecture, how to contribute |

@@ -266,7 +266,9 @@ epis explore "strategy pattern"    # 지식 그래프 탐색
 
 > **MCP란?** [Model Context Protocol](https://modelcontextprotocol.io)은 AI 도구가 외부 서비스를 호출할 수 있게 하는 개방형 표준입니다. Episteme는 지식 그래프를 Claude Code, Cursor 및 기타 호환 편집기가 자동으로 호출할 수 있는 MCP 도구로 제공합니다.
 
-### 6개 MCP 도구
+### 9개 MCP 도구
+
+#### 정규 지식 (6개 도구)
 
 | 도구 | 용도 | 사용 예시 |
 |------|------|-----------|
@@ -276,6 +278,18 @@ epis explore "strategy pattern"    # 지식 그래프 탐색
 | **`find_path`** | 두 엔티티 간의 연결 경로 탐색 | "SRP와 Extract Class의 관계는?" |
 | **`analyze_code`** | 정규식/AST 분석으로 코드 스멜 감지 | "이 결제 검증 코드 리뷰해 줘" |
 | **`suggest_refactorings`** | 순위가 매겨진 리팩토링 제안 | "이 클래스에서 리팩토링해야 할 것은?" |
+
+#### 암묵지 (3개 도구)
+
+| 도구 | 용도 | 사용 예시 |
+|------|------|-----------|
+| **`add_insight`** | 팀 결정, 교훈 기록 | "이벤트 기반 아키텍처를 폴링 대신 선택한 이유" |
+| **`search_insights`** | 과거 팀 지식 검색 | "인증 미들웨어에 대해 무슨 결정을 했나요?" |
+| **`confirm_links`** | 자동 감지된 정규 엔티티 링크 검증 | TK-001이 SMELL-03과 연관됨을 확인 |
+
+Episteme는 암묵지를 별도의 데이터베이스(`~/.episteme/user_knowledge.db`)에 저장하고, 런타임에 컴포지트 레이어를 통해 정규 그래프와 병합합니다. 팀 인사이트는 패턴, 법칙, 스멜에 자동으로 연결되어 경험을 탐색 가능한 지식으로 변환합니다.
+
+자세한 설계 내용은 [암묵지 아키텍처](../../docs/tacit-knowledge.md)를 참조하세요.
 
 ### 4개 전문 에이전트 (연결된 네트워크)
 
@@ -328,7 +342,7 @@ episteme dist --out-dir release/
 | ⚖️ | **56개 소프트웨어 법칙 및 원칙** | SOLID, Conway의 법칙, CAP 정리 등 |
 | 👃 | **17개 코드 스멜 유형** | Long Method, God Object, Feature Envy 등 ¹ |
 | 🔗 | **201개 의미론적 관계** | "해결한다", "강제한다", "위반한다", "관련 있다" |
-| 🤖 | **6개 MCP 도구 + 4개 에이전트** | 고품질 AI 에이전트 상호작용 및 에이전트 간 핸드오프 |
+| 🤖 | **9개 MCP 도구 + 4개 에이전트** | 고품질 AI 에이전트 상호작용 및 에이전트 간 핸드오프 |
 | 🌍 | **10개 언어 지원** | Python(AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
 | 📊 | **결정론적 분석** | AST 기반 Python + 정규식 다중 언어, 매번 동일한 결과 |
 | 🏷️ | **인용 가능한 지식** | 모든 발견 사항이 명시적 엔티티 ID(`RF-001`, `LAW-021`)에 연결 |

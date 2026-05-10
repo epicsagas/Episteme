@@ -266,16 +266,30 @@ epis explore "strategy pattern"    # explora el grafo de conocimiento
 
 > **Que es MCP?** El [Model Context Protocol](https://modelcontextprotocol.io) es un estandar abierto que permite a las herramientas de IA llamar a servicios externos. Episteme expone su grafo de conocimiento como herramientas MCP que Claude Code, Cursor y otros editores compatibles pueden llamar automaticamente.
 
-### 6 Herramientas MCP
+### 9 Herramientas MCP
 
-| Herramienta | Proposito | Ejemplo de Uso |
-|-------------|-----------|----------------|
+#### Conocimiento canonico (6 herramientas)
+
+| Herramienta | Proposito | Ejemplo de uso |
+|------|---------|-------------|
 | **`search_knowledge`** | Busqueda semantica en todas las entidades | "Buscar patrones para logica de reintentos" |
-| **`get_entity`** | Obtener detalles de una entidad especifica por ID | "Explicar el patron Strategy (DP-023)" |
+| **`get_entity`** | Obtener detalles de una entidad por ID | "Explicar Strategy Pattern (DP-023)" |
 | **`get_neighbors`** | Explorar entidades relacionadas | "Que refactorings resuelven Long Method?" |
 | **`find_path`** | Encontrar conexion entre dos entidades | "Como se relaciona SRP con Extract Class?" |
-| **`analyze_code`** | Detectar code smells via analisis regex/AST | "Revisar este codigo de validacion de pagos" |
+| **`analyze_code`** | Detectar code smells via regex/AST | "Revisar este codigo de validacion de pagos" |
 | **`suggest_refactorings`** | Sugerencias de refactoring clasificadas | "Que deberia refactorizar en esta clase?" |
+
+#### Conocimiento tacito (3 herramientas)
+
+| Herramienta | Proposito | Ejemplo de uso |
+|------|---------|-------------|
+| **`add_insight`** | Registrar decisiones del equipo, lecciones aprendidas | "Elegimos event-driven sobre polling por razon X" |
+| **`search_insights`** | Buscar conocimiento previo del equipo | "Que decidimos sobre el middleware de autenticacion?" |
+| **`confirm_links`** | Validar enlaces detectados automaticamente a entidades canonicas | Confirmar que TK-001 se relaciona con SMELL-03 |
+
+Episteme almacena el conocimiento tacito en una base de datos separada (`~/.episteme/user_knowledge.db`) y lo fusiona con el grafo canonico en tiempo de ejecucion mediante una capa compuesta. Las perspectivas del equipo se vinculan automaticamente con patrones, leyes y smells, convirtiendo la experiencia en conocimiento navegable.
+
+Consulte [Arquitectura del conocimiento tacito](../../docs/tacit-knowledge.md) para el diseno completo.
 
 ### 4 Agentes Especializados (Red Conectada)
 
@@ -328,7 +342,7 @@ episteme dist --out-dir release/
 | ⚖️ | **56 Leyes y Principios de Software** | SOLID, Ley de Conway, Teorema CAP, etc. |
 | 👃 | **17 Tipos de Code Smells** | Long Method, God Object, Feature Envy, etc. ¹ |
 | 🔗 | **201 Relaciones Semánticas** | "resuelve", "impone", "viola", "se relaciona con" |
-| 🤖 | **6 Herramientas MCP + 4 Agentes** | Interacción de agente IA de alta fidelidad con transferencias entre agentes |
+| 🤖 | **9 Herramientas MCP + 4 Agentes** | Interacción de agente IA de alta fidelidad con transferencias entre agentes |
 | 🌍 | **Soporte de 10 Lenguajes** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
 | 📊 | **Análisis Determinístico** | Python basado en AST + regex multilenguaje, mismo resultado siempre |
 | 🏷️ | **Conocimiento Citable** | Cada hallazgo se vincula a IDs de entidad explícitos (`RF-001`, `LAW-021`) |

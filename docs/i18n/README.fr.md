@@ -268,16 +268,30 @@ epis explore "strategy pattern"    # explorer le graphe de connaissances
 
 > **Qu'est-ce que MCP ?** Le [Model Context Protocol](https://modelcontextprotocol.io) est une norme ouverte qui permet aux outils IA d'appeler des services externes. Episteme expose son graphe de connaissances sous forme d'outils MCP que Claude Code, Cursor et autres editeurs compatibles peuvent appeler automatiquement.
 
-### 6 outils MCP
+### 9 outils MCP
+
+#### Connaissance canonique (6 outils)
 
 | Outil | Objectif | Exemple d'utilisation |
-|-------|----------|----------------------|
-| **`search_knowledge`** | Recherche semantique sur toutes les entites | « Trouver des motifs pour la logique de retry » |
-| **`get_entity`** | Obtenir les details d'une entite specifique par ID | « Expliquer le motif Strategy (DP-023) » |
-| **`get_neighbors`** | Explorer les entites liees | « Quels refactorings resolvent Long Method ? » |
-| **`find_path`** | Trouver une connexion entre deux entites | « Comment le SRP est-il lie a Extract Class ? » |
-| **`analyze_code`** | Detecter les code smells via analyse regex/AST | « Examiner ce code de validation de paiement » |
+|------|---------|-------------|
+| **`search_knowledge`** | Recherche semantique sur toutes les entites | "Trouver des patterns pour la logique de retry" |
+| **`get_entity`** | Obtenir les details d'une entite par ID | "Expliquer le Strategy Pattern (DP-023)" |
+| **`get_neighbors`** | Explorer les entites liees | "Quels refactorings resolvent Long Method ?" |
+| **`find_path`** | Trouver la connexion entre deux entites | "Comment SRP est-il lie a Extract Class ?" |
+| **`analyze_code`** | Detecter les code smells via regex/AST | " Examiner ce code de validation de paiement" |
 | **`suggest_refactorings`** | Suggestions de refactoring classees | « Que devrais-je refactorer dans cette classe ? » |
+
+#### Connaissance tacite (3 outils)
+
+| Outil | Objectif | Exemple d'utilisation |
+|------|---------|-------------|
+| **`add_insight`** | Enregistrer les decisions d'equipe, lecons apprises | "Nous avons choisi event-driven plutot que polling pour X raison" |
+| **`search_insights`** | Rechercher les connaissances passees de l'equipe | "Qu'avons-nous decide concernant le middleware d'auth ?" |
+| **`confirm_links`** | Valider les liens detectes automatiquement vers les entites canoniques | Confirmer que TK-001 est lie a SMELL-03 |
+
+Episteme stocke la connaissance tacite dans une base de donnees separee (`~/.episteme/user_knowledge.db`) et la fusionne avec le graphe canonique a l'execution via une couche composite. Les perspectives d'equipe sont automatiquement liees aux patterns, lois et smells, transformant l'experience en connaissance traversable.
+
+Voir [Architecture de la connaissance tacite](../../docs/tacit-knowledge.md) pour la conception complete.
 
 ### 4 Agents specialises (Reseau connecte)
 
@@ -330,7 +344,7 @@ episteme dist --out-dir release/
 | ⚖️ | **56 lois et principes logiciels** | SOLID, loi de Conway, théorème CAP, etc. |
 | 👃 | **17 types de code smells** | Long Method, God Object, Feature Envy, etc. ¹ |
 | 🔗 | **201 relations sémantiques** | « résout », « impose », « viole », « est lié à » |
-| 🤖 | **6 outils MCP + 4 agents** | Interaction agent IA haute fidélité avec transferts inter-agents |
+| 🤖 | **9 outils MCP + 4 agents** | Interaction agent IA haute fidélité avec transferts inter-agents |
 | 🌍 | **Support de 10 langages** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
 | 📊 | **Analyse déterministe** | Python basé AST + regex multilangage, résultat identique à chaque fois |
 | 🏷️ | **Connaissances citables** | Chaque découverte est liée à des IDs d'entité explicites (`RF-001`, `LAW-021`) |

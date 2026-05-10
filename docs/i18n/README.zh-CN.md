@@ -266,16 +266,30 @@ epis explore "strategy pattern"    # 探索知识图谱
 
 > **什么是 MCP？** [模型上下文协议](https://modelcontextprotocol.io) 是一个开放标准，允许 AI 工具调用外部服务。Episteme 将其知识图谱作为 MCP 工具暴露出来，Claude Code、Cursor 及其他兼容的编辑器可以自动调用。
 
-### 6 个 MCP 工具
+### 9 个 MCP 工具
+
+#### 规范知识（6 个工具）
 
 | 工具 | 用途 | 使用示例 |
 |------|---------|-------------|
-| **`search_knowledge`** | 跨所有实体的语义搜索 | "查找重试逻辑相关的模式" |
-| **`get_entity`** | 通过 ID 获取特定实体的详情 | "解释策略模式 (DP-023)" |
-| **`get_neighbors`** | 探索相关实体 | "哪些重构方案能解决 Long Method？" |
-| **`find_path`** | 查找两个实体之间的连接 | "SRP 与 Extract Class 有什么关系？" |
-| **`analyze_code`** | 通过正则表达式/AST 分析检测代码坏味道 | "审查这段支付验证代码" |
+| **`search_knowledge`** | 跨所有实体的语义搜索 | "查找重试逻辑的模式" |
+| **`get_entity`** | 按ID获取特定实体详情 | "解释策略模式 (DP-023)" |
+| **`get_neighbors`** | 探索相关实体 | "哪些重构能解决长方法？" |
+| **`find_path`** | 查找两个实体之间的连接 | "SRP与提取类有何关系？" |
+| **`analyze_code`** | 通过正则/AST分析检测代码异味 | "审查此支付验证代码" |
 | **`suggest_refactorings`** | 排序的重构建议 | "这个类应该重构什么？" |
+
+#### 隐性知识（3 个工具）
+
+| 工具 | 用途 | 使用示例 |
+|------|---------|-------------|
+| **`add_insight`** | 记录团队决策、经验教训 | "选择事件驱动而非轮询的原因" |
+| **`search_insights`** | 搜索过去的团队知识 | "我们对认证中间件做了什么决定？" |
+| **`confirm_links`** | 验证自动检测到的规范实体链接 | 确认 TK-001 与 SMELL-03 相关联 |
+
+Episteme 将隐性知识存储在独立的数据库（`~/.episteme/user_knowledge.db`）中，并在运行时通过组合层与规范图合并。团队洞察会自动链接到模式、法则和异味，将经验转化为可导航的知识。
+
+完整设计请参阅[隐性知识架构](../../docs/tacit-knowledge.md)。
 
 ### 4 个专用智能体（互联网络）
 
@@ -328,7 +342,7 @@ episteme dist --out-dir release/
 | ⚖️ | **56条软件定律与原则** | SOLID、康威定律、CAP定理等 |
 | 👃 | **17种代码异味类型** | Long Method、God Object、Feature Envy等 ¹ |
 | 🔗 | **201条语义关系** | "解决"、"强制"、"违反"、"关联" |
-| 🤖 | **6个MCP工具 + 4个代理** | 高保真AI代理交互，支持代理间交接 |
+| 🤖 | **9个MCP工具 + 4个代理** | 高保真AI代理交互，支持代理间交接 |
 | 🌍 | **10种语言支持** | Python（AST）、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin |
 | 📊 | **确定性分析** | 基于AST的Python + 正则多语言，每次结果一致 |
 | 🏷️ | **可引用的知识** | 每个发现都链接到明确的实体ID（`RF-001`、`LAW-021`） |
