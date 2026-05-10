@@ -572,7 +572,11 @@ const EPISTEME_END: &str = "<!-- EPISTEME-END -->";
 
 /// Upsert the Episteme skill content into a single file using section markers.
 /// Creates the file if it doesn't exist. Only replaces the EPISTEME section.
-fn upsert_skill_to_file(dest_file: &Path, dry_run: bool, label: &str) -> Result<Vec<String>, String> {
+fn upsert_skill_to_file(
+    dest_file: &Path,
+    dry_run: bool,
+    label: &str,
+) -> Result<Vec<String>, String> {
     let skill_content = read_skill_content()?;
     let section = format!("{EPISTEME_BEGIN}\n# Episteme\n\n{skill_content}\n{EPISTEME_END}\n");
 
@@ -621,7 +625,9 @@ fn upsert_cursor_rules(dry_run: bool, label: &str) -> Result<Vec<String>, String
         fs::create_dir_all(&rules_dir).map_err(|e| e.to_string())?;
         fs::write(&rule_file, &mdc_content).map_err(|e| e.to_string())?;
     }
-    Ok(vec![format!("{label}: rules seeded to .cursor/rules/episteme.mdc")])
+    Ok(vec![format!(
+        "{label}: rules seeded to .cursor/rules/episteme.mdc"
+    )])
 }
 
 // ---------------------------------------------------------------------------
@@ -893,9 +899,8 @@ mod tests {
         // upsert_skill_to_file reads from episteme home, so we can't easily test
         // without mocking. Instead test the marker logic directly.
         let existing = String::new();
-        let section = format!(
-            "{EPISTEME_BEGIN}\n# Episteme\n\ntest skill content\n{EPISTEME_END}\n"
-        );
+        let section =
+            format!("{EPISTEME_BEGIN}\n# Episteme\n\ntest skill content\n{EPISTEME_END}\n");
         let result = format!("{existing}{section}");
         assert!(result.contains(EPISTEME_BEGIN));
         assert!(result.contains("test skill content"));
@@ -904,14 +909,10 @@ mod tests {
 
     #[test]
     fn upsert_skill_to_file_replaces_existing_section() {
-        let old_section = format!(
-            "{EPISTEME_BEGIN}\n# Episteme\n\nold content\n{EPISTEME_END}"
-        );
+        let old_section = format!("{EPISTEME_BEGIN}\n# Episteme\n\nold content\n{EPISTEME_END}");
         let existing = format!("Some header\n\n{old_section}\n\nOther content");
 
-        let new_section = format!(
-            "{EPISTEME_BEGIN}\n# Episteme\n\nnew content\n{EPISTEME_END}\n"
-        );
+        let new_section = format!("{EPISTEME_BEGIN}\n# Episteme\n\nnew content\n{EPISTEME_END}\n");
 
         let start = existing.find(EPISTEME_BEGIN).unwrap();
         let end = existing.find(EPISTEME_END).unwrap() + EPISTEME_END.len();
@@ -947,6 +948,9 @@ mod tests {
         let (upserted, skipped) = upsert_dir(src_dir.path(), dst_dir.path()).unwrap();
         assert_eq!(upserted, 1);
         assert_eq!(skipped, 0);
-        assert_eq!(fs::read_to_string(dst_dir.path().join("a.txt")).unwrap(), "new");
+        assert_eq!(
+            fs::read_to_string(dst_dir.path().join("a.txt")).unwrap(),
+            "new"
+        );
     }
 }
