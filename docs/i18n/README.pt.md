@@ -178,6 +178,28 @@ O Episteme funciona inteiramente offline: binário único, banco de dados SQLite
 
 ---
 
+## Funcionalidades
+
+| | Funcionalidade | Por que é importante |
+|--|----------------|----------------------|
+| 🧠 | **22 Padrões de Projeto GoF** | Catálogo completo com exemplos reais |
+| 🔧 | **66 Técnicas de Refatoração** | Catálogo de Fowler com exemplos de código |
+| ⚖️ | **56 Leis e Princípios de Software** | SOLID, Lei de Conway, Teorema CAP, etc. |
+| 👃 | **17 Tipos de Code Smells** | Long Method, God Object, Feature Envy, etc. ¹ |
+| 🔗 | **201 Relações Semânticas** | "resolve", "impõe", "viola", "relaciona-se com" |
+| 🤖 | **9 Ferramentas MCP + 4 Agentes** | Interação de agente IA de alta fidelidade com transferências entre agentes |
+| 🌍 | **Suporte a 10 Linguagens** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
+| 📊 | **Análise Determinística** | Python baseado em AST + regex multilinguagem, mesmo resultado sempre |
+| 🏷️ | **Conhecimento Citável** | Cada descoberta é vinculada a IDs de entidade explícitos (`RF-001`, `LAW-021`) |
+| 🌐 | **API REST (17 endpoints)** | Autenticação, limite de taxa, probes de saúde, métricas Prometheus |
+| 📦 | **Binário Único** | Sem runtime, multiplataforma (macOS, Linux, Windows) |
+| 🔌 | **Embeddings Locais** | fastembed (ONNX Runtime), busca semântica sem configuração |
+| 🐳 | **Suporte Docker** | Build multi-estágio com verificações de saúde |
+
+> ¹ Duplicate Code (SMELL-13) e Shotgun Surgery (SMELL-09) requerem contexto de múltiplos arquivos e são ignorados no modo de arquivo único.
+
+---
+
 ## Instalação
 
 ### Opção 1: Um Comando (Recomendado)
@@ -332,28 +354,6 @@ episteme web --port 8080  # Interface Web (explorador de grafo interativo)
 # Empacotamento para distribuição
 episteme dist --out-dir release/
 ```
-
----
-
-## Funcionalidades
-
-| | Funcionalidade | Por que é importante |
-|--|----------------|----------------------|
-| 🧠 | **22 Padrões de Projeto GoF** | Catálogo completo com exemplos reais |
-| 🔧 | **66 Técnicas de Refatoração** | Catálogo de Fowler com exemplos de código |
-| ⚖️ | **56 Leis e Princípios de Software** | SOLID, Lei de Conway, Teorema CAP, etc. |
-| 👃 | **17 Tipos de Code Smells** | Long Method, God Object, Feature Envy, etc. ¹ |
-| 🔗 | **201 Relações Semânticas** | "resolve", "impõe", "viola", "relaciona-se com" |
-| 🤖 | **9 Ferramentas MCP + 4 Agentes** | Interação de agente IA de alta fidelidade com transferências entre agentes |
-| 🌍 | **Suporte a 10 Linguagens** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
-| 📊 | **Análise Determinística** | Python baseado em AST + regex multilinguagem, mesmo resultado sempre |
-| 🏷️ | **Conhecimento Citável** | Cada descoberta é vinculada a IDs de entidade explícitos (`RF-001`, `LAW-021`) |
-| 🌐 | **API REST (17 endpoints)** | Autenticação, limite de taxa, probes de saúde, métricas Prometheus |
-| 📦 | **Binário Único** | Sem runtime, multiplataforma (macOS, Linux, Windows) |
-| 🔌 | **Embeddings Locais** | fastembed (ONNX Runtime), busca semântica sem configuração |
-| 🐳 | **Suporte Docker** | Build multi-estágio com verificações de saúde |
-
-> ¹ Duplicate Code (SMELL-13) e Shotgun Surgery (SMELL-09) requerem contexto de múltiplos arquivos e são ignorados no modo de arquivo único.
 
 ---
 

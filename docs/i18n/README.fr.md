@@ -178,6 +178,28 @@ Episteme fonctionne entierement hors-ligne : binaire unique, base de donnees SQL
 
 ---
 
+## Fonctionnalités
+
+| | Fonctionnalité | Pourquoi c'est important |
+|--|----------------|--------------------------|
+| 🧠 | **22 motifs de conception GoF** | Catalogue complet avec exemples concrets |
+| 🔧 | **66 techniques de refactoring** | Catalogue de Fowler avec exemples de code |
+| ⚖️ | **56 lois et principes logiciels** | SOLID, loi de Conway, théorème CAP, etc. |
+| 👃 | **17 types de code smells** | Long Method, God Object, Feature Envy, etc. ¹ |
+| 🔗 | **201 relations sémantiques** | « résout », « impose », « viole », « est lié à » |
+| 🤖 | **9 outils MCP + 4 agents** | Interaction agent IA haute fidélité avec transferts inter-agents |
+| 🌍 | **Support de 10 langages** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
+| 📊 | **Analyse déterministe** | Python basé AST + regex multilangage, résultat identique à chaque fois |
+| 🏷️ | **Connaissances citables** | Chaque découverte est liée à des IDs d'entité explicites (`RF-001`, `LAW-021`) |
+| 🌐 | **API REST (17 points d'accès)** | Auth, limitation de débit, sondes de santé, métriques Prometheus |
+| 📦 | **Binaire unique** | Pas de runtime, multiplateforme (macOS, Linux, Windows) |
+| 🔌 | **Embeddings locaux** | fastembed (ONNX Runtime), recherche sémantique sans configuration |
+| 🐳 | **Support Docker** | Build multi-étape avec vérifications de santé |
+
+> ¹ Duplicate Code (SMELL-13) et Shotgun Surgery (SMELL-09) nécessitent un contexte multi-fichiers et sont ignorés en mode mono-fichier.
+
+---
+
 ## Installation
 
 ### Option 1 : Une seule commande (Recommandee)
@@ -332,28 +354,6 @@ episteme web --port 8080  # Interface Web (explorateur de graphe interactif)
 # Packaging de distribution
 episteme dist --out-dir release/
 ```
-
----
-
-## Fonctionnalités
-
-| | Fonctionnalité | Pourquoi c'est important |
-|--|----------------|--------------------------|
-| 🧠 | **22 motifs de conception GoF** | Catalogue complet avec exemples concrets |
-| 🔧 | **66 techniques de refactoring** | Catalogue de Fowler avec exemples de code |
-| ⚖️ | **56 lois et principes logiciels** | SOLID, loi de Conway, théorème CAP, etc. |
-| 👃 | **17 types de code smells** | Long Method, God Object, Feature Envy, etc. ¹ |
-| 🔗 | **201 relations sémantiques** | « résout », « impose », « viole », « est lié à » |
-| 🤖 | **9 outils MCP + 4 agents** | Interaction agent IA haute fidélité avec transferts inter-agents |
-| 🌍 | **Support de 10 langages** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
-| 📊 | **Analyse déterministe** | Python basé AST + regex multilangage, résultat identique à chaque fois |
-| 🏷️ | **Connaissances citables** | Chaque découverte est liée à des IDs d'entité explicites (`RF-001`, `LAW-021`) |
-| 🌐 | **API REST (17 points d'accès)** | Auth, limitation de débit, sondes de santé, métriques Prometheus |
-| 📦 | **Binaire unique** | Pas de runtime, multiplateforme (macOS, Linux, Windows) |
-| 🔌 | **Embeddings locaux** | fastembed (ONNX Runtime), recherche sémantique sans configuration |
-| 🐳 | **Support Docker** | Build multi-étape avec vérifications de santé |
-
-> ¹ Duplicate Code (SMELL-13) et Shotgun Surgery (SMELL-09) nécessitent un contexte multi-fichiers et sont ignorés en mode mono-fichier.
 
 ---
 

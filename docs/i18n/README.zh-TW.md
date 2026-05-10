@@ -178,6 +178,28 @@ Episteme 完全離線運作：單一二進位檔、本機 SQLite 資料庫、透
 
 ---
 
+## 功能
+
+| | 功能 | 為什麼重要 |
+|--|------|-----------|
+| 🧠 | **22個GoF設計模式** | 包含實際範例的完整目錄 |
+| 🔧 | **66個重構技術** | Fowler目錄，附帶程式碼範例 |
+| ⚖️ | **56條軟體定律與原則** | SOLID、康威定律、CAP定理等 |
+| 👃 | **17種程式碼異味類型** | Long Method、God Object、Feature Envy等 ¹ |
+| 🔗 | **201條語意關係** | 「解決」、「強制」、「違反」、「關聯」 |
+| 🤖 | **9個MCP工具 + 4個代理** | 高保真AI代理互動，支援代理間交接 |
+| 🌍 | **10種語言支援** | Python（AST）、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin |
+| 📊 | **確定性分析** | 基於AST的Python + 正規表示式多語言，每次結果一致 |
+| 🏷️ | **可引用的知識** | 每個發現都連結到明確的實體ID（`RF-001`、`LAW-021`） |
+| 🌐 | **REST API（17個端點）** | 認證、速率限制、健康探針、Prometheus指標 |
+| 📦 | **單一二進位檔案** | 無執行時期依賴，跨平台（macOS、Linux、Windows） |
+| 🔌 | **本地嵌入** | fastembed（ONNX Runtime），零配置語意搜尋 |
+| 🐳 | **Docker支援** | 帶健康檢查的多階段建置 |
+
+> ¹ Duplicate Code（SMELL-13）和Shotgun Surgery（SMELL-09）需要多檔案上下文，在單檔案模式下會跳過。
+
+---
+
 ## 安裝
 
 ### 選項 1：一鍵安裝（推薦）
@@ -332,28 +354,6 @@ episteme web --port 8080  # Web UI（互動式圖譜瀏覽器）
 # 發行打包
 episteme dist --out-dir release/
 ```
-
----
-
-## 功能
-
-| | 功能 | 為什麼重要 |
-|--|------|-----------|
-| 🧠 | **22個GoF設計模式** | 包含實際範例的完整目錄 |
-| 🔧 | **66個重構技術** | Fowler目錄，附帶程式碼範例 |
-| ⚖️ | **56條軟體定律與原則** | SOLID、康威定律、CAP定理等 |
-| 👃 | **17種程式碼異味類型** | Long Method、God Object、Feature Envy等 ¹ |
-| 🔗 | **201條語意關係** | 「解決」、「強制」、「違反」、「關聯」 |
-| 🤖 | **9個MCP工具 + 4個代理** | 高保真AI代理互動，支援代理間交接 |
-| 🌍 | **10種語言支援** | Python（AST）、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin |
-| 📊 | **確定性分析** | 基於AST的Python + 正規表示式多語言，每次結果一致 |
-| 🏷️ | **可引用的知識** | 每個發現都連結到明確的實體ID（`RF-001`、`LAW-021`） |
-| 🌐 | **REST API（17個端點）** | 認證、速率限制、健康探針、Prometheus指標 |
-| 📦 | **單一二進位檔案** | 無執行時期依賴，跨平台（macOS、Linux、Windows） |
-| 🔌 | **本地嵌入** | fastembed（ONNX Runtime），零配置語意搜尋 |
-| 🐳 | **Docker支援** | 帶健康檢查的多階段建置 |
-
-> ¹ Duplicate Code（SMELL-13）和Shotgun Surgery（SMELL-09）需要多檔案上下文，在單檔案模式下會跳過。
 
 ---
 

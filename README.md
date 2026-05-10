@@ -183,6 +183,28 @@ Episteme runs entirely offline: single binary, local SQLite database, local embe
 
 ---
 
+## Features
+
+| | Feature | Why it matters |
+|--|---------|----------------|
+| 🧠 | **22 GoF Design Patterns** | Complete catalog with real-world examples |
+| 🔧 | **66 Refactoring Techniques** | Fowler's catalog with code samples |
+| ⚖️ | **56 Software Laws & Principles** | SOLID, Conway's Law, CAP Theorem, etc. |
+| 👃 | **17 Code Smell Types** | Long Method, God Object, Feature Envy, etc. ¹ |
+| 🔗 | **201 Semantic Relations** | "solves", "enforces", "violates", "relates_to" |
+| 🤖 | **9 MCP Tools + 4 Agents** | High-fidelity AI agent interaction with cross-agent handoffs |
+| 🌍 | **10 Language Support** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
+| 📊 | **Deterministic Analysis** | AST-based Python + regex multi-language, same result every time |
+| 🏷️ | **Citable Knowledge** | Every finding links to explicit entity IDs (`RF-001`, `LAW-021`) |
+| 🌐 | **REST API (17 endpoints)** | Auth, rate limiting, health probes, Prometheus metrics |
+| 📦 | **Single Binary** | No runtime, cross-platform (macOS, Linux, Windows) |
+| 🔌 | **Local Embeddings** | fastembed (ONNX Runtime), zero-config semantic search |
+| 🐳 | **Docker Support** | Multi-stage build with health checks |
+
+> ¹ Duplicate Code (SMELL-13) and Shotgun Surgery (SMELL-09) require multi-file context and are skipped in single-file mode.
+
+---
+
 ## Installation
 
 ### Option 1: One Command (Recommended)
@@ -344,28 +366,6 @@ episteme web --port 8080  # Web UI (interactive graph explorer)
 # Distribution packaging
 episteme dist --out-dir release/
 ```
-
----
-
-## Features
-
-| | Feature | Why it matters |
-|--|---------|----------------|
-| 🧠 | **22 GoF Design Patterns** | Complete catalog with real-world examples |
-| 🔧 | **66 Refactoring Techniques** | Fowler's catalog with code samples |
-| ⚖️ | **56 Software Laws & Principles** | SOLID, Conway's Law, CAP Theorem, etc. |
-| 👃 | **17 Code Smell Types** | Long Method, God Object, Feature Envy, etc. ¹ |
-| 🔗 | **201 Semantic Relations** | "solves", "enforces", "violates", "relates_to" |
-| 🤖 | **9 MCP Tools + 4 Agents** | High-fidelity AI agent interaction with cross-agent handoffs |
-| 🌍 | **10 Language Support** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
-| 📊 | **Deterministic Analysis** | AST-based Python + regex multi-language, same result every time |
-| 🏷️ | **Citable Knowledge** | Every finding links to explicit entity IDs (`RF-001`, `LAW-021`) |
-| 🌐 | **REST API (17 endpoints)** | Auth, rate limiting, health probes, Prometheus metrics |
-| 📦 | **Single Binary** | No runtime, cross-platform (macOS, Linux, Windows) |
-| 🔌 | **Local Embeddings** | fastembed (ONNX Runtime), zero-config semantic search |
-| 🐳 | **Docker Support** | Multi-stage build with health checks |
-
-> ¹ Duplicate Code (SMELL-13) and Shotgun Surgery (SMELL-09) require multi-file context and are skipped in single-file mode.
 
 ---
 

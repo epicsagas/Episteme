@@ -178,6 +178,28 @@ Episteme laeuft vollstaendig offline: einzelnes Binary, lokale SQLite-Datenbank,
 
 ---
 
+## Funktionen
+
+| | Funktion | Warum es wichtig ist |
+|--|----------|---------------------|
+| 🧠 | **22 GoF-Entwurfsmuster** | Vollständiger Katalog mit Praxisbeispielen |
+| 🔧 | **66 Refactoring-Techniken** | Fowlers Katalog mit Codebeispielen |
+| ⚖️ | **56 Software-Gesetze & Prinzipien** | SOLID, Conways Gesetz, CAP-Theorem u.a. |
+| 👃 | **17 Code-Smell-Typen** | Long Method, God Object, Feature Envy u.a. ¹ |
+| 🔗 | **201 semantische Beziehungen** | „löst", „erzwingt", „verletzt", „hängt zusammen mit" |
+| 🤖 | **9 MCP-Tools + 4 Agenten** | Hochwertige KI-Agenten-Interaktion mit Agenten-Übergaben |
+| 🌍 | **10 Sprachunterstützung** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
+| 📊 | **Deterministische Analyse** | AST-basiertes Python + Regex-Multilanguage, jedes Mal gleiches Ergebnis |
+| 🏷️ | **Zitierbares Wissen** | Jeder Fund verweist auf explizite Entitäts-IDs (`RF-001`, `LAW-021`) |
+| 🌐 | **REST-API (17 Endpunkte)** | Auth, Rate-Limiting, Health-Probes, Prometheus-Metriken |
+| 📦 | **Einzelne Binärdatei** | Keine Runtime, plattformübergreifend (macOS, Linux, Windows) |
+| 🔌 | **Lokale Embeddings** | fastembed (ONNX Runtime), konfigurationsfreie semantische Suche |
+| 🐳 | **Docker-Support** | Mehrstufiger Build mit Health-Checks |
+
+> ¹ Duplicate Code (SMELL-13) und Shotgun Surgery (SMELL-09) erfordern Mehrdatei-Kontext und werden im Einzeldatei-Modus übersprungen.
+
+---
+
 ## Installation
 
 ### Option 1: Ein Befehl (Empfohlen)
@@ -332,28 +354,6 @@ episteme web --port 8080  # Web-UI (interaktiver Graph-Explorer)
 # Distributions-Paketierung
 episteme dist --out-dir release/
 ```
-
----
-
-## Funktionen
-
-| | Funktion | Warum es wichtig ist |
-|--|----------|---------------------|
-| 🧠 | **22 GoF-Entwurfsmuster** | Vollständiger Katalog mit Praxisbeispielen |
-| 🔧 | **66 Refactoring-Techniken** | Fowlers Katalog mit Codebeispielen |
-| ⚖️ | **56 Software-Gesetze & Prinzipien** | SOLID, Conways Gesetz, CAP-Theorem u.a. |
-| 👃 | **17 Code-Smell-Typen** | Long Method, God Object, Feature Envy u.a. ¹ |
-| 🔗 | **201 semantische Beziehungen** | „löst", „erzwingt", „verletzt", „hängt zusammen mit" |
-| 🤖 | **9 MCP-Tools + 4 Agenten** | Hochwertige KI-Agenten-Interaktion mit Agenten-Übergaben |
-| 🌍 | **10 Sprachunterstützung** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
-| 📊 | **Deterministische Analyse** | AST-basiertes Python + Regex-Multilanguage, jedes Mal gleiches Ergebnis |
-| 🏷️ | **Zitierbares Wissen** | Jeder Fund verweist auf explizite Entitäts-IDs (`RF-001`, `LAW-021`) |
-| 🌐 | **REST-API (17 Endpunkte)** | Auth, Rate-Limiting, Health-Probes, Prometheus-Metriken |
-| 📦 | **Einzelne Binärdatei** | Keine Runtime, plattformübergreifend (macOS, Linux, Windows) |
-| 🔌 | **Lokale Embeddings** | fastembed (ONNX Runtime), konfigurationsfreie semantische Suche |
-| 🐳 | **Docker-Support** | Mehrstufiger Build mit Health-Checks |
-
-> ¹ Duplicate Code (SMELL-13) und Shotgun Surgery (SMELL-09) erfordern Mehrdatei-Kontext und werden im Einzeldatei-Modus übersprungen.
 
 ---
 
