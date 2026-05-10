@@ -122,22 +122,23 @@ pub fn install_cursor(dry_run: bool, transport: &Transport) -> Result<Vec<String
     let matches = servers.get("episteme") == Some(&desired);
     let legacy_removed = remove_legacy_keys(servers);
 
+    let mut msgs = Vec::new();
+
     if matches && legacy_removed.is_empty() {
-        return Ok(vec!["Cursor: MCP already configured".to_owned()]);
-    }
-
-    servers.insert("episteme".to_owned(), desired);
-    if !dry_run {
-        write_json_file(&mcp_json, &config)?;
-    }
-
-    let label = if existed { "updated" } else { "added" };
-    let mut msgs = vec![format!("Cursor: MCP config {label}")];
-    if !legacy_removed.is_empty() {
-        msgs.push(format!(
-            "Cursor: removed legacy key(s): {}",
-            legacy_removed.join(", ")
-        ));
+        msgs.push("Cursor: MCP already configured".to_owned());
+    } else {
+        servers.insert("episteme".to_owned(), desired);
+        if !dry_run {
+            write_json_file(&mcp_json, &config)?;
+        }
+        let label = if existed { "updated" } else { "added" };
+        msgs.push(format!("Cursor: MCP config {label}"));
+        if !legacy_removed.is_empty() {
+            msgs.push(format!(
+                "Cursor: removed legacy key(s): {}",
+                legacy_removed.join(", ")
+            ));
+        }
     }
 
     // Seed Episteme rules as .cursor/rules/episteme.mdc
@@ -147,26 +148,34 @@ pub fn install_cursor(dry_run: bool, transport: &Transport) -> Result<Vec<String
     Ok(msgs)
 }
 
-/// Install AGENTS.md section for Codex.
+/// Install AGENTS.md section for Codex and seed skills to ~/.codex/.
 pub fn install_codex(dry_run: bool) -> Result<Vec<String>, String> {
+    let home = dirs_home();
+    let mut msgs = Vec::new();
+
+    // Seed registry artifacts (agents + skills) into ~/.codex/
+    let codex_dir = home.join(".codex");
+    let registry_msgs = upsert_registry_artifacts(&codex_dir, dry_run, "Codex")?;
+    msgs.extend(registry_msgs);
+
+    // Also handle AGENTS.md in CWD
     let project_dir = std::env::current_dir().map_err(|e| e.to_string())?;
     let agents_md = project_dir.join("AGENTS.md");
 
     if agents_md.exists() {
         let content = fs::read_to_string(&agents_md).map_err(|e| e.to_string())?;
         if content.contains("epis mcp") || content.contains(EPISTEME_BEGIN) {
-            // Already has config; seed skill content too.
-            let mut msgs = vec!["Codex: AGENTS.md already configured".to_owned()];
+            msgs.push("Codex: AGENTS.md already configured".to_owned());
             let skill_msgs = upsert_skill_to_file(&agents_md, dry_run, "Codex")?;
             msgs.extend(skill_msgs);
             return Ok(msgs);
         }
     }
 
-    // Codex requires manual AGENTS.md setup — don't auto-seed without MCP config.
-    Ok(vec![
-        "Codex: Add 'epis mcp' to AGENTS.md manually".to_owned(),
-    ])
+    if msgs.is_empty() {
+        msgs.push("Codex: Add 'epis mcp' to AGENTS.md manually".to_owned());
+    }
+    Ok(msgs)
 }
 
 /// Install MCP config for Gemini CLI (~/.gemini/mcp.json).
@@ -191,25 +200,30 @@ pub fn install_gemini(dry_run: bool, transport: &Transport) -> Result<Vec<String
     let matches = servers.get("episteme") == Some(&desired);
     let legacy_removed = remove_legacy_keys(servers);
 
+    let mut msgs = Vec::new();
+
     if matches && legacy_removed.is_empty() {
-        return Ok(vec!["Gemini CLI: MCP already configured".to_owned()]);
+        msgs.push("Gemini CLI: MCP already configured".to_owned());
+    } else {
+        servers.insert("episteme".to_owned(), desired);
+        if !dry_run {
+            write_json_file(&mcp_json, &config)?;
+        }
+        let label = if existed { "updated" } else { "added" };
+        msgs.push(format!("Gemini CLI: MCP config {label}"));
+        if !legacy_removed.is_empty() {
+            msgs.push(format!(
+                "Gemini CLI: removed legacy key(s): {}",
+                legacy_removed.join(", ")
+            ));
+        }
     }
 
-    servers.insert("episteme".to_owned(), desired);
-    if !dry_run {
-        write_json_file(&mcp_json, &config)?;
-    }
+    // Seed registry artifacts (agents + skills) into ~/.gemini/
+    let registry_msgs = upsert_registry_artifacts(&gemini_dir, dry_run, "Gemini CLI")?;
+    msgs.extend(registry_msgs);
 
-    let label = if existed { "updated" } else { "added" };
-    let mut msgs = vec![format!("Gemini CLI: MCP config {label}")];
-    if !legacy_removed.is_empty() {
-        msgs.push(format!(
-            "Gemini CLI: removed legacy key(s): {}",
-            legacy_removed.join(", ")
-        ));
-    }
-
-    // Seed skill content into ~/.gemini/GEMINI.md
+    // Also seed skill content into ~/.gemini/GEMINI.md for legacy compatibility
     let gemini_md = gemini_dir.join("GEMINI.md");
     let skill_msgs = upsert_skill_to_file(&gemini_md, dry_run, "Gemini CLI")?;
     msgs.extend(skill_msgs);
@@ -284,23 +298,30 @@ pub fn install_cline(dry_run: bool, transport: &Transport) -> Result<Vec<String>
     let matches = servers.get("episteme") == Some(&desired);
     let legacy_removed = remove_legacy_keys(servers);
 
+    let mut msgs = Vec::new();
+
     if matches && legacy_removed.is_empty() {
-        return Ok(vec!["Cline: MCP already configured".to_owned()]);
-    }
-    servers.insert("episteme".to_owned(), desired);
-    if !dry_run {
-        write_json_file(&mcp_json, &config)?;
-    }
-    let label = if existed { "updated" } else { "added" };
-    let mut msgs = vec![format!("Cline: MCP config {label}")];
-    if !legacy_removed.is_empty() {
-        msgs.push(format!(
-            "Cline: removed legacy key(s): {}",
-            legacy_removed.join(", ")
-        ));
+        msgs.push("Cline: MCP already configured".to_owned());
+    } else {
+        servers.insert("episteme".to_owned(), desired);
+        if !dry_run {
+            write_json_file(&mcp_json, &config)?;
+        }
+        let label = if existed { "updated" } else { "added" };
+        msgs.push(format!("Cline: MCP config {label}"));
+        if !legacy_removed.is_empty() {
+            msgs.push(format!(
+                "Cline: removed legacy key(s): {}",
+                legacy_removed.join(", ")
+            ));
+        }
     }
 
-    // Seed skill content to ~/Documents/Cline/Rules/episteme.md
+    // Seed registry artifacts (agents + skills) into ~/.cline/
+    let registry_msgs = upsert_registry_artifacts(&cline_dir, dry_run, "Cline")?;
+    msgs.extend(registry_msgs);
+
+    // Also seed skill content to ~/Documents/Cline/Rules/episteme.md
     let cline_rules = home
         .join("Documents")
         .join("Cline")
