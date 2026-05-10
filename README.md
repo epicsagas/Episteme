@@ -376,6 +376,8 @@ episteme dist --out-dir release/
 | [Quick Start](QUICKSTART.md) | Step-by-step setup, first run, troubleshooting |
 | [MCP Integration Guide](docs/mcp-integration-guide.md) | Tool reference, agent examples, conversation flows |
 | [Tacit Knowledge Architecture](docs/tacit-knowledge.md) | Two-database design, insight lifecycle, schema |
+| [Alcove Ecosystem Comparison](docs/alcove-ecosystem.md) | Storage models, search capabilities, use-case matrix |
+| [Alcove Integration Guide](docs/alcove-integration.md) | Dual-context workflows, setup, best practices |
 | [API Reference](docs/api.md) | REST endpoints, authentication, examples |
 | [Distribution](docs/distribution.md) | Release packaging and deployment |
 | [Development & Contributing](DEVELOPMENT.md) | Architecture, how to contribute |
@@ -438,6 +440,55 @@ rustup show   # confirm active toolchain
 ```
 
 > More help: [QUICKSTART.md troubleshooting section](QUICKSTART.md#troubleshooting) · [Open an issue](https://github.com/epicsagas/Episteme/issues)
+
+---
+
+## Ecosystem: Alcove Integration
+
+Episteme has two layers for capturing knowledge: the **canonical graph** (universal patterns, laws, smells) and the **tacit knowledge layer** (TK-* — team insights auto-linked to canonical entities). For richer project documentation — architecture decisions, coding conventions, onboarding guides, technical debt registers — **[Alcove](https://github.com/epicsagas/alcove)** is the recommended companion.
+
+```mermaid
+flowchart LR
+    U["Developer"] --> A["AI Agent"]
+    A -->|"What pattern applies?"| E["Episteme<br/>Canonical Graph"]
+    A -->|"Quick insight?"| T["Episteme<br/>Tacit Knowledge (TK-*)"]
+    A -->|"Team decisions?"| L["Alcove<br/>Project Docs"]
+    E --> R["Grounded Recommendation"]
+    T --> R
+    L --> R
+```
+
+### Episteme vs Alcove — when to use which
+
+| Scenario | Use | Why |
+|----------|-----|-----|
+| Detect code smells in a module | **Episteme** `analyze_code` | Regex/AST detection + ranked refactoring suggestions |
+| Record a momentary insight ("we always hit N+1 here") | **Episteme** `add_insight` | Auto-links to relevant canonical entities (SMELL-*, LAW-*) |
+| Find relationship between SRP and Extract Class | **Episteme** `find_path` | Multi-hop graph traversal across entity types |
+| Start documentation for a new project | **Alcove** `init_project` | 7 core templates (PRD, ARCHITECTURE, DECISIONS, ...) auto-generated |
+| Record a formal architecture decision (ADR) | **Alcove** DECISIONS.md | Structured ADR format with context, options, consequences |
+| Check if docs are outdated or have broken links | **Alcove** `lint_project` | Detects WIP/TODO/DEPRECATED markers, orphan files, stale dates |
+| Enforce naming conventions or required sections | **Alcove** `validate_docs` | Policy-based validation with pass/warn/fail |
+| Import Obsidian notes for agent access | **Alcove** `promote_document` | Symlink vaults + BM25/vector indexing |
+| Ground a recommendation in both principles and team rules | **Both** | Universal knowledge + team-specific constraints |
+
+### Tacit Knowledge (TK-*) vs Alcove Docs
+
+Episteme's tacit knowledge layer is designed for **short, momentary insights** that auto-connect to the knowledge graph — "we chose event-driven over polling because X", auto-linked to DP-018 (Observer) and LAW-012 (Fail Fast). Alcove handles **structured, long-lived documentation** — full ADRs with sections, architecture diagrams, coding standards, onboarding checklists.
+
+| | Episteme TK-* | Alcove |
+|---|---|---|
+| **Granularity** | Atomic free-text insight | Structured multi-section document |
+| **Auto-linking** | Keyword detection → canonical entities | wikilinks between docs |
+| **Lifecycle** | Create + search | Full CRUD + validate + lint + audit + backup |
+| **Search** | FTS5 keyword | BM25 + vector hybrid (CJK support) |
+| **Best for** | Quick observations, lessons learned | Formal decisions, project scaffolding, doc governance |
+
+Alcove manages 3 tiers of documentation (7 core + 19 supplementary + 15 public files), provides BM25 + vector hybrid search with CJK support, and integrates with Obsidian vaults. It includes policy validation, semantic linting (broken links, stale markers, orphans), and git-based backups.
+
+**Full analysis**: [Alcove Ecosystem Comparison](docs/alcove-ecosystem.md) — storage models, search capabilities, feature completeness, and use-case decision matrix.
+
+**Usage patterns**: [Alcove Integration Guide](docs/alcove-integration.md) — agent workflows, code review with dual context, and setup instructions.
 
 ---
 
