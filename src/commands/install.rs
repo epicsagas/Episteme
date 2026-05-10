@@ -250,21 +250,21 @@ pub fn detect_installed_tools() -> std::collections::HashSet<&'static str> {
     if has_json_path(
         &PathBuf::from(&home).join(".claude.json"),
         "mcpServers",
-        "epis",
+        "episteme",
     ) {
         installed.insert("claude");
     }
     if has_json_path(
         &PathBuf::from(&home).join(".cursor").join("mcp.json"),
         "mcpServers",
-        "epis",
+        "episteme",
     ) {
         installed.insert("cursor");
     }
     if has_json_path(
         &PathBuf::from(&home).join(".gemini").join("mcp.json"),
         "mcpServers",
-        "epis",
+        "episteme",
     ) {
         installed.insert("gemini");
     }
@@ -274,7 +274,7 @@ pub fn detect_installed_tools() -> std::collections::HashSet<&'static str> {
             .join("opencode")
             .join("opencode.json"),
         "mcp",
-        "epis",
+        "episteme",
     ) {
         installed.insert("opencode");
     }

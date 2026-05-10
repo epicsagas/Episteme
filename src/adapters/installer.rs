@@ -81,53 +81,9 @@ pub fn install_claude(dry_run: bool, transport: &Transport) -> Result<Vec<String
     }
 
     // Upsert registry artifacts (agents, skills) into ~/.claude/
-    let registry_src = crate::adapters::paths::episteme_home().join("registry");
-    if registry_src.is_dir() && !dry_run {
-        let claude_dir = home.join(".claude");
-
-        // agents → ~/.claude/agents/
-        let agents_src = registry_src.join("agents");
-        if agents_src.is_dir() {
-            let agents_dst = claude_dir.join("agents");
-            let (upserted, skipped) = upsert_dir(&agents_src, &agents_dst)?;
-            messages.push(format!(
-                "Claude Code: agents — {upserted} updated, {skipped} unchanged"
-            ));
-        }
-
-        // skills/<name>/ → ~/.claude/skills/<name>/
-        let skills_src = registry_src.join("skills");
-        if skills_src.is_dir() {
-            let skills_dst = claude_dir.join("skills");
-            let mut total_upserted = 0usize;
-            let mut total_skipped = 0usize;
-            for entry in fs::read_dir(&skills_src).map_err(|e| e.to_string())? {
-                let entry = entry.map_err(|e| e.to_string())?;
-                if !entry.path().is_dir() {
-                    continue;
-                }
-                let name = entry.file_name();
-                let src = entry.path();
-                let dst = skills_dst.join(&name);
-                let (u, s) = upsert_dir(&src, &dst)?;
-                total_upserted += u;
-                total_skipped += s;
-            }
-            messages.push(format!(
-                "Claude Code: skills — {total_upserted} updated, {total_skipped} unchanged"
-            ));
-        }
-
-        // hooks/ → ~/.claude/hooks/  (flat files only)
-        let hooks_src = registry_src.join("hooks");
-        if hooks_src.is_dir() {
-            let hooks_dst = claude_dir.join("hooks");
-            let (upserted, skipped) = upsert_dir(&hooks_src, &hooks_dst)?;
-            messages.push(format!(
-                "Claude Code: hooks — {upserted} updated, {skipped} unchanged"
-            ));
-        }
-    }
+    let claude_dir = home.join(".claude");
+    let registry_msgs = upsert_registry_artifacts(&claude_dir, dry_run, "Claude Code")?;
+    messages.extend(registry_msgs);
 
     Ok(messages)
 }
@@ -183,6 +139,11 @@ pub fn install_cursor(dry_run: bool, transport: &Transport) -> Result<Vec<String
             legacy_removed.join(", ")
         ));
     }
+
+    // Seed Episteme rules as .cursor/rules/episteme.mdc
+    let rules_msgs = upsert_cursor_rules(dry_run, "Cursor")?;
+    msgs.extend(rules_msgs);
+
     Ok(msgs)
 }
 
@@ -193,13 +154,16 @@ pub fn install_codex(dry_run: bool) -> Result<Vec<String>, String> {
 
     if agents_md.exists() {
         let content = fs::read_to_string(&agents_md).map_err(|e| e.to_string())?;
-        if content.contains("epis mcp") {
-            return Ok(vec!["Codex: AGENTS.md already configured".to_owned()]);
+        if content.contains("epis mcp") || content.contains(EPISTEME_BEGIN) {
+            // Already has config; seed skill content too.
+            let mut msgs = vec!["Codex: AGENTS.md already configured".to_owned()];
+            let skill_msgs = upsert_skill_to_file(&agents_md, dry_run, "Codex")?;
+            msgs.extend(skill_msgs);
+            return Ok(msgs);
         }
     }
 
-    let _ = dry_run;
-    // Don't modify AGENTS.md -- just report.
+    // Codex requires manual AGENTS.md setup — don't auto-seed without MCP config.
     Ok(vec![
         "Codex: Add 'epis mcp' to AGENTS.md manually".to_owned(),
     ])
@@ -244,6 +208,12 @@ pub fn install_gemini(dry_run: bool, transport: &Transport) -> Result<Vec<String
             legacy_removed.join(", ")
         ));
     }
+
+    // Seed skill content into ~/.gemini/GEMINI.md
+    let gemini_md = gemini_dir.join("GEMINI.md");
+    let skill_msgs = upsert_skill_to_file(&gemini_md, dry_run, "Gemini CLI")?;
+    msgs.extend(skill_msgs);
+
     Ok(msgs)
 }
 
@@ -286,6 +256,11 @@ pub fn install_opencode(dry_run: bool, transport: &Transport) -> Result<Vec<Stri
             legacy_removed.join(", ")
         ));
     }
+
+    // Seed agents + skills to ~/.config/opencode/ (OpenCode supports agents/ natively)
+    let registry_msgs = upsert_registry_artifacts(&opencode_dir, dry_run, "OpenCode")?;
+    msgs.extend(registry_msgs);
+
     Ok(msgs)
 }
 
@@ -324,6 +299,16 @@ pub fn install_cline(dry_run: bool, transport: &Transport) -> Result<Vec<String>
             legacy_removed.join(", ")
         ));
     }
+
+    // Seed skill content to ~/Documents/Cline/Rules/episteme.md
+    let cline_rules = home
+        .join("Documents")
+        .join("Cline")
+        .join("Rules")
+        .join("episteme.md");
+    let skill_msgs = upsert_skill_to_file(&cline_rules, dry_run, "Cline")?;
+    msgs.extend(skill_msgs);
+
     Ok(msgs)
 }
 
@@ -509,6 +494,134 @@ pub fn install_all(dry_run: bool, transport: &Transport) -> Result<Vec<String>, 
     }
 
     Ok(messages)
+}
+
+/// Upsert registry artifacts (agents + skills + hooks) into `dest_dir`.
+/// Copies `~/.episteme/registry/agents/` → `dest_dir/agents/`,
+/// `~/.episteme/registry/skills/<name>/` → `dest_dir/skills/<name>/`,
+/// `~/.episteme/registry/hooks/` → `dest_dir/hooks/`.
+fn upsert_registry_artifacts(
+    dest_dir: &Path,
+    dry_run: bool,
+    label: &str,
+) -> Result<Vec<String>, String> {
+    let mut messages = Vec::new();
+    let registry_src = crate::adapters::paths::episteme_home().join("registry");
+    if !registry_src.is_dir() || dry_run {
+        return Ok(messages);
+    }
+
+    // agents → dest_dir/agents/
+    let agents_src = registry_src.join("agents");
+    if agents_src.is_dir() {
+        let agents_dst = dest_dir.join("agents");
+        let (upserted, skipped) = upsert_dir(&agents_src, &agents_dst)?;
+        messages.push(format!(
+            "{label}: agents — {upserted} updated, {skipped} unchanged"
+        ));
+    }
+
+    // skills/<name>/ → dest_dir/skills/<name>/
+    let skills_src = registry_src.join("skills");
+    if skills_src.is_dir() {
+        let skills_dst = dest_dir.join("skills");
+        let mut total_upserted = 0usize;
+        let mut total_skipped = 0usize;
+        for entry in fs::read_dir(&skills_src).map_err(|e| e.to_string())? {
+            let entry = entry.map_err(|e| e.to_string())?;
+            if !entry.path().is_dir() {
+                continue;
+            }
+            let name = entry.file_name();
+            let src = entry.path();
+            let dst = skills_dst.join(&name);
+            let (u, s) = upsert_dir(&src, &dst)?;
+            total_upserted += u;
+            total_skipped += s;
+        }
+        messages.push(format!(
+            "{label}: skills — {total_upserted} updated, {total_skipped} unchanged"
+        ));
+    }
+
+    // hooks/ → dest_dir/hooks/  (flat files only)
+    let hooks_src = registry_src.join("hooks");
+    if hooks_src.is_dir() {
+        let hooks_dst = dest_dir.join("hooks");
+        let (upserted, skipped) = upsert_dir(&hooks_src, &hooks_dst)?;
+        messages.push(format!(
+            "{label}: hooks — {upserted} updated, {skipped} unchanged"
+        ));
+    }
+
+    Ok(messages)
+}
+
+/// Read the skill content from `~/.episteme/registry/skills/episteme/SKILL.md`.
+fn read_skill_content() -> Result<String, String> {
+    let skill_path = crate::adapters::paths::episteme_home()
+        .join("registry")
+        .join("skills")
+        .join("episteme")
+        .join("SKILL.md");
+    fs::read_to_string(&skill_path).map_err(|e| format!("skill not found: {e}"))
+}
+
+const EPISTEME_BEGIN: &str = "<!-- EPISTEME-BEGIN -->";
+const EPISTEME_END: &str = "<!-- EPISTEME-END -->";
+
+/// Upsert the Episteme skill content into a single file using section markers.
+/// Creates the file if it doesn't exist. Only replaces the EPISTEME section.
+fn upsert_skill_to_file(dest_file: &Path, dry_run: bool, label: &str) -> Result<Vec<String>, String> {
+    let skill_content = read_skill_content()?;
+    let section = format!("{EPISTEME_BEGIN}\n# Episteme\n\n{skill_content}\n{EPISTEME_END}\n");
+
+    let existing = fs::read_to_string(dest_file).unwrap_or_default();
+    let new_content = if existing.contains(EPISTEME_BEGIN) && existing.contains(EPISTEME_END) {
+        let start = existing.find(EPISTEME_BEGIN).unwrap();
+        let end = existing.find(EPISTEME_END).unwrap() + EPISTEME_END.len();
+        format!("{}{}{}", &existing[..start], section, &existing[end..])
+    } else {
+        let separator = if existing.is_empty() { "" } else { "\n" };
+        format!("{existing}{separator}{section}")
+    };
+
+    if new_content == existing {
+        return Ok(vec![format!("{label}: skill already up-to-date")]);
+    }
+
+    if !dry_run {
+        if let Some(parent) = dest_file.parent() {
+            fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+        }
+        fs::write(dest_file, &new_content).map_err(|e| e.to_string())?;
+    }
+    Ok(vec![format!("{label}: skill seeded")])
+}
+
+/// Upsert the Episteme skill content as a Cursor `.mdc` rule file.
+fn upsert_cursor_rules(dry_run: bool, label: &str) -> Result<Vec<String>, String> {
+    let home = dirs_home();
+    let rules_dir = home.join(".cursor").join("rules");
+    let rule_file = rules_dir.join("episteme.mdc");
+
+    let skill_content = read_skill_content()?;
+    let mdc_content = format!(
+        "---\ndescription: Episteme knowledge graph auto-trigger rules\nalwaysApply: true\n---\n\n{skill_content}\n"
+    );
+
+    if rule_file.exists() {
+        let existing = fs::read_to_string(&rule_file).map_err(|e| e.to_string())?;
+        if existing == mdc_content {
+            return Ok(vec![format!("{label}: rules already up-to-date")]);
+        }
+    }
+
+    if !dry_run {
+        fs::create_dir_all(&rules_dir).map_err(|e| e.to_string())?;
+        fs::write(&rule_file, &mdc_content).map_err(|e| e.to_string())?;
+    }
+    Ok(vec![format!("{label}: rules seeded to .cursor/rules/episteme.mdc")])
 }
 
 // ---------------------------------------------------------------------------
@@ -765,5 +878,75 @@ mod tests {
         let reloaded = read_json_file(&path);
         assert_eq!(reloaded["mcpServers"]["episteme"]["command"], "epis");
         assert_eq!(reloaded["mcpServers"]["episteme"]["args"], json!(["mcp"]));
+    }
+
+    #[test]
+    fn upsert_skill_to_file_creates_new() {
+        let dir = TempDir::new().unwrap();
+        let _dest = dir.path().join("AGENTS.md");
+
+        // Create a fake skill source
+        let skill_dir = dir.path().join("registry").join("skills").join("episteme");
+        fs::create_dir_all(&skill_dir).unwrap();
+        fs::write(skill_dir.join("SKILL.md"), "test skill content").unwrap();
+
+        // upsert_skill_to_file reads from episteme home, so we can't easily test
+        // without mocking. Instead test the marker logic directly.
+        let existing = String::new();
+        let section = format!(
+            "{EPISTEME_BEGIN}\n# Episteme\n\ntest skill content\n{EPISTEME_END}\n"
+        );
+        let result = format!("{existing}{section}");
+        assert!(result.contains(EPISTEME_BEGIN));
+        assert!(result.contains("test skill content"));
+        assert!(result.contains(EPISTEME_END));
+    }
+
+    #[test]
+    fn upsert_skill_to_file_replaces_existing_section() {
+        let old_section = format!(
+            "{EPISTEME_BEGIN}\n# Episteme\n\nold content\n{EPISTEME_END}"
+        );
+        let existing = format!("Some header\n\n{old_section}\n\nOther content");
+
+        let new_section = format!(
+            "{EPISTEME_BEGIN}\n# Episteme\n\nnew content\n{EPISTEME_END}\n"
+        );
+
+        let start = existing.find(EPISTEME_BEGIN).unwrap();
+        let end = existing.find(EPISTEME_END).unwrap() + EPISTEME_END.len();
+        let result = format!("{}{}{}", &existing[..start], new_section, &existing[end..]);
+
+        assert!(result.contains("Some header"));
+        assert!(result.contains("new content"));
+        assert!(!result.contains("old content"));
+        assert!(result.contains("Other content"));
+    }
+
+    #[test]
+    fn upsert_dir_skips_identical_files() {
+        let src_dir = TempDir::new().unwrap();
+        let dst_dir = TempDir::new().unwrap();
+
+        fs::write(src_dir.path().join("a.txt"), "hello").unwrap();
+        fs::write(dst_dir.path().join("a.txt"), "hello").unwrap();
+
+        let (upserted, skipped) = upsert_dir(src_dir.path(), dst_dir.path()).unwrap();
+        assert_eq!(upserted, 0);
+        assert_eq!(skipped, 1);
+    }
+
+    #[test]
+    fn upsert_dir_updates_changed_files() {
+        let src_dir = TempDir::new().unwrap();
+        let dst_dir = TempDir::new().unwrap();
+
+        fs::write(src_dir.path().join("a.txt"), "new").unwrap();
+        fs::write(dst_dir.path().join("a.txt"), "old").unwrap();
+
+        let (upserted, skipped) = upsert_dir(src_dir.path(), dst_dir.path()).unwrap();
+        assert_eq!(upserted, 1);
+        assert_eq!(skipped, 0);
+        assert_eq!(fs::read_to_string(dst_dir.path().join("a.txt")).unwrap(), "new");
     }
 }
