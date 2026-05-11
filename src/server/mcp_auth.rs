@@ -4,7 +4,7 @@ fn constant_time_eq(a: &str, b: &str) -> bool {
         // Still do a dummy comparison to avoid leaking length via timing.
         let mut _dummy: u8 = 0;
         for b in a.bytes() {
-            _dummy |= b ^ 0;
+            _dummy |= b;
         }
         return false;
     }
