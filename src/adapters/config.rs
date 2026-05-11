@@ -82,8 +82,13 @@ impl EpistemeConfig {
             env_bool_or("ENABLE_DEBUG_ENDPOINTS", config.enable_debug_endpoints);
         config.mcp_host = cfg_val(&yaml, "mcp", "host", "EPISTEME_MCP_HOST", &config.mcp_host);
         config.mcp_port = cfg_parse_val(&yaml, "mcp", "port", "EPISTEME_MCP_PORT", config.mcp_port);
-        config.mcp_token =
-            cfg_val(&yaml, "mcp", "token", "EPISTEME_MCP_TOKEN", &config.mcp_token);
+        config.mcp_token = cfg_val(
+            &yaml,
+            "mcp",
+            "token",
+            "EPISTEME_MCP_TOKEN",
+            &config.mcp_token,
+        );
 
         config.redis_host = cfg_val(
             &yaml,

@@ -416,9 +416,7 @@ const TOKEN_MARKER_END: &str = "# <<< episteme-token <<<";
 fn seed_token_to_shell_rc(token: &str) -> Result<()> {
     let home = std::env::var("HOME").unwrap_or_default();
     let export_line = format!(r#"export EPISTEME_MCP_TOKEN="{token}""#);
-    let block = format!(
-        "{TOKEN_MARKER_BEGIN}\n{export_line}\n{TOKEN_MARKER_END}\n"
-    );
+    let block = format!("{TOKEN_MARKER_BEGIN}\n{export_line}\n{TOKEN_MARKER_END}\n");
 
     let rc_files = [".zshrc", ".bashrc", ".bash_profile", ".profile"];
     for rc_name in &rc_files {
@@ -432,18 +430,19 @@ fn seed_token_to_shell_rc(token: &str) -> Result<()> {
             // Replace existing block
             let start = content.find(TOKEN_MARKER_BEGIN).unwrap();
             let end = content.find(TOKEN_MARKER_END).unwrap() + TOKEN_MARKER_END.len();
-            let new_content = format!("{}{}{}", &content[..start], block.trim_end(), &content[end..]);
+            let new_content = format!(
+                "{}{}{}",
+                &content[..start],
+                block.trim_end(),
+                &content[end..]
+            );
             if new_content != content {
                 std::fs::write(&rc_path, new_content)?;
                 println!("  Updated EPISTEME_MCP_TOKEN in ~/{rc_name}");
             }
         } else {
             // Append new block
-            let new_content = format!(
-                "{}\n{}",
-                content.trim_end(),
-                block,
-            );
+            let new_content = format!("{}\n{}", content.trim_end(), block,);
             std::fs::write(&rc_path, new_content)?;
             println!("  Added EPISTEME_MCP_TOKEN to ~/{rc_name}");
         }

@@ -647,7 +647,12 @@ fn systemd_unit_label(kind: ServiceKind) -> &'static str {
 
 /// Install a systemd user unit for the given service kind (Linux only).
 #[cfg(target_os = "linux")]
-pub fn install_systemd_unit(kind: ServiceKind, host: &str, port: u16, token: Option<&str>) -> Result<String, String> {
+pub fn install_systemd_unit(
+    kind: ServiceKind,
+    host: &str,
+    port: u16,
+    token: Option<&str>,
+) -> Result<String, String> {
     validate_host_port(host, port)?;
     let exe = std::env::current_exe().map_err(|e| e.to_string())?;
     let unit_path = systemd_unit_path(kind)?;
@@ -755,7 +760,12 @@ pub fn uninstall_systemd_unit(kind: ServiceKind) -> Result<String, String> {
 
 // Stubs for non-Linux targets so callers can compile unconditionally.
 #[cfg(not(target_os = "linux"))]
-pub fn install_systemd_unit(kind: ServiceKind, host: &str, port: u16, token: Option<&str>) -> Result<String, String> {
+pub fn install_systemd_unit(
+    kind: ServiceKind,
+    host: &str,
+    port: u16,
+    token: Option<&str>,
+) -> Result<String, String> {
     let _ = (kind, host, port, token);
     Err("systemd integration is only supported on Linux".to_owned())
 }

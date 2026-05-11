@@ -419,11 +419,7 @@ pub fn configure_server_tui(
     // Step 3: Port (reuse existing)
     let port = prompt_numeric_tui::<u16>("MCP server", "port", current_port)?;
 
-    Ok(ServerConfig {
-        host,
-        port,
-        token,
-    })
+    Ok(ServerConfig { host, port, token })
 }
 
 fn run_host_select_tui() -> io::Result<String> {

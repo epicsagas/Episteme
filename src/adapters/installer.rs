@@ -7,10 +7,7 @@ use serde_json::{Value, json};
 /// Transport configuration for MCP integration across all AI tools.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Transport {
-    Http {
-        port: u16,
-        token: Option<String>,
-    },
+    Http { port: u16, token: Option<String> },
     Stdio,
 }
 
@@ -31,13 +28,10 @@ fn mcp_server_config(transport: &Transport) -> Value {
                 "url": format!("http://127.0.0.1:{port}/mcp")
             });
             if let Some(t) = token {
-                config
-                    .as_object_mut()
-                    .unwrap()
-                    .insert(
-                        "headers".to_owned(),
-                        json!({ "Authorization": format!("Bearer {t}") }),
-                    );
+                config.as_object_mut().unwrap().insert(
+                    "headers".to_owned(),
+                    json!({ "Authorization": format!("Bearer {t}") }),
+                );
             }
             config
         }
@@ -891,10 +885,7 @@ mod tests {
         });
         assert_eq!(cfg["type"], "http");
         assert_eq!(cfg["url"], "http://127.0.0.1:43175/mcp");
-        assert_eq!(
-            cfg["headers"]["Authorization"],
-            "Bearer epis-abc123"
-        );
+        assert_eq!(cfg["headers"]["Authorization"], "Bearer epis-abc123");
     }
 
     #[test]

@@ -129,9 +129,7 @@ impl KnowledgeGraph {
             sources.sort();
             sources.dedup();
             if let Some(entity) = entities.get_mut(&target_id) {
-                entity
-                    .relations
-                    .insert(inverse_key.to_owned(), sources);
+                entity.relations.insert(inverse_key.to_owned(), sources);
             }
         }
     }
@@ -957,8 +955,10 @@ pub(crate) mod tests {
         rf1.relations
             .insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
         let mut rf2 = blank_entity("RF-002");
-        rf2.relations
-            .insert("solves".to_owned(), vec!["SMELL-01".to_owned(), "SMELL-02".to_owned()]);
+        rf2.relations.insert(
+            "solves".to_owned(),
+            vec!["SMELL-01".to_owned(), "SMELL-02".to_owned()],
+        );
 
         let smell1 = blank_entity("SMELL-01");
         let smell2 = blank_entity("SMELL-02");
