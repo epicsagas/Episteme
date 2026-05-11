@@ -2,7 +2,7 @@
 
 **Project:** Episteme v0.1.0
 **Language:** Rust (edition 2024)
-**Last Updated:** 2026-05-03
+**Last Updated:** 2026-05-11
 
 ---
 
@@ -13,7 +13,7 @@
 | **Knowledge Base** | Complete | 22 patterns, 66 refactorings, 56 laws, 23 smells, 201 relations |
 | **Code Smell Detection** | Production | 16 detector functions, 10 languages |
 | **REST API** | Production | 17 endpoints (axum), rate limiting, auth |
-| **MCP Server** | Production | 6 tools, stdio + HTTP transport |
+| **MCP Server** | Production | 6 tools, stdio + HTTP transport, bearer token auth |
 | **RAG Pipeline** | Production | SQLite + FTS5 + fastembed (ONNX) |
 | **Graph Visualization** | Production | Interactive web UI with D3-force |
 
@@ -122,6 +122,7 @@ cargo test
 cargo clippy -- -D warnings
 
 # Install locally (seeds data and builds DB automatically)
+# The wizard now includes a server config step for host binding and optional bearer token
 cargo install --path .
 epis install --local
 ```
@@ -162,4 +163,4 @@ epis install --local
 
 ---
 
-*Last Updated: 2026-05-03*
+*Last Updated: 2026-05-11*

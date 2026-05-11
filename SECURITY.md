@@ -24,6 +24,8 @@ In-scope:
 - Path traversal in file analysis
 - SQL injection in the local SQLite layer
 - Unsafe deserialization of knowledge graph data
+- Bearer token leakage in MCP client configs, shell RC files, and process arguments
+- Token storage security (config.yaml, environment variables, seeded files)
 
 Out-of-scope:
 - Vulnerabilities in the user's Rust toolchain or OS

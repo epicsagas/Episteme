@@ -263,6 +263,21 @@ Add to your MCP config file:
 }
 ```
 
+For HTTP transport with bearer token authentication:
+```json
+{
+  "mcpServers": {
+    "episteme": {
+      "command": "docker",
+      "args": ["exec", "-i", "episteme-api", "episteme", "mcp"],
+      "headers": {
+        "Authorization": "Bearer epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+      }
+    }
+  }
+}
+```
+
 ### Option 4: Pre-built Binaries (No Rust Required)
 
 Download the latest binary for your platform from [GitHub Releases](https://github.com/epicsagas/Episteme/releases):
@@ -402,6 +417,7 @@ EPISTEME_API_KEY=your-secret-key
 # MCP server
 EPISTEME_MCP_HOST=127.0.0.1
 EPISTEME_MCP_PORT=43175
+EPISTEME_MCP_TOKEN=epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
 ```
 
 ---

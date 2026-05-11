@@ -22,6 +22,42 @@ Note:
 - `epis service` manages this same MCP HTTP mode in background (`start|stop|status|enable|disable`).
 - Older `--proxy` examples are deprecated; use `mcp --http`/`service` directly.
 
+### Bearer Token Authentication
+
+The MCP HTTP server supports bearer token authentication via the `Authorization` header:
+
+```
+Authorization: Bearer epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+```
+
+**Configuration:**
+
+```yaml
+# config.yaml
+mcp:
+  host: "0.0.0.0"
+  port: 43175
+  token: "epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+```
+
+Or via environment variable:
+```bash
+export EPISTEME_MCP_TOKEN="epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+```
+
+**Rules:**
+
+| Bind Address | Token Required? | Behavior |
+|--------------|-----------------|----------|
+| `127.0.0.1` (localhost) | Recommended, but optional | Server starts with or without a token |
+| `0.0.0.0` (all interfaces) | **Required** | Server refuses to start without a token |
+
+**Token format:** `epis-` prefix + 32 hex characters (e.g., `epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6`). Tokens are generated automatically by the install wizard.
+
+**Auto-seeding:** When a token is configured, `epis install` automatically:
+1. Adds `"headers": {"Authorization": "Bearer <token>"}` to MCP client configs (Claude, Cursor, etc.)
+2. Exports `EPISTEME_MCP_TOKEN=<token>` to shell RC files (`~/.bashrc`, `~/.zshrc`)
+
 ## What is MCP?
 
 [Model Context Protocol (MCP)](https://modelcontextprotocol.io) is an open standard that allows AI assistants to access external tools and data sources. Episteme provides 6 MCP tools that give AI agents direct access to software engineering knowledge.
@@ -702,6 +738,26 @@ If your tool supports MCP, manually configure:
 }
 ```
 
+When bearer token authentication is configured, include the `headers` field:
+
+```json
+{
+  "mcpServers": {
+    "episteme": {
+      "command": "/path/to/episteme",
+      "args": ["mcp"],
+      "env": {
+        "EPISTEME_DATA_DIR": "~/.episteme/data",
+        "EPISTEME_DB_PATH": "~/.episteme/db/episteme.db"
+      },
+      "headers": {
+        "Authorization": "Bearer epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+      }
+    }
+  }
+}
+```
+
 ---
 
 ## Running as Background Service
@@ -731,6 +787,22 @@ Update MCP config to use HTTP proxy:
     "episteme": {
       "command": "episteme",
       "args": ["mcp", "--proxy", "http://localhost:43175"]
+    }
+  }
+}
+```
+
+When using HTTP proxy with bearer token authentication:
+
+```json
+{
+  "mcpServers": {
+    "episteme": {
+      "command": "episteme",
+      "args": ["mcp", "--proxy", "http://localhost:43175"],
+      "headers": {
+        "Authorization": "Bearer epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+      }
     }
   }
 }

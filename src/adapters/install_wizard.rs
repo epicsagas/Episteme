@@ -20,6 +20,7 @@ pub fn select_transport() -> io::Result<Transport> {
     if !io::stdin().is_terminal() {
         return Ok(Transport::Http {
             port: DEFAULT_MCP_PORT,
+            token: None,
         });
     }
     run_transport_tui()
@@ -83,7 +84,7 @@ fn run_transport_tui() -> io::Result<Transport> {
     if transport == 0 {
         // HTTP selected — prompt for port in same style
         let port = prompt_port_tui(DEFAULT_MCP_PORT)?;
-        Ok(Transport::Http { port })
+        Ok(Transport::Http { port, token: None })
     } else {
         Ok(Transport::Stdio)
     }
@@ -354,6 +355,271 @@ fn truncate_desc(s: &str, max_chars: usize) -> String {
     }
     let take = max_chars.saturating_sub(1);
     s.chars().take(take).chain(std::iter::once('…')).collect()
+}
+
+// ---------------------------------------------------------------------------
+// Server config TUI (host + bearer token)
+// ---------------------------------------------------------------------------
+
+pub struct ServerConfig {
+    pub host: String,
+    pub port: u16,
+    pub token: Option<String>,
+}
+
+/// Interactive server configuration screen.
+///
+/// - Asks for bind address (127.0.0.1 or 0.0.0.0)
+/// - If 0.0.0.0: token is auto-generated and mandatory
+/// - If 127.0.0.1: token is optional (recommended)
+///
+/// Non-TTY returns defaults (127.0.0.1, current port, no token).
+pub fn configure_server_tui(
+    current_host: &str,
+    current_port: u16,
+    current_token: &str,
+) -> io::Result<ServerConfig> {
+    if !io::stdin().is_terminal() {
+        return Ok(ServerConfig {
+            host: current_host.to_owned(),
+            port: current_port,
+            token: None,
+        });
+    }
+
+    // Step 1: Host selection
+    let host = run_host_select_tui()?;
+
+    // Step 2: Token decision
+    let is_public = !crate::server::mcp_auth::is_localhost(&host);
+    let token = if is_public {
+        // Mandatory token for non-localhost
+        let t = crate::server::mcp_auth::generate_token();
+        show_token_tui(&t, true)?;
+        Some(t)
+    } else {
+        // Optional but recommended
+        let generate = run_yes_no_tui(
+            "Server auth",
+            "Generate a bearer token for MCP access? (recommended)",
+            true,
+        )?;
+        if generate {
+            let t = crate::server::mcp_auth::generate_token();
+            show_token_tui(&t, false)?;
+            Some(t)
+        } else if !current_token.is_empty() {
+            // Keep existing token if present
+            Some(current_token.to_owned())
+        } else {
+            None
+        }
+    };
+
+    // Step 3: Port (reuse existing)
+    let port = prompt_numeric_tui::<u16>("MCP server", "port", current_port)?;
+
+    Ok(ServerConfig {
+        host,
+        port,
+        token,
+    })
+}
+
+fn run_host_select_tui() -> io::Result<String> {
+    let options: &[(&str, &str, &str)] = &[
+        (
+            "127.0.0.1",
+            "Local only (recommended)",
+            "Only connections from this machine",
+        ),
+        (
+            "0.0.0.0",
+            "Remote accessible",
+            "Allows connections from other machines (token required)",
+        ),
+    ];
+    let mut cursor = 0usize;
+
+    enable_raw_mode()?;
+    let mut stdout = io::stdout();
+    execute!(
+        stdout,
+        EnterAlternateScreen,
+        Hide,
+        MoveTo(0, 0),
+        Clear(ClearType::All)
+    )?;
+
+    struct RawGuard;
+    impl Drop for RawGuard {
+        fn drop(&mut self) {
+            let _ = execute!(io::stdout(), LeaveAlternateScreen, Show);
+            let _ = disable_raw_mode();
+        }
+    }
+    let _guard = RawGuard;
+
+    loop {
+        queue!(stdout, MoveTo(0, 0), Clear(ClearType::All))?;
+        tui_header(&mut stdout, "MCP bind address")?;
+        queue!(stdout, Print("\r\n"))?;
+
+        for (i, (addr, label, desc)) in options.iter().enumerate() {
+            let row_hi = i == cursor;
+            let mark = if row_hi { "[•]" } else { "[ ]" };
+            let prefix = if row_hi { " › " } else { "   " };
+
+            if row_hi {
+                queue!(
+                    stdout,
+                    SetForegroundColor(HI),
+                    SetAttribute(Attribute::Bold),
+                    Print(prefix),
+                    Print(mark),
+                    Print("  "),
+                    Print(format!("{addr:<12}")),
+                    ResetColor,
+                    SetForegroundColor(DIM),
+                    Print("  "),
+                    Print(truncate_desc(label, 28)),
+                    ResetColor,
+                    Print("\r\n"),
+                )?;
+                queue!(
+                    stdout,
+                    SetForegroundColor(DIM),
+                    Print("                 "),
+                    Print(truncate_desc(desc, 50)),
+                    Print("\r\n"),
+                    ResetColor,
+                )?;
+            } else {
+                queue!(
+                    stdout,
+                    Print(prefix),
+                    SetForegroundColor(DIM),
+                    Print(mark),
+                    ResetColor,
+                    Print("  "),
+                    Print(format!("{addr:<12}")),
+                    SetForegroundColor(DIM),
+                    Print("  "),
+                    Print(truncate_desc(label, 28)),
+                    ResetColor,
+                    Print("\r\n"),
+                )?;
+            }
+        }
+
+        queue!(
+            stdout,
+            Print("\r\n"),
+            SetForegroundColor(DIM),
+            Print(" ────────────────────────────────────────────────────────────────────────\r\n"),
+            Print("  ↑/↓ Move   Enter Confirm\r\n"),
+            ResetColor,
+        )?;
+        stdout.flush()?;
+
+        let ev = event::read()?;
+        let Event::Key(key) = ev else { continue };
+        if key.kind != KeyEventKind::Press {
+            continue;
+        }
+
+        match key.code {
+            KeyCode::Up | KeyCode::Char('k') | KeyCode::Char('K') => {
+                cursor = cursor.saturating_sub(1);
+            }
+            KeyCode::Down | KeyCode::Char('j') | KeyCode::Char('J') => {
+                cursor = (cursor + 1).min(options.len() - 1);
+            }
+            KeyCode::Enter => {
+                let selected = options[cursor].0;
+                drop(_guard);
+                return Ok(selected.to_owned());
+            }
+            KeyCode::Esc | KeyCode::Char('q') | KeyCode::Char('Q') => {
+                drop(_guard);
+                return Ok("127.0.0.1".to_owned());
+            }
+            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                drop(_guard);
+                return Ok("127.0.0.1".to_owned());
+            }
+            _ => {}
+        }
+    }
+}
+
+/// Display a generated token to the user and wait for Enter.
+fn show_token_tui(token: &str, mandatory: bool) -> io::Result<()> {
+    enable_raw_mode()?;
+    let mut stdout = io::stdout();
+    execute!(
+        stdout,
+        EnterAlternateScreen,
+        Hide,
+        MoveTo(0, 0),
+        Clear(ClearType::All)
+    )?;
+
+    struct RawGuard;
+    impl Drop for RawGuard {
+        fn drop(&mut self) {
+            let _ = execute!(io::stdout(), LeaveAlternateScreen, Show);
+            let _ = disable_raw_mode();
+        }
+    }
+    let _guard = RawGuard;
+
+    let title = if mandatory {
+        "Token generated (required for 0.0.0.0)"
+    } else {
+        "Token generated"
+    };
+
+    loop {
+        queue!(stdout, MoveTo(0, 0), Clear(ClearType::All))?;
+        tui_header(&mut stdout, title)?;
+        queue!(
+            stdout,
+            Print("\r\n"),
+            SetForegroundColor(HI),
+            Print("  Bearer token:\r\n"),
+            ResetColor,
+            Print("\r\n"),
+            SetForegroundColor(ACCENT),
+            SetAttribute(Attribute::Bold),
+            Print(format!("  {token}\r\n")),
+            ResetColor,
+            Print("\r\n"),
+            SetForegroundColor(DIM),
+            Print("  Copy this token now. It will be saved to config.yaml\r\n"),
+            Print("  and seeded to your AI tool MCP configurations.\r\n"),
+            Print("\r\n"),
+            Print(" ────────────────────────────────────────────────────────────────────────\r\n"),
+            Print("  Press Enter to continue\r\n"),
+            ResetColor,
+        )?;
+        stdout.flush()?;
+
+        let ev = event::read()?;
+        let Event::Key(key) = ev else { continue };
+        if key.kind != KeyEventKind::Press {
+            continue;
+        }
+        match key.code {
+            KeyCode::Enter | KeyCode::Esc => break,
+            _ => {}
+        }
+    }
+
+    drop(_guard);
+    // Also print to stdout so it appears in terminal scrollback
+    println!("\nEpisteme bearer token: {token}\n");
+    Ok(())
 }
 
 // ---------------------------------------------------------------------------
@@ -659,6 +925,12 @@ mod tests {
             return;
         }
         let result = select_transport().unwrap();
-        assert_eq!(result, Transport::Http { port: 43175 });
+        assert_eq!(
+            result,
+            Transport::Http {
+                port: 43175,
+                token: None,
+            }
+        );
     }
 }

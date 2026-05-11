@@ -187,6 +187,21 @@ fn get_port(kind: ServiceKind) -> u16 {
     get_host_port(kind).1
 }
 
+/// Resolve the configured bearer token for MCP, if any.
+fn get_token(kind: ServiceKind) -> Option<String> {
+    match kind {
+        ServiceKind::Mcp => {
+            let cfg = crate::adapters::config::EpistemeConfig::load().ok()?;
+            if cfg.mcp_token.is_empty() {
+                None
+            } else {
+                Some(cfg.mcp_token)
+            }
+        }
+        ServiceKind::Api => None,
+    }
+}
+
 /// Return a human-readable label for the service kind.
 pub fn kind_label(kind: ServiceKind) -> &'static str {
     match kind {
@@ -406,11 +421,12 @@ pub fn install_launchd_agent_for(
     kind: ServiceKind,
     host: &str,
     port: u16,
+    token: Option<&str>,
 ) -> Result<String, String> {
     validate_host_port(host, port)?;
     #[cfg(not(target_os = "macos"))]
     {
-        let _ = (kind, host, port);
+        let _ = (kind, host, port, token);
         Err("launchd integration is only supported on macOS".to_owned())
     }
     #[cfg(target_os = "macos")]
@@ -453,6 +469,18 @@ pub fn install_launchd_agent_for(
             ),
         };
 
+        let env_vars_section = match token {
+            Some(t) => format!(
+                r#"  <key>EnvironmentVariables</key>
+  <dict>
+    <key>EPISTEME_MCP_TOKEN</key>
+    <string>{t}</string>
+  </dict>
+"#
+            ),
+            None => String::new(),
+        };
+
         let plist = format!(
             r#"<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -465,7 +493,7 @@ pub fn install_launchd_agent_for(
   </array>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><true/>
-  <key>StandardOutPath</key><string>{stdout}</string>
+  {env_vars_section}<key>StandardOutPath</key><string>{stdout}</string>
   <key>StandardErrorPath</key><string>{stderr}</string>
 </dict>
 </plist>"#,
@@ -570,7 +598,7 @@ pub fn launchd_status_for(kind: ServiceKind) -> Result<String, String> {
 
 /// Install the MCP launchd agent. Backward-compatible wrapper.
 pub fn install_launchd_agent(host: &str, port: u16) -> Result<String, String> {
-    install_launchd_agent_for(ServiceKind::Mcp, host, port)
+    install_launchd_agent_for(ServiceKind::Mcp, host, port, None)
 }
 
 /// Uninstall the MCP launchd agent. Backward-compatible wrapper.
@@ -619,7 +647,7 @@ fn systemd_unit_label(kind: ServiceKind) -> &'static str {
 
 /// Install a systemd user unit for the given service kind (Linux only).
 #[cfg(target_os = "linux")]
-pub fn install_systemd_unit(kind: ServiceKind, host: &str, port: u16) -> Result<String, String> {
+pub fn install_systemd_unit(kind: ServiceKind, host: &str, port: u16, token: Option<&str>) -> Result<String, String> {
     validate_host_port(host, port)?;
     let exe = std::env::current_exe().map_err(|e| e.to_string())?;
     let unit_path = systemd_unit_path(kind)?;
@@ -641,6 +669,11 @@ pub fn install_systemd_unit(kind: ServiceKind, host: &str, port: u16) -> Result<
 
     let description = kind_label(kind);
 
+    let env_line = match token {
+        Some(t) => format!("Environment=\"EPISTEME_MCP_TOKEN={t}\"\n"),
+        None => String::new(),
+    };
+
     let unit = format!(
         "[Unit]\n\
 Description=Episteme {description} Server\n\
@@ -649,7 +682,7 @@ After=network.target\n\
 [Service]\n\
 Type=simple\n\
 ExecStart=\"{exe}\" {cmd} serve --host \"{host}\" --port {port}\n\
-Restart=on-failure\n\
+{env_line}Restart=on-failure\n\
 RestartSec=5\n\
 StandardOutput=append:{stdout}\n\
 StandardError=append:{stderr}\n\
@@ -660,6 +693,7 @@ WantedBy=default.target\n",
         cmd = cmd,
         host = host,
         port = port,
+        env_line = env_line,
         stdout = stdout_log.display(),
         stderr = stderr_log.display(),
     );
@@ -721,8 +755,8 @@ pub fn uninstall_systemd_unit(kind: ServiceKind) -> Result<String, String> {
 
 // Stubs for non-Linux targets so callers can compile unconditionally.
 #[cfg(not(target_os = "linux"))]
-pub fn install_systemd_unit(kind: ServiceKind, host: &str, port: u16) -> Result<String, String> {
-    let _ = (kind, host, port);
+pub fn install_systemd_unit(kind: ServiceKind, host: &str, port: u16, token: Option<&str>) -> Result<String, String> {
+    let _ = (kind, host, port, token);
     Err("systemd integration is only supported on Linux".to_owned())
 }
 
@@ -750,18 +784,19 @@ fn validate_host_port(host: &str, port: u16) -> Result<(), String> {
 /// Enable (install OS service unit and optionally start) the given service.
 pub fn enable_service(kind: ServiceKind, now: bool) -> Result<String, String> {
     let (host, port) = get_host_port(kind);
+    let token = get_token(kind);
     validate_host_port(&host, port)?;
 
     let mut msg = String::new();
 
     #[cfg(target_os = "macos")]
     {
-        let install_msg = install_launchd_agent_for(kind, &host, port)?;
+        let install_msg = install_launchd_agent_for(kind, &host, port, token.as_deref())?;
         msg.push_str(&install_msg);
     }
     #[cfg(target_os = "linux")]
     {
-        let install_msg = install_systemd_unit(kind, &host, port)?;
+        let install_msg = install_systemd_unit(kind, &host, port, token.as_deref())?;
         msg.push_str(&install_msg);
     }
     #[cfg(not(any(target_os = "macos", target_os = "linux")))]

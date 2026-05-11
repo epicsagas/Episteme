@@ -7,22 +7,40 @@ use serde_json::{Value, json};
 /// Transport configuration for MCP integration across all AI tools.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Transport {
-    Http { port: u16 },
+    Http {
+        port: u16,
+        token: Option<String>,
+    },
     Stdio,
 }
 
 impl Default for Transport {
     fn default() -> Self {
-        Transport::Http { port: 43175 }
+        Transport::Http {
+            port: 43175,
+            token: None,
+        }
     }
 }
 
 fn mcp_server_config(transport: &Transport) -> Value {
     match transport {
-        Transport::Http { port } => json!({
-            "type": "http",
-            "url": format!("http://127.0.0.1:{port}/mcp")
-        }),
+        Transport::Http { port, token } => {
+            let mut config = json!({
+                "type": "http",
+                "url": format!("http://127.0.0.1:{port}/mcp")
+            });
+            if let Some(t) = token {
+                config
+                    .as_object_mut()
+                    .unwrap()
+                    .insert(
+                        "headers".to_owned(),
+                        json!({ "Authorization": format!("Bearer {t}") }),
+                    );
+            }
+            config
+        }
         Transport::Stdio => json!({
             "command": "epis",
             "args": ["mcp"]
@@ -58,7 +76,7 @@ pub fn install_claude(dry_run: bool, transport: &Transport) -> Result<Vec<String
             write_json_file(&claude_json, &config)?;
         }
         let transport_label = match transport {
-            Transport::Http { port } => format!("HTTP, port {port}"),
+            Transport::Http { port, .. } => format!("HTTP, port {port}"),
             Transport::Stdio => "stdio".to_owned(),
         };
         if existed {
@@ -742,9 +760,13 @@ mod tests {
 
     #[test]
     fn mcp_server_config_http_has_expected_shape() {
-        let config = mcp_server_config(&Transport::Http { port: 43175 });
+        let config = mcp_server_config(&Transport::Http {
+            port: 43175,
+            token: None,
+        });
         assert_eq!(config["type"], "http");
         assert_eq!(config["url"], "http://127.0.0.1:43175/mcp");
+        assert!(!config.as_object().unwrap().contains_key("headers"));
     }
 
     #[test]
@@ -842,14 +864,37 @@ mod tests {
 
     #[test]
     fn transport_default_is_http_43175() {
-        assert_eq!(Transport::default(), Transport::Http { port: 43175 });
+        assert_eq!(
+            Transport::default(),
+            Transport::Http {
+                port: 43175,
+                token: None,
+            }
+        );
     }
 
     #[test]
     fn mcp_server_config_http_custom_port() {
-        let cfg = mcp_server_config(&Transport::Http { port: 8080 });
+        let cfg = mcp_server_config(&Transport::Http {
+            port: 8080,
+            token: None,
+        });
         assert_eq!(cfg["type"], "http");
         assert_eq!(cfg["url"], "http://127.0.0.1:8080/mcp");
+    }
+
+    #[test]
+    fn mcp_server_config_http_with_token() {
+        let cfg = mcp_server_config(&Transport::Http {
+            port: 43175,
+            token: Some("epis-abc123".to_owned()),
+        });
+        assert_eq!(cfg["type"], "http");
+        assert_eq!(cfg["url"], "http://127.0.0.1:43175/mcp");
+        assert_eq!(
+            cfg["headers"]["Authorization"],
+            "Bearer epis-abc123"
+        );
     }
 
     #[test]
@@ -874,7 +919,10 @@ mod tests {
             .unwrap();
         servers.insert(
             "episteme".to_owned(),
-            mcp_server_config(&Transport::Http { port: 43175 }),
+            mcp_server_config(&Transport::Http {
+                port: 43175,
+                token: None,
+            }),
         );
         write_json_file(&path, &config).unwrap();
 

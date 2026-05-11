@@ -27,6 +27,8 @@ epis install gemini      # Gemini CLI
 epis install all         # All tools at once
 ```
 
+> **Server configuration:** The install wizard will ask you to choose a bind address (`127.0.0.1` for localhost-only or `0.0.0.0` for network access) and optionally generate a bearer token for authentication. Non-localhost binding (`0.0.0.0`) requires a token; localhost binding recommends one but does not require it.
+
 > If `epis install claude` fails to download data, use the source install below instead.
 
 **That's it.** Restart your AI tool and Episteme is active.
@@ -50,6 +52,21 @@ For MCP integration via Docker, add to your MCP config:
     "episteme": {
       "command": "docker",
       "args": ["exec", "-i", "episteme-api", "episteme", "mcp"]
+    }
+  }
+}
+```
+
+With bearer token authentication (required when binding to `0.0.0.0`):
+```json
+{
+  "mcpServers": {
+    "episteme": {
+      "command": "docker",
+      "args": ["exec", "-i", "episteme-api", "episteme", "mcp"],
+      "headers": {
+        "Authorization": "Bearer epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+      }
     }
   }
 }

@@ -101,11 +101,38 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     selected.dedup();
 
     // --- Transport selection (TTY only; non-TTY defaults to HTTP + 43175) ---
-    let transport: Transport = if io::stdin().is_terminal() {
+    let mut transport: Transport = if io::stdin().is_terminal() {
         episteme::adapters::install_wizard::select_transport().map_err(|e| anyhow::anyhow!(e))?
     } else {
         Transport::default()
     };
+
+    // --- Server configuration (host + token, HTTP transport only, TTY only) ---
+    if matches!(transport, Transport::Http { .. }) && io::stdin().is_terminal() && !dry_run {
+        let cfg = EpistemeConfig::load().unwrap_or_default();
+        let current_port = match &transport {
+            Transport::Http { port, .. } => *port,
+            _ => 43175,
+        };
+        match episteme::adapters::install_wizard::configure_server_tui(
+            &cfg.mcp_host,
+            current_port,
+            &cfg.mcp_token,
+        )
+        .map_err(|e| anyhow::anyhow!(e))?
+        {
+            sc => {
+                upsert_server_config_yaml(&sc.host, sc.port, sc.token.as_deref())?;
+                if let Some(ref token) = sc.token {
+                    seed_token_to_shell_rc(token)?;
+                }
+                transport = Transport::Http {
+                    port: sc.port,
+                    token: sc.token,
+                };
+            }
+        };
+    }
 
     for tool in &selected {
         let result = match tool.as_str() {
@@ -342,5 +369,86 @@ fn upsert_config_yaml(
     std::fs::create_dir_all(episteme::adapters::paths::episteme_home())?;
     let yaml = serde_yaml::to_string(&root)?;
     std::fs::write(path, yaml)?;
+    Ok(())
+}
+
+fn upsert_server_config_yaml(host: &str, port: u16, token: Option<&str>) -> Result<()> {
+    use serde_yaml::{Mapping, Value};
+    let path = episteme::adapters::paths::episteme_home().join("config.yaml");
+    let mut root = if path.exists() {
+        let text = std::fs::read_to_string(&path)?;
+        serde_yaml::from_str::<Value>(&text).unwrap_or_else(|_| Value::Mapping(Mapping::new()))
+    } else {
+        Value::Mapping(Mapping::new())
+    };
+
+    if !root.is_mapping() {
+        root = Value::Mapping(Mapping::new());
+    }
+    let root_map = root.as_mapping_mut().expect("mapping checked above");
+
+    let mut mcp_map = Mapping::new();
+    mcp_map.insert(
+        Value::String("host".to_owned()),
+        Value::String(host.to_owned()),
+    );
+    mcp_map.insert(
+        Value::String("port".to_owned()),
+        Value::Number(serde_yaml::Number::from(port)),
+    );
+    if let Some(t) = token {
+        mcp_map.insert(
+            Value::String("token".to_owned()),
+            Value::String(t.to_owned()),
+        );
+    }
+    root_map.insert(Value::String("mcp".to_owned()), Value::Mapping(mcp_map));
+
+    std::fs::create_dir_all(episteme::adapters::paths::episteme_home())?;
+    let yaml = serde_yaml::to_string(&root)?;
+    std::fs::write(path, yaml)?;
+    Ok(())
+}
+
+const TOKEN_MARKER_BEGIN: &str = "# >>> episteme-token >>>";
+const TOKEN_MARKER_END: &str = "# <<< episteme-token <<<";
+
+fn seed_token_to_shell_rc(token: &str) -> Result<()> {
+    let home = std::env::var("HOME").unwrap_or_default();
+    let export_line = format!(r#"export EPISTEME_MCP_TOKEN="{token}""#);
+    let block = format!(
+        "{TOKEN_MARKER_BEGIN}\n{export_line}\n{TOKEN_MARKER_END}\n"
+    );
+
+    let rc_files = [".zshrc", ".bashrc", ".bash_profile", ".profile"];
+    for rc_name in &rc_files {
+        let rc_path = PathBuf::from(&home).join(rc_name);
+        if !rc_path.exists() {
+            continue;
+        }
+        let content = std::fs::read_to_string(&rc_path)?;
+
+        if content.contains(TOKEN_MARKER_BEGIN) {
+            // Replace existing block
+            let start = content.find(TOKEN_MARKER_BEGIN).unwrap();
+            let end = content.find(TOKEN_MARKER_END).unwrap() + TOKEN_MARKER_END.len();
+            let new_content = format!("{}{}{}", &content[..start], block.trim_end(), &content[end..]);
+            if new_content != content {
+                std::fs::write(&rc_path, new_content)?;
+                println!("  Updated EPISTEME_MCP_TOKEN in ~/{rc_name}");
+            }
+        } else {
+            // Append new block
+            let new_content = format!(
+                "{}\n{}",
+                content.trim_end(),
+                block,
+            );
+            std::fs::write(&rc_path, new_content)?;
+            println!("  Added EPISTEME_MCP_TOKEN to ~/{rc_name}");
+        }
+        // Only update the first matching rc file
+        break;
+    }
     Ok(())
 }

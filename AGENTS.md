@@ -30,7 +30,7 @@
 - Error handling: `thiserror` for domain errors (`GraphError`), `InfraError` for adapters; `anyhow::Result` in CLI/main; domain uses manual `Display` + `Error` impls (no thiserror dep)
 - Imports: `use crate::domain::...` for domain, `use crate::ports::...` for traits, `use crate::adapters::...` for infra; grouped by source
 - Async: `tokio` runtime; axum handlers are async; domain logic is synchronous
-- MCP: Unified `Transport` enum (HTTP/stdio) — install 시 선택한 transport가 모든 AI 도구(Claude, Cursor, Gemini, OpenCode, Cline)에 동일하게 시딩됨
+- MCP: Unified `Transport` enum (HTTP/stdio) — install 시 선택한 transport가 모든 AI 도구(Claude, Cursor, Gemini, OpenCode, Cline)에 동일하게 시딩됨; `Transport` variants carry an optional `token` field for bearer token auth (non-localhost binding requires token in strict mode)
 - State: `KnowledgeGraph` is the central in-memory data structure; `EpistemeMCP` wraps it with optional RAG; `solves`가 단일 진실 공급원, `solved_by`는 `derive_inverse_relations()`에서 로드 시 파생
 - Regex: `OnceLock<Regex>` for cached static patterns; `GenericParser` with `ParserConfig` for language-specific parsers
 - Architecture: Hexagonal (ports & adapters) — `domain/` has zero external deps, `ports/` defines traits, `adapters/` implements them
