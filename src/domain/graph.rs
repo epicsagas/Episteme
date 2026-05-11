@@ -83,10 +83,14 @@ impl KnowledgeGraph {
 
     /// Build a knowledge graph from an existing HashMap of entities (pure, no I/O).
     ///
-    /// Derives `solved_by` from forward `solves` edges so that `solves` is the
-    /// single source of truth. Any stale `solved_by` in the data is overwritten.
+    /// Derives all inverse relations from forward edges at load time so that
+    /// forward directions are the single source of truth. The three derived
+    /// pairs are: solves→solved_by, enforces→enforced_by, violates→violated_by.
+    /// Any stale inverse data in the entity map is overwritten.
     pub fn from_entities(mut entities: HashMap<String, Entity>) -> Self {
         Self::derive_inverse_relations(&mut entities, "solves", "solved_by");
+        Self::derive_inverse_relations(&mut entities, "enforces", "enforced_by");
+        Self::derive_inverse_relations(&mut entities, "violates", "violated_by");
 
         let reverse_relations = Self::build_reverse_index(&entities);
 
@@ -210,18 +214,17 @@ impl KnowledgeGraph {
 
     /// Get all neighbor IDs of `entity_id`, optionally filtered by `relation_type`.
     ///
-    /// When `relation_type` is `Some(rt)` and `rt` has a defined inverse (e.g.
-    /// `solved_by` ↔ `solves`), this method also derives neighbors from the
-    /// reverse index, effectively traversing incoming edges.
+    /// When `relation_type` is `Some(rt)`, returns the entity's `rt` edges.
+    /// Inverse relations (solved_by, enforced_by, violated_by) are already
+    /// materialized at load time by `derive_inverse_relations`, so no query-time
+    /// derivation is needed.
     ///
     /// When `relation_type` is `None`, only **outgoing** edges are returned.
     /// For full bidirectional traversal, use `get_neighborhood()` or combine
     /// with explicit reverse queries.
     ///
     /// **Note:** `find_shortest_path()` and `extract_subgraph()` call this with
-    /// `None` and therefore traverse only directed (outgoing) edges. Inverse
-    /// derivation is intentionally limited to the `Some(rt)` path to keep BFS
-    /// semantics predictable.
+    /// `None` and therefore traverse only directed (outgoing) edges.
     pub fn get_neighbors(&self, entity_id: &str, relation_type: Option<&str>) -> Vec<String> {
         let Some(entity) = self.entities.get(entity_id) else {
             return Vec::new();
@@ -229,20 +232,6 @@ impl KnowledgeGraph {
 
         if let Some(rt) = relation_type {
             let mut results = entity.relations.get(rt).cloned().unwrap_or_default();
-
-            // Derive inverse relations from the reverse index.
-            if let Some(inverse) = Self::inverse_relation(rt)
-                && let Some(reverse_map) = self.reverse_relations.get(entity_id)
-                && let Some(sources) = reverse_map.get(&inverse)
-            {
-                let seen: HashSet<String> = results.iter().cloned().collect();
-                for source in sources {
-                    if !seen.contains(source) {
-                        results.push(source.clone());
-                    }
-                }
-            }
-
             results.sort();
             results
         } else {
@@ -257,15 +246,6 @@ impl KnowledgeGraph {
             }
             neighbors
         }
-    }
-
-    /// Return the inverse relation type, delegating to `RelationType::inverse_of()`.
-    fn inverse_relation(relation_type: &str) -> Option<String> {
-        relation_type
-            .parse::<RelationType>()
-            .ok()
-            .and_then(|rt| rt.inverse_of())
-            .map(|rt| rt.to_string())
     }
 
     /// All outgoing edges from `entity_id`.
