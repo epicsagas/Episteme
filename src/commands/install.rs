@@ -114,23 +114,19 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
             Transport::Http { port, .. } => *port,
             _ => 43175,
         };
-        match episteme::adapters::install_wizard::configure_server_tui(
+        let sc = episteme::adapters::install_wizard::configure_server_tui(
             &cfg.mcp_host,
             current_port,
             &cfg.mcp_token,
         )
-        .map_err(|e| anyhow::anyhow!(e))?
-        {
-            sc => {
-                upsert_server_config_yaml(&sc.host, sc.port, sc.token.as_deref())?;
-                if let Some(ref token) = sc.token {
-                    seed_token_to_shell_rc(token)?;
-                }
-                transport = Transport::Http {
-                    port: sc.port,
-                    token: sc.token,
-                };
-            }
+        .map_err(|e| anyhow::anyhow!(e))?;
+        upsert_server_config_yaml(&sc.host, sc.port, sc.token.as_deref())?;
+        if let Some(ref token) = sc.token {
+            seed_token_to_shell_rc(token)?;
+        }
+        transport = Transport::Http {
+            port: sc.port,
+            token: sc.token,
         };
     }
 
