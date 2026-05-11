@@ -81,6 +81,24 @@ jobs:
           RUST_BACKTRACE: 1
         run: cargo build --release --target ${{ matrix.target }}
 
+      - name: Sign macOS binary
+        if: runner.os == 'macOS' && env.CODESIGN_CERTIFICATE != ''
+        env:
+          CODESIGN_CERTIFICATE: ${{ secrets.CODESIGN_CERTIFICATE }}
+          CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.CODESIGN_CERTIFICATE_PASSWORD }}
+          CODESIGN_IDENTITY: ${{ secrets.CODESIGN_IDENTITY }}
+        run: |
+          echo "$CODESIGN_CERTIFICATE" | base64 --decode > /tmp/cert.p12
+          security create-keychain -p "" build.keychain
+          security import /tmp/cert.p12 -k build.keychain -P "$CODESIGN_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-keychain-settings -lut 21600 build.keychain
+          security unlock-keychain -p "" build.keychain
+          security list-keychains -d user -s build.keychain $(security list-keychains -d user | tr -d '"')
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+          codesign --force --sign "$CODESIGN_IDENTITY" --options runtime \
+            target/${{ matrix.target }}/release/episteme
+          codesign --verify --deep --strict target/${{ matrix.target }}/release/episteme
+
       - name: Package archive (Unix)
         if: runner.os != 'Windows'
         shell: bash
