@@ -14,3 +14,5 @@ installers = ["shell", "powershell", "homebrew"]
 tap = "epicsagas/homebrew-tap"
 publish-jobs = ["./publish-crate"]
 merge-assets = true
+macos-sign = true
+macos-notarize = true
