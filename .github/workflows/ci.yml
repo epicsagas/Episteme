@@ -1,9 +1,9 @@
 name: CI
 
+# Disabled: GitHub Actions billing limit exceeded.
+# Re-enable by restoring the `on:` triggers below.
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch: # manual trigger only
 
 permissions:
   contents: read

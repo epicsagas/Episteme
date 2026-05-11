@@ -1,9 +1,9 @@
 name: Release
 
+# Disabled: GitHub Actions billing limit exceeded.
+# Re-enable by restoring the `on:` triggers below.
 on:
-  push:
-    tags:
-      - "v*.*.*"
+  workflow_dispatch: # manual trigger only
 
 permissions:
   contents: write
