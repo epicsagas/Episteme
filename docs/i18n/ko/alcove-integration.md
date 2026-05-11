@@ -74,7 +74,7 @@ flowchart LR
 **범위**: 조직 전반  
 **내용**: 횡단 관심사, 규제 요구사항, 공통 패턴
 
-**예시** (`~/.alcove/vaults/osn-finance/FSS_COMPLIANCE.md`):
+**예시** (`~/.alcove/vaults/finance/FSS_COMPLIANCE.md`):
 ```markdown
 # FSS_COMPLIANCE.md
 ## Card Number Handling

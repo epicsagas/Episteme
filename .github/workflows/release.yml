@@ -1,9 +1,9 @@
 name: Release
 
+# Disabled: GitHub Actions billing limit exceeded.
+# Re-enable by restoring the `on:` triggers below.
 on:
-  push:
-    tags:
-      - "vvv*.*.*"
+  workflow_dispatch: # manual trigger only
 
 permissions:
   contents: write
@@ -21,19 +21,25 @@ jobs:
         include:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
-            artifact: Episteme-linux-x86_64
+            artifact: episteme-linux-x86_64
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            artifact: episteme-linux-x86_64-musl
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
-            artifact: Episteme-linux-aarch64
+            artifact: episteme-linux-aarch64
           - target: x86_64-apple-darwin
             os: macos-latest
-            artifact: Episteme-macos-x86_64
+            artifact: episteme-macos-x86_64
           - target: aarch64-apple-darwin
             os: macos-latest
-            artifact: Episteme-macos-aarch64
+            artifact: episteme-macos-aarch64
           - target: x86_64-pc-windows-msvc
             os: windows-latest
-            artifact: Episteme-windows-x86_64
+            artifact: episteme-windows-x86_64
+          - target: aarch64-pc-windows-msvc
+            os: windows-latest
+            artifact: episteme-windows-aarch64
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -50,6 +56,12 @@ jobs:
           sudo dpkg --add-architecture arm64
           sudo apt-get update
           sudo apt-get install -y libssl-dev:arm64
+
+      - name: Install musl cross-compilation tools
+        if: matrix.target == 'x86_64-unknown-linux-musl'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
 
       - name: Cache Cargo
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
@@ -69,17 +81,35 @@ jobs:
           RUST_BACKTRACE: 1
         run: cargo build --release --target ${{ matrix.target }}
 
+      - name: Sign macOS binary
+        if: runner.os == 'macOS' && env.CODESIGN_CERTIFICATE != ''
+        env:
+          CODESIGN_CERTIFICATE: ${{ secrets.CODESIGN_CERTIFICATE }}
+          CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.CODESIGN_CERTIFICATE_PASSWORD }}
+          CODESIGN_IDENTITY: ${{ secrets.CODESIGN_IDENTITY }}
+        run: |
+          echo "$CODESIGN_CERTIFICATE" | base64 --decode > /tmp/cert.p12
+          security create-keychain -p "" build.keychain
+          security import /tmp/cert.p12 -k build.keychain -P "$CODESIGN_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-keychain-settings -lut 21600 build.keychain
+          security unlock-keychain -p "" build.keychain
+          security list-keychains -d user -s build.keychain $(security list-keychains -d user | tr -d '"')
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+          codesign --force --sign "$CODESIGN_IDENTITY" --options runtime \
+            target/${{ matrix.target }}/release/episteme
+          codesign --verify --deep --strict target/${{ matrix.target }}/release/episteme
+
       - name: Package archive (Unix)
         if: runner.os != 'Windows'
         shell: bash
         run: |
           mkdir -p dist
-          cp target/${{ matrix.target }}/release/Episteme dist/
-          cp target/${{ matrix.target }}/release/Episteme-mcp dist/ 2>/dev/null || true
+          cp target/${{ matrix.target }}/release/episteme dist/
+          cp target/${{ matrix.target }}/release/epis dist/ 2>/dev/null || true
           cp LICENSE README.md dist/ 2>/dev/null || true
           cd dist
           files=""
-          for f in Episteme Episteme-mcp LICENSE README.md; do
+          for f in episteme epis LICENSE README.md; do
             [ -f "$f" ] && files="$files $f"
           done
           tar czf ${{ matrix.artifact }}.tar.gz $files
@@ -89,12 +119,12 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist
-          cp target/${{ matrix.target }}/release/Episteme.exe dist/
-          cp target/${{ matrix.target }}/release/Episteme-mcp.exe dist/ 2>/dev/null || true
+          cp target/${{ matrix.target }}/release/episteme.exe dist/
+          cp target/${{ matrix.target }}/release/epis.exe dist/ 2>/dev/null || true
           cp LICENSE README.md dist/ 2>/dev/null || true
           cd dist
           files=""
-          for f in Episteme.exe Episteme-mcp.exe LICENSE README.md; do
+          for f in episteme.exe epis.exe LICENSE README.md; do
             [ -f "$f" ] && files="$files $f"
           done
           7z a ${{ matrix.artifact }}.zip $files
@@ -116,10 +146,10 @@ jobs:
 
       - name: Verify data archive exists
         run: |
-          ARCHIVE=$(ls dist/Episteme-data-*.tar.gz 2>/dev/null | head -1)
+          ARCHIVE=$(ls dist/episteme-data-*.tar.gz 2>/dev/null | head -1)
           if [ -z "$ARCHIVE" ]; then
-            echo "ERROR: dist/Episteme-data-*.tar.gz not found in repo."
-            echo "Run 'Episteme dist' locally and commit the archive before tagging."
+            echo "ERROR: dist/episteme-data-*.tar.gz not found in repo."
+            echo "Run 'episteme dist' locally and commit the archive before tagging."
             exit 1
           fi
           echo "Found: $ARCHIVE ($(du -sh "$ARCHIVE" | cut -f1))"
@@ -128,7 +158,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: data-archive
-          path: dist/Episteme-data-*.tar.gz
+          path: dist/episteme-data-*.tar.gz
 
   # ---------------------------------------------------------------------------
   # 3. Generate SBOM and SHA256 checksums
@@ -239,13 +269,15 @@ jobs:
             done
             echo "ERROR: failed to download $1" && exit 1
           }
-          dl Episteme-macos-aarch64.tar.gz arm.tar.gz
-          dl Episteme-macos-x86_64.tar.gz intel.tar.gz
-          dl Episteme-linux-x86_64.tar.gz linux_x86_64.tar.gz
-          dl Episteme-linux-aarch64.tar.gz linux_aarch64.tar.gz
+          dl episteme-macos-aarch64.tar.gz arm.tar.gz
+          dl episteme-macos-x86_64.tar.gz intel.tar.gz
+          dl episteme-linux-x86_64.tar.gz linux_x86_64.tar.gz
+          dl episteme-linux-x86_64-musl.tar.gz linux_x86_64_musl.tar.gz
+          dl episteme-linux-aarch64.tar.gz linux_aarch64.tar.gz
           echo "arm=$(sha256sum arm.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
           echo "intel=$(sha256sum intel.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
           echo "linux_x86_64=$(sha256sum linux_x86_64.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
+          echo "linux_x86_64_musl=$(sha256sum linux_x86_64_musl.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
           echo "linux_aarch64=$(sha256sum linux_aarch64.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
 
       - name: Checkout homebrew tap
@@ -259,10 +291,11 @@ jobs:
           SHA_ARM: ${{ steps.sha.outputs.arm }}
           SHA_INTEL: ${{ steps.sha.outputs.intel }}
           SHA_LINUX_X86_64: ${{ steps.sha.outputs.linux_x86_64 }}
+          SHA_LINUX_X86_64_MUSL: ${{ steps.sha.outputs.linux_x86_64_musl }}
           SHA_LINUX_AARCH64: ${{ steps.sha.outputs.linux_aarch64 }}
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          cat > Formula/Episteme.rb << RUBY
+          cat > Formula/episteme.rb << RUBY
           class Episteme < Formula
             desc "Software engineering knowledge graph for AI agents"
             homepage "https://github.com/epicsagas/Episteme"
@@ -271,31 +304,31 @@ jobs:
 
             on_macos do
               if Hardware::CPU.arm?
-                url "https://github.com/epicsagas/Episteme/releases/download/v${VERSION}/Episteme-macos-aarch64.tar.gz"
+                url "https://github.com/epicsagas/Episteme/releases/download/v${VERSION}/episteme-macos-aarch64.tar.gz"
                 sha256 "${SHA_ARM}"
               else
-                url "https://github.com/epicsagas/Episteme/releases/download/v${VERSION}/Episteme-macos-x86_64.tar.gz"
+                url "https://github.com/epicsagas/Episteme/releases/download/v${VERSION}/episteme-macos-x86_64.tar.gz"
                 sha256 "${SHA_INTEL}"
               end
             end
 
             on_linux do
               if Hardware::CPU.arm?
-                url "https://github.com/epicsagas/Episteme/releases/download/v${VERSION}/Episteme-linux-aarch64.tar.gz"
+                url "https://github.com/epicsagas/Episteme/releases/download/v${VERSION}/episteme-linux-aarch64.tar.gz"
                 sha256 "${SHA_LINUX_AARCH64}"
               else
-                url "https://github.com/epicsagas/Episteme/releases/download/v${VERSION}/Episteme-linux-x86_64.tar.gz"
-                sha256 "${SHA_LINUX_X86_64}"
+                url "https://github.com/epicsagas/Episteme/releases/download/v${VERSION}/episteme-linux-x86_64-musl.tar.gz"
+                sha256 "${SHA_LINUX_X86_64_MUSL}"
               end
             end
 
             def install
-              bin.install "Episteme"
-              bin.install "Episteme-mcp" if File.exist?("Episteme-mcp")
+              bin.install "episteme"
+              bin.install "epis" if File.exist?("epis")
             end
 
             test do
-              assert_match version.to_s, shell_output("\#{bin}/Episteme --version")
+              assert_match version.to_s, shell_output("\#{bin}/episteme --version")
             end
           end
           RUBY
@@ -304,6 +337,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Formula/Episteme.rb
+          git add Formula/episteme.rb
           git diff --cached --quiet || git commit -m "Episteme ${GITHUB_REF_NAME#v}"
           git push

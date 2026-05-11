@@ -6,26 +6,39 @@ Get up and running with Episteme in under 2 minutes.
 
 ## Prerequisites
 
-- **Rust 1.95+** (edition 2024 required) — [Install via rustup](https://rustup.rs)
 - Internet connection (for initial data download)
+- **No Rust required** — use the one-line installer below
 
 ---
 
-## Option 1: AI Tool Integration (Recommended)
+## Option 1: One-Line Installer (Recommended)
 
-**Perfect for:** Claude Code, Cursor, Codex, Gemini users
+**Perfect for:** All platforms — no Rust toolchain needed
 
 ```bash
-# 1. Install Episteme
-cargo install --git https://github.com/epicsagas/Episteme
+# macOS / Linux
+curl --proto '=https' --tlsv1.2 -LsSf \
+  https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh | sh
 
-# 2. Install into your AI tool (downloads data, configures MCP, copies agents)
+# Windows
+powershell -ExecutionPolicy ByPass -c \
+  "irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 | iex"
+
+# Homebrew (macOS / Linux)
+brew install epicsagas/tap/episteme
+```
+
+Then install into your AI tool:
+
+```bash
 epis install claude      # Claude Code
 epis install cursor      # Cursor
 epis install codex       # OpenAI Codex
 epis install gemini      # Gemini CLI
 epis install all         # All tools at once
 ```
+
+> **Server configuration:** The install wizard will ask you to choose a bind address (`127.0.0.1` for localhost-only or `0.0.0.0` for network access) and optionally generate a bearer token for authentication. Non-localhost binding (`0.0.0.0`) requires a token; localhost binding recommends one but does not require it.
 
 > If `epis install claude` fails to download data, use the source install below instead.
 
@@ -55,9 +68,36 @@ For MCP integration via Docker, add to your MCP config:
 }
 ```
 
+With bearer token authentication (required when binding to `0.0.0.0`):
+```json
+{
+  "mcpServers": {
+    "episteme": {
+      "command": "docker",
+      "args": ["exec", "-i", "episteme-api", "episteme", "mcp"],
+      "headers": {
+        "Authorization": "Bearer epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+      }
+    }
+  }
+}
+```
+
 ---
 
-## Option 3: From Source
+## Option 3: Cargo (Rust Required)
+
+```bash
+# Fast path (downloads prebuilt binary when available)
+cargo install episteme
+
+# Or build from source
+cargo install --git https://github.com/epicsagas/Episteme
+```
+
+---
+
+## Option 4: From Source
 
 ```bash
 git clone https://github.com/epicsagas/Episteme.git

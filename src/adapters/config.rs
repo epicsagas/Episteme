@@ -13,6 +13,7 @@ pub struct EpistemeConfig {
     pub enable_debug_endpoints: bool,
     pub mcp_host: String,
     pub mcp_port: u16,
+    pub mcp_token: String,
     pub redis_host: String,
     pub redis_port: u16,
     pub redis_db: u16,
@@ -39,8 +40,9 @@ impl Default for EpistemeConfig {
             log_level: "INFO".into(),
             enable_json_logging: true,
             enable_debug_endpoints: false,
-            mcp_host: "localhost".into(),
+            mcp_host: "127.0.0.1".into(),
             mcp_port: 43175,
+            mcp_token: String::new(),
             redis_host: "localhost".into(),
             redis_port: 6379,
             redis_db: 0,
@@ -80,6 +82,8 @@ impl EpistemeConfig {
             env_bool_or("ENABLE_DEBUG_ENDPOINTS", config.enable_debug_endpoints);
         config.mcp_host = cfg_val(&yaml, "mcp", "host", "EPISTEME_MCP_HOST", &config.mcp_host);
         config.mcp_port = cfg_parse_val(&yaml, "mcp", "port", "EPISTEME_MCP_PORT", config.mcp_port);
+        config.mcp_token =
+            cfg_val(&yaml, "mcp", "token", "EPISTEME_MCP_TOKEN", &config.mcp_token);
 
         config.redis_host = cfg_val(
             &yaml,

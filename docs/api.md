@@ -370,6 +370,11 @@ EPISTEME_API_KEYS=key1,key2
 EPISTEME_DATA_DIR=~/.episteme/data
 EPISTEME_DB_PATH=~/.episteme/db/episteme.db
 
+# MCP server
+EPISTEME_MCP_HOST=127.0.0.1
+EPISTEME_MCP_PORT=43175
+EPISTEME_MCP_TOKEN=epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+
 # Logging
 RUST_LOG=info
 ```

@@ -74,7 +74,7 @@ Ces motifs sont le defaut recommande pour les agents de codage de type Cursor/Co
 **Portee** : Ensemble de l'organisation
 **Contenu** : Preoccupations transversales, exigences reglementaires, motifs partages
 
-**Exemple** (`~/.alcove/vaults/osn-finance/FSS_COMPLIANCE.md`) :
+**Exemple** (`~/.alcove/vaults/finance/FSS_COMPLIANCE.md`) :
 ```markdown
 # FSS_COMPLIANCE.md
 ## Gestion des numeros de carte

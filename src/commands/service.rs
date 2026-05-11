@@ -173,7 +173,20 @@ pub fn cmd_mcp(http: bool, host: &str, port: u16) -> Result<()> {
 
 fn cmd_mcp_http(host: &str, port: u16) -> Result<()> {
     let cfg = EpistemeConfig::load()?;
-    let allowed_api_keys = episteme::server::mcp_auth::parse_api_keys(&cfg.api_keys);
+
+    // Security: refuse non-localhost binding without a bearer token.
+    if !episteme::server::mcp_auth::is_localhost(host) && cfg.mcp_token.is_empty() {
+        anyhow::bail!(
+            "Refusing to bind on {host} without a bearer token.\n\
+             Run 'epis install' to configure a token, or set EPISTEME_MCP_TOKEN."
+        );
+    }
+
+    let mut allowed_api_keys = episteme::server::mcp_auth::parse_api_keys(&cfg.api_keys);
+    if !cfg.mcp_token.is_empty() {
+        allowed_api_keys.push(cfg.mcp_token.clone());
+    }
+
     let graph = load_graph()?;
     let mut mcp = build_mcp(graph);
     mcp.try_attach_rag();

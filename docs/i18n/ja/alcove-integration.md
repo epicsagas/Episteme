@@ -74,7 +74,7 @@ flowchart LR
 **スコープ**: 組織全体
 **内容**: 横断的関心事、規制要件、共有パターン
 
-**例**（`~/.alcove/vaults/osn-finance/FSS_COMPLIANCE.md`）:
+**例**（`~/.alcove/vaults/finance/FSS_COMPLIANCE.md`）:
 ```markdown
 # FSS_COMPLIANCE.md
 ## カード番号の取り扱い

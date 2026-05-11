@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Host selection and bearer token authentication for MCP HTTP server** — configurable bind address (`127.0.0.1` or `0.0.0.0`) with optional `epis-` prefixed bearer tokens
+- New `mcp.token` config field and `EPISTEME_MCP_TOKEN` environment variable for token-based authentication
+- Server refuses non-localhost binding (`0.0.0.0`) without a configured token — prevents accidental unauthenticated network exposure
+- Install wizard now includes server configuration step (host selection + optional token generation)
+- Token auto-seeded to MCP client configs (Claude, Cursor, etc.) as `Authorization` headers and to shell RC files as `EPISTEME_MCP_TOKEN`
+
 - `api start/stop/restart/status/enable/disable` — REST API daemon lifecycle management
 - Linux systemd user unit generation for `mcp enable`
 

@@ -116,6 +116,14 @@ rustpython-parser = "0.4"
 fxhash = "0.2"
 fastembed = { version = "5.13.4", default-features = false, features = ["hf-hub-native-tls", "ort-download-binaries-native-tls"] }
 crossterm = "0.29.0"
+rand = "0.9"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
 
 [dev-dependencies]
 tempfile = "3"

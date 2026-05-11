@@ -47,37 +47,31 @@
 
 ## Quick Start
 
-> **Prerequisites:** Rust 1.95+ via [rustup](https://rustup.rs) · **No Rust?** See [Docker](#option-3-docker-no-rust-required) or [pre-built binaries](#option-4-pre-built-binaries-no-rust-required).
-
-**1. Install Rust (if not already installed)**
+**1. Install Episteme**
 
 | OS | Command |
 |----|---------|
-| **macOS / Linux** | `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \| sh` |
-| **Windows** | Download and run [`rustup-init.exe`](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe) |
+| **macOS / Linux** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh \| sh` |
+| **Windows** | `powershell -ExecutionPolicy ByPass -c "irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex"` |
+| **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **cargo** | `cargo install episteme` |
 
-After installing, open a **new terminal** (or run `source "$HOME/.cargo/env"` on macOS/Linux).
+<details>
+<summary>Other install methods</summary>
 
-**2. Install Episteme (first build takes 3–5 min)**
+- **cargo-binstall:** `cargo binstall episteme` (downloads pre-built binary)
+- **From source:** `cargo install --git https://github.com/epicsagas/Episteme`
+- **Docker:** See [Option 3](#option-3-docker-no-rust-required)
 
-```bash
-# Install cargo-binstall if missing
-cargo install cargo-binstall
+</details>
 
-# Fast path (downloads prebuilt binary when available)
-cargo binstall episteme
-
-# Fallback (build from source)
-cargo install --git https://github.com/epicsagas/Episteme
-```
-
-**3. Seed data + wire up your AI tool**
+**2. Seed data + wire up your AI tool**
 
 ```bash
 epis install claude    # or: cursor, codex, gemini
 ```
 
-**4. Verify**
+**3. Verify**
 
 ```bash
 epis --version
@@ -263,6 +257,21 @@ Add to your MCP config file:
 }
 ```
 
+For HTTP transport with bearer token authentication:
+```json
+{
+  "mcpServers": {
+    "episteme": {
+      "command": "docker",
+      "args": ["exec", "-i", "episteme-api", "episteme", "mcp"],
+      "headers": {
+        "Authorization": "Bearer epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+      }
+    }
+  }
+}
+```
+
 ### Option 4: Pre-built Binaries (No Rust Required)
 
 Download the latest binary for your platform from [GitHub Releases](https://github.com/epicsagas/Episteme/releases):
@@ -402,6 +411,7 @@ EPISTEME_API_KEY=your-secret-key
 # MCP server
 EPISTEME_MCP_HOST=127.0.0.1
 EPISTEME_MCP_PORT=43175
+EPISTEME_MCP_TOKEN=epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
 ```
 
 ---

@@ -74,7 +74,7 @@ flowchart LR
 **範圍**：組織層級
 **內容**：跨領域關注、法規要求、共用模式
 
-**範例**（`~/.alcove/vaults/osn-finance/FSS_COMPLIANCE.md`）：
+**範例**（`~/.alcove/vaults/finance/FSS_COMPLIANCE.md`）：
 ```markdown
 # FSS_COMPLIANCE.md
 ## Card Number Handling

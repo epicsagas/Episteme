@@ -836,6 +836,7 @@ dependencies = [
  "metrics-exporter-prometheus",
  "ndarray",
  "proptest",
+ "rand 0.9.4",
  "redis",
  "regex",
  "reqwest 0.13.3",
