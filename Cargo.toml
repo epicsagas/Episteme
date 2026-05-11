@@ -118,6 +118,15 @@ fastembed = { version = "5.13.4", default-features = false, features = ["hf-hub-
 crossterm = "0.29.0"
 rand = "0.9"
 
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target }.tar.xz"
+pkg-fmt = "txz"
+bin-dir = "{ name }-{ target }/{ bin }"
+
+[package.metadata.binstall.overrides.x86_64-pc-windows-msvc]
+pkg-fmt = "zip"
+bin-dir = "{ bin }.exe"
+
 [profile.release]
 opt-level = "z"
 lto = true
