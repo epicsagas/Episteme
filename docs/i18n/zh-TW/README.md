@@ -20,15 +20,15 @@
 
 <p align="center">
   <a href="../../README.md">English</a> |
-  <a href="README.ja.md">日本語</a> |
-  <a href="README.ko.md">한국어</a> |
-  <a href="README.de.md">Deutsch</a> |
-  <a href="README.fr.md">Français</a> |
-  <a href="README.zh-CN.md">简体中文</a> |
+  <a href="../ja/">日本語</a> |
+  <a href="../ko/">한국어</a> |
+  <a href="../de/">Deutsch</a> |
+  <a href="../fr/">Français</a> |
+  <a href="../zh-CN/">简体中文</a> |
   繁體中文 |
-  <a href="README.pt.md">Português</a> |
-  <a href="README.es.md">Español</a> |
-  <a href="README.hi.md">हिन्दी</a>
+  <a href="../pt/">Português</a> |
+  <a href="../es/">Español</a> |
+  <a href="../hi/">हिन्दी</a>
 </p>
 
 ---
@@ -313,7 +313,7 @@ epis explore "strategy pattern"    # 探索知識圖譜
 
 Episteme 將隱性知識儲存在獨立的資料庫（`~/.episteme/user_knowledge.db`）中，並在執行時透過組合層與規範圖合併。團隊洞察會自動連結到模式、法則和異味，將經驗轉化為可導航的知識。
 
-完整設計請參閱[隱性知識架構](../../docs/tacit-knowledge.md)。
+完整設計請參閱[隱性知識架構](./tacit-knowledge.md)。
 
 ### 4 個專用代理（互聯網路）
 
@@ -328,7 +328,7 @@ Episteme 將隱性知識儲存在獨立的資料庫（`~/.episteme/user_knowledg
 
 **工作流程範例**：`code-reviewer` 偵測到 God Object → 追蹤因果關係至 3 個下游壞味道 → 提供「套用 RF-018」（→ refactoring-expert）或「深入分析根本原因」（→ episteme-advisor）或「架構檢查」（→ architecture-analyst）。
 
-[完整 MCP 整合指南](../../docs/mcp-integration-guide.md)
+[完整 MCP 整合指南](./mcp-integration-guide.md)
 
 ---
 
@@ -361,12 +361,15 @@ episteme dist --out-dir release/
 
 | 文件 | 說明 |
 |------|------|
-| [快速入門](../../QUICKSTART.md) | 逐步設定、首次執行、疑難排解 |
-| [MCP 整合指南](../../docs/mcp-integration-guide.md) | 工具參考、代理範例、對話流程 |
-| [API 參考](../../docs/api.md) | REST 端點、身份驗證、範例 |
-| [發行](../../docs/distribution.md) | 發行打包與部署 |
-| [開發與貢獻](../../DEVELOPMENT.md) | 架構說明、如何貢獻 |
-| [更新日誌](../../CHANGELOG.md) | 版本歷史與版本說明 |
+| [快速入門](./QUICKSTART.md) | 逐步設定、首次執行、疑難排解 |
+| [MCP 整合指南](./mcp-integration-guide.md) | 工具參考、代理範例、對話流程 |
+| [隱性知識架構](./tacit-knowledge.md) | 雙資料庫設計、洞察生命週期、綱要 |
+| [Alcove 生態系比較](./alcove-ecosystem.md) | 儲存模型、搜尋能力、使用案例矩陣 |
+| [Alcove 整合指南](./alcove-integration.md) | 雙上下文工作流程、設定、最佳實務 |
+| [API 參考](./api.md) | REST 端點、身份驗證、範例 |
+| [發行](./distribution.md) | 發行打包與部署 |
+| [開發與貢獻](./DEVELOPMENT.md) | 架構說明、如何貢獻 |
+| [更新日誌](./CHANGELOG.md) | 版本歷史與版本說明 |
 
 ---
 
@@ -440,7 +443,7 @@ rustup show   # 確認使用中的工具鏈
 
 ## 貢獻
 
-歡迎貢獻！請參閱 [DEVELOPMENT.md](../../DEVELOPMENT.md) 以了解架構概覽和貢獻指南。
+歡迎貢獻！請參閱 [DEVELOPMENT.md](./DEVELOPMENT.md) 以了解架構概覽和貢獻指南。
 
 ```bash
 # 執行測試

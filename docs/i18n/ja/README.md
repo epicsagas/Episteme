@@ -19,14 +19,14 @@
 <p align="center">
   <a href="../../README.md">English</a> |
   日本語 |
-  <a href="README.ko.md">한국어</a> |
-  <a href="README.de.md">Deutsch</a> |
-  <a href="README.fr.md">Français</a> |
-  <a href="README.zh-CN.md">简体中文</a> |
-  <a href="README.zh-TW.md">繁體中文</a> |
-  <a href="README.pt.md">Português</a> |
-  <a href="README.es.md">Español</a> |
-  <a href="README.hi.md">हिन्दी</a>
+  <a href="../ko/">한국어</a> |
+  <a href="../de/">Deutsch</a> |
+  <a href="../fr/">Français</a> |
+  <a href="../zh-CN/">简体中文</a> |
+  <a href="../zh-TW/">繁體中文</a> |
+  <a href="../pt/">Português</a> |
+  <a href="../es/">Español</a> |
+  <a href="../hi/">हिन्दी</a>
 </p>
 
 ---
@@ -311,7 +311,7 @@ epis explore "strategy pattern"    # ナレッジグラフの探索
 
 Epistemeは暗黙知を別のデータベース（`~/.episteme/user_knowledge.db`）に保存し、ランタイム時にコンポジットレイヤーを介して正規グラフとマージします。チームのインサイトはパターン、法則、スメルに自動的にリンクされ、経験がトラバース可能な知識に変換されます。
 
-詳細な設計については、[暗黙知アーキテクチャ](../../docs/tacit-knowledge.md)を参照してください。
+詳細な設計については、[暗黙知アーキテクチャ](./tacit-knowledge.md)を参照してください。
 
 ### 4つの専門エージェント（連携ネットワーク）
 
@@ -326,7 +326,7 @@ Epistemeは暗黙知を別のデータベース（`~/.episteme/user_knowledge.db
 
 **ワークフロー例**: `code-reviewer`がGod Objectを検出 → 3つの下流スメルへの因果関係を追跡 → 「RF-018を適用」（→ refactoring-expert）または「根本原因を深掘り」（→ episteme-advisor）または「アーキテクチャチェック」（→ architecture-analyst）を提案。
 
-[MCP統合ガイド（全文）](../../docs/mcp-integration-guide.md)
+[MCP統合ガイド（全文）](./mcp-integration-guide.md)
 
 ---
 
@@ -359,12 +359,15 @@ episteme dist --out-dir release/
 
 | ドキュメント | 説明 |
 |----------|-------------|
-| [クイックスタート](../../QUICKSTART.md) | ステップバイステップのセットアップ、初回実行、トラブルシューティング |
-| [MCP統合ガイド](../../docs/mcp-integration-guide.md) | ツールリファレンス、エージェントの使用例、会話フロー |
-| [APIリファレンス](../../docs/api.md) | RESTエンドポイント、認証、使用例 |
-| [配布](../../docs/distribution.md) | リリースパッケージングとデプロイメント |
-| [開発とコントリビューション](../../DEVELOPMENT.md) | アーキテクチャ、コントリビューション方法 |
-| [変更履歴](../../CHANGELOG.md) | リリース履歴とバージョンノート |
+| [クイックスタート](./QUICKSTART.md) | ステップバイステップのセットアップ、初回実行、トラブルシューティング |
+| [MCP統合ガイド](./mcp-integration-guide.md) | ツールリファレンス、エージェントの使用例、会話フロー |
+| [暗黙知アーキテクチャ](./tacit-knowledge.md) | 二重データベース設計、インサイトのライフサイクル、スキーマ |
+| [Alcoveエコシステム比較](./alcove-ecosystem.md) | 保存モデル、検索機能、ユースケースマトリクス |
+| [Alcove統合ガイド](./alcove-integration.md) | デュアルコンテキストのワークフロー、セットアップ、ベストプラクティス |
+| [APIリファレンス](./api.md) | RESTエンドポイント、認証、使用例 |
+| [配布](./distribution.md) | リリースパッケージングとデプロイメント |
+| [開発とコントリビューション](./DEVELOPMENT.md) | アーキテクチャ、コントリビューション方法 |
+| [変更履歴](./CHANGELOG.md) | リリース履歴とバージョンノート |
 
 ---
 
@@ -438,7 +441,7 @@ rustup show   # アクティブなツールチェーンを確認
 
 ## コントリビューション
 
-コントリビューションを歓迎します！アーキテクチャの概要とコントリビューションガイドは[DEVELOPMENT.md](../../DEVELOPMENT.md)を参照してください。
+コントリビューションを歓迎します！アーキテクチャの概要とコントリビューションガイドは[DEVELOPMENT.md](./DEVELOPMENT.md)を参照してください。
 
 ```bash
 # テストの実行

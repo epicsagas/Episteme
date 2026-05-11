@@ -18,15 +18,15 @@
 
 <p align="center">
   <a href="../../README.md">English</a> |
-  <a href="README.ja.md">日本語</a> |
+  <a href="../ja/">日本語</a> |
   한국어 |
-  <a href="README.de.md">Deutsch</a> |
-  <a href="README.fr.md">Français</a> |
-  <a href="README.zh-CN.md">简体中文</a> |
-  <a href="README.zh-TW.md">繁體中文</a> |
-  <a href="README.pt.md">Português</a> |
-  <a href="README.es.md">Español</a> |
-  <a href="README.hi.md">हिन्दी</a>
+  <a href="../de/">Deutsch</a> |
+  <a href="../fr/">Français</a> |
+  <a href="../zh-CN/">简体中文</a> |
+  <a href="../zh-TW/">繁體中文</a> |
+  <a href="../pt/">Português</a> |
+  <a href="../es/">Español</a> |
+  <a href="../hi/">हिन्दी</a>
 </p>
 
 ---
@@ -311,7 +311,7 @@ epis explore "strategy pattern"    # 지식 그래프 탐색
 
 Episteme는 암묵지를 별도의 데이터베이스(`~/.episteme/user_knowledge.db`)에 저장하고, 런타임에 컴포지트 레이어를 통해 정규 그래프와 병합합니다. 팀 인사이트는 패턴, 법칙, 스멜에 자동으로 연결되어 경험을 탐색 가능한 지식으로 변환합니다.
 
-자세한 설계 내용은 [암묵지 아키텍처](../../docs/tacit-knowledge.md)를 참조하세요.
+자세한 설계 내용은 [암묵지 아키텍처](./tacit-knowledge.md)를 참조하세요.
 
 ### 4개 전문 에이전트 (연결된 네트워크)
 
@@ -326,7 +326,7 @@ Episteme는 암묵지를 별도의 데이터베이스(`~/.episteme/user_knowledg
 
 **워크플로우 예시**: `code-reviewer`가 God Object를 감지 → 3개의 다운스트림 스멜까지 인과 관계 추적 → "RF-018 적용"(→ refactoring-expert) 또는 "근본 원인 심층 분석"(→ episteme-advisor) 또는 "아키텍처 검사"(→ architecture-analyst) 옵션 제공.
 
-[전체 MCP 통합 가이드](../../docs/mcp-integration-guide.md)
+[전체 MCP 통합 가이드](./mcp-integration-guide.md)
 
 ---
 
@@ -359,12 +359,15 @@ episteme dist --out-dir release/
 
 | 문서 | 설명 |
 |------|------|
-| [빠른 시작](../../QUICKSTART.md) | 단계별 설정, 첫 실행, 문제 해결 |
-| [MCP 통합 가이드](../../docs/mcp-integration-guide.md) | 도구 참조, 에이전트 예시, 대화 흐름 |
-| [API 참조](../../docs/api.md) | REST 엔드포인트, 인증, 예시 |
-| [배포](../../docs/distribution.md) | 릴리스 패키징 및 배포 |
-| [개발 및 기여](../../DEVELOPMENT.md) | 아키텍처, 기여 방법 |
-| [변경 이력](../../CHANGELOG.md) | 릴리스 이력 및 버전 정보 |
+| [빠른 시작](./QUICKSTART.md) | 단계별 설정, 첫 실행, 문제 해결 |
+| [MCP 통합 가이드](./mcp-integration-guide.md) | 도구 참조, 에이전트 예시, 대화 흐름 |
+| [암묵지 아키텍처](./tacit-knowledge.md) | 이중 데이터베이스 설계, 인사이트 수명주기, 스키마 |
+| [Alcove 생태계 비교](./alcove-ecosystem.md) | 저장 모델, 검색 기능, 사용 사례 매트릭스 |
+| [Alcove 통합 가이드](./alcove-integration.md) | 이중 컨텍스트 워크플로, 설정, 모범 사례 |
+| [API 참조](./api.md) | REST 엔드포인트, 인증, 예시 |
+| [배포](./distribution.md) | 릴리스 패키징 및 배포 |
+| [개발 및 기여](./DEVELOPMENT.md) | 아키텍처, 기여 방법 |
+| [변경 이력](./CHANGELOG.md) | 릴리스 이력 및 버전 정보 |
 
 ---
 
@@ -438,7 +441,7 @@ rustup show   # 활성 툴체인 확인
 
 ## 기여
 
-기여를 환영합니다! 아키텍처 개요와 기여 가이드는 [DEVELOPMENT.md](../../DEVELOPMENT.md)를 참조하세요.
+기여를 환영합니다! 아키텍처 개요와 기여 가이드는 [DEVELOPMENT.md](./DEVELOPMENT.md)를 참조하세요.
 
 ```bash
 # 테스트 실행

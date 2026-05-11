@@ -20,15 +20,15 @@
 
 <p align="center">
   <a href="../../README.md">English</a> |
-  <a href="README.ja.md">日本語</a> |
-  <a href="README.ko.md">한국어</a> |
-  <a href="README.de.md">Deutsch</a> |
+  <a href="../ja/">日本語</a> |
+  <a href="../ko/">한국어</a> |
+  <a href="../de/">Deutsch</a> |
   Français |
-  <a href="README.zh-CN.md">简体中文</a> |
-  <a href="README.zh-TW.md">繁體中文</a> |
-  <a href="README.pt.md">Português</a> |
-  <a href="README.es.md">Español</a> |
-  <a href="README.hi.md">हिन्दी</a>
+  <a href="../zh-CN/">简体中文</a> |
+  <a href="../zh-TW/">繁體中文</a> |
+  <a href="../pt/">Português</a> |
+  <a href="../es/">Español</a> |
+  <a href="../hi/">हिन्दी</a>
 </p>
 
 ---
@@ -313,7 +313,7 @@ epis explore "strategy pattern"    # explorer le graphe de connaissances
 
 Episteme stocke la connaissance tacite dans une base de donnees separee (`~/.episteme/user_knowledge.db`) et la fusionne avec le graphe canonique a l'execution via une couche composite. Les perspectives d'equipe sont automatiquement liees aux patterns, lois et smells, transformant l'experience en connaissance traversable.
 
-Voir [Architecture de la connaissance tacite](../../docs/tacit-knowledge.md) pour la conception complete.
+Voir [Architecture de la connaissance tacite](./tacit-knowledge.md) pour la conception complete.
 
 ### 4 Agents specialises (Reseau connecte)
 
@@ -328,7 +328,7 @@ Les agents travaillent ensemble — chaque analyse se termine par des options **
 
 **Exemple de flux de travail** : `code-reviewer` detecte un God Object → trace la causalite vers 3 smells en aval → offre « Appliquer RF-018 » (→ refactoring-expert) ou « Analyse approfondie de la cause racine » (→ episteme-advisor) ou « Verification d'architecture » (→ architecture-analyst).
 
-[Guide complet d'integration MCP](../../docs/mcp-integration-guide.md)
+[Guide complet d'integration MCP](./mcp-integration-guide.md)
 
 ---
 
@@ -361,12 +361,15 @@ episteme dist --out-dir release/
 
 | Document | Description |
 |----------|-------------|
-| [Demarrage rapide](../../QUICKSTART.md) | Installation etape par etape, premiere execution, depannage |
-| [Guide d'integration MCP](../../docs/mcp-integration-guide.md) | Reference des outils, exemples d'agents, flux de conversation |
-| [Reference API](../../docs/api.md) | Points d'acces REST, authentification, exemples |
-| [Distribution](../../docs/distribution.md) | Packaging de release et deploiement |
-| [Developpement et Contribution](../../DEVELOPMENT.md) | Architecture, comment contribuer |
-| [Journal des modifications](../../CHANGELOG.md) | Historique des versions et notes de mise a jour |
+| [Demarrage rapide](./QUICKSTART.md) | Installation etape par etape, premiere execution, depannage |
+| [Guide d'integration MCP](./mcp-integration-guide.md) | Reference des outils, exemples d'agents, flux de conversation |
+| [Architecture de la connaissance tacite](./tacit-knowledge.md) | Conception a deux bases, cycle de vie des insights, schema |
+| [Comparaison de l'ecosysteme Alcove](./alcove-ecosystem.md) | Modeles de stockage, capacites de recherche, matrice des cas d'usage |
+| [Guide d'integration Alcove](./alcove-integration.md) | Flux a double contexte, configuration, bonnes pratiques |
+| [Reference API](./api.md) | Points d'acces REST, authentification, exemples |
+| [Distribution](./distribution.md) | Packaging de release et deploiement |
+| [Developpement et Contribution](./DEVELOPMENT.md) | Architecture, comment contribuer |
+| [Journal des modifications](./CHANGELOG.md) | Historique des versions et notes de mise a jour |
 
 ---
 
@@ -440,7 +443,7 @@ rustup show   # confirmer la toolchain active
 
 ## Contribuer
 
-Les contributions sont les bienvenues ! Voir [DEVELOPMENT.md](../../DEVELOPMENT.md) pour l'aperçu de l'architecture et le guide de contribution.
+Les contributions sont les bienvenues ! Voir [DEVELOPMENT.md](./DEVELOPMENT.md) pour l'aperçu de l'architecture et le guide de contribution.
 
 ```bash
 # Executer les tests

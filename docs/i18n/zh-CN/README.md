@@ -18,15 +18,15 @@
 
 <p align="center">
   <a href="../../README.md">English</a> |
-  <a href="README.ja.md">日本語</a> |
-  <a href="README.ko.md">한국어</a> |
-  <a href="README.de.md">Deutsch</a> |
-  <a href="README.fr.md">Français</a> |
+  <a href="../ja/">日本語</a> |
+  <a href="../ko/">한국어</a> |
+  <a href="../de/">Deutsch</a> |
+  <a href="../fr/">Français</a> |
   简体中文 |
-  <a href="README.zh-TW.md">繁體中文</a> |
-  <a href="README.pt.md">Português</a> |
-  <a href="README.es.md">Español</a> |
-  <a href="README.hi.md">हिन्दी</a>
+  <a href="../zh-TW/">繁體中文</a> |
+  <a href="../pt/">Português</a> |
+  <a href="../es/">Español</a> |
+  <a href="../hi/">हिन्दी</a>
 </p>
 
 ---
@@ -311,7 +311,7 @@ epis explore "strategy pattern"    # 探索知识图谱
 
 Episteme 将隐性知识存储在独立的数据库（`~/.episteme/user_knowledge.db`）中，并在运行时通过组合层与规范图合并。团队洞察会自动链接到模式、法则和异味，将经验转化为可导航的知识。
 
-完整设计请参阅[隐性知识架构](../../docs/tacit-knowledge.md)。
+完整设计请参阅[隐性知识架构](./tacit-knowledge.md)。
 
 ### 4 个专用智能体（互联网络）
 
@@ -326,7 +326,7 @@ Episteme 将隐性知识存储在独立的数据库（`~/.episteme/user_knowledg
 
 **工作流示例**：`code-reviewer` 检测到 God Object → 追踪因果关系到 3 个下游坏味道 → 提供"应用 RF-018"（→ refactoring-expert）或"深入分析根本原因"（→ episteme-advisor）或"架构检查"（→ architecture-analyst）。
 
-[完整 MCP 集成指南](../../docs/mcp-integration-guide.md)
+[完整 MCP 集成指南](./mcp-integration-guide.md)
 
 ---
 
@@ -359,12 +359,15 @@ episteme dist --out-dir release/
 
 | 文档 | 说明 |
 |----------|-------------|
-| [快速开始](../../QUICKSTART.md) | 逐步设置、首次运行、故障排除 |
-| [MCP 集成指南](../../docs/mcp-integration-guide.md) | 工具参考、智能体示例、对话流程 |
-| [API 参考](../../docs/api.md) | REST 端点、身份验证、示例 |
-| [分发](../../docs/distribution.md) | 发布打包和部署 |
-| [开发与贡献](../../DEVELOPMENT.md) | 架构说明、如何贡献 |
-| [更新日志](../../CHANGELOG.md) | 发布历史和版本说明 |
+| [快速开始](./QUICKSTART.md) | 逐步设置、首次运行、故障排除 |
+| [MCP 集成指南](./mcp-integration-guide.md) | 工具参考、智能体示例、对话流程 |
+| [隐性知识架构](./tacit-knowledge.md) | 双数据库设计、洞察生命周期、模式 |
+| [Alcove 生态系统对比](./alcove-ecosystem.md) | 存储模型、搜索能力、用例矩阵 |
+| [Alcove 集成指南](./alcove-integration.md) | 双上下文工作流、设置、最佳实践 |
+| [API 参考](./api.md) | REST 端点、身份验证、示例 |
+| [分发](./distribution.md) | 发布打包和部署 |
+| [开发与贡献](./DEVELOPMENT.md) | 架构说明、如何贡献 |
+| [更新日志](./CHANGELOG.md) | 发布历史和版本说明 |
 
 ---
 
@@ -438,7 +441,7 @@ rustup show   # 确认当前工具链
 
 ## 贡献
 
-欢迎贡献！请参阅 [DEVELOPMENT.md](../../DEVELOPMENT.md) 了解架构概览和贡献指南。
+欢迎贡献！请参阅 [DEVELOPMENT.md](./DEVELOPMENT.md) 了解架构概览和贡献指南。
 
 ```bash
 # 运行测试
