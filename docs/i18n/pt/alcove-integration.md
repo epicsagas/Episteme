@@ -74,7 +74,7 @@ Esses padroes sao o padrao recomendado para agentes de codificacao do tipo Curso
 **Escopo**: Toda a organizacao
 **Conteudo**: Preocupacoes transversais, requisitos regulatorios, padroes compartilhados
 
-**Exemplo** (`~/.alcove/vaults/osn-finance/FSS_COMPLIANCE.md`):
+**Exemplo** (`~/.alcove/vaults/finance/FSS_COMPLIANCE.md`):
 ```markdown
 # FSS_COMPLIANCE.md
 ## Card Number Handling

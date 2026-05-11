@@ -74,7 +74,7 @@ flowchart LR
 **दायरा**: संगठन-व्यापी
 **सामग्री**: क्रॉस-कटिंग चिंताएँ, नियामक आवश्यकताएँ, साझा पैटर्न
 
-**उदाहरण** (`~/.alcove/vaults/osn-finance/FSS_COMPLIANCE.md`):
+**उदाहरण** (`~/.alcove/vaults/finance/FSS_COMPLIANCE.md`):
 ```markdown
 # FSS_COMPLIANCE.md
 ## Card Number Handling

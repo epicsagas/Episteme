@@ -74,7 +74,7 @@ Estos patrones son el defecto recomendado para agentes de codificacion tipo Curs
 **Alcance**: Toda la organizacion
 **Contenido**: Preocupaciones transversales, requisitos regulatorios, patrones compartidos
 
-**Ejemplo** (`~/.alcove/vaults/osn-finance/FSS_COMPLIANCE.md`):
+**Ejemplo** (`~/.alcove/vaults/finance/FSS_COMPLIANCE.md`):
 ```markdown
 # FSS_COMPLIANCE.md
 ## Manejo de numeros de tarjeta

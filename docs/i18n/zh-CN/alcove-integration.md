@@ -74,7 +74,7 @@ flowchart LR
 **范围**: 组织范围
 **内容**: 横切关注点、法规要求、共享模式
 
-**示例**（`~/.alcove/vaults/osn-finance/FSS_COMPLIANCE.md`）:
+**示例**（`~/.alcove/vaults/finance/FSS_COMPLIANCE.md`）:
 ```markdown
 # FSS_COMPLIANCE.md
 ## 卡号处理

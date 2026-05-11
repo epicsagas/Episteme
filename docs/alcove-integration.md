@@ -74,7 +74,7 @@ These patterns are the recommended default for Cursor/Codex/Claude-style coding 
 **Scope**: Organization-wide  
 **Content**: Cross-cutting concerns, regulatory requirements, shared patterns
 
-**Example** (`~/.alcove/vaults/osn-finance/FSS_COMPLIANCE.md`):
+**Example** (`~/.alcove/vaults/finance/FSS_COMPLIANCE.md`):
 ```markdown
 # FSS_COMPLIANCE.md
 ## Card Number Handling

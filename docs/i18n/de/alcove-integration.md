@@ -74,7 +74,7 @@ Diese Patterns sind der empfohlene Standard für Cursor/Codex/Claude-artige Codi
 **Gültigkeitsbereich**: Organisationsweit
 **Inhalt**: Querschnittsthemen, regulatorische Anforderungen, gemeinsame Patterns
 
-**Beispiel** (`~/.alcove/vaults/osn-finance/FSS_COMPLIANCE.md`):
+**Beispiel** (`~/.alcove/vaults/finance/FSS_COMPLIANCE.md`):
 ```markdown
 # FSS_COMPLIANCE.md
 ## Card Number Handling
