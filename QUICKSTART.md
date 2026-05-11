@@ -6,20 +6,31 @@ Get up and running with Episteme in under 2 minutes.
 
 ## Prerequisites
 
-- **Rust 1.95+** (edition 2024 required) — [Install via rustup](https://rustup.rs)
 - Internet connection (for initial data download)
+- **No Rust required** — use the one-line installer below
 
 ---
 
-## Option 1: AI Tool Integration (Recommended)
+## Option 1: One-Line Installer (Recommended)
 
-**Perfect for:** Claude Code, Cursor, Codex, Gemini users
+**Perfect for:** All platforms — no Rust toolchain needed
 
 ```bash
-# 1. Install Episteme
-cargo install --git https://github.com/epicsagas/Episteme
+# macOS / Linux
+curl --proto '=https' --tlsv1.2 -LsSf \
+  https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh | sh
 
-# 2. Install into your AI tool (downloads data, configures MCP, copies agents)
+# Windows
+powershell -ExecutionPolicy ByPass -c \
+  "irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 | iex"
+
+# Homebrew (macOS / Linux)
+brew install epicsagas/tap/episteme
+```
+
+Then install into your AI tool:
+
+```bash
 epis install claude      # Claude Code
 epis install cursor      # Cursor
 epis install codex       # OpenAI Codex
@@ -74,7 +85,19 @@ With bearer token authentication (required when binding to `0.0.0.0`):
 
 ---
 
-## Option 3: From Source
+## Option 3: Cargo (Rust Required)
+
+```bash
+# Fast path (downloads prebuilt binary when available)
+cargo install episteme
+
+# Or build from source
+cargo install --git https://github.com/epicsagas/Episteme
+```
+
+---
+
+## Option 4: From Source
 
 ```bash
 git clone https://github.com/epicsagas/Episteme.git

@@ -29,12 +29,12 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /usr/src/Episteme/target/release/Episteme /usr/local/bin/Episteme
-COPY --from=builder /usr/src/Episteme/target/release/Episteme-mcp /usr/local/bin/Episteme-mcp
+COPY --from=builder /usr/src/Episteme/target/release/episteme /usr/local/bin/episteme
+COPY --from=builder /usr/src/Episteme/target/release/epis /usr/local/bin/epis
 
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-CMD ["Episteme", "api"]
+CMD ["episteme", "api"]
