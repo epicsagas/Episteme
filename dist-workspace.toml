@@ -1,6 +1,18 @@
-[workspace.metadata.dist]
-cargo-dist-version = "0.28.0"
-rust-toolchain-version = "1.95"
+[workspace]
+members = ["cargo:."]
+
+# Config for 'dist'
+[dist]
+cargo-dist-version = "0.31.0"
+ci = "github"
+installers = ["homebrew"]
+# shell/powershell installers are hand-written (install.sh / install.ps1) and uploaded as extra-artifacts
+extra-artifacts = [
+  { path = "install.sh",  kind = "installer" },
+  { path = "install.ps1", kind = "installer" },
+]
+tap = "epicsagas/homebrew-tap"
+publish-jobs = ["homebrew", "./publish-crate"]
 targets = [
   "x86_64-unknown-linux-gnu",
   "x86_64-unknown-linux-musl",
@@ -10,9 +22,7 @@ targets = [
   "x86_64-pc-windows-msvc",
   "aarch64-pc-windows-msvc",
 ]
-installers = ["shell", "powershell", "homebrew"]
-tap = "epicsagas/homebrew-tap"
-publish-jobs = ["./publish-crate"]
 merge-assets = true
+allow-dirty = ["ci"]
 macos-sign = true
 macos-notarize = true

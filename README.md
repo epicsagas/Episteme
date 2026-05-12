@@ -51,8 +51,8 @@
 
 | OS | Command |
 |----|---------|
-| **macOS / Linux** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh \| sh` |
-| **Windows** | `powershell -ExecutionPolicy ByPass -c "irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex"` |
+| **macOS / Linux** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
+| **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
 | **cargo** | `cargo install episteme` |
 
