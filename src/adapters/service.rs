@@ -216,10 +216,24 @@ pub fn kind_label(kind: ServiceKind) -> &'static str {
 
 /// Spawn the server in the background for the given `kind`.
 ///
-/// Returns the child PID on success, or `Ok(0)` if the server was already running.
-pub fn cmd_start(kind: ServiceKind, host: &str, port: u16) -> Result<u32, String> {
+/// Outcome of a start attempt: newly spawned, or already running.
+pub enum StartOutcome {
+    Started(u32),
+    AlreadyRunning(u32),
+}
+
+/// Spawn the server in the background for the given `kind`.
+///
+/// Returns [`StartOutcome::Started`] with the child PID on success, or
+/// [`StartOutcome::AlreadyRunning`] when our own server is still listening.
+pub fn cmd_start(kind: ServiceKind, host: &str, port: u16) -> Result<StartOutcome, String> {
     if is_port_in_use(port) {
-        return Ok(0);
+        if let Some(existing) = find_pid_by_port(port) {
+            let expected = read_pid_for(kind);
+            if expected.is_some_and(|p| p == existing) && is_running(existing) {
+                return Ok(StartOutcome::AlreadyRunning(existing));
+            }
+        return Err(format!("Port {port} is already in use"));
     }
 
     let exe = std::env::current_exe().map_err(|e| format!("cannot determine current exe: {e}"))?;
@@ -269,7 +283,7 @@ pub fn cmd_start(kind: ServiceKind, host: &str, port: u16) -> Result<u32, String
     write_pid_for(kind, pid).map_err(|e| format!("failed to write PID file: {e}"))?;
 
     if wait_port_open(port, 10) {
-        Ok(pid)
+        Ok(StartOutcome::Started(pid))
     } else {
         // Best-effort cleanup.
         let _ = clear_pid_for(kind);
@@ -415,7 +429,9 @@ pub fn cmd_status(kind: ServiceKind) -> bool {
 
 /// Spawn the MCP HTTP server in the background. Backward-compatible wrapper.
 pub fn cmd_start_mcp(host: &str, port: u16) -> Result<u32, String> {
-    cmd_start(ServiceKind::Mcp, host, port)
+    match cmd_start(ServiceKind::Mcp, host, port)? {
+        StartOutcome::Started(pid) | StartOutcome::AlreadyRunning(pid) => Ok(pid),
+    }
 }
 
 /// Stop the running MCP server. Backward-compatible wrapper.
@@ -875,7 +891,7 @@ pub fn enable_service(kind: ServiceKind, now: bool) -> Result<String, String> {
     if now {
         let _ = cmd_stop(kind);
         match cmd_start(kind, &host, port) {
-            Ok(pid) => {
+            Ok(StartOutcome::Started(pid)) => {
                 if msg.is_empty() {
                     msg.push_str(&format!(
                         "{label} started (PID {pid})",
@@ -888,9 +904,9 @@ pub fn enable_service(kind: ServiceKind, now: bool) -> Result<String, String> {
                     ));
                 }
             }
-            Err(e) if e.contains("already in use") => {
+            Ok(StartOutcome::AlreadyRunning(pid)) => {
                 msg.push_str(&format!(
-                    "\n{label} already running on port {port}",
+                    "\n{label} already running (PID {pid})",
                     label = kind_label(kind),
                 ));
             }

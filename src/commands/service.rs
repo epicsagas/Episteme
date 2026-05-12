@@ -6,7 +6,7 @@ use anyhow::{Context, Result};
 
 use episteme::adapters::config::EpistemeConfig;
 use episteme::adapters::paths;
-use episteme::adapters::service::ServiceKind;
+use episteme::adapters::service::{ServiceKind, StartOutcome};
 use episteme::adapters::user_graph_store::UserGraphStore;
 use episteme::domain::composite_graph::CompositeGraph;
 use episteme::server::mcp_handler::EpistemeMCP;
@@ -60,12 +60,13 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
         },
         ServiceOp::Start { host, port, kind } => {
             let label = kind_label(kind);
-            let pid = episteme::adapters::service::cmd_start(kind, &host, port)
-                .map_err(|e| anyhow::anyhow!(e))?;
-            if pid == 0 {
-                println!("{label} server is already running");
-            } else {
-                println!("{label} server started (PID {pid})");
+            match episteme::adapters::service::cmd_start(kind, &host, port)
+                .map_err(|e| anyhow::anyhow!(e))?
+            {
+                StartOutcome::Started(pid) => println!("{label} server started (PID {pid})"),
+                StartOutcome::AlreadyRunning(pid) => {
+                    println!("{label} server is already running (PID {pid})")
+                }
             }
             Ok(())
         }
@@ -79,12 +80,13 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
             let label = kind_label(kind);
             // Stop first — handles launchd unload and process kill.
             let _ = episteme::adapters::service::cmd_stop(kind);
-            let pid = episteme::adapters::service::cmd_start(kind, &host, port)
-                .map_err(|e| anyhow::anyhow!(e))?;
-            if pid == 0 {
-                println!("{label} server is already running");
-            } else {
-                println!("{label} server restarted (PID {pid})");
+            match episteme::adapters::service::cmd_start(kind, &host, port)
+                .map_err(|e| anyhow::anyhow!(e))?
+            {
+                StartOutcome::Started(pid) => println!("{label} server restarted (PID {pid})"),
+                StartOutcome::AlreadyRunning(pid) => {
+                    println!("{label} server is already running (PID {pid})")
+                }
             }
             Ok(())
         }
