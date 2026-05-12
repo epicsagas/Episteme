@@ -501,14 +501,29 @@ pub fn install_launchd_agent_for(
             stdout = stdout_log.display(),
             stderr = stderr_log.display(),
         );
-        fs::write(&plist_path, plist).map_err(|e| e.to_string())?;
-
         let uid = Command::new("id")
             .arg("-u")
             .output()
             .ok()
             .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_owned())
             .unwrap_or_else(|| "501".to_owned());
+
+        // Check if the agent is already loaded — if so, bootout first so we can
+        // re-bootstrap with the updated plist.
+        let already_loaded = Command::new("launchctl")
+            .args(["list", label])
+            .output()
+            .map(|o| o.status.success())
+            .unwrap_or(false);
+
+        if already_loaded {
+            let _ = Command::new("launchctl")
+                .args(["bootout", &format!("gui/{uid}/{label}")])
+                .status();
+        }
+
+        fs::write(&plist_path, plist).map_err(|e| e.to_string())?;
+
         let st = Command::new("launchctl")
             .args([
                 "bootstrap",
@@ -518,11 +533,19 @@ pub fn install_launchd_agent_for(
             .status()
             .map_err(|e| e.to_string())?;
         if st.success() {
-            Ok(format!(
-                "{kind} launchd agent installed: {path}",
-                kind = kind_label(kind),
-                path = plist_path.display(),
-            ))
+            if already_loaded {
+                Ok(format!(
+                    "{kind} launchd agent reloaded: {path}",
+                    kind = kind_label(kind),
+                    path = plist_path.display(),
+                ))
+            } else {
+                Ok(format!(
+                    "{kind} launchd agent installed: {path}",
+                    kind = kind_label(kind),
+                    path = plist_path.display(),
+                ))
+            }
         } else {
             Err("failed to bootstrap launchd agent".to_owned())
         }
