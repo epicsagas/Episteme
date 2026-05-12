@@ -14,12 +14,12 @@ Dispensable smells point to code that is unnecessary and whose removal would mak
 Specifically, it violates the **DRY principle** (Don't Repeat Yourself), promoting unnecessary duplication and divergence.
 
 ## How to Fix
-- **Consolidate Duplicate Conditional Fragments** (`RF-034`)
+- **Inline Method** (`RF-003`)
 
 ## Connections
 **Violates:** Dry (`LAW-040`)
 
-**Resolved by refactoring:** Consolidate Duplicate Conditional Fragments (`RF-034`)
+**Resolved by refactoring:** Inline Method (`RF-003`)
 
 ---
 

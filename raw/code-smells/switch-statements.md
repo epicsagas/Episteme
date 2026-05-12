@@ -14,12 +14,18 @@ OO Abuser smells indicate that object-oriented principles are not being applied 
 Specifically, it violates the **Open/Closed Principle (OCP)**, requiring modification of existing code to accommodate new behaviour.
 
 ## How to Fix
+- **Replace Conditional With Polymorphism** (`RF-039`)
+- **Replace Type Code With Subclasses** (`RF-031`)
+- **Replace Type Code With State Strategy** (`RF-030`)
 - **Replace Type Code With Class** (`RF-029`)
+- **Introduce Null Object** (`RF-037`)
+- **Extract Method** (`RF-001`)
+- **Decompose Conditional** (`RF-035`)
 
 ## Connections
 **Violates:** Open/Closed Principle (`LAW-042-O`)
 
-**Resolved by refactoring:** Replace Type Code With Class (`RF-029`)
+**Resolved by refactoring:** Replace Conditional With Polymorphism (`RF-039`), Replace Type Code With Subclasses (`RF-031`), Replace Type Code With State Strategy (`RF-030`), Replace Type Code With Class (`RF-029`), Introduce Null Object (`RF-037`), Extract Method (`RF-001`), Decompose Conditional (`RF-035`)
 
 ---
 

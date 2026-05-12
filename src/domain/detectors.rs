@@ -1,7 +1,27 @@
-//! All 16 code-smell detector functions.
+//! All 23 code-smell detector functions.
 //!
 //! Ported faithfully from `episteme.parsers.base` -- identical thresholds and
 //! confidence formulas.
+//!
+//! ## Detector categories
+//!
+//! **Fully functional** (work from `CodeMetrics` alone):
+//! SMELL-01, 02, 03, 04, 06, 07, 10, 11, 14, 16, 18, 20, 21, 22
+//!
+//! **Functional with heuristic** (uses available metrics as proxy):
+//! SMELL-05 (Data Clumps -- parameter grouping heuristic)
+//!
+//! **Require external parameters** (caller must supply additional data):
+//! SMELL-09 (Shotgun Surgery -- `dependency_count`),
+//! SMELL-12 (Speculative Generality -- `subclass_count`, `usage_count`),
+//! SMELL-13 (Duplicate Code -- `ast_hash` + `all_hashes` map)
+//!
+//! **Placeholder** (requires cross-class or whole-program analysis not
+//! available from single-function metrics):
+//! SMELL-15 (Parallel Inheritance Hierarchies),
+//! SMELL-17 (Dead Code),
+//! SMELL-19 (Inappropriate Intimacy),
+//! SMELL-23 (Alternative Classes with Different Interfaces)
 
 use crate::domain::metrics::{CodeMetrics, SmellDetection};
 
@@ -262,14 +282,62 @@ pub fn detect_large_class(
     a.into_detection("SMELL-04", "Large Class", location, name, metrics, 0.5)
 }
 
-// -- SMELL-05  Data Clumps (stub) ------------------------------------------
+// -- SMELL-05  Data Clumps -------------------------------------------------
+// Heuristic: functions that take many primitive parameters often indicate
+// data clumps -- groups of parameters that should be extracted into a
+// dedicated object.  We use primitive_params count, parameter_count, and
+// loc as proxies.  This is a conservative heuristic; true data-clump
+// detection requires cross-function parameter-set overlap analysis.
+// >=7 params AND >=5 primitives -> 0.80 | >=6 AND >=4 -> 0.65 | >=5 AND >=3 -> 0.50
 
 pub fn detect_data_clumps(
-    _metrics: &CodeMetrics,
-    _location: &str,
-    _name: &str,
+    metrics: &CodeMetrics,
+    location: &str,
+    name: &str,
 ) -> Option<SmellDetection> {
-    None
+    if metrics.parameter_count < 5 || metrics.primitive_params < 3 {
+        return None;
+    }
+    let (confidence, reasons) = if metrics.parameter_count >= 7 && metrics.primitive_params >= 5 {
+        (
+            0.80,
+            vec![
+                format!(
+                    "{} parameters with {} primitives suggest data clumps",
+                    metrics.parameter_count, metrics.primitive_params
+                ),
+                "Consider extracting related parameters into a parameter object".into(),
+            ],
+        )
+    } else if metrics.parameter_count >= 6 && metrics.primitive_params >= 4 {
+        (
+            0.65,
+            vec![
+                format!(
+                    "High parameter count ({}) with many primitives ({})",
+                    metrics.parameter_count, metrics.primitive_params
+                ),
+                "Some parameters likely belong together".into(),
+            ],
+        )
+    } else {
+        (
+            0.50,
+            vec![format!(
+                "{} primitive parameters out of {} total may indicate grouped data",
+                metrics.primitive_params, metrics.parameter_count
+            )],
+        )
+    };
+    Some(build_detection(
+        "SMELL-05",
+        "Data Clumps",
+        confidence,
+        location,
+        name,
+        metrics,
+        reasons,
+    ))
 }
 
 // -- SMELL-06  Switch Statements --------------------------------------------
@@ -356,7 +424,11 @@ pub fn detect_data_class(
     }
 }
 
-// -- SMELL-09  Shotgun Surgery (stub) --------------------------------------
+// -- SMELL-09  Shotgun Surgery ---------------------------------------------
+// EXTERNAL PARAMETER REQUIRED: `dependency_count` -- the number of files that
+// depend on this function/class.  Cannot be derived from CodeMetrics alone;
+// requires project-wide dependency analysis.  Returns None when
+// `dependency_count == 0` or when no threshold is met.
 // dep_count >= 10 -> 0.80 | >= 7 -> 0.65
 
 pub fn detect_shotgun_surgery(
@@ -496,7 +568,10 @@ pub fn detect_lazy_class(
     }
 }
 
-// -- SMELL-12  Speculative Generality (stub) --------------------------------
+// -- SMELL-12  Speculative Generality --------------------------------------
+// EXTERNAL PARAMS REQUIRED: `subclass_count` (number of subclasses) and
+// `usage_count` (number of call sites).  Cannot be derived from CodeMetrics
+// alone; requires project-wide inheritance and usage analysis.
 // subclass==1 -> 0.75 | usage==0 -> 0.85 | usage==1 AND methods>3 -> 0.60
 // subclass==1 AND usage<=1 -> 0.90 | fires at >= 0.6
 
@@ -542,7 +617,11 @@ pub fn detect_speculative_generality(
     }
 }
 
-// -- SMELL-13  Duplicate Code (stub) ----------------------------------------
+// -- SMELL-13  Duplicate Code -----------------------------------------------
+// EXTERNAL PARAMS REQUIRED: `metrics.ast_hash` must be populated, and caller
+// must supply `all_hashes: HashMap<String, Vec<String>>` mapping each AST hash
+// to the locations where it appears.  Requires project-wide AST hashing.
+// Returns None when hashes are not provided or no duplicates are found.
 
 pub fn detect_duplicate_code(
     metrics: &CodeMetrics,
@@ -742,6 +821,203 @@ pub fn detect_god_object(
     a.into_detection("SMELL-21", "God Object", location, name, metrics, 0.6)
 }
 
+// -- SMELL-15  Parallel Inheritance Hierarchies (placeholder) ---------------
+// PLACEHOLDER: Detecting parallel hierarchies requires cross-class inheritance
+// analysis (comparing subclass trees of related base classes).  The basic
+// CodeMetrics available per function/class cannot capture this relationship.
+// A proper implementation would need a project-wide class hierarchy graph.
+
+pub fn detect_parallel_inheritance(
+    _metrics: &CodeMetrics,
+    _location: &str,
+    _name: &str,
+) -> Option<SmellDetection> {
+    // TODO: Requires cross-class inheritance tree comparison.
+    // Not detectable from per-function CodeMetrics alone.
+    None
+}
+
+// -- SMELL-16  Comments -----------------------------------------------------
+// Heuristic: high comment density relative to code suggests the code is not
+// self-documenting.  Uses `comment_count` from CodeMetrics.
+// comment_ratio >= 0.6 -> 0.80 | >= 0.4 -> 0.65 | >= 0.25 -> 0.50
+// Additional weight when LOC is also high (long methods with many comments).
+
+pub fn detect_comments(
+    metrics: &CodeMetrics,
+    location: &str,
+    name: &str,
+) -> Option<SmellDetection> {
+    if metrics.comment_count == 0 || metrics.loc == 0 {
+        return None;
+    }
+    let comment_ratio = metrics.comment_count as f64 / metrics.loc as f64;
+    let mut a = TieredAccum::new();
+    a.tier(
+        metrics.comment_count,
+        metrics.loc / 2, // > 50% comment lines
+        0.4,
+        format!(
+            "Comment density {:.0}% is very high ({} comment lines / {} LOC)",
+            comment_ratio * 100.0,
+            metrics.comment_count,
+            metrics.loc
+        ),
+        metrics.loc / 4, // > 25% comment lines
+        0.25,
+        format!(
+            "Comment density {:.0}% suggests code is not self-documenting",
+            comment_ratio * 100.0
+        ),
+    );
+    // Extra signal: long methods with many comments often indicate complex logic
+    // that should be refactored into smaller named functions.
+    if metrics.loc > 50 && comment_ratio >= 0.25 {
+        a.add(
+            0.2,
+            "Long method with many comments -- consider extracting named methods".into(),
+        );
+    }
+    // High CC combined with many comments suggests the comments are compensating
+    // for complex control flow.
+    if metrics.cyclomatic_complexity > 10 && comment_ratio >= 0.3 {
+        a.add(
+            0.15,
+            format!(
+                "High CC={} with many comments suggests complex control flow",
+                metrics.cyclomatic_complexity
+            ),
+        );
+    }
+    a.into_detection("SMELL-16", "Comments", location, name, metrics, 0.5)
+}
+
+// -- SMELL-17  Dead Code (placeholder) --------------------------------------
+// PLACEHOLDER: Detecting dead code requires project-wide usage analysis
+// (finding functions/classes that are defined but never called/referenced).
+// The basic CodeMetrics available per function/class cannot capture call-graph
+// information.  A proper implementation would need a whole-program dependency
+// graph or AST-based reference analysis.
+
+pub fn detect_dead_code(
+    _metrics: &CodeMetrics,
+    _location: &str,
+    _name: &str,
+) -> Option<SmellDetection> {
+    // TODO: Requires project-wide call-graph/reference analysis.
+    // Not detectable from per-function CodeMetrics alone.
+    None
+}
+
+// -- SMELL-19  Inappropriate Intimacy (placeholder) -------------------------
+// PLACEHOLDER: Detecting inappropriate intimacy requires cross-class access
+// analysis (measuring how much one class accesses another's internals).
+// The basic CodeMetrics available per function/class cannot capture
+// inter-class field/method access patterns.  A proper implementation would
+// need a project-wide dependency graph with access-level tracking.
+
+pub fn detect_inappropriate_intimacy(
+    _metrics: &CodeMetrics,
+    _location: &str,
+    _name: &str,
+) -> Option<SmellDetection> {
+    // TODO: Requires cross-class access analysis with visibility tracking.
+    // Not detectable from per-function CodeMetrics alone.
+    None
+}
+
+// -- SMELL-22  Refused Bequest ----------------------------------------------
+// Heuristic: if a class has many fields/methods but very few are actually used
+// in its methods (high inheritance but low utilization), or if override methods
+// are trivially empty.  Uses `override_count` as a proxy for methods that
+// override parent behavior with empty/stub implementations.
+// override_count >= 3 AND methods <= 5 -> 0.75
+// override_count >= 2 AND methods <= 4 -> 0.60
+// field_count high but method_count very low -> 0.55 (inherits fields, adds nothing)
+
+pub fn detect_refused_bequest(
+    metrics: &CodeMetrics,
+    location: &str,
+    name: &str,
+) -> Option<SmellDetection> {
+    // Signal 1: Many trivial overrides (empty/stub) in a small class
+    if metrics.override_count >= 3 && metrics.method_count <= 5 && metrics.method_count > 0 {
+        let ratio = metrics.override_count as f64 / metrics.method_count as f64;
+        if ratio >= 0.5 {
+            return Some(build_detection(
+                "SMELL-22",
+                "Refused Bequest",
+                0.75,
+                location,
+                name,
+                metrics,
+                vec![
+                    format!(
+                        "{} out of {} methods are trivial overrides",
+                        metrics.override_count, metrics.method_count
+                    ),
+                    "Subclass rejects parent behavior -- consider composition over inheritance"
+                        .into(),
+                ],
+            ));
+        }
+    }
+    // Signal 2: Moderate trivial overrides
+    if metrics.override_count >= 2 && metrics.method_count <= 4 && metrics.method_count > 0 {
+        return Some(build_detection(
+            "SMELL-22",
+            "Refused Bequest",
+            0.60,
+            location,
+            name,
+            metrics,
+            vec![
+                format!(
+                    "{} trivial overrides suggest rejected parent contract",
+                    metrics.override_count
+                ),
+                "Consider whether inheritance is appropriate".into(),
+            ],
+        ));
+    }
+    // Signal 3: Many inherited fields but very few methods (lazy subclass)
+    if metrics.field_count >= 8 && metrics.method_count <= 2 && metrics.method_count > 0 {
+        return Some(build_detection(
+            "SMELL-22",
+            "Refused Bequest",
+            0.55,
+            location,
+            name,
+            metrics,
+            vec![
+                format!(
+                    "{} fields but only {} methods -- likely inherits without adding value",
+                    metrics.field_count, metrics.method_count
+                ),
+                "Subclass may be inheriting fields it does not need".into(),
+            ],
+        ));
+    }
+    None
+}
+
+// -- SMELL-23  Alternative Classes with Different Interfaces (placeholder) ---
+// PLACEHOLDER: Detecting alternative classes with different interfaces requires
+// cross-class comparison (finding classes that do the same thing but have
+// different method signatures).  The basic CodeMetrics available per
+// function/class cannot capture semantic equivalence of classes.
+// A proper implementation would need project-wide interface analysis.
+
+pub fn detect_alternative_classes(
+    _metrics: &CodeMetrics,
+    _location: &str,
+    _name: &str,
+) -> Option<SmellDetection> {
+    // TODO: Requires cross-class interface comparison.
+    // Not detectable from per-function CodeMetrics alone.
+    None
+}
+
 // -- Convenience orchestrators -----------------------------------------------
 
 /// Run function-level smell detectors.
@@ -776,6 +1052,7 @@ pub fn detect_class_smells(
         detect_divergent_change(metrics, location, name),
         detect_middle_man(metrics, location, name),
         detect_god_object(metrics, location, name),
+        detect_refused_bequest(metrics, location, name),
     ]
     .into_iter()
     .flatten()
@@ -789,6 +1066,14 @@ pub fn detect_all(metrics: &CodeMetrics, location: &str, name: &str) -> Vec<Smel
     r.extend(
         [
             detect_data_clumps(metrics, location, name),
+            detect_comments(metrics, location, name),
+            detect_parallel_inheritance(metrics, location, name),
+            detect_dead_code(metrics, location, name),
+            detect_inappropriate_intimacy(metrics, location, name),
+            detect_alternative_classes(metrics, location, name),
+            // External-parameter detectors: called with zero values so they
+            // always return None.  Callers with real data should invoke these
+            // directly rather than via detect_all().
             detect_shotgun_surgery(metrics, location, name, 0),
             detect_speculative_generality(metrics, location, name, 0, 0),
             detect_duplicate_code(metrics, location, name, None),
@@ -1053,28 +1338,204 @@ mod tests {
     }
 
     #[test]
-    fn data_clumps_stub() {
+    fn data_clumps_below_threshold() {
         assert!(detect_data_clumps(&CodeMetrics::default(), "t.py:1", "f").is_none());
     }
 
     #[test]
-    fn shotgun_surgery_stub_zero() {
+    fn data_clumps_high_params() {
+        let m = CodeMetrics {
+            parameter_count: 8,
+            primitive_params: 6,
+            ..Default::default()
+        };
+        let d = detect_data_clumps(&m, "t.py:1", "f").unwrap();
+        assert_eq!(d.smell_id, "SMELL-05");
+        assert!((d.confidence - 0.80).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn data_clumps_moderate() {
+        let m = CodeMetrics {
+            parameter_count: 6,
+            primitive_params: 4,
+            ..Default::default()
+        };
+        let d = detect_data_clumps(&m, "t.py:1", "f").unwrap();
+        assert_eq!(d.smell_id, "SMELL-05");
+        assert!((d.confidence - 0.65).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn data_clumps_low() {
+        let m = CodeMetrics {
+            parameter_count: 5,
+            primitive_params: 3,
+            ..Default::default()
+        };
+        let d = detect_data_clumps(&m, "t.py:1", "f").unwrap();
+        assert!((d.confidence - 0.50).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn shotgun_surgery_zero_deps() {
         assert!(detect_shotgun_surgery(&CodeMetrics::default(), "t.py:1", "f", 0).is_none());
     }
 
     #[test]
-    fn speculative_generality_stub_zero() {
+    fn speculative_generality_zero() {
         assert!(
             detect_speculative_generality(&CodeMetrics::default(), "t.py:1", "f", 0, 0).is_none()
         );
     }
 
     #[test]
-    fn duplicate_code_stub_no_hashes() {
+    fn duplicate_code_no_hashes() {
         let m = CodeMetrics {
             ast_hash: "abc".into(),
             ..Default::default()
         };
         assert!(detect_duplicate_code(&m, "t.py:1", "f", None).is_none());
+    }
+
+    // -- SMELL-16 (Comments) -------------------------------------------------
+
+    #[test]
+    fn comments_no_comments() {
+        let m = CodeMetrics {
+            loc: 20,
+            comment_count: 0,
+            ..Default::default()
+        };
+        assert!(detect_comments(&m, "t.py:1", "f").is_none());
+    }
+
+    #[test]
+    fn comments_below_threshold() {
+        let m = CodeMetrics {
+            loc: 100,
+            comment_count: 5, // 5% ratio, way below threshold
+            ..Default::default()
+        };
+        assert!(detect_comments(&m, "t.py:1", "f").is_none());
+    }
+
+    #[test]
+    fn comments_high_density() {
+        let m = CodeMetrics {
+            loc: 100,
+            comment_count: 60, // 60% ratio
+            ..Default::default()
+        };
+        let d = detect_comments(&m, "t.py:1", "f").unwrap();
+        assert_eq!(d.smell_id, "SMELL-16");
+        assert!(d.confidence >= 0.4);
+    }
+
+    #[test]
+    fn comments_with_long_method() {
+        let m = CodeMetrics {
+            loc: 80,
+            comment_count: 45, // > 50% ratio, long method
+            ..Default::default()
+        };
+        let d = detect_comments(&m, "t.py:1", "f").unwrap();
+        assert_eq!(d.smell_id, "SMELL-16");
+        // Should include bonus for long method + comments
+        assert!(d.confidence > 0.4);
+    }
+
+    #[test]
+    fn comments_with_high_cc() {
+        let m = CodeMetrics {
+            loc: 60,
+            comment_count: 25,         // ~42% ratio
+            cyclomatic_complexity: 15, // high CC
+            ..Default::default()
+        };
+        let d = detect_comments(&m, "t.py:1", "f").unwrap();
+        assert_eq!(d.smell_id, "SMELL-16");
+        assert!(d.confidence >= 0.5);
+    }
+
+    // -- SMELL-22 (Refused Bequest) ------------------------------------------
+
+    #[test]
+    fn refused_bequest_many_overrides() {
+        let m = CodeMetrics {
+            method_count: 4,
+            override_count: 3,
+            ..Default::default()
+        };
+        let d = detect_refused_bequest(&m, "t.py:1", "BadSub").unwrap();
+        assert_eq!(d.smell_id, "SMELL-22");
+        assert!((d.confidence - 0.75).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn refused_bequest_moderate_overrides() {
+        let m = CodeMetrics {
+            method_count: 3,
+            override_count: 2,
+            ..Default::default()
+        };
+        let d = detect_refused_bequest(&m, "t.py:1", "Sub").unwrap();
+        assert_eq!(d.smell_id, "SMELL-22");
+        assert!((d.confidence - 0.60).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn refused_bequest_lazy_subclass() {
+        let m = CodeMetrics {
+            field_count: 10,
+            method_count: 1,
+            ..Default::default()
+        };
+        let d = detect_refused_bequest(&m, "t.py:1", "LazySub").unwrap();
+        assert_eq!(d.smell_id, "SMELL-22");
+        assert!((d.confidence - 0.55).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn refused_bequest_none() {
+        let m = CodeMetrics {
+            method_count: 10,
+            override_count: 1,
+            field_count: 3,
+            ..Default::default()
+        };
+        assert!(detect_refused_bequest(&m, "t.py:1", "GoodSub").is_none());
+    }
+
+    #[test]
+    fn refused_bequest_zero_methods() {
+        let m = CodeMetrics {
+            method_count: 0,
+            override_count: 5,
+            ..Default::default()
+        };
+        assert!(detect_refused_bequest(&m, "t.py:1", "Empty").is_none());
+    }
+
+    // -- Placeholder detectors return None ------------------------------------
+
+    #[test]
+    fn parallel_inheritance_placeholder() {
+        assert!(detect_parallel_inheritance(&CodeMetrics::default(), "t.py:1", "f").is_none());
+    }
+
+    #[test]
+    fn dead_code_placeholder() {
+        assert!(detect_dead_code(&CodeMetrics::default(), "t.py:1", "f").is_none());
+    }
+
+    #[test]
+    fn inappropriate_intimacy_placeholder() {
+        assert!(detect_inappropriate_intimacy(&CodeMetrics::default(), "t.py:1", "f").is_none());
+    }
+
+    #[test]
+    fn alternative_classes_placeholder() {
+        assert!(detect_alternative_classes(&CodeMetrics::default(), "t.py:1", "f").is_none());
     }
 }

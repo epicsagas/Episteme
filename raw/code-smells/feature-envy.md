@@ -14,13 +14,16 @@ Coupler smells indicate excessive coupling between classes or modules, reducing 
 Specifically, it violates the **Law of Demeter**, exposing implementation details across object boundaries.
 
 ## How to Fix
+- **Move Method** (`RF-016`)
+- **Move Field** (`RF-015`)
 - **Extract Method** (`RF-001`)
-- **Change Reference To Value** (`RF-019`)
+- **Introduce Foreign Method** (`RF-013`)
+- **Preserve Whole Object** (`RF-045`)
 
 ## Connections
 **Violates:** Law Of Demeter (`LAW-043`)
 
-**Resolved by refactoring:** Extract Method (`RF-001`), Change Reference To Value (`RF-019`)
+**Resolved by refactoring:** Move Method (`RF-016`), Move Field (`RF-015`), Extract Method (`RF-001`), Introduce Foreign Method (`RF-013`), Preserve Whole Object (`RF-045`)
 
 ---
 

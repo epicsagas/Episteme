@@ -14,12 +14,14 @@ Inheritance Abuser smells signal that the inheritance hierarchy is being misused
 Specifically, it violates the **Liskov Substitution Principle (LSP)**, breaking substitutability between a type and its subtypes.
 
 ## How to Fix
-- **Self Encapsulate Field** (`RF-032`)
+- **Collapse Hierarchy** (`RF-055`)
+- **Extract Subclass** (`RF-057`)
+- **Move Method** (`RF-016`)
 
 ## Connections
 **Violates:** Liskov Substitution Principle (`LAW-042-L`)
 
-**Resolved by refactoring:** Self Encapsulate Field (`RF-032`)
+**Resolved by refactoring:** Collapse Hierarchy (`RF-055`), Extract Subclass (`RF-057`), Move Method (`RF-016`)
 
 ---
 

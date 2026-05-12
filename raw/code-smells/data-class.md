@@ -14,13 +14,15 @@ Dispensable smells point to code that is unnecessary and whose removal would mak
 Specifically, it violates the **DRY principle** (Don't Repeat Yourself), promoting unnecessary duplication and divergence.
 
 ## How to Fix
-- **Replace Data Value With Object** (`RF-026`)
-- **Change Reference To Value** (`RF-019`)
+- **Encapsulate Field** (`RF-024`)
+- **Self Encapsulate Field** (`RF-032`)
+- **Remove Setting Method** (`RF-047`)
+- **Change Value To Reference** (`RF-021`)
 
 ## Connections
 **Violates:** Dry (`LAW-040`)
 
-**Resolved by refactoring:** Replace Data Value With Object (`RF-026`), Change Reference To Value (`RF-019`)
+**Resolved by refactoring:** Encapsulate Field (`RF-024`), Self Encapsulate Field (`RF-032`), Remove Setting Method (`RF-047`), Change Value To Reference (`RF-021`)
 
 ---
 

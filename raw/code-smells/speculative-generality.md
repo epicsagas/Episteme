@@ -14,13 +14,16 @@ Dispensable smells point to code that is unnecessary and whose removal would mak
 Specifically, it violates the **DRY principle** (Don't Repeat Yourself), promoting unnecessary duplication and divergence.
 
 ## How to Fix
-- **Consolidate Duplicate Conditional Fragments** (`RF-034`)
-- **Encapsulate Field** (`RF-024`)
+- **Inline Method** (`RF-003`)
+- **Inline Class** (`RF-012`)
+- **Collapse Hierarchy** (`RF-055`)
+- **Hide Method** (`RF-042`)
+- **Replace Subclass With Fields** (`RF-028`)
 
 ## Connections
 **Violates:** Dry (`LAW-040`)
 
-**Resolved by refactoring:** Consolidate Duplicate Conditional Fragments (`RF-034`), Encapsulate Field (`RF-024`)
+**Resolved by refactoring:** Inline Method (`RF-003`), Inline Class (`RF-012`), Collapse Hierarchy (`RF-055`), Hide Method (`RF-042`), Replace Subclass With Fields (`RF-028`)
 
 ---
 

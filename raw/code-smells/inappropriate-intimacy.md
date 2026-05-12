@@ -14,13 +14,17 @@ Coupler smells indicate excessive coupling between classes or modules, reducing 
 Specifically, it violates the **Law of Demeter**, exposing implementation details across object boundaries.
 
 ## How to Fix
+- **Move Method** (`RF-016`)
+- **Move Field** (`RF-015`)
+- **Change Bidirectional Association To Unidirectional** (`RF-018`)
 - **Change Unidirectional Association To Bidirectional** (`RF-020`)
-- **Self Encapsulate Field** (`RF-032`)
+- **Duplicate Observed Data** (`RF-022`)
+- **Replace Inheritance With Delegation** (`RF-066`)
 
 ## Connections
 **Violates:** Law Of Demeter (`LAW-043`)
 
-**Resolved by refactoring:** Change Unidirectional Association To Bidirectional (`RF-020`), Self Encapsulate Field (`RF-032`)
+**Resolved by refactoring:** Move Method (`RF-016`), Move Field (`RF-015`), Change Bidirectional Association To Unidirectional (`RF-018`), Change Unidirectional Association To Bidirectional (`RF-020`), Duplicate Observed Data (`RF-022`), Replace Inheritance With Delegation (`RF-066`)
 
 ---
 

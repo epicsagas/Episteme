@@ -14,12 +14,14 @@ Coupler smells indicate excessive coupling between classes or modules, reducing 
 Specifically, it violates the **Law of Demeter**, exposing implementation details across object boundaries.
 
 ## How to Fix
+- **Hide Delegate** (`RF-011`)
+- **Move Method** (`RF-016`)
 - **Encapsulate Collection** (`RF-023`)
 
 ## Connections
 **Violates:** Law Of Demeter (`LAW-043`)
 
-**Resolved by refactoring:** Encapsulate Collection (`RF-023`)
+**Resolved by refactoring:** Hide Delegate (`RF-011`), Move Method (`RF-016`), Encapsulate Collection (`RF-023`)
 
 ---
 

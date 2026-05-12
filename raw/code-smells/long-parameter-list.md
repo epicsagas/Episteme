@@ -14,13 +14,14 @@ Bloater smells arise when a method, class, or parameter list grows to a size tha
 Specifically, it violates the **KISS principle** (Keep It Simple), adding unnecessary complexity.
 
 ## How to Fix
-- **Replace Conditional With Polymorphism** (`RF-039`)
-- **Introduce Null Object** (`RF-037`)
+- **Introduce Parameter Object** (`RF-043`)
+- **Preserve Whole Object** (`RF-045`)
+- **Replace Parameter With Method Call** (`RF-053`)
 
 ## Connections
 **Violates:** Kiss (`LAW-041`)
 
-**Resolved by refactoring:** Replace Conditional With Polymorphism (`RF-039`), Introduce Null Object (`RF-037`)
+**Resolved by refactoring:** Introduce Parameter Object (`RF-043`), Preserve Whole Object (`RF-045`), Replace Parameter With Method Call (`RF-053`)
 
 ---
 

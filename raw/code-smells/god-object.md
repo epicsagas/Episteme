@@ -15,13 +15,17 @@ Bloater smells arise when a method, class, or parameter list grows to a size tha
 Specifically, it violates the **Single Responsibility Principle (SRP)**, giving the construct more than one reason to change, and the **Open/Closed Principle (OCP)**, requiring modification of existing code to accommodate new behaviour.
 
 ## How to Fix
-- **Self Encapsulate Field** (`RF-032`)
-- **Encapsulate Field** (`RF-024`)
+- **Extract Class** (`RF-010`)
+- **Extract Method** (`RF-001`)
+- **Move Method** (`RF-016`)
+- **Extract Interface** (`RF-056`)
+- **Decompose Conditional** (`RF-035`)
+- **Replace Nested Conditional With Guard Clauses** (`RF-040`)
 
 ## Connections
 **Violates:** Single Responsibility Principle (`LAW-042-S`), Open/Closed Principle (`LAW-042-O`)
 
-**Resolved by refactoring:** Self Encapsulate Field (`RF-032`), Encapsulate Field (`RF-024`)
+**Resolved by refactoring:** Extract Class (`RF-010`), Extract Method (`RF-001`), Move Method (`RF-016`), Extract Interface (`RF-056`), Decompose Conditional (`RF-035`), Replace Nested Conditional With Guard Clauses (`RF-040`)
 
 ---
 

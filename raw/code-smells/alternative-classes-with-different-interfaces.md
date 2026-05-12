@@ -14,13 +14,14 @@ OO Abuser smells indicate that object-oriented principles are not being applied 
 Specifically, it violates the **Interface Segregation Principle (ISP)**, forcing clients to depend on interfaces they do not use.
 
 ## How to Fix
+- **Rename Method** (`RF-048`)
+- **Extract Interface** (`RF-056`)
 - **Extract Method** (`RF-001`)
-- **Replace Constructor With Factory Method** (`RF-049`)
 
 ## Connections
 **Violates:** Interface Segregation Principle (`LAW-042-I`)
 
-**Resolved by refactoring:** Extract Method (`RF-001`), Replace Constructor With Factory Method (`RF-049`)
+**Resolved by refactoring:** Rename Method (`RF-048`), Extract Interface (`RF-056`), Extract Method (`RF-001`)
 
 ---
 
