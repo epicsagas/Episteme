@@ -62,7 +62,11 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
             let label = kind_label(kind);
             let pid = episteme::adapters::service::cmd_start(kind, &host, port)
                 .map_err(|e| anyhow::anyhow!(e))?;
-            println!("{label} server started (PID {pid})");
+            if pid == 0 {
+                println!("{label} server is already running");
+            } else {
+                println!("{label} server started (PID {pid})");
+            }
             Ok(())
         }
         ServiceOp::Stop { kind } => {
@@ -73,11 +77,19 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
         }
         ServiceOp::Restart { host, port, kind } => {
             let label = kind_label(kind);
+            if episteme::adapters::service::is_port_in_use(port) {
+                println!("{label} server is already running — skipping restart");
+                return Ok(());
+            }
             // Best-effort stop; ignore errors if nothing was running.
             let _ = episteme::adapters::service::cmd_stop(kind);
             let pid = episteme::adapters::service::cmd_start(kind, &host, port)
                 .map_err(|e| anyhow::anyhow!(e))?;
-            println!("{label} server restarted (PID {pid})");
+            if pid == 0 {
+                println!("{label} server is already running");
+            } else {
+                println!("{label} server restarted (PID {pid})");
+            }
             Ok(())
         }
         ServiceOp::Status { kind } => {

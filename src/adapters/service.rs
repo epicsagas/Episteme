@@ -216,13 +216,10 @@ pub fn kind_label(kind: ServiceKind) -> &'static str {
 
 /// Spawn the server in the background for the given `kind`.
 ///
-/// Returns the child PID on success.
+/// Returns the child PID on success, or `Ok(0)` if the server was already running.
 pub fn cmd_start(kind: ServiceKind, host: &str, port: u16) -> Result<u32, String> {
     if is_port_in_use(port) {
-        if let Some(existing) = find_pid_by_port(port) {
-            return Err(format!("Port {port} is already in use (PID {existing})"));
-        }
-        return Err(format!("Port {port} is already in use"));
+        return Ok(0);
     }
 
     let exe = std::env::current_exe().map_err(|e| format!("cannot determine current exe: {e}"))?;
@@ -281,7 +278,32 @@ pub fn cmd_start(kind: ServiceKind, host: &str, port: u16) -> Result<u32, String
 }
 
 /// Stop the running server for the given `kind` (SIGTERM, then SIGKILL on timeout).
+///
+/// When a launchd agent is loaded for this service kind, unloads it first so that
+/// macOS does not immediately re-spawn the process.
 pub fn cmd_stop(kind: ServiceKind) -> Result<(), String> {
+    // Unload launchd agent first to prevent immediate re-spawn.
+    #[cfg(target_os = "macos")]
+    {
+        let label = launch_agent_label(kind);
+        let loaded = Command::new("launchctl")
+            .args(["list", label])
+            .output()
+            .map(|o| o.status.success())
+            .unwrap_or(false);
+        if loaded {
+            let uid = Command::new("id")
+                .arg("-u")
+                .output()
+                .ok()
+                .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_owned())
+                .unwrap_or_default();
+            let _ = Command::new("launchctl")
+                .args(["bootout", &format!("gui/{uid}/{label}")])
+                .status();
+        }
+    }
+
     let pid = read_pid_for(kind).ok_or("No PID file found -- is the server running?")?;
 
     if !is_running(pid) {
