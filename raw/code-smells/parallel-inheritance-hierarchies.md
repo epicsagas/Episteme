@@ -14,13 +14,14 @@ Change Preventer smells make the codebase brittle: a single logical change force
 Specifically, it violates the **Single Responsibility Principle (SRP)**, giving the construct more than one reason to change.
 
 ## How to Fix
-- **Change Reference To Value** (`RF-019`)
-- **Self Encapsulate Field** (`RF-032`)
+- **Move Method** (`RF-016`)
+- **Move Field** (`RF-015`)
+- **Inline Class** (`RF-012`)
 
 ## Connections
 **Violates:** Single Responsibility Principle (`LAW-042-S`)
 
-**Resolved by refactoring:** Change Reference To Value (`RF-019`), Self Encapsulate Field (`RF-032`)
+**Resolved by refactoring:** Move Method (`RF-016`), Move Field (`RF-015`), Inline Class (`RF-012`)
 
 ---
 

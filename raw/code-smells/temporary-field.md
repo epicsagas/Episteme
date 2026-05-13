@@ -14,12 +14,13 @@ OO Abuser smells indicate that object-oriented principles are not being applied 
 Specifically, it violates the **DRY principle** (Don't Repeat Yourself), promoting unnecessary duplication and divergence.
 
 ## How to Fix
-- **Self Encapsulate Field** (`RF-032`)
+- **Extract Class** (`RF-010`)
+- **Introduce Null Object** (`RF-037`)
 
 ## Connections
 **Violates:** Dry (`LAW-040`)
 
-**Resolved by refactoring:** Self Encapsulate Field (`RF-032`)
+**Resolved by refactoring:** Extract Class (`RF-010`), Introduce Null Object (`RF-037`)
 
 ---
 

@@ -14,13 +14,15 @@ Bloater smells arise when a method, class, or parameter list grows to a size tha
 Specifically, it violates the **DRY principle** (Don't Repeat Yourself), promoting unnecessary duplication and divergence.
 
 ## How to Fix
-- **Self Encapsulate Field** (`RF-032`)
-- **Replace Conditional With Polymorphism** (`RF-039`)
+- **Introduce Parameter Object** (`RF-043`)
+- **Preserve Whole Object** (`RF-045`)
+- **Extract Class** (`RF-010`)
+- **Move Method** (`RF-016`)
 
 ## Connections
 **Violates:** Dry (`LAW-040`)
 
-**Resolved by refactoring:** Self Encapsulate Field (`RF-032`), Replace Conditional With Polymorphism (`RF-039`)
+**Resolved by refactoring:** Introduce Parameter Object (`RF-043`), Preserve Whole Object (`RF-045`), Extract Class (`RF-010`), Move Method (`RF-016`)
 
 ---
 

@@ -14,13 +14,15 @@ Change Preventer smells make the codebase brittle: a single logical change force
 Specifically, it violates the **Single Responsibility Principle (SRP)**, giving the construct more than one reason to change.
 
 ## How to Fix
-- **Change Reference To Value** (`RF-019`)
-- **Consolidate Conditional Expression** (`RF-033`)
+- **Extract Class** (`RF-010`)
+- **Extract Method** (`RF-001`)
+- **Move Method** (`RF-016`)
+- **Move Field** (`RF-015`)
 
 ## Connections
 **Violates:** Single Responsibility Principle (`LAW-042-S`)
 
-**Resolved by refactoring:** Change Reference To Value (`RF-019`), Consolidate Conditional Expression (`RF-033`)
+**Resolved by refactoring:** Extract Class (`RF-010`), Extract Method (`RF-001`), Move Method (`RF-016`), Move Field (`RF-015`)
 
 ---
 

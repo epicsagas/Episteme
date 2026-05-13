@@ -15,12 +15,16 @@ Specifically, it violates the **Single Responsibility Principle (SRP)**, giving 
 
 ## How to Fix
 - **Extract Method** (`RF-001`)
-- **Split Temporary Variable** (`RF-008`)
+- **Replace Temp With Query** (`RF-007`)
+- **Replace Method With Method Object** (`RF-006`)
+- **Decompose Conditional** (`RF-035`)
+- **Replace Nested Conditional With Guard Clauses** (`RF-040`)
+- **Substitute Algorithm** (`RF-009`)
 
 ## Connections
 **Violates:** Single Responsibility Principle (`LAW-042-S`), Kiss (`LAW-041`)
 
-**Resolved by refactoring:** Extract Method (`RF-001`), Split Temporary Variable (`RF-008`)
+**Resolved by refactoring:** Extract Method (`RF-001`), Replace Temp With Query (`RF-007`), Replace Method With Method Object (`RF-006`), Decompose Conditional (`RF-035`), Replace Nested Conditional With Guard Clauses (`RF-040`), Substitute Algorithm (`RF-009`)
 
 ---
 

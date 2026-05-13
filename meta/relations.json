@@ -11,7 +11,9 @@
     "tags": [],
     "relations": {
       "solves": [],
-      "enforces": [],
+      "enforces": [
+        "LAW-042-I"
+      ],
       "violates": [],
       "related_to": [
         "DP-002",
@@ -62,7 +64,9 @@
     "category": "creational",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-04"
+      ],
       "enforces": [],
       "violates": [],
       "related_to": [
@@ -78,7 +82,9 @@
     },
     "context": {
       "when_to_use": [
-        "**"
+        "When constructing complex objects with many optional parameters or configuration steps",
+        "When you need to create different representations of the same object",
+        "When telescoping constructors are proliferating"
       ],
       "when_not_to_use": [],
       "symptoms": [],
@@ -111,9 +117,12 @@
     "category": "creational",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-06"
+      ],
       "enforces": [
-        "LAW-042-D"
+        "LAW-042-D",
+        "LAW-042-O"
       ],
       "violates": [],
       "related_to": [
@@ -128,7 +137,9 @@
     },
     "context": {
       "when_to_use": [
-        "**"
+        "When a class cannot anticipate the type of objects it must create",
+        "When you want subclasses to decide which objects to create",
+        "When you need to delegate object creation to subclasses"
       ],
       "when_not_to_use": [],
       "symptoms": [],
@@ -264,9 +275,12 @@
     "category": "structural",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-11"
+      ],
       "enforces": [
-        "LAW-042-L"
+        "LAW-042-L",
+        "LAW-042-I"
       ],
       "violates": [],
       "related_to": [
@@ -275,8 +289,7 @@
         "DP-010",
         "DP-012",
         "DP-019",
-        "DP-020",
-        "LAW-042-I"
+        "DP-020"
       ],
       "requires": [],
       "enables": []
@@ -317,8 +330,12 @@
     "category": "structural",
     "tags": [],
     "relations": {
-      "solves": [],
-      "enforces": [],
+      "solves": [
+        "SMELL-03"
+      ],
+      "enforces": [
+        "LAW-042-O"
+      ],
       "violates": [],
       "related_to": [
         "DP-001",
@@ -359,8 +376,13 @@
     "category": "structural",
     "tags": [],
     "relations": {
-      "solves": [],
-      "enforces": [],
+      "solves": [
+        "SMELL-06"
+      ],
+      "enforces": [
+        "LAW-042-O",
+        "LAW-042-L"
+      ],
       "violates": [],
       "related_to": [
         "DP-002",
@@ -407,9 +429,12 @@
     "category": "structural",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-03"
+      ],
       "enforces": [
-        "LAW-042-O"
+        "LAW-042-O",
+        "LAW-042-L"
       ],
       "violates": [],
       "related_to": [
@@ -459,9 +484,14 @@
     "category": "structural",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-01",
+        "SMELL-21"
+      ],
       "enforces": [
-        "LAW-041"
+        "LAW-041",
+        "LAW-001",
+        "LAW-042-D"
       ],
       "violates": [],
       "related_to": [
@@ -509,7 +539,9 @@
     "category": "structural",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-14"
+      ],
       "enforces": [
         "LAW-040"
       ],
@@ -559,7 +591,9 @@
     "category": "structural",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-14"
+      ],
       "enforces": [
         "LAW-042-S",
         "LAW-043"
@@ -577,7 +611,9 @@
       "when_not_to_use": [],
       "symptoms": [],
       "benefits": [
-        ""
+        "Controls access to the original object",
+        "Adds behavior (caching, lazy loading, access control) without modifying the real object",
+        "Manages lifecycle of expensive resources"
       ],
       "drawbacks": [
         "Potential response delays from service",
@@ -606,7 +642,9 @@
     "category": "behavioral",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-06"
+      ],
       "enforces": [
         "LAW-042-O",
         "LAW-042-S"
@@ -626,7 +664,9 @@
       "when_not_to_use": [],
       "symptoms": [],
       "benefits": [
-        ""
+        "Decouples sender from receiver, reducing direct dependencies",
+        "Allows dynamic chaining of handlers at runtime",
+        "Simplifies individual handler logic by giving each a single responsibility"
       ],
       "drawbacks": [
         "Requests may reach the chain's end unhandled"
@@ -654,7 +694,9 @@
     "category": "behavioral",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-06"
+      ],
       "enforces": [
         "LAW-042-O",
         "LAW-042-S"
@@ -674,7 +716,9 @@
     },
     "context": {
       "when_to_use": [
-        "**"
+        "When you need to parameterize objects with operations",
+        "When you need to queue, schedule, or undo operations",
+        "When you want to decouple request sender from receiver"
       ],
       "when_not_to_use": [],
       "symptoms": [],
@@ -703,7 +747,9 @@
     "category": "behavioral",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-02"
+      ],
       "enforces": [
         "LAW-042-S"
       ],
@@ -720,7 +766,9 @@
     },
     "context": {
       "when_to_use": [
-        "**"
+        "When you need to traverse a collection without exposing its internal structure",
+        "When you need multiple simultaneous traversals of a collection",
+        "When you want a uniform interface for different collection types"
       ],
       "when_not_to_use": [],
       "symptoms": [],
@@ -757,10 +805,14 @@
     "category": "behavioral",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-19"
+      ],
       "enforces": [
         "LAW-042-S",
-        "LAW-043"
+        "LAW-043",
+        "LAW-001",
+        "LAW-042-D"
       ],
       "violates": [],
       "related_to": [
@@ -774,7 +826,9 @@
     },
     "context": {
       "when_to_use": [
-        "**"
+        "When a set of objects communicate in complex but well-defined ways",
+        "When reusing an object is difficult because it refers to many other objects",
+        "When behavior distributed between classes should be customizable without subclassing"
       ],
       "when_not_to_use": [],
       "symptoms": [],
@@ -826,7 +880,9 @@
     },
     "context": {
       "when_to_use": [
-        "you need to:"
+        "When you need to save and restore an object's state without violating encapsulation",
+        "When direct access to the object's fields would expose implementation details",
+        "When you need undo/rollback functionality"
       ],
       "when_not_to_use": [],
       "symptoms": [],
@@ -862,10 +918,13 @@
     "category": "behavioral",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-19"
+      ],
       "enforces": [
         "LAW-042-O",
-        "LAW-043"
+        "LAW-043",
+        "LAW-042-D"
       ],
       "violates": [],
       "related_to": [
@@ -910,10 +969,13 @@
     "category": "behavioral",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-06"
+      ],
       "enforces": [
         "LAW-042-O",
-        "LAW-042-S"
+        "LAW-042-S",
+        "LAW-042-L"
       ],
       "violates": [],
       "related_to": [
@@ -932,9 +994,9 @@
       "when_not_to_use": [],
       "symptoms": [],
       "benefits": [
-        "Eliminates bulky",
-        "Adheres to Single Responsibility Principle",
-        "Supports Open/Closed Principle for adding new states"
+        "Eliminates bulky conditional state-checking logic",
+        "Localizes state-specific behavior into separate classes",
+        "Makes state transitions explicit"
       ],
       "drawbacks": [
         "Can be excessive for simple state machines with few states"
@@ -962,7 +1024,9 @@
     "category": "behavioral",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-06"
+      ],
       "enforces": [
         "LAW-042-O"
       ],
@@ -978,7 +1042,9 @@
     },
     "context": {
       "when_to_use": [
-        "you need to:"
+        "When you need to switch between different algorithms at runtime",
+        "When a class has many related behaviors defined in conditional statements",
+        "When you want to isolate algorithm implementation details from the code that uses it"
       ],
       "when_not_to_use": [],
       "symptoms": [],
@@ -1016,10 +1082,14 @@
     "category": "behavioral",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-03"
+      ],
       "enforces": [
         "LAW-040",
-        "LAW-042-L"
+        "LAW-042-L",
+        "LAW-042-O",
+        "LAW-001"
       ],
       "violates": [],
       "related_to": [
@@ -1031,7 +1101,9 @@
     },
     "context": {
       "when_to_use": [
-        "you want clients extending only specific algorithm steps while preserving overall structure. It's particularly valuable "
+        "When subclasses must override specific algorithm steps while preserving overall structure",
+        "When you want to enforce an invariant algorithm skeleton",
+        "When you detect duplicated algorithm structure across subclasses"
       ],
       "when_not_to_use": [],
       "symptoms": [],
@@ -1067,9 +1139,12 @@
     "category": "behavioral",
     "tags": [],
     "relations": {
-      "solves": [],
+      "solves": [
+        "SMELL-06"
+      ],
       "enforces": [
-        "LAW-042-O"
+        "LAW-042-O",
+        "LAW-001"
       ],
       "violates": [],
       "related_to": [
@@ -1119,8 +1194,14 @@
     "relations": {
       "solves": [
         "SMELL-01",
+        "SMELL-04",
+        "SMELL-06",
+        "SMELL-09",
         "SMELL-13",
-        "SMELL-18"
+        "SMELL-16",
+        "SMELL-18",
+        "SMELL-21",
+        "SMELL-23"
       ],
       "enforces": [
         "LAW-040",
@@ -1138,7 +1219,11 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A method is too long or does more than one thing",
+        "A code block needs a comment to explain its purpose",
+        "You want to reuse a fragment of code in multiple places"
+      ],
       "when_not_to_use": [],
       "symptoms": [
         "Long Method",
@@ -1183,10 +1268,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A complex expression is hard to understand without explanation",
+        "The same expression is used multiple times in a method",
+        "You need to debug or log an intermediate value"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Complex conditional or arithmetic expressions that require comments to understand",
+        "Repeated identical sub-expressions within a method body"
+      ],
+      "benefits": [
+        "Names complex expressions, making code self-documenting",
+        "Simplifies debugging by giving intermediate values identifiable names",
+        "Makes it easier to extract the expression into a method later"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -1223,10 +1319,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A method body is as clear as its name and adds no abstraction value",
+        "Indirection through a trivial method obscures rather than clarifies",
+        "You need to refactor call sites to use a different method and the current one is in the way"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Methods that consist of a single delegation call with no added logic",
+        "Readers must navigate through multiple trivial method calls to understand behavior"
+      ],
+      "benefits": [
+        "Reduces unnecessary indirection and navigation overhead",
+        "Makes code more straightforward by removing trivial delegation layers",
+        "Can enable further refactorings by consolidating logic in one place"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -1248,9 +1355,7 @@
     "category": "composing_methods",
     "tags": [],
     "relations": {
-      "solves": [
-        "SMELL-16"
-      ],
+      "solves": [],
       "enforces": [],
       "violates": [],
       "related_to": [
@@ -1262,10 +1367,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A temporary variable holds a simple expression that is used only once",
+        "The temp variable interferes with other refactorings like Extract Method",
+        "The variable name adds no clarity beyond the expression itself"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Temporary variables that are assigned once and used immediately",
+        "Temps that obscure rather than clarify the logic of a method"
+      ],
+      "benefits": [
+        "Eliminates unnecessary temporary variables, reducing clutter",
+        "Often a prerequisite for applying Extract Method successfully",
+        "Makes the flow of data through a method more transparent"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -1288,8 +1404,7 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-01",
-        "SMELL-13"
+        "SMELL-01"
       ],
       "enforces": [
         "LAW-040",
@@ -1306,13 +1421,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A temporary variable is used to cache a computed value that is needed in multiple places",
+        "You want to use the computed value from other methods in the same class",
+        "The computation is cheap enough that recomputing is acceptable"
+      ],
       "when_not_to_use": [],
       "symptoms": [
         "Long Method",
         "Duplicate Code"
       ],
-      "benefits": [],
+      "benefits": [
+        "Makes computed values accessible across methods, not just within one",
+        "Eliminates the need to pass temporary variables as method parameters",
+        "Enables further refactorings by exposing the query as a method"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -1337,13 +1460,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-002",
-        "LAW-003",
-        "LAW-004",
-        "LAW-008",
-        "LAW-011"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -1382,10 +1499,7 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-001",
-        "LAW-003",
-        "LAW-011",
-        "LAW-013"
+        "LAW-004"
       ],
       "requires": [],
       "enables": []
@@ -1424,11 +1538,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-001",
-        "LAW-004",
-        "LAW-008"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -1460,11 +1570,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-001",
-        "LAW-002",
-        "LAW-003"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -1496,11 +1602,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-003",
-        "LAW-004",
-        "LAW-055"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -1533,9 +1635,7 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-007",
-        "LAW-009",
-        "LAW-045"
+        "LAW-007"
       ],
       "requires": [],
       "enables": []
@@ -1568,11 +1668,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-006",
-        "LAW-009",
-        "LAW-045"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -1604,11 +1700,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-001",
-        "LAW-002",
-        "LAW-003"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -1641,11 +1733,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-006",
-        "LAW-007",
-        "LAW-045"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -1677,12 +1765,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-036",
-        "LAW-037",
-        "LAW-041",
-        "LAW-053"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -1715,11 +1798,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-002",
-        "LAW-013",
-        "LAW-036"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -1752,11 +1831,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-013",
-        "LAW-015",
-        "LAW-026"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -1790,8 +1865,6 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-002",
-        "LAW-011",
         "LAW-012"
       ],
       "requires": [],
@@ -1826,11 +1899,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-023",
-        "LAW-047",
-        "LAW-053"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -1863,11 +1932,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-012",
-        "LAW-014",
-        "LAW-032"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -1901,9 +1966,7 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-018",
-        "LAW-027",
-        "LAW-044"
+        "LAW-043"
       ],
       "requires": [],
       "enables": []
@@ -1941,11 +2004,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-018",
-        "LAW-036",
-        "LAW-041"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -1984,12 +2043,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-016",
-        "LAW-017",
-        "LAW-036",
-        "LAW-043"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -2027,11 +2081,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-027",
-        "LAW-041",
-        "LAW-044"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -2068,11 +2118,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-022",
-        "LAW-037",
-        "LAW-038"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -2106,9 +2152,7 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-002",
-        "LAW-026",
-        "LAW-035"
+        "LAW-023"
       ],
       "requires": [],
       "enables": []
@@ -2142,11 +2186,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-017",
-        "LAW-020",
-        "LAW-023"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -2180,9 +2220,7 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-014",
-        "LAW-026",
-        "LAW-028"
+        "LAW-036"
       ],
       "requires": [],
       "enables": []
@@ -2216,11 +2254,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-017",
-        "LAW-019",
-        "LAW-036"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -2261,10 +2295,7 @@
       ],
       "violates": [],
       "related_to": [
-        "LAW-028",
-        "LAW-029",
-        "LAW-040",
-        "LAW-056"
+        "LAW-029"
       ],
       "requires": [],
       "enables": []
@@ -2304,13 +2335,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-012",
-        "LAW-013",
-        "LAW-021",
-        "LAW-023",
-        "LAW-035"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -2343,11 +2368,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-016",
-        "LAW-019",
-        "LAW-044"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -2461,7 +2482,6 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-025",
         "LAW-031",
         "LAW-033"
       ],
@@ -2497,11 +2517,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-030",
-        "LAW-040",
-        "LAW-041"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -2545,7 +2561,6 @@
       ],
       "violates": [],
       "related_to": [
-        "LAW-015",
         "LAW-030",
         "LAW-033"
       ],
@@ -2582,7 +2597,6 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-015",
         "LAW-030",
         "LAW-032"
       ],
@@ -2618,11 +2632,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-016",
-        "LAW-017",
-        "LAW-029"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -2660,11 +2670,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-021",
-        "LAW-026",
-        "LAW-030"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -2698,10 +2704,7 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-017",
-        "LAW-024",
-        "LAW-041",
-        "LAW-053"
+        "LAW-041"
       ],
       "requires": [],
       "enables": []
@@ -2736,8 +2739,6 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-010",
-        "LAW-020",
         "LAW-038"
       ],
       "requires": [],
@@ -2778,10 +2779,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-020",
-        "LAW-037"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -2820,11 +2818,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-020",
-        "LAW-037",
-        "LAW-055"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -2862,11 +2856,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-041",
-        "LAW-042",
-        "LAW-043"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -2907,9 +2897,7 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-036",
-        "LAW-040",
-        "LAW-042"
+        "LAW-043"
       ],
       "requires": [],
       "enables": []
@@ -2948,9 +2936,7 @@
       ],
       "violates": [],
       "related_to": [
-        "LAW-040",
-        "LAW-041",
-        "LAW-043"
+        "LAW-040"
       ],
       "requires": [],
       "enables": [],
@@ -2994,9 +2980,8 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-018",
         "LAW-040",
-        "LAW-042"
+        "LAW-041"
       ],
       "requires": [],
       "enables": []
@@ -3040,10 +3025,7 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-016",
-        "LAW-019",
-        "LAW-027",
-        "LAW-041"
+        "LAW-042"
       ],
       "requires": [],
       "enables": []
@@ -3077,11 +3059,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-006",
-        "LAW-046",
-        "LAW-050"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -3114,11 +3092,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-023",
-        "LAW-045",
-        "LAW-047"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -3155,8 +3129,6 @@
       ],
       "violates": [],
       "related_to": [
-        "LAW-036",
-        "LAW-041",
         "LAW-046"
       ],
       "requires": [],
@@ -3191,11 +3163,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-023",
-        "LAW-029",
-        "LAW-049"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -3228,11 +3196,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-014",
-        "LAW-047",
-        "LAW-048"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -3265,11 +3229,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-014",
-        "LAW-045",
-        "LAW-046"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -3302,11 +3262,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-026",
-        "LAW-045",
-        "LAW-052"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -3339,10 +3295,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-051",
-        "LAW-055"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -3378,11 +3331,7 @@
         "LAW-047"
       ],
       "violates": [],
-      "related_to": [
-        "LAW-036",
-        "LAW-047",
-        "LAW-054"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -3415,11 +3364,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-047",
-        "LAW-053",
-        "LAW-042-D"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -3452,12 +3397,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-005",
-        "LAW-039",
-        "LAW-052",
-        "LAW-056"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -3490,12 +3430,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-025",
-        "LAW-030",
-        "LAW-031",
-        "LAW-055"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": []
     },
@@ -3526,8 +3461,7 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-01",
-        "SMELL-21"
+        "SMELL-01"
       ],
       "enforces": [
         "LAW-041",
@@ -3535,6 +3469,7 @@
       ],
       "violates": [],
       "related_to": [
+        "LAW-042-D",
         "RF-001",
         "RF-010"
       ],
@@ -3542,10 +3477,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A method is too long and uses many local variables that prevent Extract Method",
+        "Local variable dependencies make it impossible to break a method into smaller pieces",
+        "You need to isolate a complex algorithm into its own object for testability"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Methods with many local variables that prevent straightforward extraction",
+        "Long methods where Extract Method fails due to tangled variable usage"
+      ],
+      "benefits": [
+        "Allows decomposition of very long methods that resist normal Extract Method",
+        "Enables step-by-step transformation of procedural code into object-oriented structure",
+        "Makes the algorithm independently testable in isolation"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -3583,10 +3529,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A temporary variable is assigned more than once and serves multiple unrelated purposes",
+        "A loop variable accumulates different kinds of values within the same scope",
+        "Reuse of a temp variable makes the code harder to follow"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Temporary variables that are reassigned multiple times for different purposes",
+        "Variables named generically (temp, val, x) because they serve multiple roles"
+      ],
+      "benefits": [
+        "Each variable has a single, clear responsibility with a descriptive name",
+        "Eliminates confusion caused by variables that change meaning mid-method",
+        "Makes the code safe for Extract Method since variables are no longer reused"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -3609,7 +3566,8 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-01"
+        "SMELL-01",
+        "SMELL-13"
       ],
       "enforces": [
         "LAW-041",
@@ -3623,10 +3581,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A method assigns to its input parameters, making the calling code misleading",
+        "Assignments to parameters create confusion about whether the caller sees changes",
+        "You want to enforce the convention of treating parameters as read-only"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Parameters that are reassigned within the method body",
+        "Code where it is unclear whether parameter mutation affects the caller"
+      ],
+      "benefits": [
+        "Clarifies the distinction between input parameters and local computation values",
+        "Prevents subtle bugs from misunderstanding pass-by-value vs pass-by-reference semantics",
+        "Makes method behavior more predictable and easier to reason about"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -3665,10 +3634,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "You want to replace a complex algorithm with a simpler or more performant one",
+        "The current implementation is correct but overly convoluted",
+        "A library function or well-known algorithm can replace custom logic"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "An algorithm that works but is harder to understand than necessary",
+        "Custom implementations of algorithms that have standard library equivalents"
+      ],
+      "benefits": [
+        "Dramatically simplifies code by swapping an entire algorithm at once",
+        "Can improve performance by replacing a naive algorithm with an optimized one",
+        "Reduces maintenance burden by using well-understood, tested algorithms"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -3692,8 +3672,11 @@
     "relations": {
       "solves": [
         "SMELL-04",
-        "SMELL-21",
-        "SMELL-08"
+        "SMELL-05",
+        "SMELL-08",
+        "SMELL-09",
+        "SMELL-10",
+        "SMELL-21"
       ],
       "enforces": [
         "LAW-040",
@@ -3710,10 +3693,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A class has grown too large and contains groups of methods that logically belong together",
+        "Some data and methods of a class could form a cohesive unit on their own",
+        "You want to apply Single Responsibility Principle by splitting a class"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "A class that handles multiple unrelated concerns or responsibilities",
+        "Subset of fields and methods that always change together but are independent of other subsets"
+      ],
+      "benefits": [
+        "Creates focused, single-responsibility classes that are easier to understand and maintain",
+        "Reduces coupling by isolating related behavior into its own class",
+        "Makes each extracted class independently testable"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -3736,7 +3730,6 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-14",
         "SMELL-20"
       ],
       "enforces": [
@@ -3752,10 +3745,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A client is calling methods on an object obtained through a delegate chain",
+        "You want to hide the internal structure of an object's associations",
+        "Changes to the delegate's interface should not propagate to callers"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Call chains like order.customer.address.city in client code",
+        "Clients that know too much about the internal structure of collaborating objects"
+      ],
+      "benefits": [
+        "Reduces coupling by hiding the chain of object interactions",
+        "Shields clients from changes in the delegated object's interface",
+        "Keeps the law of Demeter by avoiding chaining through multiple objects"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -3778,7 +3782,9 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-11"
+        "SMELL-11",
+        "SMELL-12",
+        "SMELL-15"
       ],
       "enforces": [
         "LAW-041"
@@ -3792,10 +3798,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A class no longer carries its weight and its features belong in another class",
+        "After moving all features out, a class is effectively empty or trivial",
+        "A refactoring like Move Method has left a class with almost no behavior"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "A class that acts as a mere wrapper with no real behavior of its own",
+        "Files where almost every method just delegates to another object"
+      ],
+      "benefits": [
+        "Eliminates unnecessary abstraction layers and reduces codebase complexity",
+        "Consolidates related logic into a single location",
+        "Removes indirection that makes the code harder to navigate"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -3818,7 +3835,7 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-04"
+        "SMELL-18"
       ],
       "enforces": [
         "LAW-042-S"
@@ -3832,10 +3849,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "You need to add behavior to a library class but cannot modify its source",
+        "A utility method logically belongs to an external type but cannot be added there",
+        "You want to keep a domain-specific operation close to the type it operates on"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Utility methods that take an external type as their first parameter",
+        "Repeated code that operates on a library class scattered across the codebase"
+      ],
+      "benefits": [
+        "Extends external types without modifying their source code",
+        "Keeps utility operations discoverable near the type they enhance",
+        "Provides a stepping stone toward Introduce Local Extension"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -3857,9 +3885,7 @@
     "category": "moving_features",
     "tags": [],
     "relations": {
-      "solves": [
-        "SMELL-04"
-      ],
+      "solves": [],
       "enforces": [
         "LAW-042-S"
       ],
@@ -3871,10 +3897,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "You need multiple additional methods on a library class you cannot modify",
+        "Introduce Foreign Method is insufficient because you need many additions",
+        "You want a cohesive API that extends a third-party type with domain operations"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Many foreign methods scattered across helper classes for the same external type",
+        "Repeated wrapping logic or conversion code for a third-party library class"
+      ],
+      "benefits": [
+        "Creates a unified extension of an external type with multiple methods",
+        "Keeps all extension methods together in a single, cohesive class",
+        "Allows the extension to maintain its own state and invariants"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -3899,7 +3936,9 @@
       "solves": [
         "SMELL-09",
         "SMELL-10",
-        "SMELL-18"
+        "SMELL-15",
+        "SMELL-18",
+        "SMELL-19"
       ],
       "enforces": [
         "LAW-042-S",
@@ -3914,10 +3953,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A field is used more heavily by another class than by its owning class",
+        "Feature Envy is detected: a field is accessed mostly through foreign methods",
+        "Moving the field would reduce the need for cross-class field access"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "A field that is accessed primarily by another class through getters or setters",
+        "Feature Envy: methods in one class frequently access a field of another class"
+      ],
+      "benefits": [
+        "Places data close to the behavior that uses it most",
+        "Reduces cross-class coupling and access patterns",
+        "Makes data ownership clearer and more logical"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -3940,9 +3990,16 @@
     "tags": [],
     "relations": {
       "solves": [
+        "SMELL-04",
+        "SMELL-05",
         "SMELL-09",
         "SMELL-10",
-        "SMELL-18"
+        "SMELL-15",
+        "SMELL-18",
+        "SMELL-19",
+        "SMELL-20",
+        "SMELL-21",
+        "SMELL-22"
       ],
       "enforces": [
         "LAW-042-S",
@@ -3957,10 +4014,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A method is used more by another class than by its current owner",
+        "Feature Envy is detected: a method accesses more data from another class",
+        "A method clearly belongs conceptually to a different class"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "A method that calls more foreign class methods than its own class methods",
+        "Methods that seem misplaced in their current class from a domain perspective"
+      ],
+      "benefits": [
+        "Reduces coupling by placing behavior near the data it operates on",
+        "Makes class responsibilities clearer and more cohesive",
+        "Often reveals hidden design concepts and opportunities for further refactoring"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -3983,8 +4051,7 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-14",
-        "SMELL-20"
+        "SMELL-14"
       ],
       "enforces": [
         "LAW-041",
@@ -3999,10 +4066,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A class has too many delegation methods that add no value",
+        "Clients can and should interact with the delegated object directly",
+        "The middle man class is a pass-through that obscures the real object"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "A class where most methods just delegate to another object with no added logic",
+        "Excessive use of Hide Delegate that creates an unnecessary wrapper layer"
+      ],
+      "benefits": [
+        "Eliminates unnecessary delegation layers and reduces code volume",
+        "Gives clients direct access to the full API of the delegated object",
+        "Makes the code more transparent by removing trivial pass-through methods"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4040,10 +4118,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A bidirectional association is no longer needed in both directions",
+        "One direction of navigation is never used in practice",
+        "You want to simplify the class and remove the complexity of maintaining two-way links"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "A back-reference pointer that is never actually traversed in the codebase",
+        "Difficult bugs arising from keeping both sides of a bidirectional link in sync"
+      ],
+      "benefits": [
+        "Eliminates the complexity of keeping both sides of an association synchronized",
+        "Reduces coupling between the two classes",
+        "Simplifies the data model by removing unnecessary back-references"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4066,9 +4155,7 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-13",
-        "SMELL-18",
-        "SMELL-21"
+        "SMELL-13"
       ],
       "enforces": [
         "LAW-040",
@@ -4083,10 +4170,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "You have a reference object that should be treated as a simple value",
+        "Shared references are causing unintended aliasing bugs",
+        "Immutable value semantics are desired for comparison and hashing"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Unexpected side effects when modifying an object shared through references",
+        "Complex equality logic needed because identity-based comparison is wrong for the domain"
+      ],
+      "benefits": [
+        "Simplifies code by making copies that can be compared by value",
+        "Eliminates aliasing bugs where modifying one reference affects another",
+        "Enables safe use as dictionary keys or set members"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4120,10 +4218,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Two objects need to navigate to each other and currently only one direction exists",
+        "You need to traverse the association from both sides efficiently",
+        "The domain model requires a genuine two-way relationship"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Code performing expensive queries to traverse a relationship backwards",
+        "Domain concepts that are inherently bidirectional but modeled unidirectionally"
+      ],
+      "benefits": [
+        "Enables efficient navigation in both directions without queries",
+        "Reflects a genuine bidirectional domain relationship in the code model",
+        "Improves performance by avoiding repeated lookups"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4146,8 +4255,8 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-13",
-        "SMELL-07"
+        "SMELL-07",
+        "SMELL-13"
       ],
       "enforces": [
         "LAW-040"
@@ -4162,10 +4271,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Multiple copies of the same logical entity exist and should share identity",
+        "You need to ensure all references point to the same object instance",
+        "Updating one reference should be visible through all others"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Multiple copies of the same logical entity that can drift out of sync",
+        "Equality checks based on data fields instead of identity for mutable objects"
+      ],
+      "benefits": [
+        "Ensures all references to a logical entity point to the same object",
+        "Simplifies updates since changes propagate automatically through shared references",
+        "Reduces memory usage by eliminating duplicate copies of the same data"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4204,10 +4324,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Domain data in a GUI must be kept in sync with a separate presentation copy",
+        "You need to observe and propagate changes from domain objects to a UI layer",
+        "Observer pattern is needed but domain objects cannot directly reference UI code"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Domain objects mixed with UI code that is difficult to test",
+        "Presentation state that diverges from domain state after updates"
+      ],
+      "benefits": [
+        "Separates domain logic from UI rendering concerns",
+        "Ensures consistency between domain state and what is displayed",
+        "Enables multiple views to observe the same domain data independently"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4241,10 +4372,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A getter returns a direct reference to a mutable internal collection",
+        "Clients can bypass encapsulation by modifying the collection directly",
+        "You need to control how a collection is accessed and modified"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Clients directly adding or removing elements from a returned collection",
+        "Internal collection state becoming inconsistent without the owning class knowing"
+      ],
+      "benefits": [
+        "Prevents uncontrolled modification of internal collection state",
+        "Allows the class to maintain invariants when the collection changes",
+        "Encapsulates the actual collection type, enabling future implementation changes"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4267,7 +4409,7 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-02"
+        "SMELL-07"
       ],
       "enforces": [
         "LAW-042-S"
@@ -4278,10 +4420,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A public field is accessed directly by external code",
+        "You need to add validation, logging, or side effects to field access",
+        "Encapsulation of internal state is a design goal"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Public fields that are accessed directly from outside the class",
+        "No validation or invariants enforced when field values change"
+      ],
+      "benefits": [
+        "Enables adding validation, notifications, or lazy initialization on access",
+        "Hides the internal representation, allowing future changes without breaking clients",
+        "Establishes a clear API boundary for the class"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4304,8 +4457,7 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-03",
-        "SMELL-05"
+        "SMELL-03"
       ],
       "enforces": [
         "LAW-042-S"
@@ -4319,10 +4471,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "An array is used to store heterogeneous data accessed by numeric index",
+        "Array index positions have named semantic meaning but the code uses magic numbers",
+        "You need to add behavior to data currently stored in array elements"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Array accesses like data[2] or data[STATUS_INDEX] that require comments to explain",
+        "Arrays containing different types of data at different indices"
+      ],
+      "benefits": [
+        "Replaces opaque index-based access with named fields for clarity",
+        "Allows adding behavior to the data structure as methods",
+        "Makes the code self-documenting by replacing magic numbers with field names"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4356,10 +4519,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A simple data value like a string or number needs associated behavior or additional data",
+        "A primitive value has special domain meaning that deserves its own type",
+        "You need to add validation, formatting, or operations to a data item"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Primitive values (strings, numbers) with special domain meaning passed around",
+        "Duplicated validation or formatting code for the same kind of data value"
+      ],
+      "benefits": [
+        "Creates a rich domain type that encapsulates behavior alongside data",
+        "Enables type-safe APIs that prevent mixing up similar primitive values",
+        "Allows adding validation and business rules specific to the value"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4397,10 +4571,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Numeric literals with special meaning appear in code without explanation",
+        "The same constant value is used in multiple places",
+        "You need to change a constant value and want a single point of modification"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Unexplained numeric literals scattered throughout the code",
+        "The same constant value repeated in multiple locations"
+      ],
+      "benefits": [
+        "Replaces magic numbers with self-documenting symbolic names",
+        "Centralizes the definition so changes are made in one place",
+        "Makes the code's intent clear without needing comments"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4437,10 +4622,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Subclasses differ only in data (fields) but share the same behavior",
+        "You want to eliminate unnecessary subclass proliferation driven by constant data",
+        "Fields on a superclass can capture the variation that subclasses express"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Subclasses that only differ in hardcoded values returned by overridden methods",
+        "A proliferation of trivial subclasses that each represent a single data variant"
+      ],
+      "benefits": [
+        "Eliminates subclasses that add no behavioral variation",
+        "Simplifies the class hierarchy and reduces the number of classes",
+        "Makes it easy to add new variants without creating new subclasses"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4474,10 +4670,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A type code is represented as a primitive (integer, string) with no compile-time safety",
+        "Switch statements branch on the type code value throughout the code",
+        "You need to enforce valid values and prevent invalid type codes"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Integer or string constants used to represent different types or categories",
+        "No compile-time checking for valid type code values"
+      ],
+      "benefits": [
+        "Provides compile-time safety for type codes, preventing invalid values",
+        "Creates a named type that documents the valid options",
+        "Enables future refactorings like Replace Type Code With Subclasses or State/Strategy"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4515,10 +4722,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A type code affects class behavior and the values change at runtime",
+        "Switch statements on a type code field need to be replaced with polymorphic behavior",
+        "The State or Strategy pattern is the right fit for the varying behavior"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Complex switch or if-else chains on a type code that affect behavior",
+        "Type code values that change during the lifetime of an object"
+      ],
+      "benefits": [
+        "Replaces conditional logic with polymorphic dispatch for cleaner code",
+        "Allows the type-specific behavior to change at runtime",
+        "Makes it easy to add new types without modifying existing conditional code"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4555,10 +4773,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A type code is fixed at object creation and never changes",
+        "Each type code variant has distinct behavior that should be in its own class",
+        "You want to use polymorphism to handle type-specific behavior"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Switch statements on a type code that never changes after construction",
+        "Methods that branch behavior based on an immutable type code field"
+      ],
+      "benefits": [
+        "Enables polymorphic dispatch to replace conditional logic on type codes",
+        "Each subclass encapsulates its variant-specific behavior",
+        "Makes adding new variants straightforward by creating new subclasses"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4581,10 +4810,7 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-02",
-        "SMELL-05",
-        "SMELL-19",
-        "SMELL-22"
+        "SMELL-07"
       ],
       "enforces": [
         "LAW-040",
@@ -4597,10 +4823,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A subclass accesses a superclass field directly but you need more flexibility",
+        "You want to introduce lazy initialization or validation on field access",
+        "Direct field access across inheritance levels makes future changes difficult"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Subclasses directly accessing inherited fields without going through accessors",
+        "A field's representation needs to change but subclasses depend on direct access"
+      ],
+      "benefits": [
+        "Decouples subclasses from the superclass's internal representation",
+        "Enables lazy initialization, validation, or caching in the accessor",
+        "Allows changing the field's representation without breaking subclasses"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4634,10 +4871,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Multiple conditions in a sequence check related things and combine to a single result",
+        "A complex boolean expression can be simplified by naming its parts",
+        "You want to extract the combined condition into a well-named method"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "A sequence of conditions combined with AND/OR that is hard to read",
+        "Complex boolean expressions that require comments to explain"
+      ],
+      "benefits": [
+        "Names the combined condition, making the intent self-documenting",
+        "Simplifies complex boolean expressions into a single readable call",
+        "Makes it easy to reuse the condition or modify it in one place"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4676,10 +4924,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "The same code appears in all branches of a conditional",
+        "Duplicated code in if/else blocks can be moved outside the conditional",
+        "Conditional branches contain identical setup or teardown code"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Identical code appearing in every branch of an if/else or switch",
+        "Setup or cleanup code copied into all conditional branches"
+      ],
+      "benefits": [
+        "Eliminates code duplication across conditional branches",
+        "Clarifies what is truly conditional versus what is common logic",
+        "Reduces the chance of updating one branch but forgetting another"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4703,6 +4962,8 @@
     "relations": {
       "solves": [
         "SMELL-01",
+        "SMELL-06",
+        "SMELL-16",
         "SMELL-21"
       ],
       "enforces": [
@@ -4719,10 +4980,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A complex conditional expression makes the code hard to follow",
+        "The condition, then-branch, and else-branch each represent distinct concepts",
+        "You want to name each part of the conditional for readability"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "A complex conditional with a large condition expression and substantial branches",
+        "Code where the reader must study the details to understand the branching logic"
+      ],
+      "benefits": [
+        "Replaces complex if/else logic with clearly named method calls",
+        "Separates the condition, then-action, and else-action into distinct methods",
+        "Makes the overall logic of the conditional self-documenting"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4759,10 +5031,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "An assumption about state must hold for code to work correctly",
+        "You want to document and enforce a precondition explicitly",
+        "Checking a condition and throwing an error is too heavy; an assertion documents intent"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Implicit assumptions about state that would cause subtle bugs if violated",
+        "Comments like 'this must never be null' that could instead be assertions"
+      ],
+      "benefits": [
+        "Documents assumptions explicitly in code rather than in comments",
+        "Catches programming errors early by validating preconditions at runtime",
+        "Can be enabled or disabled for production versus development builds"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4785,9 +5068,8 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-04",
-        "SMELL-08",
-        "SMELL-06"
+        "SMELL-06",
+        "SMELL-08"
       ],
       "enforces": [
         "LAW-041"
@@ -4800,10 +5082,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Repeated null checks for the same type appear throughout the codebase",
+        "You need a default or 'do nothing' behavior instead of null-handling logic",
+        "The domain has a meaningful concept of 'absent' or 'none' that null does not express well"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Repeated if (x != null) checks scattered across many methods",
+        "Code cluttered with null-guard logic that obscures the real business logic"
+      ],
+      "benefits": [
+        "Eliminates repeated null-check boilerplate throughout the codebase",
+        "Provides a safe default behavior that does nothing, avoiding NullPointerExceptions",
+        "Makes the domain concept of 'no value' explicit as a real object"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4840,10 +5133,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A boolean variable is used as a control flag to manage loop or method flow",
+        "Break or return statements would make the control flow clearer",
+        "A variable is checked in conditionals purely to signal 'stop processing'"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Boolean flags like 'isDone' or 'found' that only control loop or method termination",
+        "Nested conditions inside loops that check a control flag variable"
+      ],
+      "benefits": [
+        "Replaces indirect control flow with explicit break, return, or guard clauses",
+        "Makes loop and method exit conditions immediately visible",
+        "Eliminates state-tracking variables that add complexity without adding clarity"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4867,7 +5171,7 @@
     "relations": {
       "solves": [
         "SMELL-04",
-        "SMELL-05"
+        "SMELL-06"
       ],
       "enforces": [
         "LAW-040",
@@ -4879,10 +5183,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Switch or if-else statements branch on a type code to invoke different behavior",
+        "New types are frequently added, requiring changes to many conditional blocks",
+        "Behavior varies by type and each variant should own its own logic"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Switch statements on a type code that appear in multiple methods",
+        "Adding a new type requires finding and updating many conditional blocks"
+      ],
+      "benefits": [
+        "Replaces conditional dispatch with polymorphism for cleaner extensibility",
+        "Adding a new type only requires a new subclass, not modifying existing conditionals",
+        "Moves type-specific behavior to where it belongs: the type itself"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4921,10 +5236,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Deeply nested if-else blocks make the control flow hard to follow",
+        "Special cases at the start of a method should exit early rather than indent",
+        "The normal flow is obscured by error-checking or edge-case handling"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Arrow-shaped code with deep nesting levels for error or edge-case handling",
+        "The main logic buried inside multiple levels of if-else blocks"
+      ],
+      "benefits": [
+        "Flattens nested conditionals into a linear sequence of early exits",
+        "Highlights the normal happy path by removing it from deep nesting",
+        "Makes each special case independently readable at the top of the method"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -4960,10 +5286,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A method needs additional information from its caller to perform its task",
+        "The method signature does not provide enough context for the required behavior",
+        "You want to generalize a method to handle variations via additional inputs"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Methods that access global or shared state to get information they should receive as input",
+        "Near-duplicate methods that differ only in a single value or flag"
+      ],
+      "benefits": [
+        "Enables methods to handle a wider range of scenarios with additional context",
+        "Avoids creating near-duplicate methods that differ only in one input value",
+        "Makes the method's dependencies explicit in its signature"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5000,10 +5337,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A method is intended only for internal class use but is publicly visible",
+        "You want to reduce the public API surface of a class",
+        "A method that was public is now only called from within the class"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Public methods that are never called from outside the class",
+        "A large public API that exposes implementation details unnecessarily"
+      ],
+      "benefits": [
+        "Reduces the public API surface, making the class easier to understand and use",
+        "Signals that a method is an implementation detail, not a commitment",
+        "Enables freer refactoring of internal methods without breaking external callers"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5043,10 +5391,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Several methods share a common group of parameters that always appear together",
+        "A parameter list is long and many parameters are related",
+        "You want to use the grouped parameters as a first-class concept in the design"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "The same group of parameters repeated across multiple method signatures",
+        "Long parameter lists that are hard to remember and easy to mix up"
+      ],
+      "benefits": [
+        "Reduces parameter list length and groups related data into a single object",
+        "Makes the parameter group reusable across methods as a first-class concept",
+        "Enables adding new fields to the group without changing method signatures"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5084,10 +5443,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Several methods do similar things but differ by one or two values",
+        "You want to replace near-duplicate methods with a single parameterized version",
+        "Adding a new variant would otherwise require creating yet another method"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Multiple methods with similar names and nearly identical implementations",
+        "Methods like setValueFive, setValueTen, setValueTwenty that differ only in a constant"
+      ],
+      "benefits": [
+        "Eliminates near-duplicate methods that differ only in constant values",
+        "Makes adding new variants trivial by passing a different parameter value",
+        "Reduces total code volume and maintenance burden"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5110,7 +5480,9 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-02"
+        "SMELL-02",
+        "SMELL-05",
+        "SMELL-18"
       ],
       "enforces": [
         "LAW-041",
@@ -5124,10 +5496,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "You are passing individual fields from an object to a method when you could pass the whole object",
+        "A method receives several values that all come from the same source object",
+        "You want to avoid long parameter lists derived from one object's fields"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Method calls that extract multiple fields from one object to pass as separate arguments",
+        "Long parameter lists where most parameters come from the same source object"
+      ],
+      "benefits": [
+        "Shortens parameter lists by passing a single object instead of multiple fields",
+        "Makes the method resilient to changes in which fields it needs from the object",
+        "Avoids the temptation to modify the source object to pass more data"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5149,9 +5532,7 @@
     "category": "simplifying_calls",
     "tags": [],
     "relations": {
-      "solves": [
-        "SMELL-13"
-      ],
+      "solves": [],
       "enforces": [
         "LAW-040"
       ],
@@ -5161,10 +5542,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A parameter is no longer used by a method's body",
+        "The method signature carries parameters that callers pass but the method ignores",
+        "You want to simplify the method's API by removing unused inputs"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Parameters that are received but never referenced in the method body",
+        "Callers computing values only to pass them to methods that ignore them"
+      ],
+      "benefits": [
+        "Simplifies the method signature and makes it easier to understand",
+        "Removes the burden on callers of passing unnecessary arguments",
+        "Clarifies what the method actually depends on"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5201,10 +5593,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A setting method is called only at construction time and the value should not change",
+        "You want to make a field immutable after construction",
+        "A setter exposes the ability to change state that should be fixed at birth"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Setter methods called only in the constructor and nowhere else",
+        "Fields that logically should never change but have a public setter"
+      ],
+      "benefits": [
+        "Enforces immutability of fields that should not change after construction",
+        "Makes the object's state more predictable and easier to reason about",
+        "Reduces the public API and signals that the value is fixed"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5242,10 +5645,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A method name does not clearly convey what the method does",
+        "The name is inconsistent with naming conventions or other method names in the codebase",
+        "You need to rename to make the code self-documenting"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Method names that are cryptic, abbreviated, or misleading",
+        "Readers who must look at the method body to understand what it does"
+      ],
+      "benefits": [
+        "Makes the code self-documenting by using descriptive, intention-revealing names",
+        "Improves discoverability and reduces the need to read the method body",
+        "Aligns naming with domain language for better communication"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5282,10 +5696,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Object creation logic is complex or needs to vary based on conditions",
+        "You want to encapsulate construction to hide concrete class names from callers",
+        "Subclasses need to control which instances get created"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Complex construction logic repeated at multiple call sites",
+        "Callers that know too much about which concrete class to instantiate"
+      ],
+      "benefits": [
+        "Encapsulates complex creation logic in a single, well-named method",
+        "Decouples client code from concrete class names",
+        "Enables returning different subtypes or cached instances from the same call"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5322,10 +5747,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A method returns an error code that the caller must check explicitly",
+        "Error conditions should propagate up the call stack automatically",
+        "You want to use language-native exception handling for error flow"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Methods returning error codes that callers forget to check",
+        "Complex if-else chains dedicated to error propagation instead of business logic"
+      ],
+      "benefits": [
+        "Separates error handling from normal control flow for cleaner code",
+        "Ensures errors cannot be silently ignored by callers",
+        "Leverages language-native exception propagation to unwind the call stack"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5362,10 +5798,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Exceptions are used for ordinary control flow rather than genuine error conditions",
+        "A try-catch block handles a condition that could be tested with an if-statement",
+        "Performance-critical code where exception overhead is unacceptable for expected cases"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Exceptions caught and handled as part of normal program logic",
+        "Try-catch blocks where the catch implements expected behavior, not error recovery"
+      ],
+      "benefits": [
+        "Replaces expensive exception-based control flow with a simple conditional test",
+        "Makes the expected case the normal flow rather than an exceptional one",
+        "Clarifies that the condition is a business rule, not an error"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5403,10 +5850,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A method takes a parameter that selects between different behaviors",
+        "Switch-like parameter dispatch makes the method do fundamentally different things",
+        "Each value of a parameter corresponds to a distinct, named operation"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Methods that switch on a parameter to decide what to do",
+        "Method names paired with 'mode' or 'type' parameters to select behavior"
+      ],
+      "benefits": [
+        "Replaces a single multi-purpose method with clearly named, single-purpose methods",
+        "Makes the API more discoverable and self-documenting",
+        "Enables compile-time checking that the right method is called"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5444,10 +5902,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A method receives a parameter that could be obtained by calling another method on the receiver",
+        "The caller computes a value just to pass it, when the callee could compute it itself",
+        "You want to reduce coupling by removing unnecessary parameter passing"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Parameters that are just the result of calling another method available to the callee",
+        "Callers fetching data solely to pass it into a method that could get it directly"
+      ],
+      "benefits": [
+        "Eliminates unnecessary parameters that add coupling without adding value",
+        "Reduces the burden on callers to compute and pass values the callee can obtain itself",
+        "Makes the method more self-sufficient and its dependencies clearer"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5486,10 +5955,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A method both returns a value and modifies object state",
+        "You need to optimize or cache the query result without affecting mutation logic",
+        "Readers cannot tell from the signature whether calling the method is safe or has side effects"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Methods that both change state and return a value, confusing callers about side effects",
+        "Bug reports where a 'harmless' getter unexpectedly modified state"
+      ],
+      "benefits": [
+        "Clearly separates read operations from write operations for predictability",
+        "Allows the query to be called freely without fear of side effects",
+        "Enables independent optimization of the query and the modifier"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5529,10 +6009,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A superclass and its subclass are so similar that the hierarchy adds no value",
+        "A subclass was created for a variation that no longer exists or is negligible",
+        "Merging the two classes would simplify the design without losing expressiveness"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "A subclass that adds minimal or no behavior beyond the superclass",
+        "An inheritance hierarchy where a level can be removed without losing functionality"
+      ],
+      "benefits": [
+        "Eliminates unnecessary hierarchy levels, reducing code complexity",
+        "Consolidates related logic into a single class for easier maintenance",
+        "Removes the overhead of managing a trivial inheritance relationship"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5556,7 +6047,8 @@
     "relations": {
       "solves": [
         "SMELL-09",
-        "SMELL-21"
+        "SMELL-21",
+        "SMELL-23"
       ],
       "enforces": [
         "LAW-042-D",
@@ -5572,10 +6064,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Multiple clients depend on the same subset of a class's interface",
+        "You need to define a contract that multiple classes can implement",
+        "You want to decouple clients from specific implementations"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Clients depending on concrete classes when they only need a subset of behavior",
+        "Unrelated classes that share common method signatures without a shared type"
+      ],
+      "benefits": [
+        "Defines a clear contract that multiple implementations can fulfill",
+        "Decouples clients from concrete classes, enabling dependency inversion",
+        "Supports polymorphism across unrelated classes that share common behavior"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5599,7 +6102,7 @@
     "relations": {
       "solves": [
         "SMELL-04",
-        "SMELL-12"
+        "SMELL-22"
       ],
       "enforces": [
         "LAW-042-L",
@@ -5615,10 +6118,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A class has features that apply only to some instances, not all",
+        "You need to represent variant behavior or data for specific cases",
+        "Some objects of a class need additional methods or fields that others do not"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Fields or methods guarded by type checks that apply only to certain instances",
+        "A class where some features are only relevant for a subset of its instances"
+      ],
+      "benefits": [
+        "Isolates variant-specific behavior into its own class",
+        "Keeps the base class focused on common behavior",
+        "Makes adding new variants straightforward by creating new subclasses"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5658,10 +6172,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Two or more classes share common fields and methods that could be unified",
+        "Duplicate code exists across classes that are conceptually related",
+        "You want to create a common abstraction for related classes"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Duplicate fields and methods across two or more related classes",
+        "Classes that share a conceptual identity but lack a common ancestor"
+      ],
+      "benefits": [
+        "Eliminates duplication by pulling common elements into a shared superclass",
+        "Creates a clear abstraction that captures the shared concept",
+        "Enables polymorphism and shared behavior across related classes"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5699,10 +6224,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Subclasses have methods with similar structure but different steps",
+        "An algorithm skeleton is shared but individual steps vary by subclass",
+        "You want to define the invariant parts of an algorithm in one place"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Methods in different subclasses with identical structure but different details",
+        "Similar algorithmic steps duplicated with minor variations across subclasses"
+      ],
+      "benefits": [
+        "Defines the invariant algorithm skeleton in the superclass",
+        "Allows subclasses to override only the varying steps",
+        "Eliminates structural duplication across similar subclass methods"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5740,10 +6276,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Subclasses share identical constructor initialization logic",
+        "Common initialization code is duplicated across subclass constructors",
+        "You want to centralize field initialization in the superclass"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Identical initialization code repeated in multiple subclass constructors",
+        "Subclass constructors that copy-paste the same field assignments"
+      ],
+      "benefits": [
+        "Eliminates duplicate initialization code across subclass constructors",
+        "Centralizes common setup logic in the superclass constructor",
+        "Ensures consistent initialization behavior across all subclasses"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5781,10 +6328,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Fields are duplicated in multiple subclasses and represent the same concept",
+        "You want to access a common field through the superclass type",
+        "Shared field declarations should be centralized to avoid duplication"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "The same field declared independently in multiple subclasses",
+        "Duplicated getter/setter logic for the same conceptual field in different subclasses"
+      ],
+      "benefits": [
+        "Eliminates field duplication across subclasses",
+        "Allows access to the field through the superclass interface",
+        "Centralizes field-related behavior in the superclass"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5823,10 +6381,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "Methods with identical or very similar behavior exist in multiple subclasses",
+        "You want to invoke the behavior through the superclass type",
+        "Common method implementations should be shared rather than duplicated"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Identical or nearly identical methods implemented in multiple subclasses",
+        "Duplicated logic that could be shared through the superclass"
+      ],
+      "benefits": [
+        "Eliminates duplicate method implementations across subclasses",
+        "Allows the method to be called through the superclass interface",
+        "Centralizes behavior in one place so changes are made once"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5863,10 +6432,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A field is used only by some subclasses but not all",
+        "Features related to the field are specific to a subset of subclasses",
+        "You want to move specialized data to where it is actually needed"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Fields that are meaningful only for certain subclasses but declared in the superclass",
+        "Subclasses where a field is always null or unused"
+      ],
+      "benefits": [
+        "Removes unused fields from classes that do not need them",
+        "Keeps each class focused on the data it actually uses",
+        "Makes the class hierarchy more precise and reduces memory footprint"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5903,10 +6483,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A method in the superclass is only relevant to some subclasses",
+        "Subclasses provide irrelevant or no-op implementations of a method",
+        "You want each subclass to own only the behavior it actually needs"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "Subclasses that provide empty or trivial implementations of inherited methods",
+        "Methods in the superclass that only some subclasses meaningfully override"
+      ],
+      "benefits": [
+        "Moves behavior to where it is relevant, improving cohesion",
+        "Eliminates no-op or irrelevant method implementations in subclasses",
+        "Makes the superclass's API more focused on truly common behavior"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5943,10 +6534,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A class delegates all methods to another class and is effectively a subclass",
+        "The delegation relationship mirrors what inheritance would express more naturally",
+        "You want to replace wrapper methods with inherited behavior"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "A class whose every method delegates to the same object",
+        "Delegation that exists solely because inheritance was not used from the start"
+      ],
+      "benefits": [
+        "Replaces verbose delegation with concise inheritance",
+        "Leverages polymorphism and standard OO mechanisms",
+        "Reduces boilerplate delegation code"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -5984,10 +6586,21 @@
       "enables": []
     },
     "context": {
-      "when_to_use": [],
+      "when_to_use": [
+        "A subclass uses only part of a superclass's interface or behaves inconsistently",
+        "Inheritance is being misused: the subclass is-not-a genuine specialization",
+        "Delegation would better express the relationship between the two classes"
+      ],
       "when_not_to_use": [],
-      "symptoms": [],
-      "benefits": [],
+      "symptoms": [
+        "A subclass that overrides methods to throw UnsupportedOperationException or do nothing",
+        "Inheritance where the subclass is-not-a true specialization of the superclass"
+      ],
+      "benefits": [
+        "Replaces inappropriate inheritance with a more flexible delegation relationship",
+        "Allows the former subclass to use only the parts of the delegate it actually needs",
+        "Reduces coupling and prevents Liskov Substitution Principle violations"
+      ],
       "drawbacks": []
     },
     "source": {
@@ -6175,7 +6788,9 @@
       "violates": [
         "LAW-040"
       ],
-      "related_to": [],
+      "related_to": [
+        "LAW-042"
+      ],
       "requires": [],
       "enables": []
     },
@@ -6214,7 +6829,9 @@
       "violates": [
         "LAW-042-O"
       ],
-      "related_to": [],
+      "related_to": [
+        "LAW-042"
+      ],
       "requires": [],
       "enables": []
     },
@@ -6295,7 +6912,9 @@
       "violates": [
         "LAW-043"
       ],
-      "related_to": [],
+      "related_to": [
+        "LAW-042"
+      ],
       "requires": [],
       "enables": []
     },
@@ -6691,7 +7310,6 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-042",
         "LAW-042-I"
       ],
       "requires": [],
@@ -6735,9 +7353,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-042"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": [],
       "violated_by": []
@@ -6777,9 +7393,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-042"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": [],
       "violated_by": []
@@ -6822,7 +7436,6 @@
       "enforces": [],
       "violates": [],
       "related_to": [
-        "LAW-042",
         "LAW-042-S",
         "DP-006"
       ],
@@ -6867,10 +7480,7 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [
-        "LAW-042",
-        "LAW-054"
-      ],
+      "related_to": [],
       "requires": [],
       "enables": [],
       "violated_by": []

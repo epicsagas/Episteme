@@ -15,11 +15,12 @@ Specifically, it violates the **DRY principle** (Don't Repeat Yourself), promoti
 
 ## How to Fix
 - **Replace Data Value With Object** (`RF-026`)
+- **Replace Array With Object** (`RF-025`)
 
 ## Connections
 **Violates:** Dry (`LAW-040`)
 
-**Resolved by refactoring:** Replace Data Value With Object (`RF-026`)
+**Resolved by refactoring:** Replace Data Value With Object (`RF-026`), Replace Array With Object (`RF-025`)
 
 ---
 

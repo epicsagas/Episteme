@@ -15,13 +15,17 @@ Specifically, it violates the **DRY principle** (Don't Repeat Yourself), promoti
 
 ## How to Fix
 - **Extract Method** (`RF-001`)
-- **Change Reference To Value** (`RF-019`)
-- **Remove Parameter** (`RF-046`)
+- **Form Template Method** (`RF-059`)
+- **Extract Superclass** (`RF-058`)
+- **Pull Up Method** (`RF-062`)
+- **Pull Up Field** (`RF-061`)
+- **Parameterize Method** (`RF-044`)
+- **Replace Magic Number With Symbolic Constant** (`RF-027`)
 
 ## Connections
 **Violates:** Dry (`LAW-040`)
 
-**Resolved by refactoring:** Extract Method (`RF-001`), Change Reference To Value (`RF-019`), Remove Parameter (`RF-046`)
+**Resolved by refactoring:** Extract Method (`RF-001`), Form Template Method (`RF-059`), Extract Superclass (`RF-058`), Pull Up Method (`RF-062`), Pull Up Field (`RF-061`), Parameterize Method (`RF-044`), Replace Magic Number With Symbolic Constant (`RF-027`)
 
 ---
 

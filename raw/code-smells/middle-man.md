@@ -14,13 +14,13 @@ Coupler smells indicate excessive coupling between classes or modules, reducing 
 Specifically, it violates the **Law of Demeter**, exposing implementation details across object boundaries.
 
 ## How to Fix
-- **Duplicate Observed Data** (`RF-022`)
-- **Consolidate Duplicate Conditional Fragments** (`RF-034`)
+- **Remove Middle Man** (`RF-017`)
+- **Replace Delegation With Inheritance** (`RF-065`)
 
 ## Connections
 **Violates:** Law Of Demeter (`LAW-043`)
 
-**Resolved by refactoring:** Duplicate Observed Data (`RF-022`), Consolidate Duplicate Conditional Fragments (`RF-034`)
+**Resolved by refactoring:** Remove Middle Man (`RF-017`), Replace Delegation With Inheritance (`RF-065`)
 
 ---
 
