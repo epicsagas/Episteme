@@ -281,7 +281,11 @@ pub fn cmd_start(kind: ServiceKind, host: &str, port: u16) -> Result<u32, String
 ///
 /// When a launchd agent is loaded for this service kind, unloads it first so that
 /// macOS does not immediately re-spawn the process.
+///
+/// Works even without a PID file by discovering the process via the port it binds.
 pub fn cmd_stop(kind: ServiceKind) -> Result<(), String> {
+    let port = get_port(kind);
+
     // Unload launchd agent first to prevent immediate re-spawn.
     #[cfg(target_os = "macos")]
     {
@@ -304,14 +308,23 @@ pub fn cmd_stop(kind: ServiceKind) -> Result<(), String> {
         }
     }
 
-    let pid = read_pid_for(kind).ok_or("No PID file found -- is the server running?")?;
+    // Resolve PID: prefer PID file, fall back to port-based discovery.
+    let pid = match read_pid_for(kind) {
+        Some(p) => p,
+        None => match find_pid_by_port(port) {
+            Some(p) => p,
+            None => {
+                // Nothing running — just clean up stale PID file.
+                clear_pid_for(kind).ok();
+                return Ok(());
+            }
+        },
+    };
 
     if !is_running(pid) {
         clear_pid_for(kind).ok();
         return Ok(());
     }
-
-    let port = get_port(kind);
 
     // Graceful SIGTERM.
     #[cfg(unix)]

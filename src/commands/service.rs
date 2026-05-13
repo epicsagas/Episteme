@@ -77,11 +77,7 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
         }
         ServiceOp::Restart { host, port, kind } => {
             let label = kind_label(kind);
-            if episteme::adapters::service::is_port_in_use(port) {
-                println!("{label} server is already running — skipping restart");
-                return Ok(());
-            }
-            // Best-effort stop; ignore errors if nothing was running.
+            // Stop first — handles launchd unload and process kill.
             let _ = episteme::adapters::service::cmd_stop(kind);
             let pid = episteme::adapters::service::cmd_start(kind, &host, port)
                 .map_err(|e| anyhow::anyhow!(e))?;
