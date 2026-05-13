@@ -233,6 +233,8 @@ pub fn cmd_start(kind: ServiceKind, host: &str, port: u16) -> Result<StartOutcom
             if expected.is_some_and(|p| p == existing) && is_running(existing) {
                 return Ok(StartOutcome::AlreadyRunning(existing));
             }
+            return Err(format!("Port {port} is already in use (PID {existing})"));
+        }
         return Err(format!("Port {port} is already in use"));
     }
 
