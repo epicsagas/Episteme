@@ -148,13 +148,13 @@ fn assert_not_has_relation(
     rel_type: &str,
     to_id: &str,
 ) {
-    if let Some(entity) = entities.get(from_id) {
-        if let Some(targets) = entity.relations.get(rel_type) {
-            assert!(
-                !targets.contains(&to_id.to_string()),
-                "{from_id} should NOT have --{rel_type}--> {to_id}"
-            );
-        }
+    if let Some(entity) = entities.get(from_id)
+        && let Some(targets) = entity.relations.get(rel_type)
+    {
+        assert!(
+            !targets.contains(&to_id.to_string()),
+            "{from_id} should NOT have --{rel_type}--> {to_id}"
+        );
     }
 }
 
@@ -435,7 +435,7 @@ fn at_least_15_patterns_have_solves_edges() {
     let with_solves = entities
         .iter()
         .filter(|(eid, e)| eid.starts_with("DP-") && e.r#type == "pattern")
-        .filter(|(_, e)| !e.relations.get("solves").map_or(true, |v| v.is_empty()))
+        .filter(|(_, e)| e.relations.get("solves").is_some_and(|v| !v.is_empty()))
         .count();
     assert!(
         with_solves >= 15,
