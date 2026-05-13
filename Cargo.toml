@@ -86,7 +86,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 
 # System information
-sysinfo = "0.39"
+sysinfo = "0.39.1"
 
 # Metrics
 metrics = "0.24"
@@ -116,7 +116,7 @@ rustpython-parser = "0.4"
 fxhash = "0.2"
 fastembed = { version = "5.13.4", default-features = false, features = ["hf-hub-native-tls", "ort-download-binaries-native-tls"] }
 crossterm = "0.29.0"
-rand = "0.9"
+rand = "0.10"
 
 [package.metadata.binstall]
 pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target }.tar.xz"
