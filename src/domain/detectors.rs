@@ -840,8 +840,11 @@ pub fn detect_parallel_inheritance(
 // -- SMELL-16  Comments -----------------------------------------------------
 // Heuristic: high comment density relative to code suggests the code is not
 // self-documenting.  Uses `comment_count` from CodeMetrics.
-// comment_ratio >= 0.6 -> 0.80 | >= 0.4 -> 0.65 | >= 0.25 -> 0.50
-// Additional weight when LOC is also high (long methods with many comments).
+// comment_ratio >= 0.5 -> 0.40 | >= 0.35 -> 0.25
+// Extra: long method + ratio >= 0.35 -> +0.20 | high CC + ratio >= 0.35 -> +0.15
+// Fires at >= 0.50 (requires at least 2 signals).
+// NOTE: Low threshold is 35% (not 25%) to avoid flagging well-documented code
+// with rich doc comments (Javadoc, ///, etc.) which commonly reach 25-30%.
 
 pub fn detect_comments(
     metrics: &CodeMetrics,
@@ -863,24 +866,21 @@ pub fn detect_comments(
             metrics.comment_count,
             metrics.loc
         ),
-        metrics.loc / 4, // > 25% comment lines
+        // ~35% threshold: (loc * 100 / 285 ≈ 35%). Using integer math: loc * 5 / 14.
+        (metrics.loc as f64 * 0.35) as usize,
         0.25,
         format!(
             "Comment density {:.0}% suggests code is not self-documenting",
             comment_ratio * 100.0
         ),
     );
-    // Extra signal: long methods with many comments often indicate complex logic
-    // that should be refactored into smaller named functions.
-    if metrics.loc > 50 && comment_ratio >= 0.25 {
+    if metrics.loc > 50 && comment_ratio >= 0.35 {
         a.add(
             0.2,
             "Long method with many comments -- consider extracting named methods".into(),
         );
     }
-    // High CC combined with many comments suggests the comments are compensating
-    // for complex control flow.
-    if metrics.cyclomatic_complexity > 10 && comment_ratio >= 0.3 {
+    if metrics.cyclomatic_complexity > 10 && comment_ratio >= 0.35 {
         a.add(
             0.15,
             format!(
@@ -980,8 +980,14 @@ pub fn detect_refused_bequest(
             ],
         ));
     }
-    // Signal 3: Many inherited fields but very few methods (lazy subclass)
-    if metrics.field_count >= 8 && metrics.method_count <= 2 && metrics.method_count > 0 {
+    // Signal 3: Many inherited fields but very few methods (lazy subclass).
+    // Requires override_count > 0 to avoid flagging data classes (DTOs, entities)
+    // which legitimately have many fields and few methods.
+    if metrics.field_count >= 8
+        && metrics.method_count <= 2
+        && metrics.method_count > 0
+        && metrics.override_count > 0
+    {
         return Some(build_detection(
             "SMELL-22",
             "Refused Bequest",
@@ -991,10 +997,10 @@ pub fn detect_refused_bequest(
             metrics,
             vec![
                 format!(
-                    "{} fields but only {} methods -- likely inherits without adding value",
-                    metrics.field_count, metrics.method_count
+                    "{} fields, {} methods, {} trivial overrides -- inherits without adding value",
+                    metrics.field_count, metrics.method_count, metrics.override_count
                 ),
-                "Subclass may be inheriting fields it does not need".into(),
+                "Subclass overrides parent behavior but adds little -- consider composition".into(),
             ],
         ));
     }
@@ -1421,6 +1427,30 @@ mod tests {
     }
 
     #[test]
+    fn comments_doc_comment_not_flagged() {
+        // 30% comment ratio — typical for well-documented code (doc comments).
+        // Should NOT fire with only the low tier signal (0.25 < 0.50 threshold).
+        let m = CodeMetrics {
+            loc: 100,
+            comment_count: 30, // 30% ratio — below 35% low tier
+            ..Default::default()
+        };
+        assert!(detect_comments(&m, "t.py:1", "f").is_none());
+    }
+
+    #[test]
+    fn comments_35_percent_boundary() {
+        // 35% ratio triggers low tier (0.25) but needs another signal to reach 0.50.
+        let m = CodeMetrics {
+            loc: 100,
+            comment_count: 35, // exactly 35%
+            ..Default::default()
+        };
+        // 0.25 alone < 0.50 threshold → None
+        assert!(detect_comments(&m, "t.py:1", "f").is_none());
+    }
+
+    #[test]
     fn comments_high_density() {
         let m = CodeMetrics {
             loc: 100,
@@ -1489,11 +1519,25 @@ mod tests {
         let m = CodeMetrics {
             field_count: 10,
             method_count: 1,
+            override_count: 1, // must have overrides — not a pure DTO
             ..Default::default()
         };
         let d = detect_refused_bequest(&m, "t.py:1", "LazySub").unwrap();
         assert_eq!(d.smell_id, "SMELL-22");
         assert!((d.confidence - 0.55).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn refused_bequest_dto_not_flagged() {
+        // A data class (DTO/Entity) with many fields, few methods, no overrides.
+        // Should NOT be flagged as Refused Bequest.
+        let m = CodeMetrics {
+            field_count: 12,
+            method_count: 2,
+            override_count: 0, // no overrides → not refusing bequest
+            ..Default::default()
+        };
+        assert!(detect_refused_bequest(&m, "t.py:1", "UserDTO").is_none());
     }
 
     #[test]

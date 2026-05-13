@@ -1,10 +1,6 @@
 ---
 name: episteme
-description: >
-  Software engineering knowledge graph — patterns, laws, refactorings, smells.
-  Activates on any code quality concern, design decision, architecture review,
-  or engineering question — even when the user describes problems informally.
-  Use the Episteme MCP tools to ground every engineering answer in proven concepts.
+description: "SW engineering knowledge graph — patterns, laws, refactorings, smells. Trigger: code quality concern, design decision, architecture review, or any engineering question."
 ---
 
 # Episteme Knowledge Graph

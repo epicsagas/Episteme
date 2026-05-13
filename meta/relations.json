@@ -1498,7 +1498,9 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-004"
+      ],
       "requires": [],
       "enables": []
     },
@@ -1632,7 +1634,9 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-007"
+      ],
       "requires": [],
       "enables": []
     },
@@ -1860,7 +1864,9 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-012"
+      ],
       "requires": [],
       "enables": []
     },
@@ -1959,7 +1965,9 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-043"
+      ],
       "requires": [],
       "enables": []
     },
@@ -2143,7 +2151,9 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-023"
+      ],
       "requires": [],
       "enables": []
     },
@@ -2209,7 +2219,9 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-036"
+      ],
       "requires": [],
       "enables": []
     },
@@ -2282,7 +2294,9 @@
         "LAW-029"
       ],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-029"
+      ],
       "requires": [],
       "enables": []
     },
@@ -2387,7 +2401,11 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-023",
+        "LAW-025",
+        "LAW-029"
+      ],
       "requires": [],
       "enables": []
     },
@@ -2422,7 +2440,11 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-025",
+        "LAW-028",
+        "LAW-034"
+      ],
       "requires": [],
       "enables": []
     },
@@ -2459,7 +2481,10 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-031",
+        "LAW-033"
+      ],
       "requires": [],
       "enables": []
     },
@@ -2535,7 +2560,10 @@
         "LAW-033"
       ],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-030",
+        "LAW-033"
+      ],
       "requires": [],
       "enables": []
     },
@@ -2568,7 +2596,10 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-030",
+        "LAW-032"
+      ],
       "requires": [],
       "enables": []
     },
@@ -2672,7 +2703,9 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-041"
+      ],
       "requires": [],
       "enables": []
     },
@@ -2705,7 +2738,9 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-038"
+      ],
       "requires": [],
       "enables": []
     },
@@ -2861,7 +2896,9 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-043"
+      ],
       "requires": [],
       "enables": []
     },
@@ -2898,7 +2935,9 @@
         "LAW-043"
       ],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-040"
+      ],
       "requires": [],
       "enables": [],
       "violated_by": []
@@ -2940,7 +2979,10 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-040",
+        "LAW-041"
+      ],
       "requires": [],
       "enables": []
     },
@@ -2982,7 +3024,9 @@
       "solves": [],
       "enforces": [],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-042"
+      ],
       "requires": [],
       "enables": []
     },
@@ -3084,7 +3128,9 @@
         "LAW-041"
       ],
       "violates": [],
-      "related_to": [],
+      "related_to": [
+        "LAW-046"
+      ],
       "requires": [],
       "enables": []
     },
@@ -3423,6 +3469,7 @@
       ],
       "violates": [],
       "related_to": [
+        "LAW-042-D",
         "RF-001",
         "RF-010"
       ],
@@ -3519,7 +3566,8 @@
     "tags": [],
     "relations": {
       "solves": [
-        "SMELL-01"
+        "SMELL-01",
+        "SMELL-13"
       ],
       "enforces": [
         "LAW-041",
@@ -6740,7 +6788,9 @@
       "violates": [
         "LAW-040"
       ],
-      "related_to": [],
+      "related_to": [
+        "LAW-042"
+      ],
       "requires": [],
       "enables": []
     },
@@ -6779,7 +6829,9 @@
       "violates": [
         "LAW-042-O"
       ],
-      "related_to": [],
+      "related_to": [
+        "LAW-042"
+      ],
       "requires": [],
       "enables": []
     },
@@ -6860,7 +6912,9 @@
       "violates": [
         "LAW-043"
       ],
-      "related_to": [],
+      "related_to": [
+        "LAW-042"
+      ],
       "requires": [],
       "enables": []
     },
