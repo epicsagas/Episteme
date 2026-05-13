@@ -39,7 +39,7 @@ pub fn parse_api_keys(env_val: &str) -> Vec<String> {
 
 /// Generate a bearer token in the format `epis-` + 32 hex characters.
 pub fn generate_token() -> String {
-    use rand::Rng;
+    use rand::RngExt;
     let bytes: [u8; 16] = rand::rng().random();
     let hex: String = bytes.iter().map(|b| format!("{b:02x}")).collect();
     format!("epis-{hex}")
