@@ -49,21 +49,16 @@
 
 **1. Install Episteme**
 
-| OS | Command |
-|----|---------|
-| **macOS / Linux** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
-| **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
+| Method | Command |
+|--------|---------|
+| **cargo-binstall** ⚡ | `cargo binstall episteme` |
+| **Shell script** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
 | **cargo** | `cargo install episteme` |
+| **Docker** | See [Option 3](#option-3-docker-no-rust-required) |
 
-<details>
-<summary>Other install methods</summary>
-
-- **cargo-binstall:** `cargo binstall episteme` (downloads pre-built binary)
-- **From source:** `cargo install --git https://github.com/epicsagas/Episteme`
-- **Docker:** See [Option 3](#option-3-docker-no-rust-required)
-
-</details>
+> **Recommended:** `cargo-binstall` downloads pre-built binaries — no compilation needed.
 
 **2. Seed data + wire up your AI tool**
 
@@ -201,20 +196,14 @@ Episteme runs entirely offline: single binary, local SQLite database, local embe
 
 ## Installation
 
-### Option 1: One Command (Recommended)
+### Option 1: cargo-binstall (Recommended)
 
 ```bash
-# Install cargo-binstall if missing
-cargo install cargo-binstall
-
-# Fast path (downloads prebuilt binary when available)
-cargo binstall episteme
-
-# Fallback: build from source (first build takes 3–5 minutes)
-cargo install --git https://github.com/epicsagas/Episteme
-
-epis install claude    # seeds data + wires up MCP + installs agents
+cargo binstall episteme    # downloads pre-built binary — no compilation
+epis install claude        # seeds data + wires up MCP + installs agents
 ```
+
+If you don't have cargo-binstall yet: `cargo install cargo-binstall`
 
 > After `epis install claude`, **restart Claude Code** for the MCP tools and agents to appear.
 

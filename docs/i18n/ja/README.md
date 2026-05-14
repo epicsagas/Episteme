@@ -42,35 +42,26 @@
 
 > **前提条件:** [rustup](https://rustup.rs)経由でRust 1.95以上 · **Rustがインストールされていない場合:** [Docker](#option-3-docker-rust不要)または[プリビルトバイナリ](#option-4-プリビルトバイナリrust不要)を参照してください。
 
-**1. Rustのインストール（未インストールの場合）**
+**1. Epistemeのインストール**
 
-| OS | コマンド |
-|----|---------|
-| **macOS / Linux** | `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \| sh` |
-| **Windows** | [`rustup-init.exe`](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe)をダウンロードして実行 |
+| 方法 | コマンド |
+|------|----------|
+| **cargo-binstall** ⚡ | `cargo binstall episteme` |
+| **シェルスクリプト** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
+| **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
+| **cargo** | `cargo install episteme` |
+| **Docker** | [オプション3](#option-3-docker-rust不要)を参照 |
 
-インストール後、**新しいターミナル**を開いてください（macOS/Linuxの場合は`source "$HOME/.cargo/env"`を実行）。
+> **推奨:** `cargo-binstall`はコンパイル不要でビルド済みバイナリをダウンロードします。
 
-**2. Epistemeのインストール（初回ビルドは3〜5分）**
-
-```bash
-# Install cargo-binstall if missing
-cargo install cargo-binstall
-
-# Fast path (downloads prebuilt binary when available)
-cargo binstall episteme
-
-# Fallback (build from source)
-cargo install --git https://github.com/epicsagas/Episteme
-```
-
-**3. データのシード + AIツールの設定**
+**2. データのシード + AIツールの設定**
 
 ```bash
 epis install claude    # または: cursor, codex, gemini
 ```
 
-**4. 動作確認**
+**3. 動作確認**
 
 ```bash
 epis --version
@@ -200,13 +191,14 @@ Epistemeは完全にオフラインで動作します：単一バイナリ、ロ
 
 ## インストール
 
-### 方法1：ワンコマンド（推奨）
+### 方法1：cargo-binstall（推奨）
 
 ```bash
-# 初回ビルドは3〜5分かかります — これは正常です
-cargo install --git https://github.com/epicsagas/Episteme
-epis install claude    # データのシード + MCPの設定 + エージェントのインストール
+cargo binstall episteme    # ビルド済みバイナリをダウンロード — コンパイル不要
+epis install claude        # データのシード + MCPの設定 + エージェントのインストール
 ```
+
+cargo-binstallがない場合: `cargo install cargo-binstall`
 
 > `epis install claude`の後、MCPツールとエージェントを表示するには**Claude Codeを再起動**してください。
 

@@ -42,35 +42,26 @@
 
 > **पूर्वापेक्षाएँ:** [rustup](https://rustup.rs) के माध्यम से Rust 1.95+ · **Rust नहीं है?** [Docker](#विकल्प-3-docker-rust-की-आवश्यकता-नहीं) या [प्री-बिल्ट बाइनरीज़](#विकल्प-4-प्री-बिल्ट-बाइनरीज़-rust-की-आवश्यकता-नहीं) देखें।
 
-**1. Rust इंस्टॉल करें (यदि पहले से इंस्टॉल नहीं है)**
+**1. Episteme इंस्टॉल करें**
 
-| ऑपरेटिंग सिस्टम | कमांड |
-|----|---------|
-| **macOS / Linux** | `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \| sh` |
-| **Windows** | [`rustup-init.exe`](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe) डाउनलोड करें और चलाएँ |
+| विधि | कमांड |
+|------|--------|
+| **cargo-binstall** ⚡ | `cargo binstall episteme` |
+| **Shell स्क्रिप्ट** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
+| **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
+| **cargo** | `cargo install episteme` |
+| **Docker** | [विकल्प 3](#विकल्प-3-docker-rust-की-आवश्यकता-नहीं) देखें |
 
-इंस्टॉल करने के बाद, एक **नया टर्मिनल** खोलें (या macOS/Linux पर `source "$HOME/.cargo/env"` चलाएँ)।
+> **अनुशंसित:** `cargo-binstall` बिना संकलन के प्री-बिल्ट बाइनरीज़ डाउनलोड करता है।
 
-**2. Episteme इंस्टॉल करें (पहली बिल्ड में 3–5 मिनट लगते हैं)**
-
-```bash
-# Install cargo-binstall if missing
-cargo install cargo-binstall
-
-# Fast path (downloads prebuilt binary when available)
-cargo binstall episteme
-
-# Fallback (build from source)
-cargo install --git https://github.com/epicsagas/Episteme
-```
-
-**3. डेटा सीड करें + अपने AI टूल को कनेक्ट करें**
+**2. डेटा सीड करें + अपने AI टूल को कनेक्ट करें**
 
 ```bash
 epis install claude    # या: cursor, codex, gemini
 ```
 
-**4. सत्यापित करें**
+**3. सत्यापित करें**
 
 ```bash
 epis --version
@@ -200,13 +191,14 @@ Episteme पूरी तरह से ऑफलाइन चलता है: �
 
 ## इंस्टॉलेशन
 
-### विकल्प 1: एक कमांड (अनुशंसित)
+### विकल्प 1: cargo-binstall (अनुशंसित)
 
 ```bash
-# पहली बिल्ड में 3–5 मिनट लगते हैं — यह सामान्य है
-cargo install --git https://github.com/epicsagas/Episteme
-epis install claude    # डेटा सीड करता है + MCP कनेक्ट करता है + एजेंट्स इंस्टॉल करता है
+cargo binstall episteme    # प्री-बिल्ट बाइनरी डाउनलोड करता है — संकलन की आवश्यकता नहीं
+epis install claude        # डेटा सीड करता है + MCP कनेक्ट करता है + एजेंट्स इंस्टॉल करता है
 ```
+
+यदि cargo-binstall नहीं है: `cargo install cargo-binstall`
 
 > `epis install claude` के बाद, MCP टूल्स और एजेंट्स के दिखने के लिए **Claude Code को पुनः आरंभ करें**।
 

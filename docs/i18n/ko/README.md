@@ -42,35 +42,26 @@
 
 > **필수 조건:** [rustup](https://rustup.rs)을 통한 Rust 1.95+ · **Rust가 없으신가요?** [Docker](#옵션-3-docker-rust-불필요) 또는 [사전 빌드된 바이너리](#옵션-4-사전-빌드된-바이너리rust-불필요)를 참조하세요.
 
-**1. Rust 설치 (아직 설치하지 않은 경우)**
+**1. Episteme 설치**
 
-| OS | 명령어 |
-|----|---------|
-| **macOS / Linux** | `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \| sh` |
-| **Windows** | [`rustup-init.exe`](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe) 다운로드 후 실행 |
+| 방법 | 명령어 |
+|------|--------|
+| **cargo-binstall** ⚡ | `cargo binstall episteme` |
+| **Shell 스크립트** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
+| **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
+| **cargo** | `cargo install episteme` |
+| **Docker** | [옵션 3](#옵션-3-docker-rust-불필요) 참조 |
 
-설치 후 **새 터미널**을 열거나(macOS/Linux에서 `source "$HOME/.cargo/env"` 실행) 하세요.
+> **권장:** `cargo-binstall`은 컴파일 없이 사전 빌드된 바이너리를 다운로드합니다.
 
-**2. Episteme 설치 (첫 빌드는 3-5분 소요)**
-
-```bash
-# Install cargo-binstall if missing
-cargo install cargo-binstall
-
-# Fast path (downloads prebuilt binary when available)
-cargo binstall episteme
-
-# Fallback (build from source)
-cargo install --git https://github.com/epicsagas/Episteme
-```
-
-**3. 데이터 시딩 + AI 도구 연결**
+**2. 데이터 시딩 + AI 도구 연결**
 
 ```bash
 epis install claude    # 또는: cursor, codex, gemini
 ```
 
-**4. 확인**
+**3. 확인**
 
 ```bash
 epis --version
@@ -200,13 +191,14 @@ Episteme는 완전히 오프라인으로 실행됩니다: 단일 바이너리, �
 
 ## 설치
 
-### 옵션 1: 원커맨드 설치 (권장)
+### 옵션 1: cargo-binstall (권장)
 
 ```bash
-# 첫 빌드는 3-5분 소요 — 정상적인 현상입니다
-cargo install --git https://github.com/epicsagas/Episteme
-epis install claude    # 데이터 시딩 + MCP 설정 + 에이전트 설치
+cargo binstall episteme    # 사전 빌드된 바이너리 다운로드 — 컴파일 불필요
+epis install claude        # 데이터 시딩 + MCP 설정 + 에이전트 설치
 ```
+
+cargo-binstall이 없다면: `cargo install cargo-binstall`
 
 > `epis install claude` 실행 후, MCP 도구와 에이전트가 나타나도록 **Claude Code를 재시작**하세요.
 

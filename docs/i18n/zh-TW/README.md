@@ -44,35 +44,26 @@
 
 > **前置需求：** 透過 [rustup](https://rustup.rs) 安裝 Rust 1.95+ · **沒有 Rust？** 請參閱 [Docker](#選項-3docker無需-rust) 或 [預建二進位檔](#選項-4預建二進位檔無需-rust)。
 
-**1. 安裝 Rust（若尚未安裝）**
+**1. 安裝 Episteme**
 
-| 作業系統 | 指令 |
-|----------|------|
-| **macOS / Linux** | `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \| sh` |
-| **Windows** | 下載並執行 [`rustup-init.exe`](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe) |
+| 方法 | 指令 |
+|------|------|
+| **cargo-binstall** ⚡ | `cargo binstall episteme` |
+| **Shell 指令碼** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
+| **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
+| **cargo** | `cargo install episteme` |
+| **Docker** | 見 [選項 3](#選項-3docker無需-rust) |
 
-安裝完成後，開啟**新的終端機**（或在 macOS/Linux 上執行 `source "$HOME/.cargo/env"`）。
+> **推薦：** `cargo-binstall` 直接下載預建二進位檔，無需編譯。
 
-**2. 安裝 Episteme（首次建置約需 3–5 分鐘）**
-
-```bash
-# Install cargo-binstall if missing
-cargo install cargo-binstall
-
-# Fast path (downloads prebuilt binary when available)
-cargo binstall episteme
-
-# Fallback (build from source)
-cargo install --git https://github.com/epicsagas/Episteme
-```
-
-**3. 載入資料 + 設定你的 AI 工具**
+**2. 載入資料 + 設定你的 AI 工具**
 
 ```bash
 epis install claude    # 或：cursor、codex、gemini
 ```
 
-**4. 驗證安裝**
+**3. 驗證安裝**
 
 ```bash
 epis --version
@@ -202,13 +193,14 @@ Episteme 完全離線運作：單一二進位檔、本機 SQLite 資料庫、透
 
 ## 安裝
 
-### 選項 1：一鍵安裝（推薦）
+### 選項 1：cargo-binstall（推薦）
 
 ```bash
-# 首次建置約需 3–5 分鐘 — 這是正常的
-cargo install --git https://github.com/epicsagas/Episteme
-epis install claude    # 載入資料 + 設定 MCP + 安裝代理
+cargo binstall episteme    # 下載預建二進位檔 — 無需編譯
+epis install claude        # 載入資料 + 設定 MCP + 安裝代理
 ```
+
+如果沒有 cargo-binstall：`cargo install cargo-binstall`
 
 > 執行 `epis install claude` 後，**重新啟動 Claude Code**，MCP 工具和代理才會出現。
 

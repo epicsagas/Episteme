@@ -44,35 +44,26 @@
 
 > **Pré-requisitos:** Rust 1.95+ via [rustup](https://rustup.rs) · **Sem Rust?** Veja [Docker](#opção-3-docker-sem-rust-necessário) ou [binários pré-compilados](#opção-4-binários-pré-compilados-sem-rust-necessário).
 
-**1. Instalar Rust (se ainda não estiver instalado)**
+**1. Instalar Episteme**
 
-| SO | Comando |
-|----|---------|
-| **macOS / Linux** | `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \| sh` |
-| **Windows** | Baixe e execute [`rustup-init.exe`](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe) |
+| Método | Comando |
+|--------|---------|
+| **cargo-binstall** ⚡ | `cargo binstall episteme` |
+| **Script shell** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
+| **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
+| **cargo** | `cargo install episteme` |
+| **Docker** | Veja [Opção 3](#opção-3-docker-sem-rust-necessário) |
 
-Após a instalação, abra um **novo terminal** (ou execute `source "$HOME/.cargo/env"` no macOS/Linux).
+> **Recomendado:** `cargo-binstall` baixa binários pré-compilados — sem compilação necessária.
 
-**2. Instalar Episteme (a primeira compilação leva de 3 a 5 min)**
-
-```bash
-# Install cargo-binstall if missing
-cargo install cargo-binstall
-
-# Fast path (downloads prebuilt binary when available)
-cargo binstall episteme
-
-# Fallback (build from source)
-cargo install --git https://github.com/epicsagas/Episteme
-```
-
-**3. Popular dados + conectar sua ferramenta de IA**
+**2. Popular dados + conectar sua ferramenta de IA**
 
 ```bash
 epis install claude    # ou: cursor, codex, gemini
 ```
 
-**4. Verificar**
+**3. Verificar**
 
 ```bash
 epis --version
@@ -202,13 +193,14 @@ O Episteme funciona inteiramente offline: binário único, banco de dados SQLite
 
 ## Instalação
 
-### Opção 1: Um Comando (Recomendado)
+### Opção 1: cargo-binstall (Recomendado)
 
 ```bash
-# A primeira compilação leva de 3 a 5 minutos — isso é normal
-cargo install --git https://github.com/epicsagas/Episteme
-epis install claude    # popula dados + configura MCP + instala agentes
+cargo binstall episteme    # baixa binário pré-compilado — sem compilação necessária
+epis install claude        # popula dados + configura MCP + instala agentes
 ```
+
+Se não tiver cargo-binstall: `cargo install cargo-binstall`
 
 > Após `epis install claude`, **reinicie o Claude Code** para que as ferramentas e agentes MCP apareçam.
 
