@@ -29,4 +29,4 @@ Dunbar's Number sets the stage for Conway's Law: as organizations grow past the 
 
 ---
 
-*Based on: Dunbar, primate neocortex research (1992)*
+*Based on: Dunbar, "Neocortex size as a constraint on group size in primates" (Journal of Human Evolution, 1992)*

@@ -29,4 +29,4 @@ Hofstadter's Law encompasses the Ninety-Ninety Rule, which describes one specifi
 
 ---
 
-*Based on: Hofstadter, "Godel, Escher, Bach" (1979)*
+*Based on: Hofstadter, "Gödel, Escher, Bach: An Eternal Golden Braid" (Basic Books, 1979)*

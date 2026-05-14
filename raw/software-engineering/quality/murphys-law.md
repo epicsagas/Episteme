@@ -27,4 +27,4 @@ Murphy's Law underpins the entire discipline of defensive programming and pairs 
 
 ---
 
-*Based on: Public domain adage*
+*Based on: Bloch, "Murphy's Law and Other Reasons Why Things Go Wrong" (Price/Stern/Sloan, 1977)*

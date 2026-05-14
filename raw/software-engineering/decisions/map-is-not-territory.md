@@ -26,4 +26,4 @@ The Map Is Not the Territory underpins the Hype Cycle: vendor marketing is a map
 
 ---
 
-*Based on: Korzybski, "Science and Sanity" (1933)*
+*Based on: Korzybski, "Science and Sanity" (International Non-Aristotelian Library, 1933)*

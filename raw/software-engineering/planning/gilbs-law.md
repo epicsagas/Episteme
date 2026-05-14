@@ -31,4 +31,4 @@ Gilb's Law provides the measurement foundation that Goodhart's Law warns about: 
 
 ---
 
-*Based on: Gilb, software engineering metrics*
+*Based on: Gilb, "Software Metrics" (Winthrop Publishers, 1977)*

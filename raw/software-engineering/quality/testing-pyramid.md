@@ -27,4 +27,4 @@ The Testing Pyramid complements Murphy's Law by providing layered defense agains
 
 ---
 
-*Based on: Cohn, "Succeeding with Agile" (2009)*
+*Based on: Cohn, "Succeeding with Agile" (Addison-Wesley, 2009)*

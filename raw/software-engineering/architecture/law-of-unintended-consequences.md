@@ -27,4 +27,4 @@ The Fallacies of Distributed Computing are a specialized catalog of unintended c
 
 ---
 
-*Based on: Sociology / public domain*
+*Based on: Merton, "The Unanticipated Consequences of Purposive Social Action" (American Sociological Review, 1936)*

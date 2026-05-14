@@ -29,4 +29,4 @@ Price's Law intersects with the Peter Principle because high-output individual c
 
 ---
 
-*Based on: de Solla Price, scientometrics research*
+*Based on: Price, "Little Science, Big Science" (Columbia University Press, 1963)*

@@ -27,4 +27,4 @@ The Pesticide Paradox is the reason the Testing Pyramid must be maintained conti
 
 ---
 
-*Based on: Beizer, software testing research*
+*Based on: Beizer, "Software Testing Techniques" (Van Nostrand Reinhold, 1990)*

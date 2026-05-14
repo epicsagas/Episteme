@@ -29,4 +29,4 @@ Bus Factor intersects with Price's Law because the productive core identified by
 
 ---
 
-*Based on: Software engineering community knowledge*
+*Based on: Fitzpatrick, "The Truck Number" (ApacheCON/Google Tech Talk, 2010)*

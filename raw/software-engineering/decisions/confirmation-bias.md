@@ -26,4 +26,4 @@ Confirmation Bias works synergistically with the Dunning-Kruger Effect: overconf
 
 ---
 
-*Based on: Cognitive psychology*
+*Based on: Wason, "On the Failure to Eliminate Hypotheses in a Conceptual Task" (Q.J. Experimental Psychology, 1960)*

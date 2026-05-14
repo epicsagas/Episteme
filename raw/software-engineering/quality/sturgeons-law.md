@@ -27,4 +27,4 @@ Sturgeon's Law explains why the Boy Scout Rule and Broken Windows Theory matter:
 
 ---
 
-*Based on: Sturgeon, science fiction criticism (1953)*
+*Based on: Sturgeon, "On 'The Science Fiction Dimension'" (Venture Science Fiction, 1953)*

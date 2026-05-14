@@ -26,4 +26,4 @@ The Lindy Effect is a natural complement to the Hype Cycle: technologies that su
 
 ---
 
-*Based on: Mandelbrot; Taleb, "The Black Swan"*
+*Based on: Mandelbrot, "The Fractal Geometry of Nature" (W.H. Freeman, 1982). Popularized by Taleb, "Antifragile" (2012)*

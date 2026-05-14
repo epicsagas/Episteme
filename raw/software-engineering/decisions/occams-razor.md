@@ -26,4 +26,4 @@ Occam's Razor is the intellectual sibling of Hanlon's Razor, which applies the s
 
 ---
 
-*Based on: William of Ockham (14th century)*
+*Based on: William of Ockham, Lex Parsimoniae (c. 1287-1347)*

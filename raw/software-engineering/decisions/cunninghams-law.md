@@ -26,4 +26,4 @@ Cunningham's Law complements Inversion by providing a social mechanism for surfa
 
 ---
 
-*Based on: Cunningham, wiki culture*
+*Based on: Ward Cunningham, wiki culture (c. 2004)*

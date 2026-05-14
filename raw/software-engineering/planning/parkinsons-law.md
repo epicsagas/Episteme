@@ -29,4 +29,4 @@ Parkinson's Law amplifies Hofstadter's Law, because even after planners account 
 
 ---
 
-*Based on: Parkinson, The Economist (1955)*
+*Based on: Parkinson, "Parkinson's Law" (The Economist, 1955)*

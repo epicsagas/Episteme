@@ -26,4 +26,4 @@ The Dunning-Kruger Effect amplifies the harm of Confirmation Bias, because overc
 
 ---
 
-*Based on: Dunning & Kruger (1999)*
+*Based on: Kruger & Dunning, "Unskilled and Unaware of It" (J. Personality & Social Psychology, 1999)*

@@ -27,4 +27,4 @@ Postel's Law directly supports Murphy's Law by building tolerance for the malfor
 
 ---
 
-*Based on: Postel, IETF TCP specification (1981)*
+*Based on: Postel, "RFC 793: Transmission Control Protocol" (IETF, 1981)*

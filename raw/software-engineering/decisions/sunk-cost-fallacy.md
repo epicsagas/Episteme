@@ -26,4 +26,4 @@ The Sunk Cost Fallacy often co-occurs with Confirmation Bias: once committed to 
 
 ---
 
-*Based on: Behavioral economics*
+*Based on: Thaler, "Toward a Positive Theory of Consumer Choice" (Behavioral economics, 1980)*

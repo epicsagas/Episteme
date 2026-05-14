@@ -31,4 +31,4 @@ The Ninety-Ninety Rule is a specific instance of the broader pattern that Hofsta
 
 ---
 
-*Based on: Cargill, Bell Labs*
+*Based on: Bentley, "Programming Pearls" (Addison-Wesley, 1986). Attributed to Tom Cargill (Bell Labs)*

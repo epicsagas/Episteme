@@ -27,4 +27,4 @@ The CAP Theorem formalizes the unavoidable tradeoff that becomes visible once th
 
 ---
 
-*Based on: Deutsch, Sun Microsystems (1994)*
+*Based on: Deutsch & Gosling, "The Eight Fallacies of Distributed Computing" (Sun Microsystems, 1994)*

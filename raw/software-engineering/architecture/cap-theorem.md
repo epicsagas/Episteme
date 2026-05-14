@@ -27,4 +27,4 @@ The Fallacies of Distributed Computing describe the environmental conditions tha
 
 ---
 
-*Based on: Brewer, "Towards Robust Distributed Systems" (2000)*
+*Based on: Brewer, "Towards robust distributed systems" (ACM PODC, 2000)*

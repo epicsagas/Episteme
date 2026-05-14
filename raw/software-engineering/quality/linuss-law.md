@@ -27,4 +27,4 @@ Linus's Law reinforces the Broken Windows Theory because more reviewers mean bro
 
 ---
 
-*Based on: Raymond, "The Cathedral and the Bazaar" (1997)*
+*Based on: Raymond, "The Cathedral and the Bazaar" (O'Reilly Media, 1999)*

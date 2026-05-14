@@ -29,4 +29,4 @@ Putt's Law deepens the Peter Principle's effect, because technically excellent c
 
 ---
 
-*Based on: "Putt's Law and the Successful Technocrat" (1981)*
+*Based on: Putt, "Putt's Law and the Successful Technocrat" (Wiley, 1981)*

@@ -27,4 +27,4 @@ The Broken Windows Theory operates as the social-psychological complement to the
 
 ---
 
-*Based on: Wilson & Kelling, The Atlantic (1982)*
+*Based on: Wilson & Kelling, "Broken Windows" (The Atlantic Monthly, 1982)*

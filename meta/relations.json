@@ -1555,8 +1555,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Neocortex size as a constraint on group size in primates",
+      "authors": [
+        "Robin I.M. Dunbar"
+      ],
+      "year": 1992,
+      "publisher": "Journal of Human Evolution",
+      "license": "reference",
+      "url": "https://doi.org/10.1016/0047-2484(92)90081-J"
     }
   },
   "LAW-004": {
@@ -1587,8 +1593,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Recherches sur les moteurs animés: Travail de l'homme",
+      "authors": [
+        "Maximilien Ringelmann"
+      ],
+      "year": 1913,
+      "publisher": "Annales de l'Institut National Agronomique, 2nd series, vol. 12",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Ringelmann_effect"
     }
   },
   "LAW-005": {
@@ -1619,8 +1631,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Little Science, Big Science",
+      "authors": [
+        "Derek J. de Solla Price"
+      ],
+      "year": 1963,
+      "publisher": "Columbia University Press",
+      "license": "reference",
+      "url": "https://doi.org/10.7312/pric91844"
     }
   },
   "LAW-006": {
@@ -1653,8 +1671,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Putt's Law and the Successful Technocrat",
+      "authors": [
+        "Archibald Putt"
+      ],
+      "year": 1981,
+      "publisher": "John Wiley & Sons",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Putt%27s_Law"
     }
   },
   "LAW-007": {
@@ -1685,8 +1709,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "The Peter Principle",
+      "authors": [
+        "Laurence J. Peter",
+        "Raymond Hull"
+      ],
+      "year": 1969,
+      "publisher": "William Morrow and Company",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Peter_principle"
     }
   },
   "LAW-008": {
@@ -1718,8 +1749,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "The Truck Number: A Metric for Software Projects",
+      "authors": [
+        "Brian W. Fitzpatrick"
+      ],
+      "year": 2010,
+      "publisher": "Google Tech Talk / ApacheCON",
+      "license": "reference",
+      "note": "Popularized by the phrase 'lottery factor' and 'bus factor' in open-source communities",
+      "url": "https://en.wikipedia.org/wiki/Bus_factor"
     }
   },
   "LAW-009": {
@@ -1750,8 +1788,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "The Dilbert Principle",
+      "authors": [
+        "Scott Adams"
+      ],
+      "year": 1996,
+      "publisher": "HarperBusiness",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Dilbert_principle"
     }
   },
   "LAW-010": {
@@ -1783,8 +1827,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Structured Programming with go to Statements",
+      "authors": [
+        "Donald E. Knuth"
+      ],
+      "year": 1974,
+      "publisher": "ACM Computing Surveys, 6(4), 261-301",
+      "license": "reference",
+      "url": "https://doi.org/10.1145/356635.356640"
     }
   },
   "LAW-011": {
@@ -1816,8 +1866,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Parkinson's Law",
+      "authors": [
+        "C. Northcote Parkinson"
+      ],
+      "year": 1955,
+      "publisher": "The Economist",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Parkinson%27s_law"
     }
   },
   "LAW-012": {
@@ -1849,8 +1905,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Programming Pearls, 2nd Edition",
+      "authors": [
+        "Jon Bentley"
+      ],
+      "year": 1986,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "note": "Attributed to Tom Cargill of Bell Labs",
+      "url": "https://en.wikipedia.org/wiki/Ninety-ninety_rule"
     }
   },
   "LAW-013": {
@@ -1884,8 +1947,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Gödel, Escher, Bach: An Eternal Golden Braid",
+      "authors": [
+        "Douglas R. Hofstadter"
+      ],
+      "year": 1979,
+      "publisher": "Basic Books",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Hofstadter%27s_law"
     }
   },
   "LAW-014": {
@@ -1917,8 +1986,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Problems of Monetary Management: The UK Experience",
+      "authors": [
+        "Charles A.E. Goodhart"
+      ],
+      "year": 1975,
+      "publisher": "Reserve Bank of Australia",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Goodhart%27s_law"
     }
   },
   "LAW-015": {
@@ -1950,8 +2025,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Software Metrics",
+      "authors": [
+        "Tom Gilb"
+      ],
+      "year": 1977,
+      "publisher": "Winthrop Publishers",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Gilb%27s_law"
     }
   },
   "LAW-016": {
@@ -2136,8 +2217,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Towards robust distributed systems",
+      "authors": [
+        "Eric Brewer"
+      ],
+      "year": 2000,
+      "publisher": "ACM Symposium on Principles of Distributed Computing (PODC)",
+      "license": "reference",
+      "url": "https://doi.org/10.1145/343477.343502"
     }
   },
   "LAW-021": {
@@ -2171,8 +2258,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "The Mythical Man-Month",
+      "authors": [
+        "Frederick P. Brooks Jr."
+      ],
+      "year": 1975,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Second-system_effect"
     }
   },
   "LAW-022": {
@@ -2204,8 +2297,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "The Eight Fallacies of Distributed Computing",
+      "authors": [
+        "L. Peter Deutsch",
+        "James Gosling"
+      ],
+      "year": 1994,
+      "publisher": "Sun Microsystems",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Fallacies_of_distributed_computing"
     }
   },
   "LAW-023": {
@@ -2239,8 +2339,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "The Unanticipated Consequences of Purposive Social Action",
+      "authors": [
+        "Robert K. Merton"
+      ],
+      "year": 1936,
+      "publisher": "American Sociological Review, 1(6), 894-904",
+      "license": "reference",
+      "url": "https://doi.org/10.2307/2084615"
     }
   },
   "LAW-024": {
@@ -2353,8 +2459,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Murphy's Law and Other Reasons Why Things Go Wrong",
+      "authors": [
+        "Arthur Bloch"
+      ],
+      "year": 1977,
+      "publisher": "Price/Stern/Sloan",
+      "license": "reference",
+      "note": "Origin popularized in U.S. aerospace engineering (Edwards AFB, 1949)",
+      "url": "https://en.wikipedia.org/wiki/Murphy%27s_law"
     }
   },
   "LAW-027": {
@@ -2386,8 +2499,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "RFC 793: Transmission Control Protocol (TCP)",
+      "authors": [
+        "Jon Postel"
+      ],
+      "year": 1981,
+      "publisher": "Internet Engineering Task Force (IETF)",
+      "license": "reference",
+      "url": "https://doi.org/10.17487/RFC0793"
     }
   },
   "LAW-028": {
@@ -2425,8 +2544,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Broken Windows: The Police and Neighborhood Safety",
+      "authors": [
+        "James Q. Wilson",
+        "George L. Kelling"
+      ],
+      "year": 1982,
+      "publisher": "The Atlantic Monthly",
+      "license": "reference",
+      "url": "https://doi.org/10.1177/0032258X8307400305"
     }
   },
   "LAW-029": {
@@ -2502,8 +2628,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "The Cathedral and the Bazaar",
+      "authors": [
+        "Eric S. Raymond"
+      ],
+      "year": 1999,
+      "publisher": "O'Reilly Media",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Linus%27s_law"
     }
   },
   "LAW-031": {
@@ -2581,8 +2713,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Succeeding with Agile: Software Development Using Scrum",
+      "authors": [
+        "Mike Cohn"
+      ],
+      "year": 2009,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Testing_pyramid"
     }
   },
   "LAW-033": {
@@ -2617,8 +2755,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Software Testing Techniques, 2nd Edition",
+      "authors": [
+        "Boris Beizer"
+      ],
+      "year": 1990,
+      "publisher": "Van Nostrand Reinhold",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Pesticide_paradox"
     }
   },
   "LAW-034": {
@@ -2688,8 +2832,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "On 'The Science Fiction Dimension' (Venture Science Fiction)",
+      "authors": [
+        "Theodore Sturgeon"
+      ],
+      "year": 1953,
+      "publisher": "Venture Science Fiction Magazine",
+      "license": "reference",
+      "note": "Sturgeon's revelation: 'ninety percent of everything is crap'",
+      "url": "https://en.wikipedia.org/wiki/Sturgeon%27s_law"
     }
   },
   "LAW-036": {
@@ -2723,8 +2874,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Extreme Programming Explained: Embrace Change",
+      "authors": [
+        "Kent Beck"
+      ],
+      "year": 1999,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it"
     }
   },
   "LAW-037": {
@@ -2916,8 +3073,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "KISS Principle",
+      "authors": [
+        "Clarence 'Kelly' Johnson"
+      ],
+      "year": 1960,
+      "publisher": "U.S. Navy / Lockheed Skunk Works",
+      "license": "reference",
+      "note": "Design principle originated by Kelly Johnson at Lockheed",
+      "url": "https://en.wikipedia.org/wiki/KISS_principle"
     }
   },
   "LAW-042": {
@@ -3044,8 +3208,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "The Art of UNIX Programming",
+      "authors": [
+        "Eric S. Raymond"
+      ],
+      "year": 2003,
+      "publisher": "Addison-Wesley",
+      "license": "reference",
+      "note": "POLA concept originated in MIT AI Lab culture (1970s-80s)",
+      "url": "https://en.wikipedia.org/wiki/Principle_of_least_astonishment"
     }
   },
   "LAW-045": {
@@ -3077,8 +3248,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Unskilled and Unaware of It: How Difficulties in Recognizing One's Own Incompetence Lead to Inflated Self-Assessments",
+      "authors": [
+        "Justin Kruger",
+        "David Dunning"
+      ],
+      "year": 1999,
+      "publisher": "Journal of Personality and Social Psychology, 77(6), 1121-1134",
+      "license": "reference",
+      "url": "https://doi.org/10.1037/0022-3514.77.6.1121"
     }
   },
   "LAW-046": {
@@ -3110,8 +3288,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Hanlon's Razor",
+      "authors": [
+        "Robert J. Hanlon"
+      ],
+      "year": 1980,
+      "publisher": "Submitted to a joke book compiled by Arthur Bloch",
+      "license": "reference",
+      "note": "Phrase: 'Never attribute to malice that which is adequately explained by stupidity'",
+      "url": "https://en.wikipedia.org/wiki/Hanlon%27s_razor"
     }
   },
   "LAW-047": {
@@ -3148,8 +3333,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Occam's Razor (Lex Parsimoniae)",
+      "authors": [
+        "William of Ockham"
+      ],
+      "year": 1323,
+      "publisher": "Medieval philosophical tradition",
+      "license": "reference",
+      "note": "Attributed to William of Ockham (c. 1287-1347)",
+      "url": "https://en.wikipedia.org/wiki/Occam%27s_razor"
     }
   },
   "LAW-048": {
@@ -3181,8 +3373,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Sunk Cost Fallacy",
+      "authors": [
+        "Richard Thaler"
+      ],
+      "year": 1980,
+      "publisher": "Behavioral economics literature",
+      "license": "reference",
+      "note": "Key concept in behavioral economics; Thaler (1980) 'Toward a Positive Theory of Consumer Choice'",
+      "url": "https://en.wikipedia.org/wiki/Sunk_cost#Fallacy_effect"
     }
   },
   "LAW-049": {
@@ -3214,8 +3413,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Science and Sanity: An Introduction to Non-Aristotelian Systems and General Semantics",
+      "authors": [
+        "Alfred Korzybski"
+      ],
+      "year": 1933,
+      "publisher": "International Non-Aristotelian Library",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Map%E2%80%93territory_relation"
     }
   },
   "LAW-050": {
@@ -3247,8 +3452,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "On the Failure to Eliminate Hypotheses in a Conceptual Task",
+      "authors": [
+        "Peter C. Wason"
+      ],
+      "year": 1960,
+      "publisher": "Quarterly Journal of Experimental Psychology, 12(3), 129-140",
+      "license": "reference",
+      "url": "https://doi.org/10.1080/17470216008416717"
     }
   },
   "LAW-051": {
@@ -3280,8 +3491,16 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Hype Cycle / Amara's Law",
+      "authors": [
+        "Roy Amara",
+        "Jackie Fenn (Gartner)"
+      ],
+      "year": 1995,
+      "publisher": "Gartner",
+      "license": "reference",
+      "note": "Amara: 'We overestimate the effect of a technology in the short run and underestimate the effect in the long run.' Gartner Hype Cycle formalized by Fenn (1995)",
+      "url": "https://en.wikipedia.org/wiki/Hype_cycle"
     }
   },
   "LAW-052": {
@@ -3313,8 +3532,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "The Fractal Geometry of Nature",
+      "authors": [
+        "Benoit B. Mandelbrot"
+      ],
+      "year": 1982,
+      "publisher": "W.H. Freeman",
+      "license": "reference",
+      "note": "Named after Lindy's deli in NYC; popularized by Nassim Nicholas Taleb in 'Antifragile' (2012)",
+      "url": "https://en.wikipedia.org/wiki/Lindy_effect"
     }
   },
   "LAW-053": {
@@ -3349,8 +3575,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "First Principles Thinking",
+      "authors": [
+        "Aristotle"
+      ],
+      "year": -350,
+      "publisher": "Aristotelian philosophical tradition (Physics, Metaphysics)",
+      "license": "reference",
+      "note": "Ancient Greek philosophical method; revived by Elon Musk and others in modern engineering",
+      "url": "https://en.wikipedia.org/wiki/First_principle"
     }
   },
   "LAW-054": {
@@ -3382,8 +3615,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Inversion (Invert, always invert)",
+      "authors": [
+        "Carl Gustav Jacob Jacobi"
+      ],
+      "year": 1830,
+      "publisher": "Mathematical tradition",
+      "license": "reference",
+      "note": "Jacobi's motto: 'Invert, always invert.' Popularized in investing by Charlie Munger",
+      "url": "https://en.wikipedia.org/wiki/Inverse_(mathematics)"
     }
   },
   "LAW-055": {
@@ -3415,8 +3655,14 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Cours d'économie politique",
+      "authors": [
+        "Vilfredo Pareto"
+      ],
+      "year": 1896,
+      "publisher": "Lausanne",
+      "license": "reference",
+      "url": "https://en.wikipedia.org/wiki/Pareto_principle"
     }
   },
   "LAW-056": {
@@ -3448,8 +3694,15 @@
       "drawbacks": []
     },
     "source": {
-      "license": "public-domain",
-      "note": "Named law or principle in the public domain; curated summary."
+      "title": "Cunningham's Law",
+      "authors": [
+        "Ward Cunningham"
+      ],
+      "year": 2004,
+      "publisher": "Wiki culture / Cunningham & Cunningham, Inc.",
+      "license": "reference",
+      "note": "'The best way to get the right answer on the Internet is not to ask a question, it's to post the wrong answer.'",
+      "url": "https://en.wikipedia.org/wiki/Ward_Cunningham"
     }
   },
   "RF-006": {

@@ -29,4 +29,4 @@ The Peter Principle feeds directly into Putt's Law, because promoting a technica
 
 ---
 
-*Based on: Peter & Hull, "The Peter Principle" (1969)*
+*Based on: Peter & Hull, "The Peter Principle" (William Morrow, 1969)*

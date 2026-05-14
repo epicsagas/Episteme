@@ -29,4 +29,4 @@ The Ringelmann Effect compounds Brooks's Law: adding people to a late project no
 
 ---
 
-*Based on: Ringelmann, agricultural engineering (1913)*
+*Based on: Ringelmann, "Recherches sur les moteurs animés: Travail de l'homme" (Ann. Inst. Nat. Agronomique, 1913)*

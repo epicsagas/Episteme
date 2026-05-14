@@ -29,4 +29,4 @@ Goodhart's Law is the planning counterpart to Premature Optimization: both descr
 
 ---
 
-*Based on: Goodhart, monetary policy research (1975)*
+*Based on: Goodhart, "Problems of Monetary Management: The UK Experience" (Reserve Bank of Australia, 1975)*

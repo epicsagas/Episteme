@@ -26,4 +26,4 @@ Hanlon's Razor complements Occam's Razor by extending the preference for simple 
 
 ---
 
-*Based on: Public domain*
+*Based on: Hanlon, "Murphy's Law Book Two" (1980)*

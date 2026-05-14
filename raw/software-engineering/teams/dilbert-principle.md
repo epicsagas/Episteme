@@ -29,4 +29,4 @@ The Dilbert Principle is the dark companion to the Peter Principle: the Peter Pr
 
 ---
 
-*Based on: Adams, "The Dilbert Principle" (1996)*
+*Based on: Adams, "The Dilbert Principle" (HarperBusiness, 1996)*

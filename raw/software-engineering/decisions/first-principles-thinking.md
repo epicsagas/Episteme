@@ -26,4 +26,4 @@ First Principles Thinking is the natural antidote to the Hype Cycle because it g
 
 ---
 
-*Based on: Aristotelian philosophy*
+*Based on: Aristotle, Physics and Metaphysics (c. 350 BCE)*

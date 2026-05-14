@@ -27,4 +27,4 @@ Gall's Law offers the strongest counterweight to the Second-System Effect: evolv
 
 ---
 
-*Based on: Brooks, "The Mythical Man-Month" (1975)*
+*Based on: Brooks, "The Mythical Man-Month" (Addison-Wesley, 1975)*

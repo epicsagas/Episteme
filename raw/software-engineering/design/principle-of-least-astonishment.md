@@ -26,4 +26,4 @@ KISS and the Principle of Least Astonishment are natural allies: simple designs 
 
 ---
 
-*Based on: James, "The Tao of Programming"*
+*Based on: Raymond, "The Art of UNIX Programming" (Addison-Wesley, 2003). POLA originated in MIT AI Lab culture (1970s-80s)*

@@ -26,4 +26,4 @@ The Pareto Principle sharpens Inversion by focusing defensive effort on the few 
 
 ---
 
-*Based on: Pareto, economics (1896)*
+*Based on: Pareto, "Cours d'économie politique" (Lausanne, 1896)*

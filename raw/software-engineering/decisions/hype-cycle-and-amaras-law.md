@@ -26,4 +26,4 @@ The Hype Cycle amplifies the Sunk Cost Fallacy when organizations invest heavily
 
 ---
 
-*Based on: Gartner (1995); Roy Amara*
+*Based on: Amara & Fenn, Hype Cycle (Gartner, 1995)*

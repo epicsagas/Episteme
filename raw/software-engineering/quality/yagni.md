@@ -27,4 +27,4 @@ YAGNI directly reduces Technical Debt by preventing speculative features that be
 
 ---
 
-*Based on: Jeffries/Beck, Extreme Programming (1999)*
+*Based on: Beck, "Extreme Programming Explained: Embrace Change" (Addison-Wesley, 1999)*

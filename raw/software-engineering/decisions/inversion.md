@@ -26,4 +26,4 @@ Inversion pairs naturally with First Principles Thinking: first principles ident
 
 ---
 
-*Based on: Jacobi; Munger popularization*
+*Based on: Jacobi, "Invert, always invert" (c. 1830). Popularized by Charlie Munger*

@@ -29,4 +29,4 @@ Premature Optimization interacts with Goodhart's Law when teams adopt performanc
 
 ---
 
-*Based on: Knuth, "Structured Programming with go to Statements" (1974)*
+*Based on: Knuth, "Structured Programming with go to Statements" (ACM Computing Surveys, 1974)*

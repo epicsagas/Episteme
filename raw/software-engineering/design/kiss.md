@@ -26,4 +26,4 @@ KISS and YAGNI (You Aren't Gonna Need It) are kindred principles: both reject sp
 
 ---
 
-*Based on: Johnson, Lockheed (1960s)*
+*Based on: Kelly Johnson, KISS Principle (U.S. Navy / Lockheed Skunk Works, 1960)*
