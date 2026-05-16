@@ -11,11 +11,17 @@
 ---
 
 <p align="center">
-    <a href="https://github.com/epicsagas/Episteme/actions"><img src="https://img.shields.io/github/actions/workflow/status/epicsagas/Episteme/ci.yml?branch=main&label=CI" alt="CI" /></a>
-    <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.95+-orange.svg" alt="rust-lang" /></a>
-    <a href="https://crates.io/crates/episteme"><img src="https://img.shields.io/badge/crates.io-v0.1.0-orange.svg" alt="crates.io" /></a>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" /></a>
-    <a href="https://buymeacoffee.com/epicsaga"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
+  <a href="https://github.com/epicsagas/Episteme/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/epicsagas/Episteme?style=for-the-badge&labelColor=0d1117&color=ffd700&logo=github&logoColor=white" /></a>
+  <a href="https://github.com/epicsagas/Episteme/network/members"><img alt="Forks" src="https://img.shields.io/github/forks/epicsagas/Episteme?style=for-the-badge&labelColor=0d1117&color=2ecc71&logo=github&logoColor=white" /></a>
+  <a href="https://github.com/epicsagas/Episteme/issues"><img alt="Issues" src="https://img.shields.io/github/issues/epicsagas/Episteme?style=for-the-badge&labelColor=0d1117&color=ff6b6b&logo=github&logoColor=white" /></a>
+  <a href="https://github.com/epicsagas/Episteme/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/epicsagas/Episteme?style=for-the-badge&labelColor=0d1117&color=58a6ff&logo=git&logoColor=white" /></a>
+</p>
+<p align="center">
+  <a href="https://crates.io/crates/episteme"><img alt="Crates.io" src="https://img.shields.io/crates/v/episteme?style=for-the-badge&labelColor=0d1117&color=fc8d62&logo=rust&logoColor=white" /></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-3fb950?style=for-the-badge&labelColor=0d1117" /></a>
+  <img alt="Rust" src="https://img.shields.io/badge/rust-1.95+-d73a49?style=for-the-badge&labelColor=0d1117&logo=rust&logoColor=white" />
+  <a href="https://github.com/epicsagas/Episteme/actions"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/epicsagas/Episteme/ci.yml?style=for-the-badge&labelColor=0d1117&color=e67e22&logo=githubactions&logoColor=white" /></a>
+  <a href="https://buymeacoffee.com/epicsaga"><img alt="Buy Me a Coffee" src="https://img.shields.io/badge/buy_me_a_coffee-FFDD00?style=for-the-badge&labelColor=0d1117&logo=buymeacoffee&logoColor=black" /></a>
 </p>
 
 <p align="center">
