@@ -86,7 +86,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 
 # System information
-sysinfo = "0.39.1"
+sysinfo = "0.39.2"
 
 # Metrics
 metrics = "0.24"
