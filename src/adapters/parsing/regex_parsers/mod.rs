@@ -113,4 +113,3 @@ pub fn get_parser(language: &str) -> Result<Box<dyn CodeParser>, String> {
         other => Err(format!("Unsupported language: {other}")),
     }
 }
-

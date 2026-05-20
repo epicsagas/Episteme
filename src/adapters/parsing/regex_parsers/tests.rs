@@ -478,7 +478,8 @@ fn cc_cpp_counts_ternary() {
 
 #[test]
 fn cc_csharp_counts_foreach_and_linq() {
-    let code = "void Foo() { foreach (var x in xs) { } from y in ys where y > 0 select y; if (a) { } }";
+    let code =
+        "void Foo() { foreach (var x in xs) { } from y in ys where y > 0 select y; if (a) { } }";
     let cc = calculate_cc_csharp(code);
     assert!(
         cc >= 5,
@@ -495,7 +496,8 @@ fn cc_csharp_counts_ternary() {
 
 #[test]
 fn cc_php_counts_elseif_foreach_do() {
-    let code = "function foo() { if (a) { } elseif (b) { } foreach ($xs as $x) { } do { } while (c); }";
+    let code =
+        "function foo() { if (a) { } elseif (b) { } foreach ($xs as $x) { } do { } while (c); }";
     let cc = calculate_cc_php(code);
     assert!(
         cc >= 5,
@@ -512,7 +514,8 @@ fn cc_php_counts_ternary() {
 
 #[test]
 fn cc_kotlin_counts_when_and_is() {
-    let code = "fun foo(x: Any) { when (x) { is String -> println(x) is Int -> println(x) } if (a) { } }";
+    let code =
+        "fun foo(x: Any) { when (x) { is String -> println(x) is Int -> println(x) } if (a) { } }";
     let cc = calculate_cc_kotlin(code);
     assert!(
         cc >= 5,
