@@ -13,7 +13,7 @@ mod tests;
 mod typescript;
 
 use regex::Regex;
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 use std::sync::{Mutex, OnceLock};
 
 use crate::ports::parser::CodeParser;
@@ -61,30 +61,58 @@ const OWNED_CACHE_CAPACITY: usize = 256;
 /// with non-static strings.
 ///
 /// When the cache exceeds [`OWNED_CACHE_CAPACITY`] entries, the oldest half
-/// is evicted to prevent unbounded memory growth from ad-hoc patterns.
+/// (by insertion order) is evicted to prevent unbounded memory growth.
 pub(crate) fn cached_regex_owned(pattern: &str) -> Regex {
-    static OWNED_CACHE: OnceLock<Mutex<HashMap<String, Regex>>> = OnceLock::new();
-    let cache = OWNED_CACHE.get_or_init(|| Mutex::new(HashMap::new()));
-    let mut guard = cache.lock().unwrap();
-
-    if let Some(re) = guard.get(pattern) {
-        return re.clone();
+    struct OwnedCache {
+        map: HashMap<String, Regex>,
+        order: VecDeque<String>,
     }
 
-    // Evict oldest half if at capacity. "Oldest" is approximated by keeping
-    // the last N/2 entries from the current iterator order.
-    if guard.len() >= OWNED_CACHE_CAPACITY {
-        let retain = OWNED_CACHE_CAPACITY / 2;
-        let keys: Vec<String> = guard.keys().cloned().collect();
-        let evict_from = keys.len().saturating_sub(retain);
-        for key in &keys[..evict_from] {
-            guard.remove(key);
+    static OWNED_CACHE: OnceLock<Mutex<OwnedCache>> = OnceLock::new();
+    let cache = OWNED_CACHE.get_or_init(|| {
+        Mutex::new(OwnedCache {
+            map: HashMap::new(),
+            order: VecDeque::new(),
+        })
+    });
+
+    // Fast path: check cache under lock, return immediately on hit.
+    let key = pattern.to_string();
+    {
+        let guard = cache.lock().unwrap();
+        if let Some(re) = guard.map.get(&key) {
+            return re.clone();
         }
     }
 
+    // Compile outside the lock to avoid blocking other threads.
+    let compiled = Regex::new(pattern).unwrap();
+
+    let mut guard = cache.lock().unwrap();
+
+    // Double-check: another thread may have inserted between our first unlock and now.
+    if let Some(re) = guard.map.get(&key) {
+        return re.clone();
+    }
+
+    // Evict oldest half if at capacity. Insertion order is tracked in `order`.
+    if guard.map.len() >= OWNED_CACHE_CAPACITY {
+        let evict_count = OWNED_CACHE_CAPACITY / 2;
+        for _ in 0..evict_count {
+            if let Some(old_key) = guard.order.pop_front() {
+                guard.map.remove(&old_key);
+            }
+        }
+    }
+
+    guard.order.push_back(key.clone());
+    guard.map.insert(key, compiled);
+    // Return a clone of the just-inserted Regex.
     guard
-        .entry(pattern.to_string())
-        .or_insert_with(|| Regex::new(pattern).unwrap())
+        .order
+        .back()
+        .and_then(|k| guard.map.get(k))
+        .unwrap()
         .clone()
 }
 
