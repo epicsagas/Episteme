@@ -11,7 +11,7 @@ use super::{
 
 /// Extended Go parser that counts struct receiver methods across the full file.
 pub struct GoFullParser {
-    pub(crate) inner: GenericParser,
+    inner: GenericParser,
 }
 
 impl GoFullParser {

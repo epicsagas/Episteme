@@ -459,6 +459,12 @@ pub struct UserEntity {
 
 impl UserEntity {
     /// Convert this user entity to a canonical [`Entity`] for unified graph operations.
+    ///
+    /// Uses `serde_json::json!` for the `source` field. This is acceptable because
+    /// this module already depends on `serde`/`serde_json` for `Serialize`/`Deserialize`
+    /// on all domain types — placing the conversion here eliminates the former
+    /// domain→adapters reverse dependency that existed when this logic lived in
+    /// `adapters::user_graph_store`.
     pub fn to_entity(&self) -> Entity {
         Entity {
             id: self.id.clone(),
