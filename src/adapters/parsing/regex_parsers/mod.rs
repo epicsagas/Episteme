@@ -17,7 +17,7 @@ use crate::domain::metrics::CodeMetrics;
 use crate::ports::parser::CodeParser;
 
 pub use generic::{
-    cpp_parser, csharp_parser, java_parser, kotlin_parser, php_parser, rust_parser, GenericParser,
+    GenericParser, cpp_parser, csharp_parser, java_parser, kotlin_parser, php_parser, rust_parser,
 };
 pub use go::GoFullParser;
 pub use python::PythonParser;

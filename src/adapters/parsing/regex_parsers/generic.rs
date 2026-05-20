@@ -8,11 +8,11 @@ use crate::domain::metrics::{CodeMetrics, SmellDetection};
 use crate::ports::parser::CodeParser;
 
 use super::{
-    build_func_metrics_ext, calculate_cc, calculate_cc_cpp, calculate_cc_csharp,
-    calculate_cc_java, calculate_cc_kotlin, calculate_cc_php, calculate_cc_rust,
-    count_local_vars, count_local_vars_cpp, count_local_vars_csharp,
-    count_local_vars_kotlin, count_local_vars_php, count_loc, find_matching_brace,
-    line_number, remove_block_comments, remove_hash_comments, remove_line_comments,
+    build_func_metrics_ext, calculate_cc, calculate_cc_cpp, calculate_cc_csharp, calculate_cc_java,
+    calculate_cc_kotlin, calculate_cc_php, calculate_cc_rust, count_loc, count_local_vars,
+    count_local_vars_cpp, count_local_vars_csharp, count_local_vars_kotlin, count_local_vars_php,
+    find_matching_brace, line_number, remove_block_comments, remove_hash_comments,
+    remove_line_comments,
 };
 
 /// Configuration for a brace-based language parser.

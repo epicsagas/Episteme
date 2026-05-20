@@ -486,7 +486,10 @@ impl UserEntity {
                     "evidence_count".to_owned(),
                     vec![self.evidence_count.to_string()],
                 );
-                ctx.insert("last_validated".to_owned(), vec![self.last_validated.clone()]);
+                ctx.insert(
+                    "last_validated".to_owned(),
+                    vec![self.last_validated.clone()],
+                );
                 if !self.link_provenance.is_empty() {
                     let prov_entries: Vec<String> = self
                         .link_provenance

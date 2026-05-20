@@ -5,8 +5,8 @@ use crate::domain::metrics::{CodeMetrics, SmellDetection};
 use crate::ports::parser::CodeParser;
 
 use super::{
-    build_func_metrics, cached_regex, cached_regex_owned, calculate_cc, count_loc,
-    find_matching_brace, line_number, GenericParser,
+    GenericParser, build_func_metrics, cached_regex, cached_regex_owned, calculate_cc, count_loc,
+    find_matching_brace, line_number,
 };
 
 /// Extended Go parser that counts struct receiver methods across the full file.
