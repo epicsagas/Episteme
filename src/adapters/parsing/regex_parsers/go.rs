@@ -1,0 +1,105 @@
+//! Extended Go parser with struct receiver method counting across the full file.
+
+use crate::domain::detectors::detect_all;
+use crate::domain::metrics::{CodeMetrics, SmellDetection};
+use crate::ports::parser::CodeParser;
+
+use super::{
+    GenericParser, build_func_metrics, cached_regex, cached_regex_owned, calculate_cc, count_loc,
+    find_matching_brace, line_number,
+};
+
+/// Extended Go parser that counts struct receiver methods across the full file.
+pub struct GoFullParser {
+    inner: GenericParser,
+}
+
+impl GoFullParser {
+    pub fn new() -> Self {
+        Self {
+            inner: super::generic::go_parser(),
+        }
+    }
+}
+
+impl Default for GoFullParser {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl CodeParser for GoFullParser {
+    fn parse_code(&self, code: &str, file_name: &str) -> Vec<SmellDetection> {
+        let cleaned = self.inner.strip_comments(code);
+        let mut detections: Vec<SmellDetection> = Vec::new();
+        let func_re = self.inner.get_func_re();
+
+        // --- Functions ---
+        for cap in func_re.captures_iter(&cleaned) {
+            let name = &cap[1];
+            let full = cap.get(0).unwrap();
+            let start = full.start();
+
+            let brace_pos = match cleaned[start..].find('{') {
+                Some(off) => start + off,
+                None => continue,
+            };
+            let end_pos = match find_matching_brace(&cleaned, brace_pos) {
+                Some(p) => p,
+                None => continue,
+            };
+
+            let body = &cleaned[start..=end_pos];
+            let sig = &cleaned[start..];
+            let metrics = build_func_metrics(body, sig, calculate_cc);
+
+            let location = format!("{}:{}", file_name, line_number(&cleaned, start));
+            detections.extend(detect_all(&metrics, &location, name));
+        }
+
+        // --- Structs (with receiver method counting) ---
+        let struct_re = cached_regex(r"(?m)type\s+(\w+)\s+struct\s*\{");
+        for cap in struct_re.captures_iter(&cleaned) {
+            let name = &cap[1];
+            let full = cap.get(0).unwrap();
+            let start = full.start();
+
+            let brace_pos = match cleaned[start..].find('{') {
+                Some(off) => start + off,
+                None => continue,
+            };
+            let end_pos = match find_matching_brace(&cleaned, brace_pos) {
+                Some(p) => p,
+                None => continue,
+            };
+
+            let body = &cleaned[start..=end_pos];
+            let field_count = body
+                .lines()
+                .filter(|l| {
+                    let t = l.trim();
+                    !t.is_empty() && t != "{" && t != "}" && !t.starts_with("//")
+                })
+                .count();
+
+            let method_re = cached_regex_owned(&format!(r"(?m)func\s+\([^)]*\s+\*?{name}\)\s+\w+"));
+            let method_count = method_re.find_iter(&cleaned).count();
+
+            let metrics = CodeMetrics {
+                loc: count_loc(body),
+                method_count,
+                field_count,
+                ..Default::default()
+            };
+
+            let location = format!("{}:{}", file_name, line_number(&cleaned, start));
+            detections.extend(detect_all(&metrics, &location, name));
+        }
+
+        detections
+    }
+
+    fn supported_extensions(&self) -> &[&str] {
+        &["go"]
+    }
+}

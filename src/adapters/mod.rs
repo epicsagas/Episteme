@@ -1,31 +1,50 @@
+// Root-level modules
 pub mod builder;
-pub mod cache;
-pub mod chunker;
-pub mod config;
-pub mod constants;
 pub mod error;
 pub mod hooks;
 pub mod insight_utils;
-pub mod install_wizard;
-pub mod installer;
 pub mod json_loader;
-pub mod local_embeddings;
 pub mod metrics;
-pub mod noop_embeddings;
-#[cfg(feature = "openai-embeddings")]
-pub mod openai_embeddings;
-pub mod paths;
-pub mod python_ast_parser;
-pub mod rate_limiter;
-pub mod rate_limiter_mw;
-pub mod regex_parsers;
-pub mod search_engines;
-pub mod service;
-pub mod sqlite_db;
 pub mod structured_logging;
 pub mod telemetry;
-pub mod user_graph_store;
 
+// Sub-module groups
+pub mod embeddings;
+pub mod infra;
+pub mod parsing;
+pub mod setup;
+pub mod web;
+
+// Backward-compat re-exports: embeddings
+pub use embeddings::chunker;
+pub use embeddings::local_embeddings;
+pub use embeddings::noop_embeddings;
+#[cfg(feature = "openai-embeddings")]
+pub use embeddings::openai_embeddings;
+
+// Backward-compat re-exports: parsing
+pub use parsing::python_ast_parser;
+pub use parsing::regex_parsers;
+
+// Backward-compat re-exports: infra
+pub use infra::cache;
+pub use infra::search_engines;
+pub use infra::service;
+pub use infra::sqlite_db;
+pub use infra::user_graph_store;
+
+// Backward-compat re-exports: setup
+pub use setup::config;
+pub use setup::constants;
+pub use setup::install_wizard;
+pub use setup::installer;
+pub use setup::paths;
+
+// Backward-compat re-exports: web
+pub use web::rate_limiter;
+pub use web::rate_limiter_mw;
+
+// Public type re-exports
 pub use config::EpistemeConfig;
 pub use error::InfraError;
 pub use json_loader::load_graph;

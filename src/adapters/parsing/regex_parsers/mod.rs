@@ -3,13 +3,26 @@
 //! Each parser finds function/class definitions, extracts bodies via brace
 //! matching, computes `CodeMetrics`, and delegates to `detect_all`.
 
+mod generic;
+mod go;
+mod python;
+mod ruby;
+mod typescript;
+
 use regex::Regex;
 use std::collections::HashMap;
 use std::sync::{Mutex, OnceLock};
 
-use crate::domain::detectors::detect_all;
-use crate::domain::metrics::{CodeMetrics, SmellDetection};
+use crate::domain::metrics::CodeMetrics;
 use crate::ports::parser::CodeParser;
+
+pub use generic::{
+    GenericParser, cpp_parser, csharp_parser, java_parser, kotlin_parser, php_parser, rust_parser,
+};
+pub use go::GoFullParser;
+pub use python::PythonParser;
+pub use ruby::RubyParser;
+pub use typescript::TypeScriptParser;
 
 // ===========================================================================
 // Global regex cache
@@ -22,7 +35,7 @@ static REGEX_CACHE: OnceLock<Mutex<HashMap<&'static str, &'static Regex>>> = Onc
 /// Return a cached `&'static Regex` for a static pattern, compiling it on first use.
 /// Compiled regexes are leaked and live for the process lifetime. The set of
 /// distinct patterns is small and bounded, so this is an acceptable trade-off.
-fn cached_regex(pattern: &'static str) -> &'static Regex {
+pub(crate) fn cached_regex(pattern: &'static str) -> &'static Regex {
     let cache = REGEX_CACHE.get_or_init(|| Mutex::new(HashMap::new()));
     {
         let guard = cache.lock().unwrap();
@@ -40,7 +53,7 @@ fn cached_regex(pattern: &'static str) -> &'static Regex {
 /// Return a cached `Regex` for a dynamically constructed pattern string.
 /// The returned Regex is cloned out of the cache to avoid lifetime issues
 /// with non-static strings.
-fn cached_regex_owned(pattern: &str) -> Regex {
+pub(crate) fn cached_regex_owned(pattern: &str) -> Regex {
     static OWNED_CACHE: OnceLock<Mutex<HashMap<String, Regex>>> = OnceLock::new();
     let cache = OWNED_CACHE.get_or_init(|| Mutex::new(HashMap::new()));
     let mut guard = cache.lock().unwrap();
@@ -56,7 +69,7 @@ fn cached_regex_owned(pattern: &str) -> Regex {
 
 /// Find the position of the matching `}` for the `{` at `start`.
 /// Returns `None` on failure (unbalanced braces or string-literal confusion).
-fn find_matching_brace(code: &str, start: usize) -> Option<usize> {
+pub(crate) fn find_matching_brace(code: &str, start: usize) -> Option<usize> {
     let bytes = code.as_bytes();
     let mut depth: i32 = 0;
     let mut in_single = false;
@@ -121,7 +134,7 @@ fn find_matching_brace(code: &str, start: usize) -> Option<usize> {
 }
 
 /// Count non-blank, non-brace-only lines.
-fn count_loc(body: &str) -> usize {
+pub(crate) fn count_loc(body: &str) -> usize {
     body.lines()
         .filter(|l| {
             let t = l.trim();
@@ -131,7 +144,7 @@ fn count_loc(body: &str) -> usize {
 }
 
 /// Compute cyclomatic complexity from common control-flow keywords.
-fn calculate_cc(body: &str) -> usize {
+pub(crate) fn calculate_cc(body: &str) -> usize {
     let mut cc: usize = 1;
     cc += count_keyword(body, r"\bif\b");
     cc += count_keyword(body, r"\belif\b");
@@ -149,7 +162,7 @@ fn calculate_cc(body: &str) -> usize {
 }
 
 /// Compute maximum nesting depth from brace pairs.
-fn calculate_nesting(body: &str) -> usize {
+pub(crate) fn calculate_nesting(body: &str) -> usize {
     let mut max_d: usize = 0;
     let mut cur: usize = 0;
     for ch in body.chars() {
@@ -164,17 +177,17 @@ fn calculate_nesting(body: &str) -> usize {
 }
 
 /// Count regex matches using the global regex cache.
-fn count_keyword(code: &str, pattern: &'static str) -> usize {
+pub(crate) fn count_keyword(code: &str, pattern: &'static str) -> usize {
     cached_regex(pattern).find_iter(code).count()
 }
 
 /// Count return statements.
-fn count_returns(body: &str) -> usize {
+pub(crate) fn count_returns(body: &str) -> usize {
     count_keyword(body, r"\breturn\b")
 }
 
 /// Count local variables: `var x` and `x :=` and simple `x = y`.
-fn count_local_vars(body: &str) -> usize {
+pub(crate) fn count_local_vars(body: &str) -> usize {
     count_keyword(body, r"\bvar\s+\w+")
         + count_keyword(body, r"\w+\s*:=")
         + count_keyword(body, r"\blet\s+\w+")
@@ -182,7 +195,7 @@ fn count_local_vars(body: &str) -> usize {
 }
 
 /// Count local variables in C/C++: typed declarations like `int x =`, `auto x;`.
-fn count_local_vars_cpp(body: &str) -> usize {
+pub(crate) fn count_local_vars_cpp(body: &str) -> usize {
     count_keyword(
         body,
         r"\b(?:int|double|float|bool|char|void|auto|long|short|unsigned|signed|size_t)\s+\w+\s*[=;]",
@@ -190,7 +203,7 @@ fn count_local_vars_cpp(body: &str) -> usize {
 }
 
 /// Count local variables in C#: typed and `var` declarations like `int x =`, `var x;`.
-fn count_local_vars_csharp(body: &str) -> usize {
+pub(crate) fn count_local_vars_csharp(body: &str) -> usize {
     count_keyword(
         body,
         r"\b(?:int|string|bool|double|float|var|decimal|long|byte|char|short|uint|ulong|ushort)\s+\w+\s*[=;]",
@@ -198,17 +211,17 @@ fn count_local_vars_csharp(body: &str) -> usize {
 }
 
 /// Count local variables in PHP: `$x =` (PHP variables always start with $).
-fn count_local_vars_php(body: &str) -> usize {
+pub(crate) fn count_local_vars_php(body: &str) -> usize {
     count_keyword(body, r"\$\w+\s*=")
 }
 
 /// Count local variables in Kotlin: `val x` and `var x` declarations.
-fn count_local_vars_kotlin(body: &str) -> usize {
+pub(crate) fn count_local_vars_kotlin(body: &str) -> usize {
     count_keyword(body, r"\b(?:val|var)\s+\w+")
 }
 
 /// Count parameters inside the first balanced paren group in `sig`.
-fn count_params(sig: &str) -> usize {
+pub(crate) fn count_params(sig: &str) -> usize {
     let start = match sig.find('(') {
         Some(i) => i + 1,
         None => return 0,
@@ -237,12 +250,12 @@ fn count_params(sig: &str) -> usize {
 }
 
 /// Count `obj.method()` external calls.
-fn count_external_calls(body: &str) -> usize {
+pub(crate) fn count_external_calls(body: &str) -> usize {
     count_keyword(body, r"\w+\.\w+\s*\(")
 }
 
 /// Count branches: `if`, `elif`, `else if`, `case`, `match` arms.
-fn count_branches(body: &str) -> usize {
+pub(crate) fn count_branches(body: &str) -> usize {
     count_keyword(body, r"\bif\b")
         + count_keyword(body, r"\belif\b")
         + count_keyword(body, r"\belse\s+if\b")
@@ -252,7 +265,7 @@ fn count_branches(body: &str) -> usize {
 
 /// Count method call chains like `a.b().c().d()`.
 /// Heuristic: count sequences of `.identifier(`.
-fn count_method_call_chains(body: &str) -> usize {
+pub(crate) fn count_method_call_chains(body: &str) -> usize {
     let re = cached_regex(r"\.\w+\s*\(");
     let matches: Vec<_> = re.find_iter(body).collect();
     if matches.is_empty() {
@@ -273,7 +286,7 @@ fn count_method_call_chains(body: &str) -> usize {
 }
 
 /// Line number for a byte offset (1-based).
-fn line_number(code: &str, byte_offset: usize) -> usize {
+pub(crate) fn line_number(code: &str, byte_offset: usize) -> usize {
     code[..byte_offset].chars().filter(|&c| c == '\n').count() + 1
 }
 
@@ -290,21 +303,21 @@ fn calculate_cc_ext(body: &str, extras: &[&'static str]) -> usize {
     cc
 }
 
-fn calculate_cc_java(body: &str) -> usize {
+pub(crate) fn calculate_cc_java(body: &str) -> usize {
     calculate_cc_ext(
         body,
         &[r"\bdo\b", r"\b\w+\s*\?\s*[^:\n]{1,50}:", r"\btry\b"],
     )
 }
 
-fn calculate_cc_cpp(body: &str) -> usize {
+pub(crate) fn calculate_cc_cpp(body: &str) -> usize {
     calculate_cc_ext(
         body,
         &[r"\bdo\b", r"\b\w+\s*\?\s*[^:\n]{1,50}:", r"\btry\b"],
     )
 }
 
-fn calculate_cc_csharp(body: &str) -> usize {
+pub(crate) fn calculate_cc_csharp(body: &str) -> usize {
     calculate_cc_ext(
         body,
         &[
@@ -317,7 +330,7 @@ fn calculate_cc_csharp(body: &str) -> usize {
     )
 }
 
-fn calculate_cc_php(body: &str) -> usize {
+pub(crate) fn calculate_cc_php(body: &str) -> usize {
     calculate_cc_ext(
         body,
         &[
@@ -329,11 +342,11 @@ fn calculate_cc_php(body: &str) -> usize {
     )
 }
 
-fn calculate_cc_kotlin(body: &str) -> usize {
+pub(crate) fn calculate_cc_kotlin(body: &str) -> usize {
     calculate_cc_ext(body, &[r"\bwhen\b", r"\bis\b"])
 }
 
-fn calculate_cc_rust(body: &str) -> usize {
+pub(crate) fn calculate_cc_rust(body: &str) -> usize {
     calculate_cc_ext(body, &[r"\bloop\b", r"=>"])
 }
 
@@ -341,159 +354,30 @@ fn calculate_cc_rust(body: &str) -> usize {
 // Comment stripping
 // ===========================================================================
 
-fn remove_line_comments<'a>(code: &'a str, prefix: &str) -> std::borrow::Cow<'a, str> {
+pub(crate) fn remove_line_comments<'a>(code: &'a str, prefix: &str) -> std::borrow::Cow<'a, str> {
     let re = cached_regex_owned(&format!(r"(?m){prefix}.*$"));
     re.replace_all(code, "")
 }
 
-fn remove_block_comments(code: &str) -> std::borrow::Cow<'_, str> {
+pub(crate) fn remove_block_comments(code: &str) -> std::borrow::Cow<'_, str> {
     cached_regex(r"/\*.*?\*/").replace_all(code, "")
 }
 
 /// Strip Ruby `=begin`/`=end` block comments.
-fn remove_ruby_block_comments(code: &str) -> std::borrow::Cow<'_, str> {
+pub(crate) fn remove_ruby_block_comments(code: &str) -> std::borrow::Cow<'_, str> {
     cached_regex(r"(?m)^=begin\b.*?^=end\b").replace_all(code, "")
 }
 
 /// Strip Python/Ruby `#` line comments.
-fn remove_hash_comments(code: &str) -> std::borrow::Cow<'_, str> {
+pub(crate) fn remove_hash_comments(code: &str) -> std::borrow::Cow<'_, str> {
     cached_regex(r"(?m)#.*$").replace_all(code, "")
 }
 
 // ===========================================================================
-// Python Parser (kept separate: indentation-based body extraction)
+// Python-specific helpers (shared between python.rs and ruby.rs)
 // ===========================================================================
 
-pub struct PythonParser;
-
-impl Default for PythonParser {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl PythonParser {
-    pub fn new() -> Self {
-        Self
-    }
-}
-
-impl CodeParser for PythonParser {
-    fn parse_code(&self, code: &str, file_name: &str) -> Vec<SmellDetection> {
-        let cleaned = remove_hash_comments(code);
-        let cleaned = strip_python_docstrings(&cleaned);
-        let mut detections: Vec<SmellDetection> = Vec::new();
-
-        // --- Functions (def / async def) ---
-        let fn_re = cached_regex(r"(?m)^(?:async\s+)?def\s+(\w+)\s*\(");
-        for cap in fn_re.captures_iter(&cleaned) {
-            let name = &cap[1];
-            let full = cap.get(0).unwrap();
-            let sig_start = full.start();
-
-            let sig_line_start = cleaned[..sig_start].rfind('\n').map(|i| i + 1).unwrap_or(0);
-            let indent = cleaned[sig_line_start..]
-                .find(|c: char| !c.is_whitespace())
-                .unwrap_or(0);
-            let body_end = find_python_block_end(&cleaned, sig_start, indent);
-            let body = &cleaned[sig_start..body_end];
-
-            let sig_text = &cleaned[sig_start..];
-            let loc = count_python_loc(body);
-            let params = count_params(sig_text);
-            let primitive_params = count_primitive_params_python(sig_text);
-            let cc = calculate_cc_python(body);
-            let nesting = calculate_nesting_python(body);
-            let returns = count_returns(body);
-            let local_vars = count_keyword(body, r"(?m)^\s*(\w+)\s*=")
-                + count_keyword(body, r"(?m)^\s*(\w+)\s*:");
-            let ext_calls = count_external_calls(body);
-            let branches = count_branches_python(body);
-            let chains = count_method_call_chains(body);
-
-            let metrics = CodeMetrics {
-                loc,
-                cyclomatic_complexity: cc,
-                nesting_depth: nesting,
-                parameter_count: params,
-                local_variables: local_vars,
-                return_statements: returns,
-                external_calls: ext_calls,
-                primitive_params,
-                branch_count: branches,
-                method_call_chains: chains,
-                ..Default::default()
-            };
-
-            let location = format!("{}:{}", file_name, line_number(&cleaned, sig_start));
-            detections.extend(detect_all(&metrics, &location, name));
-        }
-
-        // --- Classes ---
-        let cls_re = cached_regex(r"(?m)^class\s+(\w+)");
-        let python_method_re = cached_regex(r"(?m)^\s+def\s+\w+");
-        for cap in cls_re.captures_iter(&cleaned) {
-            let name = &cap[1];
-            let full = cap.get(0).unwrap();
-            let cls_start = full.start();
-
-            let sig_line_start = cleaned[..cls_start].rfind('\n').map(|i| i + 1).unwrap_or(0);
-            let indent = cleaned[sig_line_start..]
-                .find(|c: char| !c.is_whitespace())
-                .unwrap_or(0);
-            let body_end = find_python_block_end(&cleaned, cls_start, indent);
-            let body = &cleaned[cls_start..body_end];
-
-            let method_count = python_method_re.find_iter(body).count();
-            let field_count = count_keyword(body, r"self\.\w+\s*=");
-
-            let metrics = CodeMetrics {
-                loc: count_python_loc(body),
-                method_count,
-                field_count,
-                ..Default::default()
-            };
-
-            let location = format!("{}:{}", file_name, line_number(&cleaned, cls_start));
-            detections.extend(detect_all(&metrics, &location, name));
-        }
-
-        detections
-    }
-
-    fn supported_extensions(&self) -> &[&str] {
-        &["py"]
-    }
-}
-
-fn find_python_block_end(code: &str, start: usize, base_indent: usize) -> usize {
-    let lines = code[start..].lines().enumerate();
-    let mut end = code.len();
-    for (i, line) in lines {
-        if i == 0 {
-            continue;
-        }
-        let trimmed = line.trim_start();
-        if trimmed.is_empty() || trimmed.starts_with('#') {
-            continue;
-        }
-        let cur_indent = line.len() - trimmed.len();
-        if cur_indent <= base_indent {
-            let mut offset = start;
-            for (j, l) in code[start..].lines().enumerate() {
-                if j == i {
-                    break;
-                }
-                offset += l.len() + 1;
-            }
-            end = offset;
-            break;
-        }
-    }
-    end
-}
-
-fn count_python_loc(body: &str) -> usize {
+pub(crate) fn count_python_loc(body: &str) -> usize {
     body.lines()
         .filter(|l| {
             let t = l.trim();
@@ -505,7 +389,7 @@ fn count_python_loc(body: &str) -> usize {
         .count()
 }
 
-fn calculate_cc_python(body: &str) -> usize {
+pub(crate) fn calculate_cc_python(body: &str) -> usize {
     let mut cc: usize = 1;
     cc += count_keyword(body, r"\bif\b");
     cc += count_keyword(body, r"\belif\b");
@@ -518,7 +402,7 @@ fn calculate_cc_python(body: &str) -> usize {
     cc
 }
 
-fn calculate_nesting_python(body: &str) -> usize {
+pub(crate) fn calculate_nesting_python(body: &str) -> usize {
     let mut max_d: usize = 0;
     for line in body.lines() {
         if line.trim().is_empty() {
@@ -531,14 +415,14 @@ fn calculate_nesting_python(body: &str) -> usize {
     max_d
 }
 
-fn count_branches_python(body: &str) -> usize {
+pub(crate) fn count_branches_python(body: &str) -> usize {
     count_keyword(body, r"\bif\b")
         + count_keyword(body, r"\belif\b")
         + count_keyword(body, r"\bcase\b")
         + count_keyword(body, r"\bmatch\b")
 }
 
-fn strip_python_docstrings(code: &str) -> std::borrow::Cow<'_, str> {
+pub(crate) fn strip_python_docstrings(code: &str) -> std::borrow::Cow<'_, str> {
     let triple_double = cached_regex(r#"(?s)""".*?""""#);
     let no_double = triple_double.replace_all(code, "");
     let triple_single = cached_regex(r"(?s)'''.*?'''");
@@ -548,7 +432,7 @@ fn strip_python_docstrings(code: &str) -> std::borrow::Cow<'_, str> {
         .into()
 }
 
-fn count_primitive_params_python(sig: &str) -> usize {
+pub(crate) fn count_primitive_params_python(sig: &str) -> usize {
     let start = match sig.find('(') {
         Some(i) => i + 1,
         None => return 0,
@@ -574,539 +458,16 @@ fn count_primitive_params_python(sig: &str) -> usize {
 }
 
 // ===========================================================================
-// TypeScript Parser (kept separate: arrow functions need special handling)
+// Metric builder helpers (used by typescript, generic, go)
 // ===========================================================================
-
-pub struct TypeScriptParser;
-
-impl Default for TypeScriptParser {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl TypeScriptParser {
-    pub fn new() -> Self {
-        Self
-    }
-}
-
-impl CodeParser for TypeScriptParser {
-    fn parse_code(&self, code: &str, file_name: &str) -> Vec<SmellDetection> {
-        let cleaned = remove_line_comments(code, "//");
-        let cleaned = remove_block_comments(&cleaned);
-        let mut detections: Vec<SmellDetection> = Vec::new();
-
-        // --- Functions: function declarations ---
-        let fn_re = cached_regex(r"(?m)(?:export\s+)?(?:async\s+)?function\s+(\w+)\s*\(");
-        for cap in fn_re.captures_iter(&cleaned) {
-            let name = &cap[1];
-            let full = cap.get(0).unwrap();
-            let start = full.start();
-
-            let brace_pos = match cleaned[start..].find('{') {
-                Some(off) => start + off,
-                None => continue,
-            };
-            let end_pos = match find_matching_brace(&cleaned, brace_pos) {
-                Some(p) => p,
-                None => continue,
-            };
-
-            let body = &cleaned[start..=end_pos];
-            let sig = &cleaned[start..];
-
-            let metrics = build_func_metrics(body, sig, calculate_cc);
-
-            let location = format!("{}:{}", file_name, line_number(&cleaned, start));
-            detections.extend(detect_all(&metrics, &location, name));
-        }
-
-        // --- Arrow functions: const/let/var name = (params) => { ... } or expr ---
-        let arrow_re = cached_regex(
-            r"(?m)(?:export\s+)?(?:const|let|var)\s+(\w+)\s*=\s*(?:async\s*)?(?:\([^)]*\)|\w+)\s*=>",
-        );
-        for cap in arrow_re.captures_iter(&cleaned) {
-            let name = &cap[1];
-            let full = cap.get(0).unwrap();
-            let start = full.start();
-
-            let after_arrow = match cleaned[start..].find("=>") {
-                Some(off) => start + off + 2,
-                None => continue,
-            };
-
-            let body_start = cleaned[after_arrow..]
-                .find(|c: char| !c.is_whitespace())
-                .map(|off| after_arrow + off)
-                .unwrap_or(after_arrow);
-
-            let body_end = if cleaned.as_bytes().get(body_start) == Some(&b'{') {
-                match find_matching_brace(&cleaned, body_start) {
-                    Some(p) => p,
-                    None => continue,
-                }
-            } else {
-                find_ts_expression_end(&cleaned, after_arrow)
-            };
-
-            let body = &cleaned[start..=body_end];
-            let sig = &cleaned[start..];
-
-            let metrics = build_func_metrics(body, sig, calculate_cc);
-
-            let location = format!("{}:{}", file_name, line_number(&cleaned, start));
-            detections.extend(detect_all(&metrics, &location, name));
-        }
-
-        // --- Classes ---
-        let cls_re = cached_regex(r"(?m)(?:export\s+)?(?:abstract\s+)?class\s+(\w+)");
-        let ts_method_re = cached_regex(
-            r"(?m)(?:public|private|protected|static|\s)+\w+\s*\([^)]*\)\s*(?::\s*[\w<>\[\]]+\s*)?\{",
-        );
-        for cap in cls_re.captures_iter(&cleaned) {
-            let name = &cap[1];
-            let full = cap.get(0).unwrap();
-            let start = full.start();
-
-            let brace_pos = match cleaned[start..].find('{') {
-                Some(off) => start + off,
-                None => continue,
-            };
-            let end_pos = match find_matching_brace(&cleaned, brace_pos) {
-                Some(p) => p,
-                None => continue,
-            };
-
-            let body = &cleaned[start..=end_pos];
-            let method_count = ts_method_re.find_iter(body).count();
-            let field_count =
-                count_keyword(body, r"(?:public|private|protected|readonly)\s+\w+\s*[:=]");
-
-            let metrics = CodeMetrics {
-                loc: count_loc(body),
-                method_count,
-                field_count,
-                ..Default::default()
-            };
-
-            let location = format!("{}:{}", file_name, line_number(&cleaned, start));
-            detections.extend(detect_all(&metrics, &location, name));
-        }
-
-        detections
-    }
-
-    fn supported_extensions(&self) -> &[&str] {
-        &["ts", "tsx", "js", "jsx"]
-    }
-}
-
-/// For expression-bodied TypeScript arrow functions, find the end of the
-/// expression by scanning forward from `start`.
-fn find_ts_expression_end(code: &str, start: usize) -> usize {
-    let line_start = code[..start].rfind('\n').map(|i| i + 1).unwrap_or(0);
-    let base_indent = code[line_start..]
-        .find(|c: char| !c.is_whitespace())
-        .unwrap_or(0);
-
-    let suffix = &code[start..];
-    let mut offset = start;
-
-    for (i, line) in suffix.lines().enumerate() {
-        if i == 0 {
-            offset += line.len();
-            if i < suffix.lines().count() || suffix.ends_with('\n') {
-                offset += 1;
-            }
-            continue;
-        }
-        let trimmed = line.trim_start();
-        if trimmed.is_empty() {
-            offset += line.len();
-            offset += 1;
-            continue;
-        }
-        let cur_indent = line.len() - trimmed.len();
-        if trimmed.starts_with('}')
-            || (cur_indent <= base_indent
-                && (trimmed.starts_with("const ")
-                    || trimmed.starts_with("let ")
-                    || trimmed.starts_with("var ")
-                    || trimmed.starts_with("function ")
-                    || trimmed.starts_with("class ")
-                    || trimmed.starts_with("export ")))
-        {
-            break;
-        }
-        offset += line.len();
-        offset += 1;
-    }
-
-    while offset > start && code.as_bytes().get(offset - 1) == Some(&b'\n') {
-        offset -= 1;
-    }
-    if offset >= code.len() {
-        code.len() - 1
-    } else if offset <= start {
-        start
-    } else {
-        offset
-    }
-}
-
-// ===========================================================================
-// Ruby Parser (kept separate: end-block-based body extraction)
-// ===========================================================================
-
-pub struct RubyParser;
-
-impl Default for RubyParser {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl RubyParser {
-    pub fn new() -> Self {
-        Self
-    }
-}
-
-impl CodeParser for RubyParser {
-    fn parse_code(&self, code: &str, file_name: &str) -> Vec<SmellDetection> {
-        let cleaned = remove_hash_comments(code);
-        let cleaned = remove_ruby_block_comments(&cleaned);
-        let mut detections: Vec<SmellDetection> = Vec::new();
-
-        // --- Methods (def / define_method) ---
-        let fn_re = cached_regex(r"(?m)def\s+(?:self\.)?(\w+)[?!]?");
-        for cap in fn_re.captures_iter(&cleaned) {
-            let name = &cap[1];
-            let full = cap.get(0).unwrap();
-            let sig_start = full.start();
-
-            let sig_line_start = code[..sig_start].rfind('\n').map(|i| i + 1).unwrap_or(0);
-            let indent = code[sig_line_start..]
-                .find(|c: char| !c.is_whitespace())
-                .unwrap_or(0);
-            let body_end = find_ruby_block_end(&cleaned, sig_start, indent);
-            let body = &cleaned[sig_start..body_end];
-
-            let sig_text = &cleaned[sig_start..];
-            let params = count_params(sig_text);
-
-            let metrics = CodeMetrics {
-                loc: count_python_loc(body),
-                cyclomatic_complexity: calculate_cc_ruby(body),
-                nesting_depth: calculate_nesting_ruby(body),
-                parameter_count: params,
-                local_variables: count_keyword(body, r"(?m)^\s*(\w+)\s*="),
-                return_statements: count_returns(body),
-                external_calls: count_external_calls(body),
-                primitive_params: params,
-                branch_count: count_branches_python(body),
-                method_call_chains: count_method_call_chains(body),
-                ..Default::default()
-            };
-
-            let location = format!("{}:{}", file_name, line_number(&cleaned, sig_start));
-            detections.extend(detect_all(&metrics, &location, name));
-        }
-
-        // --- Classes ---
-        let cls_re = cached_regex(r"(?m)class\s+(\w+)");
-        let ruby_method_re = cached_regex(r"(?m)^\s+def\s+\w+");
-        for cap in cls_re.captures_iter(&cleaned) {
-            let name = &cap[1];
-            let full = cap.get(0).unwrap();
-            let cls_start = full.start();
-
-            let sig_line_start = code[..cls_start].rfind('\n').map(|i| i + 1).unwrap_or(0);
-            let indent = code[sig_line_start..]
-                .find(|c: char| !c.is_whitespace())
-                .unwrap_or(0);
-            let body_end = find_ruby_block_end(&cleaned, cls_start, indent);
-            let body = &cleaned[cls_start..body_end];
-
-            let method_count = ruby_method_re.find_iter(body).count();
-            let field_count = count_keyword(body, r"@\w+");
-
-            let metrics = CodeMetrics {
-                loc: count_python_loc(body),
-                method_count,
-                field_count,
-                ..Default::default()
-            };
-
-            let location = format!("{}:{}", file_name, line_number(&cleaned, cls_start));
-            detections.extend(detect_all(&metrics, &location, name));
-        }
-
-        detections
-    }
-
-    fn supported_extensions(&self) -> &[&str] {
-        &["rb"]
-    }
-}
-
-fn calculate_cc_ruby(body: &str) -> usize {
-    let mut cc: usize = 1;
-    cc += count_keyword(body, r"\bif\b");
-    cc += count_keyword(body, r"\belsif\b");
-    cc += count_keyword(body, r"\bunless\b");
-    cc += count_keyword(body, r"\bfor\b");
-    cc += count_keyword(body, r"\bwhile\b");
-    cc += count_keyword(body, r"\buntil\b");
-    cc += count_keyword(body, r"\bcase\b");
-    cc += count_keyword(body, r"\bwhen\b");
-    cc += count_keyword(body, r"\brescue\b");
-    cc += count_keyword(body, r"\band\b");
-    cc += count_keyword(body, r"\bor\b");
-    cc += count_keyword(body, r"&&");
-    cc += count_keyword(body, r"\|\|");
-    cc
-}
-
-fn calculate_nesting_ruby(body: &str) -> usize {
-    let mut depth = 0usize;
-    let mut max_depth = 0usize;
-    let open_re = cached_regex(r"^\s*(class|module|def|if|unless|case|while|until|for|begin|do)\b");
-    let close_re = cached_regex(r"^\s*end\b");
-    for line in body.lines() {
-        let t = line.trim();
-        if t.is_empty() || t.starts_with('#') {
-            continue;
-        }
-        if close_re.is_match(t) {
-            depth = depth.saturating_sub(1);
-            continue;
-        }
-        if open_re.is_match(t) {
-            depth += 1;
-            max_depth = max_depth.max(depth);
-        }
-    }
-    max_depth
-}
-
-fn find_ruby_block_end(code: &str, start: usize, _base_indent: usize) -> usize {
-    let open_re = cached_regex(r"^\s*(class|module|def|if|unless|case|while|until|for|begin|do)\b");
-    let close_re = cached_regex(r"^\s*end\b");
-    let mut depth = 0i32;
-    let mut offset = start;
-    for line in code[start..].lines() {
-        let t = line.trim();
-        if open_re.is_match(t) {
-            depth += 1;
-        } else if close_re.is_match(t) {
-            depth -= 1;
-            if depth <= 0 {
-                return (offset + line.len()).min(code.len());
-            }
-        }
-        offset = offset.saturating_add(line.len() + 1);
-    }
-    code.len()
-}
-
-// ===========================================================================
-// Generic brace-based parser
-// ===========================================================================
-
-/// Configuration for a brace-based language parser.
-struct ParserConfig {
-    name: &'static str,
-    extensions: &'static [&'static str],
-    func_regex: &'static str,
-    class_regex: Option<&'static str>,
-    class_method_regex: Option<&'static str>,
-    class_field_regex: Option<&'static str>,
-    strip_line_comment: &'static str,
-    strip_block_comments: bool,
-    strip_hash_comments: bool,
-    cc_fn: fn(&str) -> usize,
-    count_local_vars_fn: fn(&str) -> usize,
-    /// Keywords to skip when they appear as captured function names.
-    skip_names: &'static [&'static str],
-}
-
-impl std::fmt::Debug for ParserConfig {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("ParserConfig")
-            .field("name", &self.name)
-            .field("extensions", &self.extensions)
-            .finish_non_exhaustive()
-    }
-}
-
-pub struct GenericParser {
-    config: ParserConfig,
-    func_re: OnceLock<Regex>,
-    class_re: OnceLock<Regex>,
-    class_method_re: OnceLock<Regex>,
-    class_field_re: OnceLock<Regex>,
-}
-
-impl GenericParser {
-    fn new(config: ParserConfig) -> Self {
-        Self {
-            config,
-            func_re: OnceLock::new(),
-            class_re: OnceLock::new(),
-            class_method_re: OnceLock::new(),
-            class_field_re: OnceLock::new(),
-        }
-    }
-
-    fn get_func_re(&self) -> &Regex {
-        self.func_re
-            .get_or_init(|| Regex::new(self.config.func_regex).unwrap())
-    }
-
-    fn get_class_re(&self) -> Option<&Regex> {
-        self.config
-            .class_regex
-            .map(|pat| self.class_re.get_or_init(|| Regex::new(pat).unwrap()))
-    }
-
-    fn get_class_method_re(&self) -> Option<&Regex> {
-        self.config.class_method_regex.map(|pat| {
-            self.class_method_re
-                .get_or_init(|| Regex::new(pat).unwrap())
-        })
-    }
-
-    fn get_class_field_re(&self) -> Option<&Regex> {
-        self.config
-            .class_field_regex
-            .map(|pat| self.class_field_re.get_or_init(|| Regex::new(pat).unwrap()))
-    }
-
-    /// Strip comments according to config.
-    fn strip_comments<'a>(&self, code: &'a str) -> std::borrow::Cow<'a, str> {
-        let mut cleaned: std::borrow::Cow<'_, str> = if self.config.strip_line_comment.is_empty() {
-            std::borrow::Cow::Borrowed(code)
-        } else {
-            remove_line_comments(code, self.config.strip_line_comment)
-        };
-        if self.config.strip_block_comments {
-            cleaned = remove_block_comments(&cleaned).into_owned().into();
-        }
-        if self.config.strip_hash_comments {
-            cleaned = remove_hash_comments(&cleaned).into_owned().into();
-        }
-        cleaned
-    }
-}
-
-impl Default for GenericParser {
-    fn default() -> Self {
-        Self::new(ParserConfig {
-            name: "",
-            extensions: &[],
-            func_regex: "",
-            class_regex: None,
-            class_method_regex: None,
-            class_field_regex: None,
-            strip_line_comment: "",
-            strip_block_comments: false,
-            strip_hash_comments: false,
-            cc_fn: calculate_cc,
-            count_local_vars_fn: count_local_vars,
-            skip_names: &[],
-        })
-    }
-}
-
-impl CodeParser for GenericParser {
-    fn parse_code(&self, code: &str, file_name: &str) -> Vec<SmellDetection> {
-        let cleaned = self.strip_comments(code);
-        let mut detections: Vec<SmellDetection> = Vec::new();
-        let func_re = self.get_func_re();
-        let cc_fn = self.config.cc_fn;
-        let vars_fn = self.config.count_local_vars_fn;
-        let skip = self.config.skip_names;
-
-        // --- Functions ---
-        for cap in func_re.captures_iter(&cleaned) {
-            let name = &cap[1];
-            if skip.contains(&name) {
-                continue;
-            }
-            let full = cap.get(0).unwrap();
-            let start = full.start();
-
-            let brace_pos = match cleaned[start..].find('{') {
-                Some(off) => start + off,
-                None => continue,
-            };
-            let end_pos = match find_matching_brace(&cleaned, brace_pos) {
-                Some(p) => p,
-                None => continue,
-            };
-
-            let body = &cleaned[start..=end_pos];
-            let sig = &cleaned[start..];
-            let metrics = build_func_metrics_ext(body, sig, cc_fn, vars_fn);
-
-            let location = format!("{}:{}", file_name, line_number(&cleaned, start));
-            detections.extend(detect_all(&metrics, &location, name));
-        }
-
-        // --- Classes ---
-        if let (Some(class_re), Some(class_method_re)) =
-            (self.get_class_re(), self.get_class_method_re())
-        {
-            for cap in class_re.captures_iter(&cleaned) {
-                let name = &cap[1];
-                let full = cap.get(0).unwrap();
-                let start = full.start();
-
-                let brace_pos = match cleaned[start..].find('{') {
-                    Some(off) => start + off,
-                    None => continue,
-                };
-                let end_pos = match find_matching_brace(&cleaned, brace_pos) {
-                    Some(p) => p,
-                    None => continue,
-                };
-
-                let body = &cleaned[start..=end_pos];
-                let method_count = class_method_re.find_iter(body).count();
-                let field_count = self
-                    .get_class_field_re()
-                    .map(|re| re.find_iter(body).count())
-                    .unwrap_or(0);
-
-                let metrics = CodeMetrics {
-                    loc: count_loc(body),
-                    method_count,
-                    field_count,
-                    ..Default::default()
-                };
-
-                let location = format!("{}:{}", file_name, line_number(&cleaned, start));
-                detections.extend(detect_all(&metrics, &location, name));
-            }
-        }
-
-        detections
-    }
-
-    fn supported_extensions(&self) -> &[&str] {
-        self.config.extensions
-    }
-}
 
 /// Build function metrics with the default `count_local_vars`.
-fn build_func_metrics(body: &str, sig: &str, cc_fn: fn(&str) -> usize) -> CodeMetrics {
+pub(crate) fn build_func_metrics(body: &str, sig: &str, cc_fn: fn(&str) -> usize) -> CodeMetrics {
     build_func_metrics_ext(body, sig, cc_fn, count_local_vars)
 }
 
 /// Build function metrics with a custom local-var counter.
-fn build_func_metrics_ext(
+pub(crate) fn build_func_metrics_ext(
     body: &str,
     sig: &str,
     cc_fn: fn(&str) -> usize,
@@ -1125,249 +486,6 @@ fn build_func_metrics_ext(
         branch_count: count_branches(body),
         method_call_chains: count_method_call_chains(body),
         ..Default::default()
-    }
-}
-
-// ===========================================================================
-// Concrete parser instances
-// ===========================================================================
-
-/// Java parser (brace-based).
-pub fn java_parser() -> GenericParser {
-    GenericParser::new(ParserConfig {
-        name: "java",
-        extensions: &["java"],
-        func_regex: r"(?m)(?:public|private|protected|static|\s)+[\w<>\[\]]+\s+(\w+)\s*\(",
-        class_regex: Some(r"(?m)(?:public\s+)?(?:abstract\s+)?(?:class|interface|enum)\s+(\w+)"),
-        class_method_regex: Some(r"(?m)(?:public|private|protected)\s+[\w<>\[\]]+\s+\w+\s*\("),
-        class_field_regex: Some(r"(?m)(?:public|private|protected)\s+[\w<>\[\]]+\s+\w+\s*;"),
-        strip_line_comment: "//",
-        strip_block_comments: true,
-        strip_hash_comments: false,
-        cc_fn: calculate_cc_java,
-        count_local_vars_fn: count_local_vars,
-        skip_names: &[],
-    })
-}
-
-/// Basic Go parser (brace-based).
-///
-/// This parser cannot detect Go struct receiver methods. Use [`GoFullParser`]
-/// instead for full Go support including struct method counting.
-/// Marked `pub(crate)` because external callers should use [`GoFullParser`].
-pub(crate) fn go_parser() -> GenericParser {
-    GenericParser::new(ParserConfig {
-        name: "go",
-        extensions: &["go"],
-        func_regex: r"(?m)func\s+(?:\([^)]*\)\s*)?(\w+)\s*\(",
-        class_regex: Some(r"(?m)type\s+(\w+)\s+struct\s*\{"),
-        class_method_regex: None, // handled specially in GoFullParser
-        class_field_regex: None,
-        strip_line_comment: "//",
-        strip_block_comments: true,
-        strip_hash_comments: false,
-        cc_fn: calculate_cc,
-        count_local_vars_fn: count_local_vars,
-        skip_names: &[],
-    })
-}
-
-/// Rust parser (brace-based).
-pub fn rust_parser() -> GenericParser {
-    GenericParser::new(ParserConfig {
-        name: "rust",
-        extensions: &["rs"],
-        func_regex: r"(?m)(?:pub\s+)?(?:(?:async|unsafe|const)\s+)*fn\s+(\w+)\s*[\(<]",
-        class_regex: Some(r"(?m)impl\s+(?:<[^>]*>\s*)?(\w+)"),
-        class_method_regex: Some(r"(?m)(?:pub\s+)?(?:(?:async|unsafe|const)\s+)*fn\s+\w+"),
-        class_field_regex: None,
-        strip_line_comment: "//",
-        strip_block_comments: true,
-        strip_hash_comments: false,
-        cc_fn: calculate_cc_rust,
-        count_local_vars_fn: count_local_vars,
-        skip_names: &[],
-    })
-}
-
-/// C/C++ parser (brace-based).
-pub fn cpp_parser() -> GenericParser {
-    GenericParser::new(ParserConfig {
-        name: "cpp",
-        extensions: &["cpp", "cxx", "cc", "c", "hpp", "h"],
-        func_regex: r"(?m)(?:(?:static|inline|virtual|const|extern)\s+)*(?:[\w:*&<>,\s]+)\s+(\w+)\s*\(",
-        class_regex: Some(r"(?m)(?:class|struct)\s+(\w+)\s*(?::\s*[^\{]*)?\{"),
-        class_method_regex: Some(
-            r"(?m)(?:(?:public|private|protected|virtual|static)\s+)*[\w:*&<>,\s]+\s+\w+\s*\(",
-        ),
-        class_field_regex: Some(r"(?m)(?:public|private|protected)\s+[\w:*&<>,\s]+\s+\w+\s*;"),
-        strip_line_comment: "//",
-        strip_block_comments: true,
-        strip_hash_comments: false,
-        cc_fn: calculate_cc_cpp,
-        count_local_vars_fn: count_local_vars_cpp,
-        skip_names: &[
-            "if", "for", "while", "switch", "catch", "return", "class", "struct",
-        ],
-    })
-}
-
-/// C# parser (brace-based).
-pub fn csharp_parser() -> GenericParser {
-    GenericParser::new(ParserConfig {
-        name: "csharp",
-        extensions: &["cs"],
-        func_regex: r"(?m)(?:(?:public|private|protected|internal|static|virtual|override|async|abstract)\s+)+[\w<>\[\]?]+\s+(\w+)\s*\(",
-        class_regex: Some(
-            r"(?m)(?:(?:public|private|protected|internal|static|abstract|sealed)\s+)*(?:class|struct|record)\s+(\w+)",
-        ),
-        class_method_regex: Some(
-            r"(?m)(?:public|private|protected|internal)\s+[\w<>\[\]?]+\s+\w+\s*\(",
-        ),
-        class_field_regex: Some(
-            r"(?m)(?:public|private|protected|internal|readonly)\s+[\w<>\[\]?]+\s+\w+\s*[;=]",
-        ),
-        strip_line_comment: "//",
-        strip_block_comments: true,
-        strip_hash_comments: false,
-        cc_fn: calculate_cc_csharp,
-        count_local_vars_fn: count_local_vars_csharp,
-        skip_names: &["if", "for", "while", "switch", "catch", "using", "lock"],
-    })
-}
-
-/// Kotlin parser (brace-based).
-pub fn kotlin_parser() -> GenericParser {
-    GenericParser::new(ParserConfig {
-        name: "kotlin",
-        extensions: &["kt", "kts"],
-        func_regex: r"(?m)(?:(?:public|private|protected|internal|suspend|inline|open|override|abstract)\s+)*fun\s+(?:<[^>]*>\s*)?(\w+)\s*\(",
-        class_regex: Some(
-            r"(?m)(?:(?:public|private|protected|internal|open|abstract|sealed|data|inner)\s+)*class\s+(\w+)",
-        ),
-        class_method_regex: Some(r"(?m)fun\s+(?:<[^>]*>\s*)?\w+\s*\("),
-        class_field_regex: Some(r"(?:val|var)\s+\w+"),
-        strip_line_comment: "//",
-        strip_block_comments: true,
-        strip_hash_comments: false,
-        cc_fn: calculate_cc_kotlin,
-        count_local_vars_fn: count_local_vars_kotlin,
-        skip_names: &[],
-    })
-}
-
-/// PHP parser (brace-based).
-pub fn php_parser() -> GenericParser {
-    GenericParser::new(ParserConfig {
-        name: "php",
-        extensions: &["php"],
-        func_regex: r"(?m)function\s+(\w+)\s*\(",
-        class_regex: Some(r"(?m)(?:final\s+)?(?:abstract\s+)?class\s+(\w+)"),
-        class_method_regex: Some(r"(?m)(?:public|private|protected|static)\s+function\s+\w+"),
-        class_field_regex: Some(r"(?m)(?:public|private|protected|static)\s+(?:\$)\w+"),
-        strip_line_comment: "//",
-        strip_block_comments: true,
-        strip_hash_comments: true,
-        cc_fn: calculate_cc_php,
-        count_local_vars_fn: count_local_vars_php,
-        skip_names: &[],
-    })
-}
-
-// ===========================================================================
-// Go parser (special struct method counting)
-// ===========================================================================
-
-/// Extended Go parser that counts struct receiver methods across the full file.
-pub struct GoFullParser {
-    inner: GenericParser,
-}
-
-impl GoFullParser {
-    pub fn new() -> Self {
-        Self { inner: go_parser() }
-    }
-}
-
-impl Default for GoFullParser {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl CodeParser for GoFullParser {
-    fn parse_code(&self, code: &str, file_name: &str) -> Vec<SmellDetection> {
-        let cleaned = self.inner.strip_comments(code);
-        let mut detections: Vec<SmellDetection> = Vec::new();
-        let func_re = self.inner.get_func_re();
-
-        // --- Functions ---
-        for cap in func_re.captures_iter(&cleaned) {
-            let name = &cap[1];
-            let full = cap.get(0).unwrap();
-            let start = full.start();
-
-            let brace_pos = match cleaned[start..].find('{') {
-                Some(off) => start + off,
-                None => continue,
-            };
-            let end_pos = match find_matching_brace(&cleaned, brace_pos) {
-                Some(p) => p,
-                None => continue,
-            };
-
-            let body = &cleaned[start..=end_pos];
-            let sig = &cleaned[start..];
-            let metrics = build_func_metrics(body, sig, calculate_cc);
-
-            let location = format!("{}:{}", file_name, line_number(&cleaned, start));
-            detections.extend(detect_all(&metrics, &location, name));
-        }
-
-        // --- Structs (with receiver method counting) ---
-        let struct_re = cached_regex(r"(?m)type\s+(\w+)\s+struct\s*\{");
-        for cap in struct_re.captures_iter(&cleaned) {
-            let name = &cap[1];
-            let full = cap.get(0).unwrap();
-            let start = full.start();
-
-            let brace_pos = match cleaned[start..].find('{') {
-                Some(off) => start + off,
-                None => continue,
-            };
-            let end_pos = match find_matching_brace(&cleaned, brace_pos) {
-                Some(p) => p,
-                None => continue,
-            };
-
-            let body = &cleaned[start..=end_pos];
-            let field_count = body
-                .lines()
-                .filter(|l| {
-                    let t = l.trim();
-                    !t.is_empty() && t != "{" && t != "}" && !t.starts_with("//")
-                })
-                .count();
-
-            let method_re = cached_regex_owned(&format!(r"(?m)func\s+\([^)]*\s+\*?{name}\)\s+\w+"));
-            let method_count = method_re.find_iter(&cleaned).count();
-
-            let metrics = CodeMetrics {
-                loc: count_loc(body),
-                method_count,
-                field_count,
-                ..Default::default()
-            };
-
-            let location = format!("{}:{}", file_name, line_number(&cleaned, start));
-            detections.extend(detect_all(&metrics, &location, name));
-        }
-
-        detections
-    }
-
-    fn supported_extensions(&self) -> &[&str] {
-        &["go"]
     }
 }
 
@@ -1937,7 +1055,7 @@ export function bigFunc(a: number, b: number, c: number, d: number, e: number, f
     #[test]
     fn cc_ruby_counts_when() {
         let code = "def foo(x)\n  case x\n  when 'a'\n    1\n  when 'b'\n    2\n  end\nend";
-        let cc = calculate_cc_ruby(code);
+        let cc = ruby::calculate_cc_ruby(code);
         assert!(cc >= 3, "Ruby CC should count case + 2 when, got {cc}");
     }
 
