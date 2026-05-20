@@ -3,7 +3,7 @@ use std::sync::Mutex;
 
 use rusqlite::{Connection, params};
 
-use crate::domain::types::{CorrelationScore, Entity, GraphEdge, UserEntity};
+use crate::domain::types::{CorrelationScore, GraphEdge, UserEntity};
 use crate::ports::graph::MutableGraphRepository;
 
 // ---------------------------------------------------------------------------
@@ -125,52 +125,6 @@ fn init_schema(conn: &Connection) -> Result<(), String> {
 // ---------------------------------------------------------------------------
 // UserGraphStore
 // ---------------------------------------------------------------------------
-
-/// Convert a [`UserEntity`] to a canonical [`Entity`] for unified graph operations.
-///
-/// This function lives in the adapter layer because it uses `serde_json::json!`
-/// to construct the `source` metadata, keeping the domain free of direct
-/// `serde_json` usage.
-pub fn user_entity_to_entity(ue: &UserEntity) -> Entity {
-    Entity {
-        id: ue.id.clone(),
-        r#type: "insight".to_owned(),
-        title: ue.title.clone(),
-        description: ue.content.clone(),
-        name: ue.title.clone(),
-        category: String::new(),
-        tags: ue.tags.clone(),
-        relations: ue.relations.clone(),
-        context: {
-            let mut ctx = HashMap::new();
-            ctx.insert("author".to_owned(), vec![ue.author.clone()]);
-            ctx.insert(
-                "confidence".to_owned(),
-                vec![format!("{:.2}", ue.confidence)],
-            );
-            ctx.insert(
-                "evidence_count".to_owned(),
-                vec![ue.evidence_count.to_string()],
-            );
-            ctx.insert("last_validated".to_owned(), vec![ue.last_validated.clone()]);
-            if !ue.link_provenance.is_empty() {
-                let prov_entries: Vec<String> = ue
-                    .link_provenance
-                    .iter()
-                    .map(|(k, v)| format!("{}:source={},score={:.2}", k, v.source, v.score))
-                    .collect();
-                ctx.insert("link_provenance".to_owned(), prov_entries);
-            }
-            ctx
-        },
-        file_path: String::new(),
-        source: serde_json::json!({
-            "source": "user",
-            "confidence": ue.confidence,
-            "author": ue.author,
-        }),
-    }
-}
 
 pub struct UserGraphStore {
     conn: Mutex<Connection>,

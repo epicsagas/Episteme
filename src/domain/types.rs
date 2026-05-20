@@ -457,6 +457,50 @@ pub struct UserEntity {
     pub updated_at: String,
 }
 
+impl UserEntity {
+    /// Convert this user entity to a canonical [`Entity`] for unified graph operations.
+    pub fn to_entity(&self) -> Entity {
+        Entity {
+            id: self.id.clone(),
+            r#type: "insight".to_owned(),
+            title: self.title.clone(),
+            description: self.content.clone(),
+            name: self.title.clone(),
+            category: String::new(),
+            tags: self.tags.clone(),
+            relations: self.relations.clone(),
+            context: {
+                let mut ctx = HashMap::new();
+                ctx.insert("author".to_owned(), vec![self.author.clone()]);
+                ctx.insert(
+                    "confidence".to_owned(),
+                    vec![format!("{:.2}", self.confidence)],
+                );
+                ctx.insert(
+                    "evidence_count".to_owned(),
+                    vec![self.evidence_count.to_string()],
+                );
+                ctx.insert("last_validated".to_owned(), vec![self.last_validated.clone()]);
+                if !self.link_provenance.is_empty() {
+                    let prov_entries: Vec<String> = self
+                        .link_provenance
+                        .iter()
+                        .map(|(k, v)| format!("{}:source={},score={:.2}", k, v.source, v.score))
+                        .collect();
+                    ctx.insert("link_provenance".to_owned(), prov_entries);
+                }
+                ctx
+            },
+            file_path: String::new(),
+            source: serde_json::json!({
+                "source": "user",
+                "confidence": self.confidence,
+                "author": self.author,
+            }),
+        }
+    }
+}
+
 /// A link suggestion returned during insight creation.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InsightLink {

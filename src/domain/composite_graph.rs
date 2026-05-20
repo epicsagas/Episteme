@@ -1,6 +1,5 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
-use crate::adapters::user_graph_store::user_entity_to_entity;
 use crate::domain::graph::KnowledgeGraph;
 use crate::domain::types::*;
 use crate::ports::graph::{GraphRepository, MutableGraphRepository};
@@ -46,7 +45,7 @@ impl CompositeGraph {
     /// Add a user entity to both the in-memory cache and persistent store.
     pub fn add_user_entity(&mut self, entity: UserEntity) -> Result<(), String> {
         let id = entity.id.clone();
-        let converted = user_entity_to_entity(&entity);
+        let converted = entity.to_entity();
         self.user_store.add_entity(entity)?;
         self.rebuild_reverse_for(&id, &converted);
         self.user_entities.insert(id, converted);
@@ -55,7 +54,7 @@ impl CompositeGraph {
 
     /// Update a user entity.
     pub fn update_user_entity(&mut self, id: &str, entity: UserEntity) -> Result<(), String> {
-        let converted = user_entity_to_entity(&entity);
+        let converted = entity.to_entity();
         // Remove old reverse index entries
         self.remove_reverse_for(id);
         self.user_store.update_entity(id, entity)?;
@@ -101,7 +100,7 @@ impl CompositeGraph {
     fn load_user_entities(&mut self) {
         for ue in self.user_store.all_user_entities() {
             let id = ue.id.clone();
-            let entity = user_entity_to_entity(&ue);
+            let entity = ue.to_entity();
             self.rebuild_reverse_for(&id, &entity);
             self.user_entities.insert(id, entity);
         }
