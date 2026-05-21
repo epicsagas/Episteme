@@ -69,7 +69,7 @@
 **2. Seed data + wire up your AI tool**
 
 ```bash
-epis install claude    # or: cursor, codex, gemini
+epis install claude    # or: cursor, codex, antigravity
 ```
 
 **3. Verify**
@@ -289,7 +289,7 @@ sudo mv episteme /usr/local/bin/
 
 Then install:
 ```bash
-epis install claude    # or: cursor, codex, gemini
+epis install claude    # or: cursor, codex, antigravity
 ```
 
 ### Verify
