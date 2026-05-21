@@ -23,7 +23,7 @@ cargo install --git https://github.com/epicsagas/Episteme
 epis install claude      # Claude Code
 epis install cursor      # Cursor
 epis install codex       # OpenAI Codex
-epis install gemini      # Gemini CLI
+epis install gemini      # Antigravity
 epis install all         # सभी टूल एक साथ
 ```
 

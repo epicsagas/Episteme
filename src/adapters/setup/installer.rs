@@ -190,13 +190,13 @@ pub fn install_codex(dry_run: bool) -> Result<Vec<String>, String> {
     Ok(msgs)
 }
 
-/// Install MCP config for Gemini CLI (~/.gemini/mcp.json).
-pub fn install_gemini(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
+/// Install MCP config for Antigravity (~/.gemini/config/mcp_config.json).
+pub fn install_antigravity(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
     let home = dirs_home();
-    let gemini_dir = home.join(".gemini");
-    let mcp_json = gemini_dir.join("mcp.json");
+    let config_dir = home.join(".gemini").join("config");
+    let mcp_json = config_dir.join("mcp_config.json");
 
-    fs::create_dir_all(&gemini_dir).map_err(|e| e.to_string())?;
+    fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;
 
     let mut config = read_json_file(&mcp_json);
     let map = config.as_object_mut().ok_or("config is not an object")?;
@@ -215,30 +215,21 @@ pub fn install_gemini(dry_run: bool, transport: &Transport) -> Result<Vec<String
     let mut msgs = Vec::new();
 
     if matches && legacy_removed.is_empty() {
-        msgs.push("Gemini CLI: MCP already configured".to_owned());
+        msgs.push("Antigravity: MCP already configured".to_owned());
     } else {
         servers.insert("episteme".to_owned(), desired);
         if !dry_run {
             write_json_file(&mcp_json, &config)?;
         }
         let label = if existed { "updated" } else { "added" };
-        msgs.push(format!("Gemini CLI: MCP config {label}"));
+        msgs.push(format!("Antigravity: MCP config {label}"));
         if !legacy_removed.is_empty() {
             msgs.push(format!(
-                "Gemini CLI: removed legacy key(s): {}",
+                "Antigravity: removed legacy key(s): {}",
                 legacy_removed.join(", ")
             ));
         }
     }
-
-    // Seed registry artifacts (agents + skills) into ~/.gemini/
-    let registry_msgs = upsert_registry_artifacts(&gemini_dir, dry_run, "Gemini CLI")?;
-    msgs.extend(registry_msgs);
-
-    // Also seed skill content into ~/.gemini/GEMINI.md for legacy compatibility
-    let gemini_md = gemini_dir.join("GEMINI.md");
-    let skill_msgs = upsert_skill_to_file(&gemini_md, dry_run, "Gemini CLI")?;
-    msgs.extend(skill_msgs);
 
     Ok(msgs)
 }
@@ -516,7 +507,7 @@ pub fn install_all(dry_run: bool, transport: &Transport) -> Result<Vec<String>, 
         install_claude(dry_run, transport),
         install_cursor(dry_run, transport),
         install_codex(dry_run),
-        install_gemini(dry_run, transport),
+        install_antigravity(dry_run, transport),
         install_opencode(dry_run, transport),
         install_cline(dry_run, transport),
     ] {
