@@ -57,10 +57,17 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     use episteme::adapters::installer::Transport;
 
     let mut selected: Vec<String> = if all || tools.iter().any(|t| t == "all") {
-        vec!["claude", "cursor", "codex", "antigravity", "opencode", "cline"]
-            .into_iter()
-            .map(|s| s.to_owned())
-            .collect()
+        vec![
+            "claude",
+            "cursor",
+            "codex",
+            "antigravity",
+            "opencode",
+            "cline",
+        ]
+        .into_iter()
+        .map(|s| s.to_owned())
+        .collect()
     } else if tools.is_empty() && io::stdin().is_terminal() {
         let installed: Vec<&str> = detect_installed_tools().into_iter().collect();
         let selected =
@@ -419,6 +426,48 @@ fn upsert_server_config_yaml(host: &str, port: u16, token: Option<&str>) -> Resu
     Ok(())
 }
 
+const TOKEN_MARKER_BEGIN: &str = "# >>> episteme-token >>>";
+const TOKEN_MARKER_END: &str = "# <<< episteme-token <<<";
+
+fn seed_token_to_shell_rc(token: &str) -> Result<()> {
+    let home = std::env::var("HOME").unwrap_or_default();
+    let export_line = format!(r#"export EPISTEME_MCP_TOKEN="{token}""#);
+    let block = format!("{TOKEN_MARKER_BEGIN}\n{export_line}\n{TOKEN_MARKER_END}\n");
+
+    let rc_files = [".zshrc", ".bashrc", ".bash_profile", ".profile"];
+    for rc_name in &rc_files {
+        let rc_path = PathBuf::from(&home).join(rc_name);
+        if !rc_path.exists() {
+            continue;
+        }
+        let content = std::fs::read_to_string(&rc_path)?;
+
+        if content.contains(TOKEN_MARKER_BEGIN) {
+            // Replace existing block
+            let start = content.find(TOKEN_MARKER_BEGIN).unwrap();
+            let end = content.find(TOKEN_MARKER_END).unwrap() + TOKEN_MARKER_END.len();
+            let new_content = format!(
+                "{}{}{}",
+                &content[..start],
+                block.trim_end(),
+                &content[end..]
+            );
+            if new_content != content {
+                std::fs::write(&rc_path, new_content)?;
+                println!("  Updated EPISTEME_MCP_TOKEN in ~/{rc_name}");
+            }
+        } else {
+            // Append new block
+            let new_content = format!("{}\n{}", content.trim_end(), block,);
+            std::fs::write(&rc_path, new_content)?;
+            println!("  Added EPISTEME_MCP_TOKEN to ~/{rc_name}");
+        }
+        // Only update the first matching rc file
+        break;
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -463,46 +512,4 @@ mod tests {
         // 여기서는 단순히 컴파일되고 패닉 없이 실행되면 통과
         let _ = selected;
     }
-}
-
-const TOKEN_MARKER_BEGIN: &str = "# >>> episteme-token >>>";
-const TOKEN_MARKER_END: &str = "# <<< episteme-token <<<";
-
-fn seed_token_to_shell_rc(token: &str) -> Result<()> {
-    let home = std::env::var("HOME").unwrap_or_default();
-    let export_line = format!(r#"export EPISTEME_MCP_TOKEN="{token}""#);
-    let block = format!("{TOKEN_MARKER_BEGIN}\n{export_line}\n{TOKEN_MARKER_END}\n");
-
-    let rc_files = [".zshrc", ".bashrc", ".bash_profile", ".profile"];
-    for rc_name in &rc_files {
-        let rc_path = PathBuf::from(&home).join(rc_name);
-        if !rc_path.exists() {
-            continue;
-        }
-        let content = std::fs::read_to_string(&rc_path)?;
-
-        if content.contains(TOKEN_MARKER_BEGIN) {
-            // Replace existing block
-            let start = content.find(TOKEN_MARKER_BEGIN).unwrap();
-            let end = content.find(TOKEN_MARKER_END).unwrap() + TOKEN_MARKER_END.len();
-            let new_content = format!(
-                "{}{}{}",
-                &content[..start],
-                block.trim_end(),
-                &content[end..]
-            );
-            if new_content != content {
-                std::fs::write(&rc_path, new_content)?;
-                println!("  Updated EPISTEME_MCP_TOKEN in ~/{rc_name}");
-            }
-        } else {
-            // Append new block
-            let new_content = format!("{}\n{}", content.trim_end(), block,);
-            std::fs::write(&rc_path, new_content)?;
-            println!("  Added EPISTEME_MCP_TOKEN to ~/{rc_name}");
-        }
-        // Only update the first matching rc file
-        break;
-    }
-    Ok(())
 }
