@@ -1,0 +1,23 @@
+{
+  "name": "episteme",
+  "version": "0.2.2",
+  "description": "Software engineering knowledge graph — design patterns, laws, refactorings, and code smells with graph traversal and AI-powered code analysis.",
+  "author": {
+    "name": "epicsagas",
+    "url": "https://github.com/epicsagas"
+  },
+  "homepage": "https://github.com/epicsagas/Episteme",
+  "repository": "https://github.com/epicsagas/Episteme",
+  "license": "Apache-2.0",
+  "keywords": [
+    "knowledge-graph",
+    "design-patterns",
+    "code-smells",
+    "refactoring",
+    "architecture",
+    "mcp"
+  ],
+  "skills": "./registry/skills/",
+  "hooks": "./.claude-plugin/hooks.json",
+  "mcpServers": "./registry/mcp.json"
+}

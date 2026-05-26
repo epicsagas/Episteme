@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/registry/scripts/install.js\"",
+            "async": false
+          }
+        ],
+        "description": "Install episteme binary if missing (cross-platform), register MCP server"
+      }
+    ]
+  }
+}

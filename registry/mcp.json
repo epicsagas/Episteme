@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "episteme": {
+      "command": "episteme",
+      "args": ["mcp"],
+      "env": {}
+    }
+  }
+}
