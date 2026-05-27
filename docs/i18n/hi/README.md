@@ -58,7 +58,7 @@
 **2. डेटा सीड करें + अपने AI टूल को कनेक्ट करें**
 
 ```bash
-epis install claude    # या: cursor, codex, gemini
+epis install cursor
 ```
 
 **3. सत्यापित करें**
@@ -195,12 +195,12 @@ Episteme पूरी तरह से ऑफलाइन चलता है: �
 
 ```bash
 cargo binstall episteme    # प्री-बिल्ट बाइनरी डाउनलोड करता है — संकलन की आवश्यकता नहीं
-epis install claude        # डेटा सीड करता है + MCP कनेक्ट करता है + एजेंट्स इंस्टॉल करता है
+epis install cursor        # डेटा सीड करता है + MCP कनेक्ट करता है + एजेंट्स इंस्टॉल करता है
 ```
 
 यदि cargo-binstall नहीं है: `cargo install cargo-binstall`
 
-> `epis install claude` के बाद, MCP टूल्स और एजेंट्स के दिखने के लिए **Claude Code को पुनः आरंभ करें**।
+> `epis install cursor` के बाद, MCP टूल्स और एजेंट्स के दिखने के लिए **Claude Code को पुनः आरंभ करें**।
 
 ### विकल्प 2: सोर्स से
 
@@ -213,8 +213,8 @@ cd Episteme && cargo build --release
 
 | प्लेटफ़ॉर्म | कमांड |
 |----------|---------|
-| **macOS / Linux** | `./target/release/epis install --local claude` |
-| **Windows** | `.\target\release\episteme.exe install --local claude` |
+| **macOS / Linux** | `./target/release/epis install --local cursor` |
+| **Windows** | `.\target\release\episteme.exe install --local cursor` |
 
 ### विकल्प 3: Docker (Rust की आवश्यकता नहीं)
 
@@ -263,7 +263,7 @@ sudo mv episteme /usr/local/bin/
 
 फिर इंस्टॉल करें:
 ```bash
-epis install claude    # या: cursor, codex, gemini
+epis install cursor
 ```
 
 ### सत्यापित करें

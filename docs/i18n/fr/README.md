@@ -60,7 +60,7 @@
 **2. Initialiser les donnees + connecter votre outil IA**
 
 ```bash
-epis install claude    # ou : cursor, codex, gemini
+epis install cursor
 ```
 
 **3. Verifier**
@@ -197,12 +197,12 @@ Episteme fonctionne entierement hors-ligne : binaire unique, base de donnees SQL
 
 ```bash
 cargo binstall episteme    # telecharge les binaires precompiles — pas de compilation
-epis install claude        # initialise les donnees + connecte MCP + installe les agents
+epis install cursor        # initialise les donnees + connecte MCP + installe les agents
 ```
 
 Si cargo-binstall n'est pas installe : `cargo install cargo-binstall`
 
-> Apres `epis install claude`, **redemarrez Claude Code** pour que les outils MCP et les agents apparaissent.
+> Apres `epis install cursor`, **redemarrez Claude Code** pour que les outils MCP et les agents apparaissent.
 
 ### Option 2 : A partir des sources
 
@@ -215,8 +215,8 @@ Puis executez le binaire pour votre plateforme :
 
 | Plateforme | Commande |
 |------------|----------|
-| **macOS / Linux** | `./target/release/epis install --local claude` |
-| **Windows** | `.\target\release\episteme.exe install --local claude` |
+| **macOS / Linux** | `./target/release/epis install --local cursor` |
+| **Windows** | `.\target\release\episteme.exe install --local cursor` |
 
 ### Option 3 : Docker (Rust non requis)
 
@@ -265,7 +265,7 @@ sudo mv episteme /usr/local/bin/
 
 Puis installez :
 ```bash
-epis install claude    # ou : cursor, codex, gemini
+epis install cursor
 ```
 
 ### Verifier

@@ -58,7 +58,7 @@
 **2. データのシード + AIツールの設定**
 
 ```bash
-epis install claude    # または: cursor, codex, gemini
+epis install cursor
 ```
 
 **3. 動作確認**
@@ -195,12 +195,12 @@ Epistemeは完全にオフラインで動作します：単一バイナリ、ロ
 
 ```bash
 cargo binstall episteme    # ビルド済みバイナリをダウンロード — コンパイル不要
-epis install claude        # データのシード + MCPの設定 + エージェントのインストール
+epis install cursor        # データのシード + MCPの設定 + エージェントのインストール
 ```
 
 cargo-binstallがない場合: `cargo install cargo-binstall`
 
-> `epis install claude`の後、MCPツールとエージェントを表示するには**Claude Codeを再起動**してください。
+> `epis install cursor`の後、MCPツールとエージェントを表示するには**Claude Codeを再起動**してください。
 
 ### 方法2：ソースからビルド
 
@@ -213,8 +213,8 @@ cd Episteme && cargo build --release
 
 | プラットフォーム | コマンド |
 |----------|---------|
-| **macOS / Linux** | `./target/release/epis install --local claude` |
-| **Windows** | `.\target\release\episteme.exe install --local claude` |
+| **macOS / Linux** | `./target/release/epis install --local cursor` |
+| **Windows** | `.\target\release\episteme.exe install --local cursor` |
 
 ### 方法3：Docker（Rust不要）
 
@@ -263,7 +263,7 @@ sudo mv episteme /usr/local/bin/
 
 その後、インストールを実行：
 ```bash
-epis install claude    # または: cursor, codex, gemini
+epis install cursor
 ```
 
 ### 動作確認

@@ -190,50 +190,6 @@ pub fn install_codex(dry_run: bool) -> Result<Vec<String>, String> {
     Ok(msgs)
 }
 
-/// Install MCP config for Antigravity (~/.gemini/config/mcp_config.json).
-pub fn install_antigravity(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
-    let home = dirs_home();
-    let config_dir = home.join(".gemini").join("config");
-    let mcp_json = config_dir.join("mcp_config.json");
-
-    fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;
-
-    let mut config = read_json_file(&mcp_json);
-    let map = config.as_object_mut().ok_or("config is not an object")?;
-
-    let servers = map
-        .entry("mcpServers")
-        .or_insert_with(|| json!({}))
-        .as_object_mut()
-        .ok_or("mcpServers is not an object")?;
-
-    let desired = mcp_server_config(transport);
-    let existed = servers.contains_key("episteme");
-    let matches = servers.get("episteme") == Some(&desired);
-    let legacy_removed = remove_legacy_keys(servers);
-
-    let mut msgs = Vec::new();
-
-    if matches && legacy_removed.is_empty() {
-        msgs.push("Antigravity: MCP already configured".to_owned());
-    } else {
-        servers.insert("episteme".to_owned(), desired);
-        if !dry_run {
-            write_json_file(&mcp_json, &config)?;
-        }
-        let label = if existed { "updated" } else { "added" };
-        msgs.push(format!("Antigravity: MCP config {label}"));
-        if !legacy_removed.is_empty() {
-            msgs.push(format!(
-                "Antigravity: removed legacy key(s): {}",
-                legacy_removed.join(", ")
-            ));
-        }
-    }
-
-    Ok(msgs)
-}
-
 /// Install MCP config for OpenCode (~/.config/opencode/opencode.json).
 pub fn install_opencode(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
     let home = dirs_home();
@@ -507,7 +463,6 @@ pub fn install_all(dry_run: bool, transport: &Transport) -> Result<Vec<String>, 
         install_claude(dry_run, transport),
         install_cursor(dry_run, transport),
         install_codex(dry_run),
-        install_antigravity(dry_run, transport),
         install_opencode(dry_run, transport),
         install_cline(dry_run, transport),
     ] {

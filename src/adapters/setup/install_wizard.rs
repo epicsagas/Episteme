@@ -157,7 +157,6 @@ const TOOLS: &[(&str, &str)] = &[
     ("claude", "Claude Code (CLI + IDE)"),
     ("cursor", "Cursor (IDE)"),
     ("codex", "OpenAI Codex CLI"),
-    ("antigravity", "Google Antigravity"),
     ("opencode", "OpenCode"),
     ("cline", "Cline (VS Code)"),
 ];

@@ -61,7 +61,6 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
             "claude",
             "cursor",
             "codex",
-            "antigravity",
             "opencode",
             "cline",
         ]
@@ -142,7 +141,6 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
             "claude" => installer::install_claude(dry_run, &transport),
             "cursor" => installer::install_cursor(dry_run, &transport),
             "codex" => installer::install_codex(dry_run),
-            "antigravity" => installer::install_antigravity(dry_run, &transport),
             "opencode" => installer::install_opencode(dry_run, &transport),
             "cline" => installer::install_cline(dry_run, &transport),
             _ => Err(format!("Unknown tool: {tool}")),
@@ -290,16 +288,6 @@ pub fn detect_installed_tools() -> std::collections::HashSet<&'static str> {
         "episteme",
     ) {
         installed.insert("cursor");
-    }
-    if has_json_path(
-        &PathBuf::from(&home)
-            .join(".gemini")
-            .join("config")
-            .join("mcp_config.json"),
-        "mcpServers",
-        "episteme",
-    ) {
-        installed.insert("antigravity");
     }
     if has_json_path(
         &PathBuf::from(&home)

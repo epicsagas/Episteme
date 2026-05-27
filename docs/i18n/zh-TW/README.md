@@ -60,7 +60,7 @@
 **2. 載入資料 + 設定你的 AI 工具**
 
 ```bash
-epis install claude    # 或：cursor、codex、gemini
+epis install cursor
 ```
 
 **3. 驗證安裝**
@@ -197,12 +197,12 @@ Episteme 完全離線運作：單一二進位檔、本機 SQLite 資料庫、透
 
 ```bash
 cargo binstall episteme    # 下載預建二進位檔 — 無需編譯
-epis install claude        # 載入資料 + 設定 MCP + 安裝代理
+epis install cursor        # 載入資料 + 設定 MCP + 安裝代理
 ```
 
 如果沒有 cargo-binstall：`cargo install cargo-binstall`
 
-> 執行 `epis install claude` 後，**重新啟動 Claude Code**，MCP 工具和代理才會出現。
+> 執行 `epis install cursor` 後，**重新啟動 Claude Code**，MCP 工具和代理才會出現。
 
 ### 選項 2：從原始碼建置
 
@@ -215,8 +215,8 @@ cd Episteme && cargo build --release
 
 | 平台 | 指令 |
 |------|------|
-| **macOS / Linux** | `./target/release/epis install --local claude` |
-| **Windows** | `.\target\release\episteme.exe install --local claude` |
+| **macOS / Linux** | `./target/release/epis install --local cursor` |
+| **Windows** | `.\target\release\episteme.exe install --local cursor` |
 
 ### 選項 3：Docker（無需 Rust）
 
@@ -265,7 +265,7 @@ sudo mv episteme /usr/local/bin/
 
 然後安裝：
 ```bash
-epis install claude    # 或：cursor、codex、gemini
+epis install cursor
 ```
 
 ### 驗證安裝

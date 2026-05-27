@@ -58,7 +58,7 @@
 **2. 데이터 시딩 + AI 도구 연결**
 
 ```bash
-epis install claude    # 또는: cursor, codex, gemini
+epis install cursor
 ```
 
 **3. 확인**
@@ -195,12 +195,12 @@ Episteme는 완전히 오프라인으로 실행됩니다: 단일 바이너리, �
 
 ```bash
 cargo binstall episteme    # 사전 빌드된 바이너리 다운로드 — 컴파일 불필요
-epis install claude        # 데이터 시딩 + MCP 설정 + 에이전트 설치
+epis install cursor        # 데이터 시딩 + MCP 설정 + 에이전트 설치
 ```
 
 cargo-binstall이 없다면: `cargo install cargo-binstall`
 
-> `epis install claude` 실행 후, MCP 도구와 에이전트가 나타나도록 **Claude Code를 재시작**하세요.
+> `epis install cursor` 실행 후, MCP 도구와 에이전트가 나타나도록 **Claude Code를 재시작**하세요.
 
 ### 옵션 2: 소스에서 빌드
 
@@ -213,8 +213,8 @@ cd Episteme && cargo build --release
 
 | 플랫폼 | 명령어 |
 |----------|---------|
-| **macOS / Linux** | `./target/release/epis install --local claude` |
-| **Windows** | `.\target\release\episteme.exe install --local claude` |
+| **macOS / Linux** | `./target/release/epis install --local cursor` |
+| **Windows** | `.\target\release\episteme.exe install --local cursor` |
 
 ### 옵션 3: Docker (Rust 불필요)
 
@@ -263,7 +263,7 @@ sudo mv episteme /usr/local/bin/
 
 그런 다음 설치합니다:
 ```bash
-epis install claude    # 또는: cursor, codex, gemini
+epis install cursor
 ```
 
 ### 확인

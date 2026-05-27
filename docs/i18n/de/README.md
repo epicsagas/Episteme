@@ -60,7 +60,7 @@
 **2. Daten laden + KI-Werkzeug verknuepfen**
 
 ```bash
-epis install claude    # oder: cursor, codex, gemini
+epis install cursor
 ```
 
 **3. Ueberpruefen**
@@ -197,12 +197,12 @@ Episteme laeuft vollstaendig offline: einzelnes Binary, lokale SQLite-Datenbank,
 
 ```bash
 cargo binstall episteme    # laedt vorgefertigtes Binary — keine Kompilierung
-epis install claude        # laedt Daten + verknuepft MCP + installiert Agenten
+epis install cursor        # laedt Daten + verknuepft MCP + installiert Agenten
 ```
 
 Falls cargo-binstall fehlt: `cargo install cargo-binstall`
 
-> Starten Sie nach `epis install claude` **Claude Code neu**, damit die MCP-Werkzeuge und Agenten erscheinen.
+> Starten Sie nach `epis install cursor` **Claude Code neu**, damit die MCP-Werkzeuge und Agenten erscheinen.
 
 ### Option 2: Aus dem Quellcode
 
@@ -215,8 +215,8 @@ Fuehren Sie dann das Binary fuer Ihre Plattform aus:
 
 | Plattform | Befehl |
 |----------|---------|
-| **macOS / Linux** | `./target/release/epis install --local claude` |
-| **Windows** | `.\target\release\episteme.exe install --local claude` |
+| **macOS / Linux** | `./target/release/epis install --local cursor` |
+| **Windows** | `.\target\release\episteme.exe install --local cursor` |
 
 ### Option 3: Docker (Kein Rust erforderlich)
 
@@ -265,7 +265,7 @@ sudo mv episteme /usr/local/bin/
 
 Dann installieren:
 ```bash
-epis install claude    # oder: cursor, codex, gemini
+epis install cursor
 ```
 
 ### Ueberpruefen

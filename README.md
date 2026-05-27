@@ -69,7 +69,7 @@
 **2. Seed data + wire up your AI tool**
 
 ```bash
-epis install claude    # or: cursor, codex, antigravity
+epis install cursor
 ```
 
 **3. Verify**
@@ -206,12 +206,12 @@ Episteme runs entirely offline: single binary, local SQLite database, local embe
 
 ```bash
 cargo binstall episteme    # downloads pre-built binary — no compilation
-epis install claude        # seeds data + wires up MCP + installs agents
+epis install cursor        # seeds data + wires up MCP + installs agents
 ```
 
 If you don't have cargo-binstall yet: `cargo install cargo-binstall`
 
-> After `epis install claude`, **restart Claude Code** for the MCP tools and agents to appear.
+> After `epis install`, **restart your editor** for the MCP tools and agents to appear.
 
 ### Option 2: From Source
 
@@ -224,8 +224,8 @@ Then run the binary for your platform:
 
 | Platform | Command |
 |----------|---------|
-| **macOS / Linux** | `./target/release/epis install --local claude` |
-| **Windows** | `.\target\release\episteme.exe install --local claude` |
+| **macOS / Linux** | `./target/release/epis install --local cursor` |
+| **Windows** | `.\target\release\episteme.exe install --local cursor` |
 
 ### Option 3: Docker (No Rust Required)
 
@@ -289,7 +289,7 @@ sudo mv episteme /usr/local/bin/
 
 Then install:
 ```bash
-epis install claude    # or: cursor, codex, antigravity
+epis install cursor
 ```
 
 ### Verify
