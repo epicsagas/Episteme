@@ -4,7 +4,7 @@ use regex::Regex;
 use std::sync::OnceLock;
 
 use crate::domain::detectors::detect_all;
-use crate::domain::metrics::{CodeMetrics, SmellDetection};
+use crate::domain::metrics::{CodeMetrics, ItemType, SmellDetection};
 use crate::ports::parser::CodeParser;
 
 use super::{
@@ -184,6 +184,7 @@ impl CodeParser for GenericParser {
                     loc: count_loc(body),
                     method_count,
                     field_count,
+                    item_type: ItemType::Class,
                     ..Default::default()
                 };
 
@@ -250,9 +251,9 @@ pub fn rust_parser() -> GenericParser {
         name: "rust",
         extensions: &["rs"],
         func_regex: r"(?m)(?:pub\s+)?(?:(?:async|unsafe|const)\s+)*fn\s+(\w+)\s*[\(<]",
-        class_regex: Some(r"(?m)impl\s+(?:<[^>]*>\s*)?(\w+)"),
+        class_regex: Some(r"(?m)(?:impl\s+(?:<[^>]*>\s*)?|struct\s+)(\w+)"),
         class_method_regex: Some(r"(?m)(?:pub\s+)?(?:(?:async|unsafe|const)\s+)*fn\s+\w+"),
-        class_field_regex: None,
+        class_field_regex: Some(r"(?m)pub\s+\w+:\s+"),
         strip_line_comment: "//",
         strip_block_comments: true,
         strip_hash_comments: false,

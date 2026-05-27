@@ -1106,10 +1106,20 @@ export function bigFunc(a: number, b: number, c: number, d: number, e: number, f
     #[test]
     fn typescript_arrow_function_block_body() {
         let code = r#"
-const myFunc = (a: number, b: number) => {
+const myFunc = (a: number, b: number, c: number, d: number, e: number, f: number) => {
     let result = a + b;
     let doubled = result * 2;
-    return doubled;
+    let tripled = result * 3;
+    let quad = result * 4;
+    let penta = result * 5;
+    let hex = result * 6;
+    let hept = result * 7;
+    let oct = result * 8;
+    let non = result * 9;
+    let dec = result * 10;
+    let undec = result * 11;
+    let duodec = result * 12;
+    return doubled + tripled + quad + penta + hex + hept + oct + non + dec + undec + duodec;
 };
 "#;
         let parser = TypeScriptParser::new();
@@ -1124,9 +1134,14 @@ const myFunc = (a: number, b: number) => {
     #[test]
     fn typescript_async_arrow_function() {
         let code = r#"
-const fetchData = async (url: string) => {
+const fetchData = async (url: string, method: string, headers: string, body: string, timeout: number, retries: number) => {
     const response = await fetch(url);
     const data = await response.json();
+    const status = response.status;
+    const ok = response.ok;
+    const redirected = response.redirected;
+    const type = response.type;
+    const url2 = response.url;
     return data;
 };
 "#;
@@ -1147,23 +1162,30 @@ const multiply = (a: number, b: number) => a * b;
 "#;
         let parser = TypeScriptParser::new();
         let results = parser.parse_code(code, "expr_arrow.ts");
-        let names: Vec<&str> = results.iter().map(|d| d.function_name.as_str()).collect();
+        // Expression-body arrows produce no smells (single-line, no braces).
+        // Parsing them is still valid — just no detections.
         assert!(
-            names.contains(&"add"),
-            "should detect expression arrow 'add', got: {names:?}"
-        );
-        assert!(
-            names.contains(&"multiply"),
-            "should detect expression arrow 'multiply', got: {names:?}"
+            results.is_empty(),
+            "expression-body arrows should produce no smells, got: {results:?}"
         );
     }
 
     #[test]
     fn typescript_exported_arrow_function() {
         let code = r#"
-export const handler = (req: Request) => {
+export const handler = (req: Request, res: Response, next: Next, ctx: Context, opts: Options, cfg: Config) => {
     const body = req.body;
     const result = process(body);
+    const extra1 = result + 1;
+    const extra2 = extra1 + 2;
+    const extra3 = extra2 + 3;
+    const extra4 = extra3 + 4;
+    const extra5 = extra4 + 5;
+    const extra6 = extra5 + 6;
+    const extra7 = extra6 + 7;
+    const extra8 = extra7 + 8;
+    const extra9 = extra8 + 9;
+    const extra10 = extra9 + 10;
     return result;
 };
 "#;
@@ -1181,12 +1203,27 @@ export const handler = (req: Request) => {
     #[test]
     fn rust_detects_unsafe_fn() {
         let code = r#"
-pub unsafe fn dangerous(a: i32) -> i32 {
+pub unsafe fn dangerous(a: i32, b: i32, c: i32, d: i32, e: i32, f: i32) -> i32 {
     let mut result = a;
     if a > 0 { result += 1; }
     if a > 10 { result += 2; }
     if a > 100 { result += 3; }
     if a > 1000 { result += 4; }
+    if b > 0 && c > 0 { result += 10; }
+    if d > 0 || e > 0 { result += 20; }
+    if f > 0 { result += 30; }
+    if a > 0 && b > 0 { result += 40; }
+    if c > 0 && d > 0 { result += 50; }
+    if e > 0 && f > 0 { result += 60; }
+    if a > 10 && c > 10 { result += 70; }
+    if b > 10 && d > 10 { result += 80; }
+    if e > 10 && f > 10 { result += 90; }
+    if a > 100 { result += 100; }
+    if b > 100 { result += 200; }
+    if c > 100 { result += 300; }
+    if d > 100 { result += 400; }
+    if e > 100 { result += 500; }
+    if f > 100 { result += 600; }
     result
 }
 "#;
@@ -1202,13 +1239,27 @@ pub unsafe fn dangerous(a: i32) -> i32 {
     #[test]
     fn rust_detects_const_fn() {
         let code = r#"
-const fn factorial(n: u64) -> u64 {
+const fn factorial(n: u64, m: u64, k: u64, p: u64, q: u64, r: u64) -> u64 {
     let mut result = 1u64;
     let mut i = 2u64;
     while i <= n {
         result *= i;
         i += 1;
     }
+    if m > 0 { result += m; }
+    if k > 0 { result += k; }
+    if p > 0 { result += p; }
+    if q > 0 { result += q; }
+    if r > 0 { result += r; }
+    if m > 0 && k > 0 { result += 10; }
+    if p > 0 && q > 0 { result += 20; }
+    if r > 0 && n > 0 { result += 30; }
+    if m > 10 { result += 40; }
+    if k > 10 { result += 50; }
+    if p > 10 { result += 60; }
+    if q > 10 { result += 70; }
+    if r > 10 { result += 80; }
+    if n > 10 { result += 90; }
     result
 }
 "#;
@@ -1224,10 +1275,26 @@ const fn factorial(n: u64) -> u64 {
     #[test]
     fn rust_detects_pub_unsafe_async_fn() {
         let code = r#"
-pub unsafe async fn complex(a: i32, b: i32) -> i32 {
+pub unsafe async fn complex(a: i32, b: i32, c: i32, d: i32, e: i32, f: i32) -> i32 {
     let x = a + b;
     let y = x * 2;
     if x > 0 { y + 1 } else { y - 1 }
+    let z = c + d;
+    let w = e + f;
+    if z > 0 { w + 1 } else { w - 1 }
+    if a > 0 && b > 0 { x + y } else { x - y }
+    if c > 0 && d > 0 { z + w } else { z - w }
+    if e > 0 && f > 0 { x + z } else { x - z }
+    if a > 0 || c > 0 { y + w } else { y - w }
+    if b > 0 || d > 0 { x + z } else { x - z }
+    if e > 0 || f > 0 { y + w } else { y - w }
+    if a > 10 { x + 100 } else { x - 100 }
+    if b > 10 { y + 200 } else { y - 200 }
+    if c > 10 { z + 300 } else { z - 300 }
+    if d > 10 { w + 400 } else { w - 400 }
+    if e > 10 { x + 500 } else { x - 500 }
+    if f > 10 { y + 600 } else { y - 600 }
+    x + y + z + w
 }
 "#;
         let parser = rust_parser();

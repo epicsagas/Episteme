@@ -1,5 +1,5 @@
 use crate::domain::detectors::detect_all;
-use crate::domain::metrics::{CodeMetrics, SmellDetection};
+use crate::domain::metrics::{CodeMetrics, ItemType, SmellDetection};
 use crate::ports::parser::CodeParser;
 use rustpython_parser::Parse;
 use rustpython_parser::ast::{self, Ranged};
@@ -137,6 +137,7 @@ fn detect_class_metrics(c: &ast::StmtClassDef, code: &str, file_name: &str) -> V
         loc: range_len_lines(code, c.range()),
         method_count,
         field_count,
+        item_type: ItemType::Class,
         ..Default::default()
     };
     let line = line_number_at_offset(code, c.range().start().to_usize());

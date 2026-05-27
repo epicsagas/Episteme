@@ -1,5 +1,13 @@
 use serde::{Deserialize, Serialize};
 
+/// Whether a parsed item is a function or a class/struct/impl block.
+#[derive(Default, Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum ItemType {
+    #[default]
+    Function,
+    Class,
+}
+
 /// Code metrics for a function or class.
 ///
 /// Ported from `episteme.parsers.base.CodeMetrics`.
@@ -33,6 +41,9 @@ pub struct CodeMetrics {
     /// Number of methods that override parent methods with empty or trivial bodies.
     #[serde(default)]
     pub override_count: usize,
+    /// Whether this item is a function or class/struct/impl block.
+    #[serde(default)]
+    pub item_type: ItemType,
 }
 
 impl Default for CodeMetrics {
@@ -54,6 +65,7 @@ impl Default for CodeMetrics {
             ast_hash: String::new(),
             comment_count: 0,
             override_count: 0,
+            item_type: ItemType::Function,
         }
     }
 }

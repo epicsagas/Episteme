@@ -1,7 +1,7 @@
 //! Ruby parser — end-block-based body extraction.
 
 use crate::domain::detectors::detect_all;
-use crate::domain::metrics::{CodeMetrics, SmellDetection};
+use crate::domain::metrics::{CodeMetrics, ItemType, SmellDetection};
 use crate::ports::parser::CodeParser;
 
 use super::{
@@ -86,6 +86,7 @@ impl CodeParser for RubyParser {
                 loc: count_python_loc(body),
                 method_count,
                 field_count,
+                item_type: ItemType::Class,
                 ..Default::default()
             };
 

@@ -23,7 +23,7 @@
 //! SMELL-19 (Inappropriate Intimacy),
 //! SMELL-23 (Alternative Classes with Different Interfaces)
 
-use crate::domain::metrics::{CodeMetrics, SmellDetection};
+use crate::domain::metrics::{CodeMetrics, ItemType, SmellDetection};
 
 // -- Shared helpers ---------------------------------------------------------
 
@@ -1065,24 +1065,24 @@ pub fn detect_class_smells(
     .collect()
 }
 
-/// Run every detector against the given metrics and return all non-None hits.
+/// Run appropriate detectors based on `metrics.item_type`.
+///
+/// - `Function` items: function-level smells + data clumps + comments.
+/// - `Class` items: class-level smells + data clumps + comments.
+///
+/// External-parameter detectors (SMELL-09, -12, -13) require project-wide
+/// data not available at the per-item level. Callers with real data should
+/// invoke `detect_shotgun_surgery`, `detect_speculative_generality`, and
+/// `detect_duplicate_code` directly.
 pub fn detect_all(metrics: &CodeMetrics, location: &str, name: &str) -> Vec<SmellDetection> {
-    let mut r = detect_function_smells(metrics, location, name);
-    r.extend(detect_class_smells(metrics, location, name));
+    let mut r = match metrics.item_type {
+        ItemType::Function => detect_function_smells(metrics, location, name),
+        ItemType::Class => detect_class_smells(metrics, location, name),
+    };
     r.extend(
         [
             detect_data_clumps(metrics, location, name),
             detect_comments(metrics, location, name),
-            detect_parallel_inheritance(metrics, location, name),
-            detect_dead_code(metrics, location, name),
-            detect_inappropriate_intimacy(metrics, location, name),
-            detect_alternative_classes(metrics, location, name),
-            // External-parameter detectors: called with zero values so they
-            // always return None.  Callers with real data should invoke these
-            // directly rather than via detect_all().
-            detect_shotgun_surgery(metrics, location, name, 0),
-            detect_speculative_generality(metrics, location, name, 0, 0),
-            detect_duplicate_code(metrics, location, name, None),
         ]
         .into_iter()
         .flatten(),
