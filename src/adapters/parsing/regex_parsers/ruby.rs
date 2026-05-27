@@ -54,7 +54,7 @@ impl CodeParser for RubyParser {
                 local_variables: count_keyword(body, r"(?m)^\s*(\w+)\s*="),
                 return_statements: count_returns(body),
                 external_calls: count_external_calls(body),
-                primitive_params: params,
+                primitive_params: 0,
                 branch_count: super::count_branches_python(body),
                 method_call_chains: count_method_call_chains(body),
                 ..Default::default()

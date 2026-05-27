@@ -8,9 +8,13 @@ use crate::domain::metrics::{CodeMetrics, ItemType, SmellDetection};
 use crate::ports::parser::CodeParser;
 
 use super::{
-    build_func_metrics_ext, calculate_cc, calculate_cc_cpp, calculate_cc_csharp, calculate_cc_java,
-    calculate_cc_kotlin, calculate_cc_php, calculate_cc_rust, count_loc, count_local_vars,
-    count_local_vars_cpp, count_local_vars_csharp, count_local_vars_kotlin, count_local_vars_php,
+    build_func_metrics_full, calculate_cc, calculate_cc_cpp, calculate_cc_csharp, calculate_cc_java,
+    calculate_cc_kotlin, calculate_cc_php, calculate_cc_rust, count_block_comment_lines,
+    count_line_comment_lines, count_loc, count_local_vars, count_local_vars_cpp,
+    count_local_vars_csharp, count_local_vars_kotlin, count_local_vars_php,
+    count_primitive_params_csharp, count_primitive_params_go, count_primitive_params_java,
+    count_primitive_params_kotlin, count_primitive_params_none, count_primitive_params_php,
+    count_primitive_params_rust,
     find_matching_brace, line_number, remove_block_comments, remove_hash_comments,
     remove_line_comments,
 };
@@ -28,6 +32,9 @@ pub(crate) struct ParserConfig {
     strip_hash_comments: bool,
     cc_fn: fn(&str) -> usize,
     count_local_vars_fn: fn(&str) -> usize,
+    primitive_fn: fn(&str) -> usize,
+    /// Comment-line prefix used for counting (e.g. "//", "#"). Empty = no line comments.
+    comment_prefix: &'static str,
     /// Keywords to skip when they appear as captured function names.
     skip_names: &'static [&'static str],
 }
@@ -115,6 +122,8 @@ impl Default for GenericParser {
             strip_hash_comments: false,
             cc_fn: calculate_cc,
             count_local_vars_fn: count_local_vars,
+            primitive_fn: count_primitive_params_none,
+            comment_prefix: "",
             skip_names: &[],
         })
     }
@@ -127,7 +136,14 @@ impl CodeParser for GenericParser {
         let func_re = self.get_func_re();
         let cc_fn = self.config.cc_fn;
         let vars_fn = self.config.count_local_vars_fn;
+        let primitive_fn = self.config.primitive_fn;
+        let comment_prefix = self.config.comment_prefix;
+        let has_block_comments = self.config.strip_block_comments;
         let skip = self.config.skip_names;
+
+        // Pre-collect raw function bodies for comment counting.
+        let raw_func_comments: std::collections::HashMap<String, usize> =
+            collect_raw_func_comment_counts(func_re, code, skip, comment_prefix, has_block_comments);
 
         // --- Functions ---
         for cap in func_re.captures_iter(&cleaned) {
@@ -149,7 +165,8 @@ impl CodeParser for GenericParser {
 
             let body = &cleaned[start..=end_pos];
             let sig = &cleaned[start..];
-            let metrics = build_func_metrics_ext(body, sig, cc_fn, vars_fn);
+            let comment_count = *raw_func_comments.get(name).unwrap_or(&0);
+            let metrics = build_func_metrics_full(body, sig, cc_fn, vars_fn, primitive_fn, comment_count);
 
             let location = format!("{}:{}", file_name, line_number(&cleaned, start));
             detections.extend(detect_all(&metrics, &location, name));
@@ -219,6 +236,8 @@ pub fn java_parser() -> GenericParser {
         strip_hash_comments: false,
         cc_fn: calculate_cc_java,
         count_local_vars_fn: count_local_vars,
+        primitive_fn: count_primitive_params_java,
+        comment_prefix: "//",
         skip_names: &[],
     })
 }
@@ -241,6 +260,8 @@ pub(crate) fn go_parser() -> GenericParser {
         strip_hash_comments: false,
         cc_fn: calculate_cc,
         count_local_vars_fn: count_local_vars,
+        primitive_fn: count_primitive_params_go,
+        comment_prefix: "//",
         skip_names: &[],
     })
 }
@@ -251,14 +272,16 @@ pub fn rust_parser() -> GenericParser {
         name: "rust",
         extensions: &["rs"],
         func_regex: r"(?m)(?:pub\s+)?(?:(?:async|unsafe|const)\s+)*fn\s+(\w+)\s*[\(<]",
-        class_regex: Some(r"(?m)(?:impl\s+(?:<[^>]*>\s*)?|struct\s+)(\w+)"),
+        class_regex: Some(r"(?m)struct\s+(\w+)"),
         class_method_regex: Some(r"(?m)(?:pub\s+)?(?:(?:async|unsafe|const)\s+)*fn\s+\w+"),
-        class_field_regex: Some(r"(?m)pub\s+\w+:\s+"),
+        class_field_regex: Some(r"(?m)\s+\w+\s*:\s*[A-Za-z]"),
         strip_line_comment: "//",
         strip_block_comments: true,
         strip_hash_comments: false,
         cc_fn: calculate_cc_rust,
         count_local_vars_fn: count_local_vars,
+        primitive_fn: count_primitive_params_rust,
+        comment_prefix: "//",
         skip_names: &[],
     })
 }
@@ -279,6 +302,8 @@ pub fn cpp_parser() -> GenericParser {
         strip_hash_comments: false,
         cc_fn: calculate_cc_cpp,
         count_local_vars_fn: count_local_vars_cpp,
+        primitive_fn: count_primitive_params_none,
+        comment_prefix: "//",
         skip_names: &[
             "if", "for", "while", "switch", "catch", "return", "class", "struct",
         ],
@@ -305,6 +330,8 @@ pub fn csharp_parser() -> GenericParser {
         strip_hash_comments: false,
         cc_fn: calculate_cc_csharp,
         count_local_vars_fn: count_local_vars_csharp,
+        primitive_fn: count_primitive_params_csharp,
+        comment_prefix: "//",
         skip_names: &["if", "for", "while", "switch", "catch", "using", "lock"],
     })
 }
@@ -325,6 +352,8 @@ pub fn kotlin_parser() -> GenericParser {
         strip_hash_comments: false,
         cc_fn: calculate_cc_kotlin,
         count_local_vars_fn: count_local_vars_kotlin,
+        primitive_fn: count_primitive_params_kotlin,
+        comment_prefix: "//",
         skip_names: &[],
     })
 }
@@ -343,6 +372,45 @@ pub fn php_parser() -> GenericParser {
         strip_hash_comments: true,
         cc_fn: calculate_cc_php,
         count_local_vars_fn: count_local_vars_php,
+        primitive_fn: count_primitive_params_php,
+        comment_prefix: "//",
         skip_names: &[],
     })
+}
+
+/// Scan raw (unstripped) code for functions, count comment lines in each raw body.
+/// Returns a map from function name to comment line count (first occurrence per name).
+fn collect_raw_func_comment_counts(
+    func_re: &Regex,
+    raw_code: &str,
+    skip: &[&str],
+    comment_prefix: &str,
+    has_block_comments: bool,
+) -> std::collections::HashMap<String, usize> {
+    let mut map = std::collections::HashMap::new();
+    for cap in func_re.captures_iter(raw_code) {
+        let name = cap[1].to_string();
+        if skip.contains(&name.as_str()) || map.contains_key(&name) {
+            continue;
+        }
+        let full = cap.get(0).unwrap();
+        let start = full.start();
+        let Some(off) = raw_code[start..].find('{') else {
+            continue;
+        };
+        let brace_pos = start + off;
+        let Some(end_pos) = find_matching_brace(raw_code, brace_pos) else {
+            continue;
+        };
+        let raw_body = &raw_code[start..=end_pos];
+        let mut count = 0;
+        if !comment_prefix.is_empty() {
+            count += count_line_comment_lines(raw_body, comment_prefix);
+        }
+        if has_block_comments {
+            count += count_block_comment_lines(raw_body);
+        }
+        map.insert(name, count);
+    }
+    map
 }

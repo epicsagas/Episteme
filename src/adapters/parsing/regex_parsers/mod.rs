@@ -161,11 +161,13 @@ pub(crate) fn calculate_cc(body: &str) -> usize {
     cc
 }
 
-/// Compute maximum nesting depth from brace pairs.
+/// Compute maximum nesting depth from brace pairs, ignoring braces inside
+/// string literals.
 pub(crate) fn calculate_nesting(body: &str) -> usize {
+    let stripped = strip_string_literals_for_nesting(body);
     let mut max_d: usize = 0;
     let mut cur: usize = 0;
-    for ch in body.chars() {
+    for ch in stripped.chars() {
         if ch == '{' {
             cur += 1;
             max_d = max_d.max(cur);
@@ -174,6 +176,13 @@ pub(crate) fn calculate_nesting(body: &str) -> usize {
         }
     }
     max_d
+}
+
+/// Replace string-literal bodies with spaces so braces inside strings don't
+/// affect nesting depth. Handles `"..."` and `'...'` (single-line only).
+fn strip_string_literals_for_nesting(body: &str) -> std::borrow::Cow<'_, str> {
+    let re = cached_regex(r#"(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')"#);
+    re.replace_all(body, " ")
 }
 
 /// Count regex matches using the global regex cache.
@@ -255,10 +264,12 @@ pub(crate) fn count_external_calls(body: &str) -> usize {
 }
 
 /// Count branches: `if`, `elif`, `else if`, `case`, `match` arms.
+/// Avoids double-counting `else if` (counted once, not as `else if` + `if`).
 pub(crate) fn count_branches(body: &str) -> usize {
-    count_keyword(body, r"\bif\b")
+    let else_if = count_keyword(body, r"\belse\s+if\b");
+    let standalone_if = count_keyword(body, r"\bif\b").saturating_sub(else_if);
+    else_if + standalone_if
         + count_keyword(body, r"\belif\b")
-        + count_keyword(body, r"\belse\s+if\b")
         + count_keyword(body, r"\bcase\b")
         + count_keyword(body, r"\bmatch\b")
 }
@@ -347,7 +358,7 @@ pub(crate) fn calculate_cc_kotlin(body: &str) -> usize {
 }
 
 pub(crate) fn calculate_cc_rust(body: &str) -> usize {
-    calculate_cc_ext(body, &[r"\bloop\b", r"=>"])
+    calculate_cc_ext(body, &[r"\bloop\b"])
 }
 
 // ===========================================================================
@@ -371,6 +382,31 @@ pub(crate) fn remove_ruby_block_comments(code: &str) -> std::borrow::Cow<'_, str
 /// Strip Python/Ruby `#` line comments.
 pub(crate) fn remove_hash_comments(code: &str) -> std::borrow::Cow<'_, str> {
     cached_regex(r"(?m)#.*$").replace_all(code, "")
+}
+
+// ===========================================================================
+// Comment counting (for SMELL-16 Comments detector)
+// ===========================================================================
+
+/// Count line-comment lines (`//` prefix).
+pub(crate) fn count_line_comment_lines(body: &str, prefix: &str) -> usize {
+    let re = cached_regex_owned(&format!(r"(?m)^\s*{prefix}"));
+    re.find_iter(body).count()
+}
+
+/// Count block-comment lines (`/* ... */`).
+pub(crate) fn count_block_comment_lines(body: &str) -> usize {
+    let re = cached_regex(r"/\*.*?\*/");
+    re.find_iter(body)
+        .map(|m| m.as_str().lines().count())
+        .sum()
+}
+
+/// Count hash-comment lines (`#` prefix).
+#[expect(dead_code, reason = "used by Ruby/Python comment counting")]
+pub(crate) fn count_hash_comment_lines(body: &str) -> usize {
+    let re = cached_regex(r"(?m)^\s*#");
+    re.find_iter(body).count()
 }
 
 // ===========================================================================
@@ -461,17 +497,14 @@ pub(crate) fn count_primitive_params_python(sig: &str) -> usize {
 // Metric builder helpers (used by typescript, generic, go)
 // ===========================================================================
 
-/// Build function metrics with the default `count_local_vars`.
-pub(crate) fn build_func_metrics(body: &str, sig: &str, cc_fn: fn(&str) -> usize) -> CodeMetrics {
-    build_func_metrics_ext(body, sig, cc_fn, count_local_vars)
-}
-
-/// Build function metrics with a custom local-var counter.
-pub(crate) fn build_func_metrics_ext(
+/// Full metrics builder with all configurable counters.
+pub(crate) fn build_func_metrics_full(
     body: &str,
     sig: &str,
     cc_fn: fn(&str) -> usize,
     vars_fn: fn(&str) -> usize,
+    primitive_fn: fn(&str) -> usize,
+    comment_count: usize,
 ) -> CodeMetrics {
     let params = count_params(sig);
     CodeMetrics {
@@ -482,11 +515,105 @@ pub(crate) fn build_func_metrics_ext(
         local_variables: vars_fn(body),
         return_statements: count_returns(body),
         external_calls: count_external_calls(body),
-        primitive_params: params,
+        primitive_params: primitive_fn(sig),
         branch_count: count_branches(body),
         method_call_chains: count_method_call_chains(body),
+        comment_count,
         ..Default::default()
     }
+}
+
+// -- Primitive-param counting helpers ----------------------------------------
+
+/// No type info available — conservatively report 0.
+pub(crate) fn count_primitive_params_none(_sig: &str) -> usize {
+    0
+}
+
+/// Rust: primitives are i8..i128, u8..u128, f32, f64, bool, char, &str, usize, isize.
+pub(crate) fn count_primitive_params_rust(sig: &str) -> usize {
+    count_typed_primitives(
+        sig,
+        r"\b(?:i8|i16|i32|i64|i128|u8|u16|u32|u64|u128|f32|f64|bool|char|usize|isize|&str)\b",
+    )
+}
+
+/// Go: primitives are int, int8..int64, uint8..uint64, float32, float64, bool, string, byte, rune.
+pub(crate) fn count_primitive_params_go(sig: &str) -> usize {
+    count_typed_primitives(
+        sig,
+        r"\b(?:int|int8|int16|int32|int64|uint|uint8|uint16|uint32|uint64|float32|float64|bool|string|byte|rune)\b",
+    )
+}
+
+/// TypeScript/JavaScript: primitives are number, string, boolean, any, null, undefined.
+pub(crate) fn count_primitive_params_typescript(sig: &str) -> usize {
+    count_typed_primitives(
+        sig,
+        r":\s*(?:number|string|boolean|any|null|undefined|void|never|unknown)\b",
+    )
+}
+
+/// Java: primitives are int, long, short, byte, float, double, boolean, char, and their wrappers.
+pub(crate) fn count_primitive_params_java(sig: &str) -> usize {
+    count_typed_primitives(
+        sig,
+        r"\b(?:int|long|short|byte|float|double|boolean|char|Integer|Long|Short|Byte|Float|Double|Boolean|Character|String)\b",
+    )
+}
+
+/// C#: same idea as Java.
+pub(crate) fn count_primitive_params_csharp(sig: &str) -> usize {
+    count_typed_primitives(
+        sig,
+        r"\b(?:int|long|short|byte|float|double|decimal|bool|char|string|uint|ulong|ushort|sbyte|object|dynamic)\b",
+    )
+}
+
+/// Kotlin: primitives via type annotations.
+pub(crate) fn count_primitive_params_kotlin(sig: &str) -> usize {
+    count_typed_primitives(
+        sig,
+        r":\s*(?:Int|Long|Short|Byte|Float|Double|Boolean|Char|String|Any|Unit|Nothing)\b",
+    )
+}
+
+/// PHP: $variable = ... typed params via `int $x`, `string $y`, etc.
+pub(crate) fn count_primitive_params_php(sig: &str) -> usize {
+    count_typed_primitives(
+        sig,
+        r"\b(?:int|float|bool|string|array|mixed|null|true|false|void|callable|iterable)\b",
+    )
+}
+
+/// Count params that match a type-primitive regex inside the paren group.
+fn count_typed_primitives(sig: &str, type_pattern: &str) -> usize {
+    let start = match sig.find('(') {
+        Some(i) => i + 1,
+        None => return 0,
+    };
+    let mut depth: i32 = 1;
+    let mut end = start;
+    for (idx, ch) in sig[start..].char_indices() {
+        if ch == '(' {
+            depth += 1;
+        } else if ch == ')' {
+            depth -= 1;
+            if depth == 0 {
+                end = idx;
+                break;
+            }
+        }
+    }
+    if end == 0 {
+        return 0;
+    }
+    let params = &sig[start..start + end];
+    if params.trim().is_empty() {
+        return 0;
+    }
+    let re = cached_regex_owned(type_pattern);
+    params.split(',').filter(|p| re.is_match(p.trim())).count()
 }
 
 // ===========================================================================
@@ -1042,13 +1169,14 @@ export function bigFunc(a: number, b: number, c: number, d: number, e: number, f
     }
 
     #[test]
-    fn cc_rust_counts_loop_and_match_arms() {
+    fn cc_rust_counts_loop_and_match_and_if() {
         let code =
             "fn foo() { loop { x += 1; } match x { 1 => true, 2 => false, _ => true } if (a) { } }";
         let cc = calculate_cc_rust(code);
+        // base CC: match(1) + if(1) = 2. Rust extra: loop(1). Total: 1 + 2 + 1 = 4.
         assert!(
-            cc >= 6,
-            "Rust CC should count loop + match + 3 arms + if, got {cc}"
+            cc >= 4,
+            "Rust CC should count loop + match + if, got {cc}"
         );
     }
 

@@ -84,7 +84,7 @@ fn detect_function_metrics(
 ) -> Vec<SmellDetection> {
     let parameter_count = args.posonlyargs.len() + args.args.len() + args.kwonlyargs.len();
     let primitive_params = count_primitive_params(args);
-    let loc = range_len_lines(code, range);
+    let loc = count_code_lines_in_range(code, range);
     let cyclomatic_complexity = 1 + count_decisions(body);
     let nesting_depth = max_nesting(body, 0);
     let local_variables = count_local_assignments(body);
@@ -92,6 +92,7 @@ fn detect_function_metrics(
     let external_calls = count_external_calls(body);
     let branch_count = count_branches(body);
     let method_call_chains = count_call_chains(body);
+    let comment_count = count_comment_lines_in_range(code, range);
 
     let metrics = CodeMetrics {
         loc,
@@ -104,6 +105,7 @@ fn detect_function_metrics(
         primitive_params,
         branch_count,
         method_call_chains,
+        comment_count,
         ..Default::default()
     };
     let line = line_number_at_offset(code, range.start().to_usize());
@@ -134,9 +136,10 @@ fn detect_class_metrics(c: &ast::StmtClassDef, code: &str, file_name: &str) -> V
         .filter(|s| matches!(s, ast::Stmt::Assign(_) | ast::Stmt::AnnAssign(_)))
         .count();
     let metrics = CodeMetrics {
-        loc: range_len_lines(code, c.range()),
+        loc: count_code_lines_in_range(code, c.range()),
         method_count,
         field_count,
+        comment_count: count_comment_lines_in_range(code, c.range()),
         item_type: ItemType::Class,
         ..Default::default()
     };
@@ -341,13 +344,31 @@ fn line_number_at_offset(code: &str, offset: usize) -> usize {
         + 1
 }
 
-fn range_len_lines(code: &str, range: rustpython_parser::text_size::TextRange) -> usize {
+/// Count actual code lines (non-blank, non-comment, non-docstring) within a range.
+fn count_code_lines_in_range(code: &str, range: rustpython_parser::text_size::TextRange) -> usize {
     let start = range.start().to_usize().min(code.len());
     let end = range.end().to_usize().min(code.len());
     let slice = &code[start..end];
     slice
         .lines()
-        .filter(|l| !l.trim().is_empty())
+        .filter(|l| {
+            let t = l.trim();
+            !t.is_empty() && !t.starts_with('#') && !t.starts_with("'''") && !t.starts_with("\"\"\"")
+        })
         .count()
         .max(1)
+}
+
+/// Count comment lines (# lines) within a range.
+fn count_comment_lines_in_range(code: &str, range: rustpython_parser::text_size::TextRange) -> usize {
+    let start = range.start().to_usize().min(code.len());
+    let end = range.end().to_usize().min(code.len());
+    let slice = &code[start..end];
+    slice
+        .lines()
+        .filter(|l| {
+            let t = l.trim();
+            t.starts_with('#')
+        })
+        .count()
 }
