@@ -57,16 +57,10 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     use episteme::adapters::installer::Transport;
 
     let mut selected: Vec<String> = if all || tools.iter().any(|t| t == "all") {
-        vec![
-            "claude",
-            "cursor",
-            "codex",
-            "opencode",
-            "cline",
-        ]
-        .into_iter()
-        .map(|s| s.to_owned())
-        .collect()
+        vec!["claude", "cursor", "codex", "opencode", "cline"]
+            .into_iter()
+            .map(|s| s.to_owned())
+            .collect()
     } else if tools.is_empty() && io::stdin().is_terminal() {
         let installed: Vec<&str> = detect_installed_tools().into_iter().collect();
         let selected =

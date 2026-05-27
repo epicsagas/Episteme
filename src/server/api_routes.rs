@@ -21,7 +21,10 @@ use crate::server::api_models::{
 };
 
 /// Map an MCP error JSON value to an appropriate HTTP error response.
-fn mcp_error_response(result: &serde_json::Value, fallback_msg: &str) -> Option<axum::response::Response> {
+fn mcp_error_response(
+    result: &serde_json::Value,
+    fallback_msg: &str,
+) -> Option<axum::response::Response> {
     let err = result.get("error")?;
     let msg = err.as_str().unwrap_or(fallback_msg);
     let status = if msg.contains("exceeds") {

@@ -6,7 +6,7 @@ use crate::ports::parser::CodeParser;
 
 use super::{
     GenericParser, build_func_metrics_full, cached_regex, cached_regex_owned, calculate_cc_rust,
-    count_block_comment_lines, count_line_comment_lines, count_local_vars, count_loc,
+    count_block_comment_lines, count_line_comment_lines, count_loc, count_local_vars,
     count_primitive_params_rust, find_matching_brace, line_number,
 };
 
@@ -53,8 +53,8 @@ impl CodeParser for RustFullParser {
             let body = &cleaned[start..=end_pos];
             let sig = &cleaned[start..];
             let raw_body = &code[start..=end_pos];
-            let comment_count = count_line_comment_lines(raw_body, "//")
-                + count_block_comment_lines(raw_body);
+            let comment_count =
+                count_line_comment_lines(raw_body, "//") + count_block_comment_lines(raw_body);
             let metrics = build_func_metrics_full(
                 body,
                 sig,

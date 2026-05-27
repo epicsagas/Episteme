@@ -458,7 +458,6 @@ async fn graph_tree(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Val
     Json(serde_json::json!({"tree": tree}))
 }
 
-
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------

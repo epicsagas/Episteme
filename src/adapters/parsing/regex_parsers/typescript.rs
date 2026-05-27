@@ -5,9 +5,9 @@ use crate::domain::metrics::{CodeMetrics, ItemType, SmellDetection};
 use crate::ports::parser::CodeParser;
 
 use super::{
-    build_func_metrics_full, cached_regex, calculate_cc, count_keyword, count_local_vars, count_loc,
-    count_primitive_params_typescript, find_matching_brace, line_number, remove_block_comments,
-    remove_line_comments,
+    build_func_metrics_full, cached_regex, calculate_cc, count_keyword, count_loc,
+    count_local_vars, count_primitive_params_typescript, find_matching_brace, line_number,
+    remove_block_comments, remove_line_comments,
 };
 
 pub struct TypeScriptParser;
@@ -50,7 +50,12 @@ impl CodeParser for TypeScriptParser {
             let sig = &cleaned[start..];
 
             let metrics = build_func_metrics_full(
-                body, sig, calculate_cc, count_local_vars, count_primitive_params_typescript, 0,
+                body,
+                sig,
+                calculate_cc,
+                count_local_vars,
+                count_primitive_params_typescript,
+                0,
             );
 
             let location = format!("{}:{}", file_name, line_number(&cleaned, start));
@@ -89,7 +94,12 @@ impl CodeParser for TypeScriptParser {
             let sig = &cleaned[start..];
 
             let metrics = build_func_metrics_full(
-                body, sig, calculate_cc, count_local_vars, count_primitive_params_typescript, 0,
+                body,
+                sig,
+                calculate_cc,
+                count_local_vars,
+                count_primitive_params_typescript,
+                0,
             );
 
             let location = format!("{}:{}", file_name, line_number(&cleaned, start));

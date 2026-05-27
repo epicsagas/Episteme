@@ -270,7 +270,8 @@ pub(crate) fn count_external_calls(body: &str) -> usize {
 pub(crate) fn count_branches(body: &str) -> usize {
     let else_if = count_keyword(body, r"\belse\s+if\b");
     let standalone_if = count_keyword(body, r"\bif\b").saturating_sub(else_if);
-    else_if + standalone_if
+    else_if
+        + standalone_if
         + count_keyword(body, r"\belif\b")
         + count_keyword(body, r"\bcase\b")
         + count_keyword(body, r"\bmatch\b")
@@ -399,9 +400,7 @@ pub(crate) fn count_line_comment_lines(body: &str, prefix: &str) -> usize {
 /// Count block-comment lines (`/* ... */`).
 pub(crate) fn count_block_comment_lines(body: &str) -> usize {
     let re = cached_regex(r"/\*.*?\*/");
-    re.find_iter(body)
-        .map(|m| m.as_str().lines().count())
-        .sum()
+    re.find_iter(body).map(|m| m.as_str().lines().count()).sum()
 }
 
 /// Count hash-comment lines (`#` prefix).
@@ -1176,10 +1175,7 @@ export function bigFunc(a: number, b: number, c: number, d: number, e: number, f
             "fn foo() { loop { x += 1; } match x { 1 => true, 2 => false, _ => true } if (a) { } }";
         let cc = calculate_cc_rust(code);
         // base CC: match(1) + if(1) = 2. Rust extra: loop(1). Total: 1 + 2 + 1 = 4.
-        assert!(
-            cc >= 4,
-            "Rust CC should count loop + match + if, got {cc}"
-        );
+        assert!(cc >= 4, "Rust CC should count loop + match + if, got {cc}");
     }
 
     #[test]

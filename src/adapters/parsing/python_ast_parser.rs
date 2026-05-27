@@ -353,14 +353,20 @@ fn count_code_lines_in_range(code: &str, range: rustpython_parser::text_size::Te
         .lines()
         .filter(|l| {
             let t = l.trim();
-            !t.is_empty() && !t.starts_with('#') && !t.starts_with("'''") && !t.starts_with("\"\"\"")
+            !t.is_empty()
+                && !t.starts_with('#')
+                && !t.starts_with("'''")
+                && !t.starts_with("\"\"\"")
         })
         .count()
         .max(1)
 }
 
 /// Count comment lines (# lines) within a range.
-fn count_comment_lines_in_range(code: &str, range: rustpython_parser::text_size::TextRange) -> usize {
+fn count_comment_lines_in_range(
+    code: &str,
+    range: rustpython_parser::text_size::TextRange,
+) -> usize {
     let start = range.start().to_usize().min(code.len());
     let end = range.end().to_usize().min(code.len());
     let slice = &code[start..end];
