@@ -7,6 +7,7 @@ mod generic;
 mod go;
 mod python;
 mod ruby;
+mod rust;
 mod typescript;
 
 use regex::Regex;
@@ -22,6 +23,7 @@ pub use generic::{
 pub use go::GoFullParser;
 pub use python::PythonParser;
 pub use ruby::RubyParser;
+pub use rust::RustFullParser;
 pub use typescript::TypeScriptParser;
 
 // ===========================================================================
@@ -631,7 +633,7 @@ pub fn get_parser(language: &str) -> Result<Box<dyn CodeParser>, String> {
         )),
         "java" => Ok(Box::new(java_parser())),
         "go" => Ok(Box::new(GoFullParser::new())),
-        "rust" => Ok(Box::new(rust_parser())),
+        "rust" => Ok(Box::new(RustFullParser::new())),
         "typescript" | "javascript" | "js" | "ts" => Ok(Box::new(TypeScriptParser::new())),
         "c" | "cpp" | "c++" | "cxx" | "cc" | "hpp" => Ok(Box::new(cpp_parser())),
         "c#" | "cs" | "csharp" => Ok(Box::new(csharp_parser())),

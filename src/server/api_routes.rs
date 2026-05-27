@@ -20,6 +20,20 @@ use crate::server::api_models::{
     SearchRequest, SearchResponse, StatsResponse, SubgraphRequest, SystemInfo,
 };
 
+/// Map an MCP error JSON value to an appropriate HTTP error response.
+fn mcp_error_response(result: &serde_json::Value, fallback_msg: &str) -> Option<axum::response::Response> {
+    let err = result.get("error")?;
+    let msg = err.as_str().unwrap_or(fallback_msg);
+    let status = if msg.contains("exceeds") {
+        StatusCode::PAYLOAD_TOO_LARGE
+    } else if msg.contains("Unsupported") {
+        StatusCode::BAD_REQUEST
+    } else {
+        StatusCode::INTERNAL_SERVER_ERROR
+    };
+    Some((status, Json(ErrorResponse { error: msg.into() })).into_response())
+}
+
 /// Shared application state passed to all handlers.
 pub type AppState = Arc<EpistemeMCP>;
 
@@ -193,16 +207,8 @@ pub async fn analyze(
 
     let result = mcp.analyze_code(&body.code, body.language.as_deref());
 
-    if let Some(err) = result.get("error") {
-        let msg = err.as_str().unwrap_or("analysis error");
-        let status = if msg.contains("exceeds") {
-            StatusCode::PAYLOAD_TOO_LARGE
-        } else if msg.contains("Unsupported") {
-            StatusCode::BAD_REQUEST
-        } else {
-            StatusCode::INTERNAL_SERVER_ERROR
-        };
-        return (status, Json(ErrorResponse { error: msg.into() })).into_response();
+    if let Some(resp) = mcp_error_response(&result, "analysis error") {
+        return resp;
     }
 
     let smells: Vec<serde_json::Value> = result
@@ -261,16 +267,8 @@ pub async fn refactor(
     let result = mcp.suggest_refactorings(&body.code, body.language.as_deref(), body.top_k);
     let min_confidence = body.min_confidence.unwrap_or(0.5).clamp(0.0, 1.0);
 
-    if let Some(err) = result.get("error") {
-        let msg = err.as_str().unwrap_or("refactoring error");
-        let status = if msg.contains("exceeds") {
-            StatusCode::PAYLOAD_TOO_LARGE
-        } else if msg.contains("Unsupported") {
-            StatusCode::BAD_REQUEST
-        } else {
-            StatusCode::INTERNAL_SERVER_ERROR
-        };
-        return (status, Json(ErrorResponse { error: msg.into() })).into_response();
+    if let Some(resp) = mcp_error_response(&result, "refactoring error") {
+        return resp;
     }
 
     let analyses: Vec<serde_json::Value> = result

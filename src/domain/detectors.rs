@@ -729,14 +729,16 @@ pub fn detect_feature_envy(
 }
 
 // -- SMELL-20  Message Chains -----------------------------------------------
-// >5 -> 0.90 | >4 -> 0.75 | >2 -> 0.60
+// >6 -> 0.90 | >5 -> 0.75 | >4 -> 0.60
+// Note: chains of 4 or fewer are common with standard library APIs (e.g.
+// `.get().and_then().unwrap_or()`) and are not flagged.
 
 pub fn detect_message_chains(
     metrics: &CodeMetrics,
     location: &str,
     name: &str,
 ) -> Option<SmellDetection> {
-    if metrics.method_call_chains <= 3 {
+    if metrics.method_call_chains <= 4 {
         return None;
     }
     let (confidence, reasons) = if metrics.method_call_chains > 6 {
@@ -1316,9 +1318,9 @@ mod tests {
     }
 
     #[test]
-    fn message_chains_not_detected_at_3() {
+    fn message_chains_not_detected_at_4() {
         let m = CodeMetrics {
-            method_call_chains: 3,
+            method_call_chains: 4,
             ..Default::default()
         };
         assert!(detect_message_chains(&m, "t.py:1", "f").is_none());
