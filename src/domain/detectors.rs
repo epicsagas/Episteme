@@ -200,7 +200,7 @@ pub fn detect_primitive_obsession(
     location: &str,
     name: &str,
 ) -> Option<SmellDetection> {
-    if metrics.primitive_params < 3 {
+    if metrics.primitive_params < 4 {
         return None;
     }
     let ratio = metrics.primitive_params as f64 / metrics.parameter_count.max(1) as f64;
@@ -219,14 +219,6 @@ pub fn detect_primitive_obsession(
                 format!("{} primitive parameters", metrics.primitive_params),
                 format!("High primitive ratio {:.0}%", ratio * 100.0),
             ],
-        )
-    } else if metrics.primitive_params >= 3 && ratio >= 0.7 {
-        (
-            0.55,
-            vec![format!(
-                "{} primitive parameters suggest domain object needed",
-                metrics.primitive_params
-            )],
         )
     } else {
         return None;
@@ -288,14 +280,15 @@ pub fn detect_large_class(
 // dedicated object.  We use primitive_params count, parameter_count, and
 // loc as proxies.  This is a conservative heuristic; true data-clump
 // detection requires cross-function parameter-set overlap analysis.
-// >=7 params AND >=5 primitives -> 0.80 | >=6 AND >=4 -> 0.65 | >=5 AND >=3 -> 0.50
+// >=7 params AND >=5 primitives -> 0.80 | >=6 AND >=4 -> 0.65
+// Removed the low-confidence tier (50%) to reduce noise on borderline cases.
 
 pub fn detect_data_clumps(
     metrics: &CodeMetrics,
     location: &str,
     name: &str,
 ) -> Option<SmellDetection> {
-    if metrics.parameter_count < 5 || metrics.primitive_params < 3 {
+    if metrics.parameter_count < 6 || metrics.primitive_params < 4 {
         return None;
     }
     let (confidence, reasons) = if metrics.parameter_count >= 7 && metrics.primitive_params >= 5 {
@@ -309,7 +302,7 @@ pub fn detect_data_clumps(
                 "Consider extracting related parameters into a parameter object".into(),
             ],
         )
-    } else if metrics.parameter_count >= 6 && metrics.primitive_params >= 4 {
+    } else {
         (
             0.65,
             vec![
@@ -319,14 +312,6 @@ pub fn detect_data_clumps(
                 ),
                 "Some parameters likely belong together".into(),
             ],
-        )
-    } else {
-        (
-            0.50,
-            vec![format!(
-                "{} primitive parameters out of {} total may indicate grouped data",
-                metrics.primitive_params, metrics.parameter_count
-            )],
         )
     };
     Some(build_detection(
@@ -540,18 +525,37 @@ pub fn detect_divergent_change(
 }
 
 // -- SMELL-11  Lazy Class ---------------------------------------------------
-// LOC < 20 AND methods <= 2 -> 0.70
+// LOC < 15 AND methods == 0 -> 0.70 (pure data holder with no behavior)
+// LOC < 20 AND methods <= 1 AND fields >= 5 -> 0.65 (nearly empty class)
+// Pure data classes (many fields, no methods) are common in Rust/Go and
+// should not be flagged. Only flag when there's almost nothing at all.
 
 pub fn detect_lazy_class(
     metrics: &CodeMetrics,
     location: &str,
     name: &str,
 ) -> Option<SmellDetection> {
-    if metrics.loc < 20 && metrics.method_count <= 2 {
-        Some(build_detection(
+    // Class with no methods AND no fields → truly empty
+    if metrics.loc < 15 && metrics.method_count == 0 && metrics.field_count == 0 {
+        return Some(build_detection(
             "SMELL-11",
             "Lazy Class",
             0.70,
+            location,
+            name,
+            metrics,
+            vec![
+                format!("LOC={} is very small", metrics.loc),
+                "No methods or fields, minimal functionality".into(),
+            ],
+        ));
+    }
+    // Class with almost no behavior but some structure
+    if metrics.loc < 20 && metrics.method_count <= 1 && metrics.field_count < 5 {
+        return Some(build_detection(
+            "SMELL-11",
+            "Lazy Class",
+            0.65,
             location,
             name,
             metrics,
@@ -562,10 +566,9 @@ pub fn detect_lazy_class(
                     metrics.method_count
                 ),
             ],
-        ))
-    } else {
-        None
+        ));
     }
+    None
 }
 
 // -- SMELL-12  Speculative Generality --------------------------------------
@@ -733,10 +736,10 @@ pub fn detect_message_chains(
     location: &str,
     name: &str,
 ) -> Option<SmellDetection> {
-    if metrics.method_call_chains <= 2 {
+    if metrics.method_call_chains <= 3 {
         return None;
     }
-    let (confidence, reasons) = if metrics.method_call_chains > 5 {
+    let (confidence, reasons) = if metrics.method_call_chains > 6 {
         (
             0.90,
             vec![
@@ -747,7 +750,7 @@ pub fn detect_message_chains(
                 "Violates Law of Demeter, creates tight coupling".into(),
             ],
         )
-    } else if metrics.method_call_chains > 4 {
+    } else if metrics.method_call_chains > 5 {
         (
             0.75,
             vec![
@@ -1185,6 +1188,16 @@ mod tests {
     }
 
     #[test]
+    fn primitive_obsession_below_4_not_flagged() {
+        let m = CodeMetrics {
+            primitive_params: 3,
+            parameter_count: 3,
+            ..Default::default()
+        };
+        assert!(detect_primitive_obsession(&m, "t.py:1", "f").is_none());
+    }
+
+    #[test]
     fn large_class_high() {
         let d = detect_large_class(&make_class_metrics(350, 25, 18), "t.py:1", "BigCls").unwrap();
         assert_eq!(d.smell_id, "SMELL-04");
@@ -1222,12 +1235,49 @@ mod tests {
     fn lazy_class_detected() {
         let m = CodeMetrics {
             loc: 10,
-            method_count: 1,
+            method_count: 0,
+            field_count: 0,
             ..Default::default()
         };
         let d = detect_lazy_class(&m, "t.py:1", "Useless").unwrap();
         assert_eq!(d.smell_id, "SMELL-11");
         assert!((d.confidence - 0.70).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn lazy_class_with_one_method_few_fields() {
+        let m = CodeMetrics {
+            loc: 18,
+            method_count: 1,
+            field_count: 2,
+            ..Default::default()
+        };
+        let d = detect_lazy_class(&m, "t.py:1", "Tiny").unwrap();
+        assert_eq!(d.smell_id, "SMELL-11");
+        assert!((d.confidence - 0.65).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn lazy_class_data_struct_not_flagged() {
+        // Rust-style data struct with many fields but no methods — should NOT be flagged
+        let m = CodeMetrics {
+            loc: 15,
+            method_count: 0,
+            field_count: 10,
+            ..Default::default()
+        };
+        assert!(detect_lazy_class(&m, "t.rs:1", "BuildStats").is_none());
+    }
+
+    #[test]
+    fn lazy_class_enough_methods_not_flagged() {
+        let m = CodeMetrics {
+            loc: 30,
+            method_count: 3,
+            field_count: 2,
+            ..Default::default()
+        };
+        assert!(detect_lazy_class(&m, "t.py:1", "Active").is_none());
     }
 
     #[test]
@@ -1266,9 +1316,18 @@ mod tests {
     }
 
     #[test]
+    fn message_chains_not_detected_at_3() {
+        let m = CodeMetrics {
+            method_call_chains: 3,
+            ..Default::default()
+        };
+        assert!(detect_message_chains(&m, "t.py:1", "f").is_none());
+    }
+
+    #[test]
     fn message_chains_detected() {
         let m = CodeMetrics {
-            method_call_chains: 4,
+            method_call_chains: 5,
             ..Default::default()
         };
         let d = detect_message_chains(&m, "t.py:1", "f").unwrap();
@@ -1279,7 +1338,7 @@ mod tests {
     #[test]
     fn message_chains_long() {
         let m = CodeMetrics {
-            method_call_chains: 5,
+            method_call_chains: 6,
             ..Default::default()
         };
         let d = detect_message_chains(&m, "t.py:1", "f").unwrap();
@@ -1373,14 +1432,14 @@ mod tests {
     }
 
     #[test]
-    fn data_clumps_low() {
+    fn data_clumps_below_new_threshold() {
+        // 5 params, 3 primitives — now below threshold after tightening
         let m = CodeMetrics {
             parameter_count: 5,
             primitive_params: 3,
             ..Default::default()
         };
-        let d = detect_data_clumps(&m, "t.py:1", "f").unwrap();
-        assert!((d.confidence - 0.50).abs() < f64::EPSILON);
+        assert!(detect_data_clumps(&m, "t.py:1", "f").is_none());
     }
 
     #[test]
