@@ -19,7 +19,7 @@
 <p align="center">
   <a href="https://crates.io/crates/episteme"><img alt="Crates.io" src="https://img.shields.io/crates/v/episteme?style=for-the-badge&labelColor=0d1117&color=fc8d62&logo=rust&logoColor=white" /></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-3fb950?style=for-the-badge&labelColor=0d1117" /></a>
-  <img alt="Rust" src="https://img.shields.io/badge/rust-1.95+-d73a49?style=for-the-badge&labelColor=0d1117&logo=rust&logoColor=white" />
+  <a href="https://blog.rust-lang.org/"><img alt="Rust" src="https://img.shields.io/badge/rust-1.95+-d73a49?style=for-the-badge&labelColor=0d1117&logo=rust&logoColor=white" /></a>
   <a href="https://github.com/epicsagas/Episteme/actions"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/epicsagas/Episteme/ci.yml?style=for-the-badge&labelColor=0d1117&color=e67e22&logo=githubactions&logoColor=white" /></a>
   <a href="https://buymeacoffee.com/epicsaga"><img alt="Buy Me a Coffee" src="https://img.shields.io/badge/buy_me_a_coffee-FFDD00?style=for-the-badge&labelColor=0d1117&logo=buymeacoffee&logoColor=black" /></a>
 </p>
