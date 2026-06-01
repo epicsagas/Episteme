@@ -40,35 +40,49 @@
 
 ## त्वरित शुरुआत
 
-> **पूर्वापेक्षाएँ:** [rustup](https://rustup.rs) के माध्यम से Rust 1.95+ · **Rust नहीं है?** [Docker](#विकल्प-3-docker-rust-की-आवश्यकता-नहीं) या [प्री-बिल्ट बाइनरीज़](#विकल्प-4-प्री-बिल्ट-बाइनरीज़-rust-की-आवश्यकता-नहीं) देखें।
+### Claude Code
 
-**1. Episteme इंस्टॉल करें**
+```bash
+brew install epicsagas/tap/episteme   # या: cargo binstall episteme
+epis install claude
+```
+
+नॉलेज ग्राफ को सीड करता है, MCP टूल्स रजिस्टर करता है, और 4 विशेष एजेंट इंस्टॉल करता है। Claude Code को पुनः आरंभ करें और तैयार है।
+
+### Codex CLI
+
+```bash
+brew install epicsagas/tap/episteme
+epis install codex
+```
+
+डेटा सीड करता है और स्किल्स रजिस्टर करता है। पुनः आरंभ के बाद तुरंत उपलब्ध।
+
+### अन्य टूल्स
+
+```bash
+epis install cursor       # Cursor IDE
+epis install opencode     # OpenCode
+epis install cline        # Cline
+epis install --all        # सभी समर्थित टूल्स
+```
+
+### मैनुअल इंस्टॉल
 
 | विधि | कमांड |
 |------|--------|
-| **cargo-binstall** ⚡ | `cargo binstall episteme` |
-| **Shell स्क्रिप्ट** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Shell स्क्रिप्ट** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
-| **cargo** | `cargo install episteme` |
+| **cargo** | `cargo binstall episteme` ⚡ या `cargo install episteme` |
 | **Docker** | [विकल्प 3](#विकल्प-3-docker-rust-की-आवश्यकता-नहीं) देखें |
 
-> **अनुशंसित:** `cargo-binstall` बिना संकलन के प्री-बिल्ट बाइनरीज़ डाउनलोड करता है।
-
-**2. डेटा सीड करें + अपने AI टूल को कनेक्ट करें**
-
-```bash
-epis install cursor
-```
-
-**3. सत्यापित करें**
+### सत्यापित करें
 
 ```bash
 epis --version
 epis stats
 ```
-
-बस। Claude Code को पुनः आरंभ करें और Episteme टूल्स तैयार हैं।
 
 ### 30 सेकंड में आज़माएँ
 

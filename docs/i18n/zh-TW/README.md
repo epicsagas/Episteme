@@ -42,35 +42,49 @@
 
 ## 快速入門
 
-> **前置需求：** 透過 [rustup](https://rustup.rs) 安裝 Rust 1.95+ · **沒有 Rust？** 請參閱 [Docker](#選項-3docker無需-rust) 或 [預建二進位檔](#選項-4預建二進位檔無需-rust)。
+### Claude Code
 
-**1. 安裝 Episteme**
+```bash
+brew install epicsagas/tap/episteme   # 或：cargo binstall episteme
+epis install claude
+```
+
+初始化知識圖譜、註冊 MCP 工具並安裝 4 個專業代理。重新啟動 Claude Code 即可使用。
+
+### Codex CLI
+
+```bash
+brew install epicsagas/tap/episteme
+epis install codex
+```
+
+初始化資料並註冊技能。重新啟動後立即可用。
+
+### 其他工具
+
+```bash
+epis install cursor       # Cursor IDE
+epis install opencode     # OpenCode
+epis install cline        # Cline
+epis install --all        # 所有支援的工具
+```
+
+### 手動安裝
 
 | 方法 | 指令 |
 |------|------|
-| **cargo-binstall** ⚡ | `cargo binstall episteme` |
-| **Shell 指令碼** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Shell 指令碼** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
-| **cargo** | `cargo install episteme` |
+| **cargo** | `cargo binstall episteme` ⚡ 或 `cargo install episteme` |
 | **Docker** | 見 [選項 3](#選項-3docker無需-rust) |
 
-> **推薦：** `cargo-binstall` 直接下載預建二進位檔，無需編譯。
-
-**2. 載入資料 + 設定你的 AI 工具**
-
-```bash
-epis install cursor
-```
-
-**3. 驗證安裝**
+### 驗證安裝
 
 ```bash
 epis --version
 epis stats
 ```
-
-就是這樣。重新啟動 Claude Code，Episteme 工具即可使用。
 
 ### 30 秒內試用
 

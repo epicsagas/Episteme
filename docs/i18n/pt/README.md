@@ -42,35 +42,49 @@
 
 ## Início Rápido
 
-> **Pré-requisitos:** Rust 1.95+ via [rustup](https://rustup.rs) · **Sem Rust?** Veja [Docker](#opção-3-docker-sem-rust-necessário) ou [binários pré-compilados](#opção-4-binários-pré-compilados-sem-rust-necessário).
+### Claude Code
 
-**1. Instalar Episteme**
+```bash
+brew install epicsagas/tap/episteme   # ou: cargo binstall episteme
+epis install claude
+```
+
+Popula o grafo de conhecimento, registra ferramentas MCP e instala 4 agentes especializados. Reinicie o Claude Code e está pronto.
+
+### Codex CLI
+
+```bash
+brew install epicsagas/tap/episteme
+epis install codex
+```
+
+Popula dados e registra skills. Disponível imediatamente após reiniciar.
+
+### Outras ferramentas
+
+```bash
+epis install cursor       # Cursor IDE
+epis install opencode     # OpenCode
+epis install cline        # Cline
+epis install --all        # Todas as ferramentas suportadas
+```
+
+### Instalação manual
 
 | Método | Comando |
 |--------|---------|
-| **cargo-binstall** ⚡ | `cargo binstall episteme` |
-| **Script shell** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Script shell** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
-| **cargo** | `cargo install episteme` |
+| **cargo** | `cargo binstall episteme` ⚡ ou `cargo install episteme` |
 | **Docker** | Veja [Opção 3](#opção-3-docker-sem-rust-necessário) |
 
-> **Recomendado:** `cargo-binstall` baixa binários pré-compilados — sem compilação necessária.
-
-**2. Popular dados + conectar sua ferramenta de IA**
-
-```bash
-epis install cursor
-```
-
-**3. Verificar**
+### Verificar
 
 ```bash
 epis --version
 epis stats
 ```
-
-Pronto. Reinicie o Claude Code e as ferramentas do Episteme estarão disponíveis.
 
 ### Experimente em 30 segundos
 

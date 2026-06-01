@@ -40,35 +40,49 @@
 
 ## 빠른 시작
 
-> **필수 조건:** [rustup](https://rustup.rs)을 통한 Rust 1.95+ · **Rust가 없으신가요?** [Docker](#옵션-3-docker-rust-불필요) 또는 [사전 빌드된 바이너리](#옵션-4-사전-빌드된-바이너리rust-불필요)를 참조하세요.
+### Claude Code
 
-**1. Episteme 설치**
+```bash
+brew install epicsagas/tap/episteme   # 또는: cargo binstall episteme
+epis install claude
+```
+
+지식 그래프를 시딩하고, MCP 도구를 등록하며, 4개의 전문 에이전트를 설치합니다. Claude Code를 재시작하면 바로 사용할 수 있습니다.
+
+### Codex CLI
+
+```bash
+brew install epicsagas/tap/episteme
+epis install codex
+```
+
+데이터를 시딩하고 스킬을 등록합니다. 재시작 후 즉시 사용 가능합니다.
+
+### 기타 도구
+
+```bash
+epis install cursor       # Cursor IDE
+epis install opencode     # OpenCode
+epis install cline        # Cline
+epis install --all        # 지원되는 모든 도구
+```
+
+### 수동 설치
 
 | 방법 | 명령어 |
 |------|--------|
-| **cargo-binstall** ⚡ | `cargo binstall episteme` |
-| **Shell 스크립트** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Shell 스크립트** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
-| **cargo** | `cargo install episteme` |
+| **cargo** | `cargo binstall episteme` ⚡ 또는 `cargo install episteme` |
 | **Docker** | [옵션 3](#옵션-3-docker-rust-불필요) 참조 |
 
-> **권장:** `cargo-binstall`은 컴파일 없이 사전 빌드된 바이너리를 다운로드합니다.
-
-**2. 데이터 시딩 + AI 도구 연결**
-
-```bash
-epis install cursor
-```
-
-**3. 확인**
+### 확인
 
 ```bash
 epis --version
 epis stats
 ```
-
-완료되었습니다. Claude Code를 재시작하면 Episteme 도구를 사용할 수 있습니다.
 
 ### 30초 만에 체험하기
 

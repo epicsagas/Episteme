@@ -40,35 +40,49 @@
 
 ## クイックスタート
 
-> **前提条件:** [rustup](https://rustup.rs)経由でRust 1.95以上 · **Rustがインストールされていない場合:** [Docker](#option-3-docker-rust不要)または[プリビルトバイナリ](#option-4-プリビルトバイナリrust不要)を参照してください。
+### Claude Code
 
-**1. Epistemeのインストール**
+```bash
+brew install epicsagas/tap/episteme   # または: cargo binstall episteme
+epis install claude
+```
+
+ナレッジグラフをシードし、MCPツールを登録し、4つの専門エージェントをインストールします。Claude Codeを再起動するだけで完了です。
+
+### Codex CLI
+
+```bash
+brew install epicsagas/tap/episteme
+epis install codex
+```
+
+データをシードし、スキルを登録します。再起動後すぐに利用可能です。
+
+### その他のツール
+
+```bash
+epis install cursor       # Cursor IDE
+epis install opencode     # OpenCode
+epis install cline        # Cline
+epis install --all        # 対応するすべてのツール
+```
+
+### 手動インストール
 
 | 方法 | コマンド |
 |------|----------|
-| **cargo-binstall** ⚡ | `cargo binstall episteme` |
-| **シェルスクリプト** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **シェルスクリプト** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
-| **cargo** | `cargo install episteme` |
+| **cargo** | `cargo binstall episteme` ⚡ または `cargo install episteme` |
 | **Docker** | [オプション3](#option-3-docker-rust不要)を参照 |
 
-> **推奨:** `cargo-binstall`はコンパイル不要でビルド済みバイナリをダウンロードします。
-
-**2. データのシード + AIツールの設定**
-
-```bash
-epis install cursor
-```
-
-**3. 動作確認**
+### 動作確認
 
 ```bash
 epis --version
 epis stats
 ```
-
-以上です。Claude Codeを再起動すればEpistemeツールが使用可能になります。
 
 ### 30秒で試す
 

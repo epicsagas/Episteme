@@ -53,33 +53,49 @@
 
 ## Quick Start
 
-**1. Install Episteme**
+### Claude Code
+
+```bash
+brew install epicsagas/tap/episteme   # or: cargo binstall episteme
+epis install claude
+```
+
+Seeds the knowledge graph, registers MCP tools, and installs 4 specialized agents. Restart Claude Code and you're done.
+
+### Codex CLI
+
+```bash
+brew install epicsagas/tap/episteme
+epis install codex
+```
+
+Seeds data and registers skills. Available immediately after restart.
+
+### Other tools
+
+```bash
+epis install cursor       # Cursor IDE
+epis install opencode     # OpenCode
+epis install cline        # Cline
+epis install --all        # All supported tools
+```
+
+### Manual install
 
 | Method | Command |
 |--------|---------|
-| **cargo-binstall** ⚡ | `cargo binstall episteme` |
-| **Shell script** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Shell script** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
-| **cargo** | `cargo install episteme` |
+| **cargo** | `cargo binstall episteme` ⚡ or `cargo install episteme` |
 | **Docker** | See [Option 3](#option-3-docker-no-rust-required) |
 
-> **Recommended:** `cargo-binstall` downloads pre-built binaries — no compilation needed.
-
-**2. Seed data + wire up your AI tool**
-
-```bash
-epis install cursor
-```
-
-**3. Verify**
+### Verify
 
 ```bash
 epis --version
 epis stats
 ```
-
-That's it. Restart Claude Code and Episteme tools are ready.
 
 ### Try it in 30 seconds
 

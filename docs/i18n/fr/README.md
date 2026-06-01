@@ -42,35 +42,49 @@
 
 ## Demarrage rapide
 
-> **Prerequis :** Rust 1.95+ via [rustup](https://rustup.rs) · **Pas de Rust ?** Voir [Docker](#option-3-docker-rust-non-requis) ou [binaires precompiles](#option-4-binaires-precompiles-rust-non-requis).
+### Claude Code
 
-**1. Installer Episteme**
+```bash
+brew install epicsagas/tap/episteme   # ou : cargo binstall episteme
+epis install claude
+```
+
+Seeds le graphe de connaissances, enregistre les outils MCP et installe 4 agents specialises. Redemarrez Claude Code et c'est pret.
+
+### Codex CLI
+
+```bash
+brew install epicsagas/tap/episteme
+epis install codex
+```
+
+Seeds les donnees et enregistre les skills. Disponible immediatement apres redemarrage.
+
+### Autres outils
+
+```bash
+epis install cursor       # Cursor IDE
+epis install opencode     # OpenCode
+epis install cline        # Cline
+epis install --all        # Tous les outils supportes
+```
+
+### Installation manuelle
 
 | Methode | Commande |
 |---------|----------|
-| **cargo-binstall** ⚡ | `cargo binstall episteme` |
-| **Script shell** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Script shell** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
-| **cargo** | `cargo install episteme` |
+| **cargo** | `cargo binstall episteme` ⚡ ou `cargo install episteme` |
 | **Docker** | Voir [Option 3](#option-3-docker-rust-non-requis) |
 
-> **Recommande :** `cargo-binstall` telecharge les binaires precompiles — pas de compilation necessaire.
-
-**2. Initialiser les donnees + connecter votre outil IA**
-
-```bash
-epis install cursor
-```
-
-**3. Verifier**
+### Verifier
 
 ```bash
 epis --version
 epis stats
 ```
-
-C'est tout. Redemarrez Claude Code et les outils Episteme sont prets.
 
 ### Essayez en 30 secondes
 

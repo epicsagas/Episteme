@@ -42,35 +42,49 @@
 
 ## Schnellstart
 
-> **Voraussetzungen:** Rust 1.95+ ueber [rustup](https://rustup.rs) · **Kein Rust?** Siehe [Docker](#option-3-docker-kein-rust-erforderlich) oder [vorgefertigte Binaries](#option-4-vorgefertigte-binaries-kein-rust-erforderlich).
+### Claude Code
 
-**1. Episteme installieren**
+```bash
+brew install epicsagas/tap/episteme   # oder: cargo binstall episteme
+epis install claude
+```
+
+Seeds den Wissensgraphen, registriert MCP-Tools und installiert 4 spezialisierte Agenten. Claude Code neu starten und fertig.
+
+### Codex CLI
+
+```bash
+brew install epicsagas/tap/episteme
+epis install codex
+```
+
+Seeds Daten und registriert Skills. Nach Neustart sofort verfügbar.
+
+### Andere Tools
+
+```bash
+epis install cursor       # Cursor IDE
+epis install opencode     # OpenCode
+epis install cline        # Cline
+epis install --all        # Alle unterstützten Tools
+```
+
+### Manuelle Installation
 
 | Methode | Befehl |
 |---------|--------|
-| **cargo-binstall** ⚡ | `cargo binstall episteme` |
-| **Shell-Skript** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Shell-Skript** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
-| **cargo** | `cargo install episteme` |
+| **cargo** | `cargo binstall episteme` ⚡ oder `cargo install episteme` |
 | **Docker** | Siehe [Option 3](#option-3-docker-kein-rust-erforderlich) |
 
-> **Empfohlen:** `cargo-binstall` laedt vorgefertigte Binaries herunter — keine Kompilierung noetig.
-
-**2. Daten laden + KI-Werkzeug verknuepfen**
-
-```bash
-epis install cursor
-```
-
-**3. Ueberpruefen**
+### Überprüfen
 
 ```bash
 epis --version
 epis stats
 ```
-
-Das war's. Starten Sie Claude Code neu und die Episteme-Werkzeuge sind einsatzbereit.
 
 ### In 30 Sekunden ausprobieren
 

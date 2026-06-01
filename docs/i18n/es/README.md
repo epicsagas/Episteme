@@ -40,35 +40,49 @@
 
 ## Inicio Rapido
 
-> **Requisitos previos:** Rust 1.95+ via [rustup](https://rustup.rs) · **No tienes Rust?** Consulta [Docker](#opcion-3-docker-no-se-requiere-rust) o [binarios precompilados](#opcion-4-binarios-precompilados-no-se-requiere-rust).
+### Claude Code
 
-**1. Instalar Episteme**
+```bash
+brew install epicsagas/tap/episteme   # o: cargo binstall episteme
+epis install claude
+```
+
+Puebla el grafo de conocimiento, registra herramientas MCP e instala 4 agentes especializados. Reinicia Claude Code y listo.
+
+### Codex CLI
+
+```bash
+brew install epicsagas/tap/episteme
+epis install codex
+```
+
+Puebla datos y registra skills. Disponible inmediatamente despues de reiniciar.
+
+### Otras herramientas
+
+```bash
+epis install cursor       # Cursor IDE
+epis install opencode     # OpenCode
+epis install cline        # Cline
+epis install --all        # Todas las herramientas soportadas
+```
+
+### Instalacion manual
 
 | Metodo | Comando |
 |--------|---------|
-| **cargo-binstall** ⚡ | `cargo binstall episteme` |
-| **Script shell** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
+| **Script shell** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
 | **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
-| **cargo** | `cargo install episteme` |
+| **cargo** | `cargo binstall episteme` ⚡ o `cargo install episteme` |
 | **Docker** | Consulta [Opcion 3](#opcion-3-docker-no-se-requiere-rust) |
 
-> **Recomendado:** `cargo-binstall` descarga binarios precompilados — sin compilacion necesaria.
-
-**2. Cargar datos y conectar tu herramienta de IA**
-
-```bash
-epis install cursor
-```
-
-**3. Verificar**
+### Verificar
 
 ```bash
 epis --version
 epis stats
 ```
-
-Eso es todo. Reinicia Claude Code y las herramientas de Episteme estaran listas.
 
 ### Pruébalo en 30 segundos
 
