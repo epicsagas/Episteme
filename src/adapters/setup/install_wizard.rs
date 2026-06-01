@@ -154,9 +154,7 @@ const DIM: crossterm::style::Color = crossterm::style::Color::DarkGrey;
 const HI: crossterm::style::Color = crossterm::style::Color::Yellow;
 
 const TOOLS: &[(&str, &str)] = &[
-    ("claude", "Claude Code (CLI + IDE)"),
     ("cursor", "Cursor (IDE)"),
-    ("codex", "OpenAI Codex CLI"),
     ("opencode", "OpenCode"),
     ("cline", "Cline (VS Code)"),
 ];
@@ -903,10 +901,10 @@ mod tests {
 
     #[test]
     fn selected_names_filters_checked() {
-        let checked = vec![true, false, true, false, false, false];
+        let checked = vec![true, false, true];
         assert_eq!(
             selected_names(&checked),
-            vec!["claude".to_string(), "codex".to_string()]
+            vec!["cursor".to_string(), "cline".to_string()]
         );
     }
 

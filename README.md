@@ -530,10 +530,17 @@ Alcove manages 3 tiers of documentation (7 core + 19 supplementary + 15 public f
 
 ## Roadmap
 
-- [ ] **Custom Entities** — Add team-specific patterns/smells
+**Released**
+- [x] `epis install` — one-command data setup from GitHub Releases
+- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux x86_64
+- [x] Claude Code & Codex CLI plugin marketplace support
+- [x] README translations — 9 languages (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+
+**Planned**
+- [ ] **Cross-platform builds** — Migrate `fastembed` → `candle` (Pure Rust) to support Intel macOS, Windows, Linux ARM64 ([#32](https://github.com/epicsagas/Episteme/issues/32))
+- [ ] **Custom Entities** — Add team-specific patterns and code smells
+- [ ] **Multilingual Metadata** — Entity titles and summaries in CJK languages
 - [ ] **Interactive Tutorials** — In-app guided tours for MCP tools
-- [ ] **Multilingual Metadata** — Entity titles and summaries in Korean, Japanese, Chinese (README translations already complete)
-- [ ] **MCP Tool Descriptions** — Enhanced tool descriptions to replace IDE-specific plugins
 - [ ] **Team Metrics** — Aggregate pattern usage across organization
 
 ---

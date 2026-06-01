@@ -148,7 +148,7 @@ pub enum Commands {
     },
     /// Install Episteme into AI tools
     Install {
-        /// Tools to install (claude, cursor, codex, opencode, cline, all)
+        /// Tools to install (cursor, opencode, cline, all)
         #[arg(required = false)]
         tools: Vec<String>,
         /// Install for all supported tools (non-interactive)
