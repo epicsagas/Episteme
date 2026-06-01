@@ -15,6 +15,7 @@ targets = [
 tap = "epicsagas/homebrew-tap"
 formula = "episteme"
 publish-jobs = ["homebrew"]
+allow-dirty = ["ci"]
 macos-sign = false
 install-path = "CARGO_HOME"
 pr-run-mode = "plan"
