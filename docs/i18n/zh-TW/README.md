@@ -44,21 +44,36 @@
 
 ### Claude Code
 
-```bash
-brew install epicsagas/tap/episteme   # 或：cargo binstall episteme
-epis install claude
+```
+/plugin marketplace add epicsagas/plugins
+/plugin install episteme@epicsagas
 ```
 
-初始化知識圖譜、註冊 MCP 工具並安裝 4 個專業代理。重新啟動 Claude Code 即可使用。
+安裝後，執行一次以下指令以下載知識圖譜資料（MCP 正常運作所必需）：
+
+```bash
+epis install   # 從 GitHub Releases 下載知識圖譜資料
+```
+
+MCP 工具和 4 個專業代理將自動註冊。重新啟動 Claude Code 即可使用。
+
+更新：`/plugin update episteme@epicsagas`
 
 ### Codex CLI
 
 ```bash
-brew install epicsagas/tap/episteme
-epis install codex
+codex plugin marketplace add epicsagas/plugins
 ```
 
-初始化資料並註冊技能。重新啟動後立即可用。
+安裝後，執行一次以下指令以下載知識圖譜資料（MCP 正常運作所必需）：
+
+```bash
+epis install   # 從 GitHub Releases 下載知識圖譜資料
+```
+
+重新啟動後立即可用。
+
+更新：`codex plugin update episteme@epicsagas`
 
 ### 其他工具
 
@@ -74,8 +89,7 @@ epis install --all        # 所有支援的工具
 | 方法 | 指令 |
 |------|------|
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
-| **Shell 指令碼** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
-| **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
+| **Shell 指令碼** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh \| sh` |
 | **cargo** | `cargo binstall episteme` ⚡ 或 `cargo install episteme` |
 | **Docker** | 見 [選項 3](#選項-3docker無需-rust) |
 
@@ -263,11 +277,8 @@ docker-compose up -d
 
 | 平台 | 檔案 |
 |------|------|
-| **macOS**（Apple Silicon） | `episteme-aarch64-apple-darwin.tar.gz` |
-| **macOS**（Intel） | `episteme-x86_64-apple-darwin.tar.gz` |
-| **Linux**（x86_64） | `episteme-x86_64-unknown-linux-gnu.tar.gz` |
-| **Linux**（ARM64） | `episteme-aarch64-unknown-linux-gnu.tar.gz` |
-| **Windows**（x86_64） | `episteme-x86_64-pc-windows-msvc.zip` |
+| **macOS**（Apple Silicon） | `episteme-aarch64-apple-darwin.tar.xz` |
+| **Linux**（x86_64） | `episteme-x86_64-unknown-linux-gnu.tar.xz` |
 
 ```bash
 # macOS / Linux

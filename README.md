@@ -55,21 +55,34 @@
 
 ### Claude Code
 
-```bash
-brew install epicsagas/tap/episteme   # or: cargo binstall episteme
-epis install claude
+```
+/plugin marketplace add epicsagas/plugins
+/plugin install episteme@epicsagas
 ```
 
-Seeds the knowledge graph, registers MCP tools, and installs 4 specialized agents. Restart Claude Code and you're done.
+Then run once after installation:
+
+```bash
+epis install   # download knowledge graph data from GitHub Releases
+```
+
+`epis install` seeds the knowledge graph database — required before MCP tools become functional. Restart Claude Code and you're done.
+
+Updates with `/plugin update episteme@epicsagas`.
 
 ### Codex CLI
 
 ```bash
-brew install epicsagas/tap/episteme
-epis install codex
+codex plugin marketplace add epicsagas/plugins
 ```
 
-Seeds data and registers skills. Available immediately after restart.
+Then run once after installation:
+
+```bash
+epis install   # download knowledge graph data from GitHub Releases
+```
+
+`epis install` is required before first use. Updates with `codex plugin update episteme@epicsagas`.
 
 ### Other tools
 
@@ -85,8 +98,7 @@ epis install --all        # All supported tools
 | Method | Command |
 |--------|---------|
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
-| **Shell script** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
-| **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
+| **Shell script** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh \| sh` |
 | **cargo** | `cargo binstall episteme` ⚡ or `cargo install episteme` |
 | **Docker** | See [Option 3](#option-3-docker-no-rust-required) |
 
@@ -289,11 +301,8 @@ Download the latest binary for your platform from [GitHub Releases](https://gith
 
 | Platform | File |
 |----------|------|
-| **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.gz` |
-| **macOS** (Intel) | `episteme-x86_64-apple-darwin.tar.gz` |
-| **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.gz` |
-| **Linux** (ARM64) | `episteme-aarch64-unknown-linux-gnu.tar.gz` |
-| **Windows** (x86_64) | `episteme-x86_64-pc-windows-msvc.zip` |
+| **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.xz` |
+| **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.xz` |
 
 ```bash
 # macOS / Linux

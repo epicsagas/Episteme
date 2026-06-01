@@ -42,21 +42,36 @@
 
 ### Claude Code
 
-```bash
-brew install epicsagas/tap/episteme   # または: cargo binstall episteme
-epis install claude
+```
+/plugin marketplace add epicsagas/plugins
+/plugin install episteme@epicsagas
 ```
 
-ナレッジグラフをシードし、MCPツールを登録し、4つの専門エージェントをインストールします。Claude Codeを再起動するだけで完了です。
+インストール後、ナレッジグラフデータをダウンロードするために一度実行してください（MCP動作に必須）：
+
+```bash
+epis install   # GitHub Releasesからナレッジグラフデータをダウンロード
+```
+
+MCPツールと4つの専門エージェントが登録されます。Claude Codeを再起動するだけで完了です。
+
+アップデート: `/plugin update episteme@epicsagas`
 
 ### Codex CLI
 
 ```bash
-brew install epicsagas/tap/episteme
-epis install codex
+codex plugin marketplace add epicsagas/plugins
 ```
 
-データをシードし、スキルを登録します。再起動後すぐに利用可能です。
+インストール後、ナレッジグラフデータをダウンロードするために一度実行してください（MCP動作に必須）：
+
+```bash
+epis install   # GitHub Releasesからナレッジグラフデータをダウンロード
+```
+
+再起動後すぐに利用可能です。
+
+アップデート: `codex plugin update episteme@epicsagas`
 
 ### その他のツール
 
@@ -72,8 +87,7 @@ epis install --all        # 対応するすべてのツール
 | 方法 | コマンド |
 |------|----------|
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
-| **シェルスクリプト** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/install.sh \| sh` |
-| **Windows** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/install.ps1 \| iex` |
+| **シェルスクリプト** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh \| sh` |
 | **cargo** | `cargo binstall episteme` ⚡ または `cargo install episteme` |
 | **Docker** | [オプション3](#option-3-docker-rust不要)を参照 |
 
@@ -261,11 +275,8 @@ MCP設定ファイルに以下を追加してください：
 
 | プラットフォーム | ファイル |
 |----------|------|
-| **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.gz` |
-| **macOS** (Intel) | `episteme-x86_64-apple-darwin.tar.gz` |
-| **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.gz` |
-| **Linux** (ARM64) | `episteme-aarch64-unknown-linux-gnu.tar.gz` |
-| **Windows** (x86_64) | `episteme-x86_64-pc-windows-msvc.zip` |
+| **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.xz` |
+| **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.xz` |
 
 ```bash
 # macOS / Linux
