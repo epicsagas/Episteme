@@ -8,7 +8,6 @@ license = "Apache-2.0"
 readme = "README.md"
 keywords = ["knowledge-graph", "design-patterns", "refactoring", "software-engineering", "mcp"]
 categories = ["command-line-utilities", "data-structures", "development-tools"]
-default-run = "epis"
 repository = "https://github.com/epicsagas/Episteme"
 exclude = [
     # Large media assets
