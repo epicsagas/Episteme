@@ -49,13 +49,13 @@
 /plugin install episteme@epicsagas
 ```
 
-安裝後，執行一次以下指令以下載知識圖譜資料（MCP 正常運作所必需）：
+外掛鉤子會自動安裝 `epis` 二進位檔。**在啟動新工作階段之前**，請在終端機中執行一次以下指令：
 
 ```bash
 epis install   # 從 GitHub Releases 下載知識圖譜資料
 ```
 
-MCP 工具和 4 個專業代理將自動註冊。重新啟動 Claude Code 即可使用。
+`epis install` 會初始化知識圖譜資料庫 — 缺少此步驟，MCP 工具將無法正常運作。之後啟動新的 Claude Code 工作階段即可使用。
 
 更新：`/plugin update episteme@epicsagas`
 
@@ -65,13 +65,13 @@ MCP 工具和 4 個專業代理將自動註冊。重新啟動 Claude Code 即可
 codex plugin marketplace add epicsagas/plugins
 ```
 
-安裝後，執行一次以下指令以下載知識圖譜資料（MCP 正常運作所必需）：
+外掛鉤子會自動安裝 `epis` 二進位檔。**在啟動新工作階段之前**，請在終端機中執行一次以下指令：
 
 ```bash
 epis install   # 從 GitHub Releases 下載知識圖譜資料
 ```
 
-重新啟動後立即可用。
+`epis install` 會初始化知識圖譜資料庫 — 缺少此步驟，MCP 工具將無法正常運作。之後啟動新工作階段即可立即使用。
 
 更新：`codex plugin update episteme@epicsagas`
 
@@ -456,10 +456,17 @@ rustup show   # 確認使用中的工具鏈
 
 ## 發展路線圖
 
+**已發布**
+- [x] `epis install` — 從 GitHub Releases 一鍵完成資料初始化
+- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux x86_64
+- [x] Claude Code & Codex CLI 外掛市集支援
+- [x] README 多語言翻譯 — 9 種語言 (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+
+**規劃中**
+- [ ] **跨平台建置** — 將 `fastembed` 遷移至 `candle`（Pure Rust）以支援 Intel macOS、Windows、Linux ARM64 ([#32](https://github.com/epicsagas/Episteme/issues/32))
 - [ ] **自訂實體** — 新增團隊特定的模式/壞味道
+- [ ] **多語言中繼資料** — 實體標題與摘要的 CJK 語言支援
 - [ ] **互動式教學** — 應用程式內的 MCP 工具導覽
-- [ ] **多語言中繼資料** — 實體標題與摘要的韓文、日文、中文支援（README 翻譯已完成）
-- [ ] **MCP 工具描述** — 取代 IDE 專用外掛的增強工具描述
 - [ ] **團隊指標** — 跨組織的聚合模式使用分析
 
 ---

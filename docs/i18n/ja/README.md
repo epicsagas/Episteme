@@ -47,13 +47,13 @@
 /plugin install episteme@epicsagas
 ```
 
-インストール後、ナレッジグラフデータをダウンロードするために一度実行してください（MCP動作に必須）：
+プラグインフックが `epis` バイナリを自動的にインストールします。**新しいセッションを開始する前に**、ターミナルで以下のコマンドを一度実行してください：
 
 ```bash
 epis install   # GitHub Releasesからナレッジグラフデータをダウンロード
 ```
 
-MCPツールと4つの専門エージェントが登録されます。Claude Codeを再起動するだけで完了です。
+`epis install` はナレッジグラフデータベースを初期化します — このステップなしではMCPツールが動作しません。その後、新しいClaude Codeセッションを起動すれば完了です。
 
 アップデート: `/plugin update episteme@epicsagas`
 
@@ -63,13 +63,13 @@ MCPツールと4つの専門エージェントが登録されます。Claude Cod
 codex plugin marketplace add epicsagas/plugins
 ```
 
-インストール後、ナレッジグラフデータをダウンロードするために一度実行してください（MCP動作に必須）：
+プラグインフックが `epis` バイナリを自動的にインストールします。**新しいセッションを開始する前に**、ターミナルで以下のコマンドを一度実行してください：
 
 ```bash
 epis install   # GitHub Releasesからナレッジグラフデータをダウンロード
 ```
 
-再起動後すぐに利用可能です。
+`epis install` はナレッジグラフデータベースを初期化します — このステップなしではMCPツールが動作しません。その後、新しいセッションを起動すれば即時利用可能です。
 
 アップデート: `codex plugin update episteme@epicsagas`
 
@@ -454,10 +454,17 @@ rustup show   # アクティブなツールチェーンを確認
 
 ## ロードマップ
 
+**リリース済み**
+- [x] `epis install` — GitHub Releasesからワンコマンドでデータをセットアップ
+- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux x86_64
+- [x] Claude Code & Codex CLI プラグインマーケットプレイス対応
+- [x] README多言語翻訳 — 9言語 (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+
+**予定**
+- [ ] **クロスプラットフォームビルド** — `fastembed` → `candle`（Pure Rust）への移行によりIntel macOS、Windows、Linux ARM64に対応 ([#32](https://github.com/epicsagas/Episteme/issues/32))
 - [ ] **カスタムエンティティ** — チーム固有のパターン/スメルの追加
+- [ ] **多言語メタデータ** — エンティティのタイトルと概要のCJK言語対応
 - [ ] **インタラクティブチュートリアル** — MCPツールのアプリ内ガイドツアー
-- [ ] **多言語メタデータ** — エンティティのタイトルと概要の韓国語・日本語・中国語対応（README翻訳は完了）
-- [ ] **MCPツール説明** — IDE専用プラグインに代わる強化されたツール説明
 - [ ] **チームメトリクス** — 組織全体でのパターン使用状況の集計
 
 ---

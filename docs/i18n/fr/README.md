@@ -49,13 +49,13 @@
 /plugin install episteme@epicsagas
 ```
 
-Après l'installation, exécutez une fois la commande suivante pour télécharger les données du graphe de connaissances (obligatoire pour le fonctionnement de MCP) :
+Le hook du plugin installe le binaire `epis` automatiquement. **Avant de démarrer une nouvelle session**, exécutez cette commande une fois dans votre terminal :
 
 ```bash
 epis install   # Télécharge les données du graphe de connaissances depuis GitHub Releases
 ```
 
-Les outils MCP et les 4 agents spécialisés seront enregistrés. Redémarrez Claude Code et c'est prêt.
+`epis install` initialise la base de données du graphe de connaissances — les outils MCP ne fonctionneront pas sans cette étape. Démarrez ensuite une nouvelle session Claude Code et c'est prêt.
 
 Mettre à jour : `/plugin update episteme@epicsagas`
 
@@ -65,13 +65,13 @@ Mettre à jour : `/plugin update episteme@epicsagas`
 codex plugin marketplace add epicsagas/plugins
 ```
 
-Après l'installation, exécutez une fois la commande suivante pour télécharger les données du graphe de connaissances (obligatoire pour le fonctionnement de MCP) :
+Le hook du plugin installe le binaire `epis` automatiquement. **Avant de démarrer une nouvelle session**, exécutez cette commande une fois dans votre terminal :
 
 ```bash
 epis install   # Télécharge les données du graphe de connaissances depuis GitHub Releases
 ```
 
-Disponible immédiatement après redémarrage.
+`epis install` initialise la base de données du graphe de connaissances — les outils MCP ne fonctionneront pas sans cette étape. Démarrez ensuite une nouvelle session et tout est immédiatement disponible.
 
 Mettre à jour : `codex plugin update episteme@epicsagas`
 
@@ -456,11 +456,18 @@ rustup show   # confirmer la toolchain active
 
 ## Feuille de route
 
-- [ ] **Entites personnalisees** — Ajouter des motifs/smells specifiques a l'equipe
-- [ ] **Tutoriels interactifs** — Visites guidees integrees pour les outils MCP
-- [ ] **Metadonnees multilingues** — Titres et resumes des entites en coreen, japonais, chinois (traductions README deja completes)
-- [ ] **Descriptions des outils MCP** — Descriptions ameliorees pour remplacer les plugins IDE specifiques
-- [ ] **Metriques d'equipe** — Agréger l'utilisation des motifs au sein de l'organisation
+**Publié**
+- [x] `epis install` — configuration des données en une seule commande depuis GitHub Releases
+- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux x86_64
+- [x] Support du marketplace de plugins Claude Code & Codex CLI
+- [x] Traductions du README — 9 langues (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+
+**Prévu**
+- [ ] **Builds multi-plateformes** — Migrer `fastembed` → `candle` (Pure Rust) pour prendre en charge Intel macOS, Windows, Linux ARM64 ([#32](https://github.com/epicsagas/Episteme/issues/32))
+- [ ] **Entités personnalisées** — Ajouter des motifs/smells spécifiques à l'équipe
+- [ ] **Métadonnées multilingues** — Titres et résumés des entités en langues CJK
+- [ ] **Tutoriels interactifs** — Visites guidées intégrées pour les outils MCP
+- [ ] **Métriques d'équipe** — Agréger l'utilisation des motifs au sein de l'organisation
 
 ---
 

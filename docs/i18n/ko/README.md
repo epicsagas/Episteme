@@ -47,13 +47,13 @@
 /plugin install episteme@epicsagas
 ```
 
-설치 후 한 번 실행하여 지식 그래프 데이터를 다운로드합니다 (MCP 동작에 필수):
+플러그인 훅이 `epis` 바이너리를 자동으로 설치합니다. **새 세션을 시작하기 전에** 터미널에서 아래 명령을 한 번 실행하세요:
 
 ```bash
 epis install   # GitHub Releases에서 지식 그래프 데이터 다운로드
 ```
 
-MCP 도구와 4개의 전문 에이전트가 등록됩니다. Claude Code를 재시작하면 바로 사용할 수 있습니다.
+`epis install`은 지식 그래프 데이터베이스를 초기화합니다 — 이 단계 없이는 MCP 도구가 작동하지 않습니다. 이후 새 Claude Code 세션을 시작하면 바로 사용할 수 있습니다.
 
 업데이트: `/plugin update episteme@epicsagas`
 
@@ -63,13 +63,13 @@ MCP 도구와 4개의 전문 에이전트가 등록됩니다. Claude Code를 재
 codex plugin marketplace add epicsagas/plugins
 ```
 
-설치 후 한 번 실행하여 지식 그래프 데이터를 다운로드합니다 (MCP 동작에 필수):
+플러그인 훅이 `epis` 바이너리를 자동으로 설치합니다. **새 세션을 시작하기 전에** 터미널에서 아래 명령을 한 번 실행하세요:
 
 ```bash
 epis install   # GitHub Releases에서 지식 그래프 데이터 다운로드
 ```
 
-재시작 후 즉시 사용 가능합니다.
+`epis install`은 지식 그래프 데이터베이스를 초기화합니다 — 이 단계 없이는 MCP 도구가 작동하지 않습니다. 이후 새 세션을 시작하면 즉시 사용 가능합니다.
 
 업데이트: `codex plugin update episteme@epicsagas`
 
@@ -454,10 +454,17 @@ rustup show   # 활성 툴체인 확인
 
 ## 로드맵
 
+**출시 완료**
+- [x] `epis install` — GitHub Releases에서 한 번에 데이터 설정
+- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux x86_64
+- [x] Claude Code & Codex CLI 플러그인 마켓플레이스 지원
+- [x] README 다국어 번역 — 9개 언어 (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+
+**예정**
+- [ ] **크로스 플랫폼 빌드** — `fastembed` → `candle` (Pure Rust)로 마이그레이션하여 Intel macOS, Windows, Linux ARM64 지원 ([#32](https://github.com/epicsagas/Episteme/issues/32))
 - [ ] **사용자 정의 엔티티** — 팀별 패턴/스멜 추가
+- [ ] **다국어 메타데이터** — 엔티티 제목 및 요약의 CJK 언어 지원
 - [ ] **대화형 튜토리얼** — MCP 도구에 대한 앱 내 가이드 투어
-- [ ] **다국어 메타데이터** — 엔티티 제목 및 요약의 한국어, 일본어, 중국어 지원 (README 번역은 완료)
-- [ ] **MCP 도구 설명** — IDE 전용 플러그인을 대체하는 향상된 도구 설명
 - [ ] **팀 메트릭** — 조직 전체의 패턴 사용 현황 집계
 
 ---

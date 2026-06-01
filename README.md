@@ -60,13 +60,13 @@
 /plugin install episteme@epicsagas
 ```
 
-Then run once after installation:
+The plugin hook installs the `epis` binary automatically. **Before starting a new session**, run this once in your terminal:
 
 ```bash
 epis install   # download knowledge graph data from GitHub Releases
 ```
 
-`epis install` seeds the knowledge graph database — required before MCP tools become functional. Restart Claude Code and you're done.
+`epis install` seeds the knowledge graph database — MCP tools will not function without it. Then start a new Claude Code session and you're done.
 
 Updates with `/plugin update episteme@epicsagas`.
 
@@ -76,13 +76,13 @@ Updates with `/plugin update episteme@epicsagas`.
 codex plugin marketplace add epicsagas/plugins
 ```
 
-Then run once after installation:
+The plugin hook installs the `epis` binary automatically. **Before starting a new session**, run this once in your terminal:
 
 ```bash
 epis install   # download knowledge graph data from GitHub Releases
 ```
 
-`epis install` is required before first use. Updates with `codex plugin update episteme@epicsagas`.
+`epis install` is required before MCP tools become functional. Updates with `codex plugin update episteme@epicsagas`.
 
 ### Other tools
 

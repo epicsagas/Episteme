@@ -49,13 +49,13 @@
 /plugin install episteme@epicsagas
 ```
 
-Após instalar, execute uma vez para baixar os dados do grafo de conhecimento (obrigatório para o MCP funcionar):
+O hook do plugin instala o binário `epis` automaticamente. **Antes de iniciar uma nova sessão**, execute este comando uma vez no seu terminal:
 
 ```bash
 epis install   # Baixa os dados do grafo de conhecimento do GitHub Releases
 ```
 
-As ferramentas MCP e os 4 agentes especializados serão registrados. Reinicie o Claude Code e está pronto.
+`epis install` inicializa o banco de dados do grafo de conhecimento — as ferramentas MCP não funcionarão sem este passo. Em seguida, inicie uma nova sessão do Claude Code e está pronto.
 
 Atualizar: `/plugin update episteme@epicsagas`
 
@@ -65,13 +65,13 @@ Atualizar: `/plugin update episteme@epicsagas`
 codex plugin marketplace add epicsagas/plugins
 ```
 
-Após instalar, execute uma vez para baixar os dados do grafo de conhecimento (obrigatório para o MCP funcionar):
+O hook do plugin instala o binário `epis` automaticamente. **Antes de iniciar uma nova sessão**, execute este comando uma vez no seu terminal:
 
 ```bash
 epis install   # Baixa os dados do grafo de conhecimento do GitHub Releases
 ```
 
-Disponível imediatamente após reiniciar.
+`epis install` inicializa o banco de dados do grafo de conhecimento — as ferramentas MCP não funcionarão sem este passo. Em seguida, inicie uma nova sessão e está disponível imediatamente.
 
 Atualizar: `codex plugin update episteme@epicsagas`
 
@@ -456,10 +456,17 @@ rustup show   # confirme a toolchain ativa
 
 ## Roteiro
 
+**Lançado**
+- [x] `epis install` — configuração de dados com um único comando a partir do GitHub Releases
+- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux x86_64
+- [x] Suporte ao marketplace de plugins do Claude Code & Codex CLI
+- [x] Traduções do README — 9 idiomas (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+
+**Planejado**
+- [ ] **Builds multiplataforma** — Migrar `fastembed` → `candle` (Pure Rust) para suportar Intel macOS, Windows, Linux ARM64 ([#32](https://github.com/epicsagas/Episteme/issues/32))
 - [ ] **Entidades Personalizadas** — Adicionar padrões/smells específicos da equipe
+- [ ] **Metadados Multilíngues** — Títulos e resumos de entidades em idiomas CJK
 - [ ] **Tutoriais Interativos** — Tours guiados no aplicativo para ferramentas MCP
-- [ ] **Metadados Multilíngues** — Títulos e resumos de entidades em coreano, japonês, chinês (traduções do README já concluídas)
-- [ ] **Descrições de Ferramentas MCP** — Descrições aprimoradas para substituir plugins IDE específicos
 - [ ] **Métricas de Equipe** — Agregação de uso de padrões pela organização
 
 ---

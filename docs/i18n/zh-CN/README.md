@@ -47,13 +47,13 @@
 /plugin install episteme@epicsagas
 ```
 
-安装后，运行一次以下命令下载知识图谱数据（MCP 正常工作所必需）：
+插件钩子会自动安装 `epis` 二进制文件。**在启动新会话之前**，请在终端中运行一次以下命令：
 
 ```bash
 epis install   # 从 GitHub Releases 下载知识图谱数据
 ```
 
-MCP 工具和 4 个专业代理将自动注册。重启 Claude Code 即可使用。
+`epis install` 会初始化知识图谱数据库 —— 缺少此步骤，MCP 工具将无法正常工作。然后启动新的 Claude Code 会话即可。
 
 更新：`/plugin update episteme@epicsagas`
 
@@ -63,13 +63,13 @@ MCP 工具和 4 个专业代理将自动注册。重启 Claude Code 即可使用
 codex plugin marketplace add epicsagas/plugins
 ```
 
-安装后，运行一次以下命令下载知识图谱数据（MCP 正常工作所必需）：
+插件钩子会自动安装 `epis` 二进制文件。**在启动新会话之前**，请在终端中运行一次以下命令：
 
 ```bash
 epis install   # 从 GitHub Releases 下载知识图谱数据
 ```
 
-重启后立即可用。
+`epis install` 会初始化知识图谱数据库 —— 缺少此步骤，MCP 工具将无法正常工作。然后启动新会话即可立即使用。
 
 更新：`codex plugin update episteme@epicsagas`
 
@@ -454,10 +454,17 @@ rustup show   # 确认当前工具链
 
 ## 路线图
 
+**已发布**
+- [x] `epis install` —— 从 GitHub Releases 一键完成数据初始化
+- [x] Homebrew tap (`epicsagas/tap/episteme`) —— macOS Apple Silicon + Linux x86_64
+- [x] Claude Code & Codex CLI 插件市场支持
+- [x] README 多语言翻译 —— 9 种语言 (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+
+**计划中**
+- [ ] **跨平台构建** —— 将 `fastembed` 迁移至 `candle`（Pure Rust）以支持 Intel macOS、Windows、Linux ARM64 ([#32](https://github.com/epicsagas/Episteme/issues/32))
 - [ ] **自定义实体** —— 添加团队特定的模式/坏味道
+- [ ] **多语言元数据** —— 实体标题和摘要的 CJK 语言支持
 - [ ] **交互式教程** —— 应用内 MCP 工具引导教程
-- [ ] **多语言元数据** —— 实体标题和摘要的韩语、日语、中文支持（README 翻译已完成）
-- [ ] **MCP 工具描述** —— 替代 IDE 专用插件的增强工具描述
 - [ ] **团队指标** —— 跨组织的模式使用聚合
 
 ---
