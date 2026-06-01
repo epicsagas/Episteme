@@ -14,7 +14,7 @@ targets = [
 ]
 tap = "epicsagas/homebrew-tap"
 formula = "episteme"
-publish-jobs = ["homebrew"]
+publish-jobs = ["homebrew", "./publish-crates"]
 allow-dirty = ["ci"]
 macos-sign = false
 install-path = "CARGO_HOME"
