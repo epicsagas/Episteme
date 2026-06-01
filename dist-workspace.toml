@@ -5,24 +5,17 @@ members = ["cargo:."]
 [dist]
 cargo-dist-version = "0.31.0"
 ci = "github"
-installers = ["homebrew"]
-# shell/powershell installers are hand-written (install.sh / install.ps1) and uploaded as extra-artifacts
-extra-artifacts = [
-  { path = "install.sh",  kind = "installer" },
-  { path = "install.ps1", kind = "installer" },
+installers = ["shell", "homebrew"]
+# ort-sys prebuilt ONNX Runtime binaries are only available for these two targets.
+# x86_64-apple-darwin, musl, Windows, aarch64-linux all fail at build time.
+targets = [
+  "aarch64-apple-darwin",
+  "x86_64-unknown-linux-gnu",
 ]
 tap = "epicsagas/homebrew-tap"
-publish-jobs = ["homebrew", "./publish-crate"]
-targets = [
-  "x86_64-unknown-linux-gnu",
-  "x86_64-unknown-linux-musl",
-  "aarch64-unknown-linux-gnu",
-  "x86_64-apple-darwin",
-  "aarch64-apple-darwin",
-  "x86_64-pc-windows-msvc",
-  "aarch64-pc-windows-msvc",
-]
-merge-assets = true
-allow-dirty = ["ci"]
-macos-sign = true
-macos-notarize = true
+formula = "episteme"
+publish-jobs = ["homebrew"]
+macos-sign = false
+install-path = "CARGO_HOME"
+pr-run-mode = "plan"
+source-tarball = true
