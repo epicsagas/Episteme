@@ -100,6 +100,12 @@ epis --version
 epis stats
 ```
 
+Oder direkt in Claude Code / Codex CLI:
+
+```
+/episteme verify
+```
+
 ### In 30 Sekunden ausprobieren
 
 **Option A — CLI:** Auf jede Datei in Ihrem Projekt anwenden.

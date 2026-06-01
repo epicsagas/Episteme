@@ -98,6 +98,12 @@ epis --version
 epis stats
 ```
 
+Claude Code / Codex CLI 内から直接実行することもできます:
+
+```
+/episteme verify
+```
+
 ### 30秒で試す
 
 **方法A — CLI:** プロジェクト内の任意のファイルを指定します。

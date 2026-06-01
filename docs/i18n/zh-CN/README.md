@@ -98,6 +98,12 @@ epis --version
 epis stats
 ```
 
+也可以在 Claude Code / Codex CLI 中直接运行:
+
+```
+/episteme verify
+```
+
 ### 30 秒上手体验
 
 **方式 A —— CLI：** 指向项目中的任意文件。
