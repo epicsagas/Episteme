@@ -2,6 +2,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+#[cfg(test)]
 use serde_json::{Value, json};
 
 /// Transport configuration for MCP integration across all AI tools.
@@ -20,6 +21,7 @@ impl Default for Transport {
     }
 }
 
+#[cfg(test)]
 fn mcp_server_config(transport: &Transport) -> Value {
     match transport {
         Transport::Http { port, token } => {
@@ -42,55 +44,11 @@ fn mcp_server_config(transport: &Transport) -> Value {
     }
 }
 
-/// Install MCP config for Claude Code (~/.claude.json).
-pub fn install_claude(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
+/// Install registry artifacts for Claude Code (~/.claude/).
+/// MCP config is not auto-configured in skill-driven mode.
+pub fn install_claude(dry_run: bool, _transport: &Transport) -> Result<Vec<String>, String> {
     let home = dirs_home();
-    let claude_json = home.join(".claude.json");
     let mut messages = Vec::new();
-
-    let mut config = read_json_file(&claude_json);
-    let map = config.as_object_mut().ok_or("config is not an object")?;
-
-    let servers = map
-        .entry("mcpServers")
-        .or_insert_with(|| json!({}))
-        .as_object_mut()
-        .ok_or("mcpServers is not an object")?;
-
-    let desired = mcp_server_config(transport);
-    let existed = servers.contains_key("episteme");
-    let matches = servers.get("episteme") == Some(&desired);
-    let legacy_removed = remove_legacy_keys(servers);
-
-    if matches {
-        messages.push("Claude Code: MCP already configured".to_owned());
-    } else {
-        servers.insert("episteme".to_owned(), desired);
-        if !dry_run {
-            write_json_file(&claude_json, &config)?;
-        }
-        let transport_label = match transport {
-            Transport::Http { port, .. } => format!("HTTP, port {port}"),
-            Transport::Stdio => "stdio".to_owned(),
-        };
-        if existed {
-            messages.push(format!(
-                "Claude Code: MCP config updated ({transport_label})"
-            ));
-        } else {
-            messages.push(format!("Claude Code: MCP config added ({transport_label})"));
-        }
-    }
-
-    if !legacy_removed.is_empty() {
-        if !dry_run {
-            write_json_file(&claude_json, &config)?;
-        }
-        messages.push(format!(
-            "Claude Code: removed legacy key(s): {}",
-            legacy_removed.join(", ")
-        ));
-    }
 
     // Upsert registry artifacts (agents, skills) into ~/.claude/
     let claude_dir = home.join(".claude");
@@ -100,58 +58,10 @@ pub fn install_claude(dry_run: bool, transport: &Transport) -> Result<Vec<String
     Ok(messages)
 }
 
-/// Remove legacy MCP server keys (e.g. "syntagma") from a servers map.
-/// Returns a list of removed key names.
-fn remove_legacy_keys(servers: &mut serde_json::Map<String, Value>) -> Vec<String> {
-    let legacy_keys = ["syntagma".to_owned()];
-    let removed: Vec<String> = legacy_keys
-        .iter()
-        .filter(|k| servers.remove(k.as_str()).is_some())
-        .cloned()
-        .collect();
-    removed
-}
-
-/// Install MCP config for Cursor (~/.cursor/mcp.json).
-pub fn install_cursor(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
-    let home = dirs_home();
-    let cursor_dir = home.join(".cursor");
-    let mcp_json = cursor_dir.join("mcp.json");
-
-    fs::create_dir_all(&cursor_dir).map_err(|e| e.to_string())?;
-
-    let mut config = read_json_file(&mcp_json);
-    let map = config.as_object_mut().ok_or("config is not an object")?;
-
-    let servers = map
-        .entry("mcpServers")
-        .or_insert_with(|| json!({}))
-        .as_object_mut()
-        .ok_or("mcpServers is not an object")?;
-
-    let desired = mcp_server_config(transport);
-    let existed = servers.contains_key("episteme");
-    let matches = servers.get("episteme") == Some(&desired);
-    let legacy_removed = remove_legacy_keys(servers);
-
+/// Install rules for Cursor (~/.cursor/rules/).
+/// MCP config is not auto-configured in skill-driven mode.
+pub fn install_cursor(dry_run: bool, _transport: &Transport) -> Result<Vec<String>, String> {
     let mut msgs = Vec::new();
-
-    if matches && legacy_removed.is_empty() {
-        msgs.push("Cursor: MCP already configured".to_owned());
-    } else {
-        servers.insert("episteme".to_owned(), desired);
-        if !dry_run {
-            write_json_file(&mcp_json, &config)?;
-        }
-        let label = if existed { "updated" } else { "added" };
-        msgs.push(format!("Cursor: MCP config {label}"));
-        if !legacy_removed.is_empty() {
-            msgs.push(format!(
-                "Cursor: removed legacy key(s): {}",
-                legacy_removed.join(", ")
-            ));
-        }
-    }
 
     // Seed Episteme rules as .cursor/rules/episteme.mdc
     let rules_msgs = upsert_cursor_rules(dry_run, "Cursor")?;
@@ -190,91 +100,25 @@ pub fn install_codex(dry_run: bool) -> Result<Vec<String>, String> {
     Ok(msgs)
 }
 
-/// Install MCP config for OpenCode (~/.config/opencode/opencode.json).
-pub fn install_opencode(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
+/// Install registry artifacts for OpenCode (~/.config/opencode/).
+/// MCP config is not auto-configured in skill-driven mode.
+pub fn install_opencode(dry_run: bool, _transport: &Transport) -> Result<Vec<String>, String> {
     let home = dirs_home();
     let opencode_dir = home.join(".config").join("opencode");
-    let config_json = opencode_dir.join("opencode.json");
-
-    fs::create_dir_all(&opencode_dir).map_err(|e| e.to_string())?;
-
-    let mut config = read_json_file(&config_json);
-    let map = config.as_object_mut().ok_or("config is not an object")?;
-
-    let servers = map
-        .entry("mcp")
-        .or_insert_with(|| json!({}))
-        .as_object_mut()
-        .ok_or("mcp is not an object")?;
-
-    let desired = mcp_server_config(transport);
-    let existed = servers.contains_key("episteme");
-    let matches = servers.get("episteme") == Some(&desired);
-    let legacy_removed = remove_legacy_keys(servers);
-
-    if matches && legacy_removed.is_empty() {
-        return Ok(vec!["OpenCode: MCP already configured".to_owned()]);
-    }
-
-    servers.insert("episteme".to_owned(), desired);
-    if !dry_run {
-        write_json_file(&config_json, &config)?;
-    }
-
-    let label = if existed { "updated" } else { "added" };
-    let mut msgs = vec![format!("OpenCode: MCP config {label}")];
-    if !legacy_removed.is_empty() {
-        msgs.push(format!(
-            "OpenCode: removed legacy key(s): {}",
-            legacy_removed.join(", ")
-        ));
-    }
 
     // Seed agents + skills to ~/.config/opencode/ (OpenCode supports agents/ natively)
     let registry_msgs = upsert_registry_artifacts(&opencode_dir, dry_run, "OpenCode")?;
-    msgs.extend(registry_msgs);
 
-    Ok(msgs)
+    Ok(registry_msgs)
 }
 
-/// Install MCP config for Cline (~/.cline/mcp.json).
-pub fn install_cline(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
+/// Install registry artifacts and rules for Cline (~/.cline/).
+/// MCP config is not auto-configured in skill-driven mode.
+pub fn install_cline(dry_run: bool, _transport: &Transport) -> Result<Vec<String>, String> {
     let home = dirs_home();
     let cline_dir = home.join(".cline");
-    let mcp_json = cline_dir.join("mcp.json");
-    fs::create_dir_all(&cline_dir).map_err(|e| e.to_string())?;
-
-    let mut config = read_json_file(&mcp_json);
-    let map = config.as_object_mut().ok_or("config is not an object")?;
-    let servers = map
-        .entry("mcpServers")
-        .or_insert_with(|| json!({}))
-        .as_object_mut()
-        .ok_or("mcpServers is not an object")?;
-
-    let desired = mcp_server_config(transport);
-    let existed = servers.contains_key("episteme");
-    let matches = servers.get("episteme") == Some(&desired);
-    let legacy_removed = remove_legacy_keys(servers);
 
     let mut msgs = Vec::new();
-
-    if matches && legacy_removed.is_empty() {
-        msgs.push("Cline: MCP already configured".to_owned());
-    } else {
-        servers.insert("episteme".to_owned(), desired);
-        if !dry_run {
-            write_json_file(&mcp_json, &config)?;
-        }
-        let label = if existed { "updated" } else { "added" };
-        msgs.push(format!("Cline: MCP config {label}"));
-        if !legacy_removed.is_empty() {
-            msgs.push(format!(
-                "Cline: removed legacy key(s): {}",
-                legacy_removed.join(", ")
-            ));
-        }
-    }
 
     // Seed registry artifacts (agents + skills) into ~/.cline/
     let registry_msgs = upsert_registry_artifacts(&cline_dir, dry_run, "Cline")?;
@@ -459,6 +303,9 @@ pub fn seed_data_from_local_archive(path: &Path, dry_run: bool) -> Result<Vec<St
 pub fn install_all(dry_run: bool, transport: &Transport) -> Result<Vec<String>, String> {
     let mut messages = Vec::new();
 
+    messages.push("ℹ️  MCP server not auto-configured (skill-driven mode).".to_owned());
+    messages.push("   To use MCP, see registry/mcp.json for manual setup.".to_owned());
+
     for result in [
         install_claude(dry_run, transport),
         install_cursor(dry_run, transport),
@@ -620,6 +467,7 @@ fn dirs_home() -> PathBuf {
         .unwrap_or_else(|| PathBuf::from("/tmp"))
 }
 
+#[cfg(test)]
 fn read_json_file(path: &Path) -> Value {
     fs::read_to_string(path)
         .ok()
@@ -627,6 +475,7 @@ fn read_json_file(path: &Path) -> Value {
         .unwrap_or(json!({}))
 }
 
+#[cfg(test)]
 fn write_json_file(path: &Path, value: &Value) -> Result<(), String> {
     let content = serde_json::to_string_pretty(value).map_err(|e| e.to_string())?;
     fs::write(path, content).map_err(|e| e.to_string())
