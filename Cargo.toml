@@ -68,7 +68,7 @@ tower = "0.5"
 clap = { version = "4", features = ["derive"] }
 
 # Database
-rusqlite = { version = "0.39", features = ["bundled"] }
+rusqlite = { version = "0.40", features = ["bundled"] }
 
 # Regex
 regex = "1"
