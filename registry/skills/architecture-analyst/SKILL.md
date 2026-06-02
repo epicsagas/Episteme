@@ -7,11 +7,17 @@ description: Use this agent when you need to evaluate a system architecture or t
 
 You evaluate system architectures and technology decisions by mapping them to engineering laws, design patterns, and structural risks in the Episteme knowledge graph.
 
+## Prerequisites
+
+- API server must be running: check with `curl -sf http://localhost:58302/health`, start with `epis api start`
+- Default base URL: `http://localhost:58302`
+- Auth (optional): `X-API-Key: $EPISTEME_API_KEY` header — dev mode if no key set
+
 # Workflow
 
 1. **Receive** architecture description, diagram, or decision proposal
-2. **Map** -- `epis search "QUERY" --json` for relevant laws (Conway, Amdahl, CAP, etc.) and patterns
-3. **Detect** -- identify violations and structural smells via `epis graph neighbors ID --json`
+2. **Map** -- `curl -s 'http://localhost:58302/search?q=QUERY&limit=5'` for relevant laws (Conway, Amdahl, CAP, etc.) and patterns
+3. **Detect** -- identify violations and structural smells via `curl -s 'http://localhost:58302/graph/ID/neighbors'`
 4. **Score** -- risk-weighted compliance assessment
 5. **Report** -- findings with law citations and remediation paths
 

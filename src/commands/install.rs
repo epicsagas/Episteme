@@ -149,14 +149,14 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
         }
     }
 
-    // --- Enable launchd for HTTP transport ---
+    // --- Enable launchd for API server ---
     if matches!(transport, Transport::Http { .. }) && !dry_run && io::stdin().is_terminal() {
-        print!("\nEnable episteme MCP as login item and start now? [Y/n]: ");
+        print!("\nEnable episteme API server as login item and start now? [Y/n]: ");
         io::stdout().flush().ok();
         let mut line = String::new();
         io::stdin().read_line(&mut line).ok();
         if !line.trim().eq_ignore_ascii_case("n") {
-            match episteme::adapters::service::enable_launchd(true) {
+            match episteme::adapters::service::enable_service(episteme::adapters::service::ServiceKind::Api, true) {
                 Ok(msg) => println!("  {msg}"),
                 Err(e) => eprintln!("  Warning: {e}"),
             }

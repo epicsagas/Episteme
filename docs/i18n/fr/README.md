@@ -55,7 +55,7 @@ Le hook du plugin installe le binaire `epis` automatiquement. **Avant de démarr
 epis install   # Télécharge les données du graphe de connaissances depuis GitHub Releases
 ```
 
-`epis install` initialise la base de données du graphe de connaissances — les outils MCP ne fonctionneront pas sans cette étape. Démarrez ensuite une nouvelle session Claude Code et c'est prêt.
+`epis install` initialise la base de données du graphe de connaissances et démarre le serveur HTTP API sur le port 58302. Démarrez ensuite une nouvelle session Claude Code et c'est prêt.
 
 Mettre à jour : `/plugin update episteme@epicsagas`
 
@@ -71,7 +71,7 @@ Le hook du plugin installe le binaire `epis` automatiquement. **Avant de démarr
 epis install   # Télécharge les données du graphe de connaissances depuis GitHub Releases
 ```
 
-`epis install` initialise la base de données du graphe de connaissances — les outils MCP ne fonctionneront pas sans cette étape. Démarrez ensuite une nouvelle session et tout est immédiatement disponible.
+`epis install` initialise la base de données du graphe de connaissances et démarre le serveur HTTP API sur le port 58302. Démarrez ensuite une nouvelle session et tout est immédiatement disponible.
 
 Mettre à jour : `codex plugin update episteme@epicsagas`
 
@@ -213,6 +213,7 @@ Episteme fonctionne entierement hors-ligne : binaire unique, base de donnees SQL
 | 👃 | **17 types de code smells** | Long Method, God Object, Feature Envy, etc. ¹ |
 | 🔗 | **201 relations sémantiques** | « résout », « impose », « viole », « est lié à » |
 | 🤖 | **9 outils MCP + 4 agents** | Interaction agent IA haute fidélité avec transferts inter-agents |
+| 🌐 | **Serveur HTTP API** | API REST sur le port 58302, démarré automatiquement à l'installation |
 | 🌍 | **Support de 10 langages** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
 | 📊 | **Analyse déterministe** | Python basé AST + regex multilangage, résultat identique à chaque fois |
 | 🏷️ | **Connaissances citables** | Chaque découverte est liée à des IDs d'entité explicites (`RF-001`, `LAW-021`) |
@@ -231,12 +232,12 @@ Episteme fonctionne entierement hors-ligne : binaire unique, base de donnees SQL
 
 ```bash
 cargo binstall episteme    # telecharge les binaires precompiles — pas de compilation
-epis install cursor        # initialise les donnees + connecte MCP + installe les agents
+epis install cursor        # initialise les donnees + demarre le serveur API + installe les agents
 ```
 
 Si cargo-binstall n'est pas installe : `cargo install cargo-binstall`
 
-> Apres `epis install cursor`, **redemarrez Claude Code** pour que les outils MCP et les agents apparaissent.
+> Après `epis install`, le serveur HTTP API démarre automatiquement sur le port 58302. MCP reste disponible -- voir `registry/mcp.json` pour la configuration manuelle.
 
 ### Option 2 : A partir des sources
 
@@ -309,11 +310,36 @@ epis explore "strategy pattern"    # explorer le graphe de connaissances
 
 ---
 
-## Outils MCP et Agents
+## Endpoints HTTP API
 
-> **Qu'est-ce que MCP ?** Le [Model Context Protocol](https://modelcontextprotocol.io) est une norme ouverte qui permet aux outils IA d'appeler des services externes. Episteme expose son graphe de connaissances sous forme d'outils MCP que Claude Code, Cursor et autres editeurs compatibles peuvent appeler automatiquement.
+> Episteme fonctionne comme un serveur HTTP API toujours actif sur le port 58302. Les skills et agents utilisent `curl http://localhost:58302/...` au lieu des outils MCP. MCP reste disponible pour la configuration manuelle -- voir `registry/mcp.json`.
 
-### 9 outils MCP
+### Endpoints de l'API
+
+#### Graphe de Connaissances
+
+| Méthode | Endpoint | Objectif |
+|---------|----------|----------|
+| **GET** | `/health` | Vérification de l'état |
+| **GET** | `/search?q=...` | Rechercher dans le graphe de connaissances |
+| **GET** | `/graph/{id}` | Obtenir une entité par ID |
+| **GET** | `/graph/{id}/neighbors` | Obtenir les entités liées |
+| **POST** | `/graph/path` | Trouver un chemin entre deux entités |
+
+#### Analyse de Code
+
+| Méthode | Endpoint | Objectif |
+|---------|----------|----------|
+| **POST** | `/analyze` | Détecter les code smells |
+| **POST** | `/refactor` | Suggérer des refactorings |
+
+#### Connaissance Tacite
+
+| Méthode | Endpoint | Objectif |
+|---------|----------|----------|
+| **POST** | `/insights` | Ajouter un insight d'équipe |
+
+### 9 outils MCP (Legacy)
 
 #### Connaissance canonique (6 outils)
 
@@ -370,8 +396,8 @@ epis graph path DP-005 RF-001   # ex. Factory Method → Extract Method
 epis build
 
 # Demarrer les serveurs
-epis api              # REST API sur :8000
-episteme mcp --http       # Serveur MCP sur :43175
+epis api              # REST API sur :58302
+episteme mcp --http       # Serveur MCP sur :43175 (legacy)
 episteme web --port 8080  # Interface Web (explorateur de graphe interactif)
 
 # Packaging de distribution
@@ -407,7 +433,7 @@ EPISTEME_DB_PATH=~/.episteme/db/episteme.db
 
 # Serveur API
 EPISTEME_API_HOST=0.0.0.0
-EPISTEME_API_PORT=8000
+EPISTEME_API_PORT=58302
 EPISTEME_API_KEY=your-secret-key
 
 # Serveur MCP
@@ -428,14 +454,11 @@ EPISTEME_MCP_PORT=43175
 
 **Les outils MCP n'apparaissent pas dans Claude Code / Cursor**
 
-Redemarrez l'editeur apres avoir execute `epis install`. Si toujours absent, verifiez que la configuration a ete ecrite :
-```bash
-cat ~/.claude.json   # Claude Code
-```
+Le serveur HTTP API démarre automatiquement sur le port 58302 après `epis install`. Les skills utilisent `curl http://localhost:58302/...` pour interagir avec Episteme. MCP reste disponible pour la configuration manuelle -- voir `registry/mcp.json`.
 
 **Port deja utilise**
 ```bash
-episteme mcp --http --port 43176   # utiliser un port different
+epis api --port 58303   # utiliser un port different
 ```
 
 **Premier demarrage lent**

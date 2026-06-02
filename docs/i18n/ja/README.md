@@ -53,7 +53,7 @@
 epis install   # GitHub Releasesからナレッジグラフデータをダウンロード
 ```
 
-`epis install` はナレッジグラフデータベースを初期化します — このステップなしではMCPツールが動作しません。その後、新しいClaude Codeセッションを起動すれば完了です。
+`epis install` はナレッジグラフデータベースを初期化し、ポート58302でHTTP APIサーバーを起動します。その後、新しいClaude Codeセッションを起動すれば完了です。
 
 アップデート: `/plugin update episteme@epicsagas`
 
@@ -69,7 +69,7 @@ codex plugin marketplace add epicsagas/plugins
 epis install   # GitHub Releasesからナレッジグラフデータをダウンロード
 ```
 
-`epis install` はナレッジグラフデータベースを初期化します — このステップなしではMCPツールが動作しません。その後、新しいセッションを起動すれば即時利用可能です。
+`epis install` はナレッジグラフデータベースを初期化し、ポート58302でHTTP APIサーバーを起動します。その後、新しいセッションを起動すれば即時利用可能です。
 
 アップデート: `codex plugin update episteme@epicsagas`
 
@@ -211,6 +211,7 @@ Epistemeは完全にオフラインで動作します：単一バイナリ、ロ
 | 👃 | **17のコードスメルタイプ** | Long Method、God Object、Feature Envyなど ¹ |
 | 🔗 | **201のセマンティック関係** | 「解決する」「強制する」「違反する」「関連する」 |
 | 🤖 | **9つのMCPツール + 4つのエージェント** | 高忠実度AIエージェント連携とエージェント間ハンドオフ |
+| 🌐 | **HTTP APIサーバー** | ポート58302でREST API、インストール時に自動起動 |
 | 🌍 | **10言語サポート** | Python（AST）、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin |
 | 📊 | **決定論的分析** | ASTベースPython + 正規表現マルチ言語、常に同じ結果 |
 | 🏷️ | **引用可能なナレッジ** | すべての発見が明示的エンティティID（`RF-001`、`LAW-021`）にリンク |
@@ -229,12 +230,12 @@ Epistemeは完全にオフラインで動作します：単一バイナリ、ロ
 
 ```bash
 cargo binstall episteme    # ビルド済みバイナリをダウンロード — コンパイル不要
-epis install cursor        # データのシード + MCPの設定 + エージェントのインストール
+epis install cursor        # データのシード + APIサーバー起動 + エージェントのインストール
 ```
 
 cargo-binstallがない場合: `cargo install cargo-binstall`
 
-> `epis install cursor`の後、MCPツールとエージェントを表示するには**Claude Codeを再起動**してください。
+> `epis install`の後、HTTP APIサーバーがポート58302で自動的に起動します。MCPも引き続き利用可能 -- 手動設定は`registry/mcp.json`を参照してください。
 
 ### 方法2：ソースからビルド
 
@@ -307,11 +308,36 @@ epis explore "strategy pattern"    # ナレッジグラフの探索
 
 ---
 
-## MCPツールとエージェント
+## HTTP APIエンドポイント
 
-> **MCPとは？** [Model Context Protocol](https://modelcontextprotocol.io)は、AIツールが外部サービスを呼び出すためのオープン標準です。EpistemeはナレッジグラフをMCPツールとして公開し、Claude Code、Cursor、その他の互換エディタが自動的に呼び出せるようにします。
+> Epistemeはポート58302で常に稼働するHTTP APIサーバーとして動作します。スキルとエージェントはMCPツールの代わりに`curl http://localhost:58302/...`を使用します。MCPも手動設定で引き続き利用可能 -- `registry/mcp.json`を参照してください。
 
-### 9つのMCPツール
+### APIエンドポイント
+
+#### ナレッジグラフ
+
+| メソッド | エンドポイント | 用途 |
+|----------|---------------|------|
+| **GET** | `/health` | ヘルスチェック |
+| **GET** | `/search?q=...` | ナレッジグラフの検索 |
+| **GET** | `/graph/{id}` | IDでエンティティを取得 |
+| **GET** | `/graph/{id}/neighbors` | 関連エンティティを取得 |
+| **POST** | `/graph/path` | 2つのエンティティ間のパスを検索 |
+
+#### コード分析
+
+| メソッド | エンドポイント | 用途 |
+|----------|---------------|------|
+| **POST** | `/analyze` | コードスメルの検出 |
+| **POST** | `/refactor` | リファクタリングの提案 |
+
+#### 暗黙知
+
+| メソッド | エンドポイント | 用途 |
+|----------|---------------|------|
+| **POST** | `/insights` | チームインサイトの追加 |
+
+### 9つのMCPツール（Legacy）
 
 #### 正規知識（6つのツール）
 
@@ -368,8 +394,8 @@ epis graph path DP-005 RF-001   # 例: Factory Method → Extract Method
 epis build
 
 # サーバーの起動
-epis api              # REST API on :8000
-episteme mcp --http       # MCPサーバー on :43175
+epis api              # REST API on :58302
+episteme mcp --http       # MCPサーバー on :43175 (legacy)
 episteme web --port 8080  # Web UI（インタラクティブなグラフエクスプローラー）
 
 # 配布パッケージング
@@ -405,7 +431,7 @@ EPISTEME_DB_PATH=~/.episteme/db/episteme.db
 
 # APIサーバー
 EPISTEME_API_HOST=0.0.0.0
-EPISTEME_API_PORT=8000
+EPISTEME_API_PORT=58302
 EPISTEME_API_KEY=your-secret-key
 
 # MCPサーバー
@@ -426,14 +452,11 @@ EPISTEME_MCP_PORT=43175
 
 **MCPツールがClaude Code / Cursorに表示されない場合**
 
-`epis install`を実行した後、エディタを再起動してください。それでも表示されない場合、設定が書き込まれたか確認してください：
-```bash
-cat ~/.claude.json   # Claude Code
-```
+`epis install`の後、HTTP APIサーバーがポート58302で自動的に起動します。スキルは`curl http://localhost:58302/...`を使用してEpistemeと対話します。MCPも手動設定で引き続き利用可能 -- `registry/mcp.json`を参照してください。
 
 **ポートが既に使用されている場合**
 ```bash
-episteme mcp --http --port 43176   # 別のポートを使用
+epis api --port 58303   # 別のポートを使用
 ```
 
 **初回起動が遅い場合**

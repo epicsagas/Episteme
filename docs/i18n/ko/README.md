@@ -53,7 +53,7 @@
 epis install   # GitHub Releases에서 지식 그래프 데이터 다운로드
 ```
 
-`epis install`은 지식 그래프 데이터베이스를 초기화합니다 — 이 단계 없이는 MCP 도구가 작동하지 않습니다. 이후 새 Claude Code 세션을 시작하면 바로 사용할 수 있습니다.
+`epis install`은 지식 그래프 데이터베이스를 초기화하고 포트 58302에서 HTTP API 서버를 시작합니다. 이후 새 Claude Code 세션을 시작하면 바로 사용할 수 있습니다.
 
 업데이트: `/plugin update episteme@epicsagas`
 
@@ -69,7 +69,7 @@ codex plugin marketplace add epicsagas/plugins
 epis install   # GitHub Releases에서 지식 그래프 데이터 다운로드
 ```
 
-`epis install`은 지식 그래프 데이터베이스를 초기화합니다 — 이 단계 없이는 MCP 도구가 작동하지 않습니다. 이후 새 세션을 시작하면 즉시 사용 가능합니다.
+`epis install`은 지식 그래프 데이터베이스를 초기화하고 포트 58302에서 HTTP API 서버를 시작합니다. 이후 새 세션을 시작하면 즉시 사용 가능합니다.
 
 업데이트: `codex plugin update episteme@epicsagas`
 
@@ -211,6 +211,7 @@ Episteme는 완전히 오프라인으로 실행됩니다: 단일 바이너리, �
 | 👃 | **17개 코드 스멜 유형** | Long Method, God Object, Feature Envy 등 ¹ |
 | 🔗 | **201개 의미론적 관계** | "해결한다", "강제한다", "위반한다", "관련 있다" |
 | 🤖 | **9개 MCP 도구 + 4개 에이전트** | 고품질 AI 에이전트 상호작용 및 에이전트 간 핸드오프 |
+| 🌐 | **HTTP API 서버** | 포트 58302에서 REST API, 설치 시 자동 시작 |
 | 🌍 | **10개 언어 지원** | Python(AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
 | 📊 | **결정론적 분석** | AST 기반 Python + 정규식 다중 언어, 매번 동일한 결과 |
 | 🏷️ | **인용 가능한 지식** | 모든 발견 사항이 명시적 엔티티 ID(`RF-001`, `LAW-021`)에 연결 |
@@ -229,12 +230,12 @@ Episteme는 완전히 오프라인으로 실행됩니다: 단일 바이너리, �
 
 ```bash
 cargo binstall episteme    # 사전 빌드된 바이너리 다운로드 — 컴파일 불필요
-epis install cursor        # 데이터 시딩 + MCP 설정 + 에이전트 설치
+epis install cursor        # 데이터 시딩 + API 서버 시작 + 에이전트 설치
 ```
 
 cargo-binstall이 없다면: `cargo install cargo-binstall`
 
-> `epis install cursor` 실행 후, MCP 도구와 에이전트가 나타나도록 **Claude Code를 재시작**하세요.
+> `epis install` 후 HTTP API 서버가 포트 58302에서 자동으로 시작됩니다. MCP도 계속 사용 가능 -- 수동 설정은 `registry/mcp.json`을 참조하세요.
 
 ### 옵션 2: 소스에서 빌드
 
@@ -307,11 +308,36 @@ epis explore "strategy pattern"    # 지식 그래프 탐색
 
 ---
 
-## MCP 도구 및 에이전트
+## HTTP API 엔드포인트
 
-> **MCP란?** [Model Context Protocol](https://modelcontextprotocol.io)은 AI 도구가 외부 서비스를 호출할 수 있게 하는 개방형 표준입니다. Episteme는 지식 그래프를 Claude Code, Cursor 및 기타 호환 편집기가 자동으로 호출할 수 있는 MCP 도구로 제공합니다.
+> Episteme는 포트 58302에서 항상 실행되는 HTTP API 서버로 동작합니다. 스킬과 에이전트는 MCP 도구 대신 `curl http://localhost:58302/...`를 사용합니다. MCP도 수동 설정으로 계속 사용 가능 -- `registry/mcp.json`을 참조하세요.
 
-### 9개 MCP 도구
+### API 엔드포인트
+
+#### 지식 그래프
+
+| 메서드 | 엔드포인트 | 용도 |
+|--------|-----------|------|
+| **GET** | `/health` | 헬스 체크 |
+| **GET** | `/search?q=...` | 지식 그래프 검색 |
+| **GET** | `/graph/{id}` | ID로 엔티티 조회 |
+| **GET** | `/graph/{id}/neighbors` | 관련 엔티티 조회 |
+| **POST** | `/graph/path` | 두 엔티티 간 경로 탐색 |
+
+#### 코드 분석
+
+| 메서드 | 엔드포인트 | 용도 |
+|--------|-----------|------|
+| **POST** | `/analyze` | 코드 스멜 감지 |
+| **POST** | `/refactor` | 리팩토링 제안 |
+
+#### 암묵지
+
+| 메서드 | 엔드포인트 | 용도 |
+|--------|-----------|------|
+| **POST** | `/insights` | 팀 인사이트 추가 |
+
+### 9개 MCP 도구 (레거시)
 
 #### 정규 지식 (6개 도구)
 
@@ -368,8 +394,8 @@ epis graph path DP-005 RF-001   # 예: Factory Method → Extract Method
 epis build
 
 # 서버 시작
-epis api              # :8000에서 REST API
-episteme mcp --http       # :43175에서 MCP 서버
+epis api              # :58302에서 REST API
+episteme mcp --http       # :43175에서 MCP 서버 (레거시)
 episteme web --port 8080  # 웹 UI (대화형 그래프 탐색기)
 
 # 배포 패키징
@@ -405,7 +431,7 @@ EPISTEME_DB_PATH=~/.episteme/db/episteme.db
 
 # API 서버
 EPISTEME_API_HOST=0.0.0.0
-EPISTEME_API_PORT=8000
+EPISTEME_API_PORT=58302
 EPISTEME_API_KEY=your-secret-key
 
 # MCP 서버
@@ -426,14 +452,11 @@ EPISTEME_MCP_PORT=43175
 
 **Claude Code / Cursor에서 MCP 도구가 나타나지 않는 경우**
 
-`epis install` 실행 후 편집기를 재시작합니다. 그래도 나타나지 않으면 설정이 올바르게 작성되었는지 확인합니다:
-```bash
-cat ~/.claude.json   # Claude Code
-```
+`epis install` 후 HTTP API 서버가 포트 58302에서 자동으로 시작됩니다. 스킬은 `curl http://localhost:58302/...`를 사용하여 Episteme와 상호작용합니다. MCP도 수동 설정으로 계속 사용 가능 -- `registry/mcp.json`을 참조하세요.
 
 **포트가 이미 사용 중인 경우**
 ```bash
-episteme mcp --http --port 43176   # 다른 포트 사용
+epis api --port 58303   # 다른 포트 사용
 ```
 
 **첫 시작이 느린 경우**

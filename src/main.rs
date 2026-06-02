@@ -224,7 +224,7 @@ fn service_lifecycle_op(sub: ServiceLifecycle, kind: ServiceKind) -> commands::S
         ServiceLifecycle::Start { host, port } => {
             let (def_host, def_port) = match kind {
                 ServiceKind::Mcp => ("127.0.0.1", 43175),
-                ServiceKind::Api => ("0.0.0.0", 8000),
+                ServiceKind::Api => ("0.0.0.0", 58302),
             };
             commands::ServiceOp::Start {
                 host: host.unwrap_or_else(|| def_host.to_string()),
@@ -236,7 +236,7 @@ fn service_lifecycle_op(sub: ServiceLifecycle, kind: ServiceKind) -> commands::S
         ServiceLifecycle::Restart { host, port } => {
             let (def_host, def_port) = match kind {
                 ServiceKind::Mcp => ("127.0.0.1", 43175),
-                ServiceKind::Api => ("0.0.0.0", 8000),
+                ServiceKind::Api => ("0.0.0.0", 58302),
             };
             commands::ServiceOp::Restart {
                 host: host.unwrap_or_else(|| def_host.to_string()),

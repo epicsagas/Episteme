@@ -5,7 +5,13 @@ description: "SW engineering knowledge graph — patterns, laws, refactorings, s
 
 # Episteme Knowledge Graph
 
-Hybrid search + graph traversal over a curated database of design patterns, engineering laws, code smells, and refactoring techniques. All commands use the `epis` CLI.
+Hybrid search + graph traversal over a curated database of design patterns, engineering laws, code smells, and refactoring techniques. All queries use the Episteme HTTP API via curl.
+
+## Prerequisites
+
+- API server must be running: check with `curl -sf http://localhost:58302/health`, start with `epis api start`
+- Default base URL: `http://localhost:58302`
+- Auth (optional): `X-API-Key: $EPISTEME_API_KEY` header — dev mode if no key set
 
 ## When to Use
 
@@ -13,146 +19,198 @@ Activate automatically when the user expresses any of the following, regardless 
 
 **Code problems — translate complaint into a knowledge graph query:**
 
-| User says | Command |
+| User says | API call (run via Bash) |
 |-----------|---------|
-| "this class does too much" / file > 300 lines | `epis search "god class large class single responsibility" --json` |
-| "this function is too long" | `epis search "long method extract method" --json` |
-| "code is too complex" / hard to follow | `epis search "complexity smell cognitive overload" --json` |
-| "calling DB directly in business logic" | `epis search "coupling persistence repository data access layer" --json` |
-| "hard to test" / can't write unit tests | `epis search "testability dependency injection mockability" --json` |
-| "copy-pasted this" / duplicated logic | `epis search "duplicated code clone smell" --json` |
-| "changing X breaks Y" / change ripple | `epis search "brittle coupling change propagation rigidity" --json` |
-| "adding a new type means touching everywhere" / growing switch | `epis search "open closed principle strategy polymorphism" --json` |
-| "is this thread-safe?" / concurrency concerns | `epis search "thread safety race condition shared mutable state" --json` |
-| "API is slow" / performance issues | `epis search "N+1 query lazy loading caching performance" --json` |
-| User shares code for review | Write to temp file, then `epis analyze FILE --language LANG --json` then `epis infer FILE --language LANG --json` |
-| User wants to refactor or improve code | Write to temp file, then `epis infer FILE --language LANG --json` |
+| "this class does too much" / file > 300 lines | `curl -s 'http://localhost:58302/search?q=god+class+large+class+single+responsibility&limit=5'` |
+| "this function is too long" | `curl -s 'http://localhost:58302/search?q=long+method+extract+method&limit=5'` |
+| "code is too complex" / hard to follow | `curl -s 'http://localhost:58302/search?q=complexity+smell+cognitive+overload&limit=5'` |
+| "calling DB directly in business logic" | `curl -s 'http://localhost:58302/search?q=coupling+persistence+repository+data+access+layer&limit=5'` |
+| "hard to test" / can't write unit tests | `curl -s 'http://localhost:58302/search?q=testability+dependency+injection+mockability&limit=5'` |
+| "copy-pasted this" / duplicated logic | `curl -s 'http://localhost:58302/search?q=duplicated+code+clone+smell&limit=5'` |
+| "changing X breaks Y" / change ripple | `curl -s 'http://localhost:58302/search?q=brittle+coupling+change+propagation+rigidity&limit=5'` |
+| "adding a new type means touching everywhere" / growing switch | `curl -s 'http://localhost:58302/search?q=open+closed+principle+strategy+polymorphism&limit=5'` |
+| "is this thread-safe?" / concurrency concerns | `curl -s 'http://localhost:58302/search?q=thread+safety+race+condition+shared+mutable+state&limit=5'` |
+| "API is slow" / performance issues | `curl -s 'http://localhost:58302/search?q=N%2B1+query+lazy+loading+caching+performance&limit=5'` |
+| User shares code for review | `curl -s -X POST http://localhost:58302/analyze -H 'Content-Type: application/json' -d '{"code":"...","language":"python"}'` then `curl -s -X POST http://localhost:58302/refactor -H 'Content-Type: application/json' -d '{"code":"...","language":"python"}'` |
+| User wants to refactor or improve code | `curl -s -X POST http://localhost:58302/refactor -H 'Content-Type: application/json' -d '{"code":"...","language":"python"}'` |
 
 **Architecture discussions:**
 
-| User says | Command |
+| User says | API call (run via Bash) |
 |-----------|---------|
-| "microservices vs monolith" / how to split | `epis search "monolith microservice decomposition bounded context" --json` |
-| "is this architecture okay?" / architecture review | `epis search "layered architecture coupling cohesion separation concerns" --json` |
-| "where should this go?" / code placement | `epis search "responsibility assignment package structure" --json` |
-| Team/org structure affects code | `epis search "Conway law organizational structure architecture" --json` |
+| "microservices vs monolith" / how to split | `curl -s 'http://localhost:58302/search?q=monolith+microservice+decomposition+bounded+context&limit=5'` |
+| "is this architecture okay?" / architecture review | `curl -s 'http://localhost:58302/search?q=layered+architecture+coupling+cohesion+separation+concerns&limit=5'` |
+| "where should this go?" / code placement | `curl -s 'http://localhost:58302/search?q=responsibility+assignment+package+structure&limit=5'` |
+| Team/org structure affects code | `curl -s 'http://localhost:58302/search?q=Conway+law+organizational+structure+architecture&limit=5'` |
 
 **Follow-up exploration:**
 
-| User says | Action |
+| User says | API call (run via Bash) |
 |-----------|--------|
-| Entity ID mentioned (DP-xxx, LAW-xxx, RF-xxx, SMELL-xxx) | `epis graph entity ID` |
-| "how does X relate to Y" | `epis graph path FROM TO --json` or `epis graph neighbors ID --json` |
-| "tell me more" about a result | `epis graph entity ID` for full details, `epis graph neighbors ID --json` for connections |
+| Entity ID mentioned (DP-xxx, LAW-xxx, RF-xxx, SMELL-xxx) | `curl -s 'http://localhost:58302/graph/DP-005?detail=full'` |
+| "how does X relate to Y" | `curl -s -X POST http://localhost:58302/graph/path -H 'Content-Type: application/json' -d '{"from_id":"DP-005","to_id":"SMELL-01","max_depth":5}'` or `curl -s 'http://localhost:58302/graph/DP-005/neighbors'` |
+| "tell me more" about a result | `curl -s 'http://localhost:58302/graph/ID?detail=full'` for full details, `curl -s 'http://localhost:58302/graph/ID/neighbors'` for connections |
 
 **Always:**
 - Translate informal language into technical queries. User says "it's a tangled mess", you search "coupling tangled dependency".
 - Present the named concept and explain it in the user's own language.
 - Cite entity IDs (DP-005, LAW-003) in responses.
 
-## CLI Commands
+## HTTP API Reference
 
-| Command | Purpose | Key flags |
-|---------|---------|-----------|
-| `epis search "QUERY"` | Hybrid keyword + semantic search | `--limit N` (default 5), `--entity-type TYPE` (pattern/refactoring/law/smell), `--json` |
-| `epis graph entity ID` | Full details for a specific entity (always JSON output) | ID is required (e.g. DP-005) |
-| `epis graph neighbors ID` | Explore related entities | `--relation-type TYPE` (solves/solved_by/enforces/violates/related_to), `--json` |
-| `epis graph path FROM TO` | Trace connection between two concepts | `--max-depth N` (default 5), `--json` |
-| `epis analyze FILE` | Detect code smells in a source file | `--language LANG`, `--min-confidence 0.0`, `--json` |
-| `epis infer FILE` | Ranked refactoring suggestions for a source file | `--language LANG`, `--top-k N` (default 3), `--json` |
-| `epis insight add "TITLE" "CONTENT"` | Add a user insight | `--tags "t1,t2"`, `--link "DP-005,SMELL-01"`, `--json` |
-| `epis insight search "QUERY"` | Search user insights by keyword | `--limit N` (default 10), `--json` |
+All commands use `curl` via the Bash tool. Add `-H "X-API-Key: $EPISTEME_API_KEY"` if auth is configured.
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/search?q=QUERY&limit=N&type=TYPE` | GET | Hybrid keyword + semantic search |
+| `/search` | POST | Search with JSON body: `{"query":"...","limit":5,"entity_type":"pattern"}` |
+| `/graph/{ID}?detail=full` | GET | Full details for a specific entity |
+| `/graph/{ID}/neighbors?type=solves` | GET | Explore related entities |
+| `/graph/neighbors` | POST | Neighbors with JSON body: `{"entity_id":"DP-005","relation_type":"solves"}` |
+| `/graph/path` | POST | Trace connection: `{"from_id":"DP-005","to_id":"SMELL-01","max_depth":5}` |
+| `/analyze` | POST | Detect code smells: `{"code":"...","language":"python"}` |
+| `/refactor` | POST | Ranked refactoring suggestions: `{"code":"...","language":"python","top_k":3}` |
+| `/insights` | POST | Add user insight: `{"text":"...","tags":["t1"],"linked_entities":["DP-005"]}` |
+| `/health` | GET | Health check |
+| `/stats` | GET | Graph statistics |
+
+### curl examples
+
+```bash
+# Search
+curl -s 'http://localhost:58302/search?q=dependency+injection&limit=5'
+
+# POST search with entity type filter
+curl -s -X POST http://localhost:58302/search \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"dependency injection","limit":5,"entity_type":"pattern"}'
+
+# Get entity details
+curl -s 'http://localhost:58302/graph/DP-005?detail=full'
+
+# Get neighbors
+curl -s 'http://localhost:58302/graph/DP-005/neighbors?type=enforces'
+
+# POST neighbors
+curl -s -X POST http://localhost:58302/graph/neighbors \
+  -H 'Content-Type: application/json' \
+  -d '{"entity_id":"DP-005","relation_type":"enforces"}'
+
+# Find path between entities
+curl -s -X POST http://localhost:58302/graph/path \
+  -H 'Content-Type: application/json' \
+  -d '{"from_id":"DP-005","to_id":"SMELL-01","max_depth":5}'
+
+# Analyze code
+curl -s -X POST http://localhost:58302/analyze \
+  -H 'Content-Type: application/json' \
+  -d '{"code":"class GodClass { ... }","language":"python"}'
+
+# Get refactoring suggestions
+curl -s -X POST http://localhost:58302/refactor \
+  -H 'Content-Type: application/json' \
+  -d '{"code":"class GodClass { ... }","language":"python","top_k":3}'
+
+# Add insight
+curl -s -X POST http://localhost:58302/insights \
+  -H 'Content-Type: application/json' \
+  -d '{"text":"Team decided to use Repository pattern","tags":["decision"],"linked_entities":["DP-005"]}'
+```
 
 ### Code analysis workflow
 
-For `epis analyze` / `epis infer`, code must be written to a temp file first:
+For code analysis, pass the code string directly in the JSON body — no temp file needed:
 
 ```bash
-cat > /tmp/code_snippet.py << 'EOF'
-{code}
-EOF
-epis analyze /tmp/code_snippet.py --language python --json
-epis infer /tmp/code_snippet.py --language python --json
+# Analyze smells
+curl -s -X POST http://localhost:58302/analyze \
+  -H 'Content-Type: application/json' \
+  -d '{"code":"class UserManager:\n    def create(self): pass\n    def delete(self): pass\n    def email(self): pass","language":"python"}'
+
+# Get ranked refactorings
+curl -s -X POST http://localhost:58302/refactor \
+  -H 'Content-Type: application/json' \
+  -d '{"code":"class UserManager:\n    def create(self): pass\n    def delete(self): pass\n    def email(self): pass","language":"python","top_k":3}'
 ```
 
 ## Workflow Chains
 
-Multi-step flows that chain commands into end-to-end workflows. After each chain completes, present interactive follow-up options to the user.
+Multi-step flows that chain API calls into end-to-end workflows. After each chain completes, present interactive follow-up options to the user.
 
 ### Chain 1: Code Review Pipeline
 
 ```
-epis analyze FILE --language LANG --json
-  -> epis infer FILE --language LANG --json
-  -> epis graph neighbors SMELL_ID --relation-type solved_by --json
-  -> epis graph path SMELL_A SMELL_B --json  [for each pair of detected smells]
+curl -s -X POST http://localhost:58302/analyze -d '{"code":"...","language":"LANG"}'
+  -> curl -s -X POST http://localhost:58302/refactor -d '{"code":"...","language":"LANG"}'
+  -> curl -s 'http://localhost:58302/graph/SMELL_ID/neighbors?type=solved_by'
+  -> curl -s -X POST http://localhost:58302/graph/path -d '{"from_id":"SMELL_A","to_id":"SMELL_B"}'  [for each pair of detected smells]
   -> Report with causation graph
   -> Present options:
      1. Apply refactoring [RF-xxx] -> spawn refactoring-expert agent
      2. Deep dive into [SMELL-xxx] root cause -> spawn episteme-advisor agent
      3. Architecture assessment -> spawn architecture-analyst agent
-     4. Explain [entity ID] in detail -> epis graph entity ID
+     4. Explain [entity ID] in detail -> curl -s 'http://localhost:58302/graph/ID?detail=full'
 ```
 
 ### Chain 2: Architecture Review Pipeline
 
 ```
-epis search "QUERY" --json
-  -> epis graph entity TOP_RESULT
-  -> epis graph neighbors ENTITY --relation-type enforces --json
-  -> epis graph neighbors ENTITY --relation-type violates --json
-  -> epis graph path ENTITY_A ENTITY_B --json
+curl -s 'http://localhost:58302/search?q=QUERY&limit=5'
+  -> curl -s 'http://localhost:58302/graph/TOP_RESULT?detail=full'
+  -> curl -s 'http://localhost:58302/graph/ENTITY/neighbors?type=enforces'
+  -> curl -s 'http://localhost:58302/graph/ENTITY/neighbors?type=violates'
+  -> curl -s -X POST http://localhost:58302/graph/path -d '{"from_id":"ENTITY_A","to_id":"ENTITY_B"}'
   -> Report with compliance scores and risk assessment
   -> Present options:
      1. Get refactoring plan for violations -> spawn code-reviewer agent
      2. Advisory on resolving tensions -> spawn episteme-advisor agent
      3. Research alternatives -> spawn episteme-researcher agent
-     4. Deep dive into specific law/pattern -> epis graph entity ID
+     4. Deep dive into specific law/pattern -> curl -s 'http://localhost:58302/graph/ID?detail=full'
 ```
 
 ### Chain 3: Problem Diagnosis Pipeline
 
 ```
-epis search "SYMPTOM_QUERY" --json
-  -> epis graph entity TOP_RESULT
-  -> epis graph neighbors ENTITY --relation-type solved_by --json
-  -> epis graph neighbors ENTITY --relation-type violates --json
+curl -s 'http://localhost:58302/search?q=SYMPTOM_QUERY&limit=5'
+  -> curl -s 'http://localhost:58302/graph/TOP_RESULT?detail=full'
+  -> curl -s 'http://localhost:58302/graph/ENTITY/neighbors?type=solved_by'
+  -> curl -s 'http://localhost:58302/graph/ENTITY/neighbors?type=violates'
   -> Report: Root Cause -> Symptoms -> Fixes -> Trade-offs
   -> Present options:
      1. Apply recommended fix -> spawn refactoring-expert agent
      2. Get advisory on approach -> spawn episteme-advisor agent
-     3. Verify fix works -> epis infer FILE --json on proposed solution
-     4. Explore related patterns -> epis graph neighbors ID --relation-type related_to --json
+     3. Verify fix works -> curl -s -X POST http://localhost:58302/refactor -d '{"code":"...","language":"python"}' on proposed solution
+     4. Explore related patterns -> curl -s 'http://localhost:58302/graph/ID/neighbors?type=related_to'
 ```
 
 ### Chain 4: Learning & Exploration Pipeline
 
 ```
-epis search "TOPIC" --json
-  -> epis graph entity RESULTS
-  -> epis graph neighbors ENTITY --relation-type related_to --json
-  -> epis graph path ENTITY_A ENTITY_B --json  [for contrasting concepts]
+curl -s 'http://localhost:58302/search?q=TOPIC&limit=5'
+  -> curl -s 'http://localhost:58302/graph/ID?detail=full' [for each result]
+  -> curl -s 'http://localhost:58302/graph/ID/neighbors?type=related_to'
+  -> curl -s -X POST http://localhost:58302/graph/path -d '{"from_id":"ENTITY_A","to_id":"ENTITY_B"}'  [for contrasting concepts]
   -> Report: Core Concept -> Related -> Contrasting -> When to Use
   -> Present options:
-     1. See practical code examples -> epis search "ENTITY example" --json
+     1. See practical code examples -> curl -s 'http://localhost:58302/search?q=ENTITY+example&limit=5'
      2. Apply this pattern to my code -> spawn code-reviewer agent
      3. Compare alternatives -> spawn episteme-researcher agent
 ```
 
 ## Cross-Tool Chaining Rules
 
-These rules ensure every command leads naturally to the next:
+These rules ensure every API call leads naturally to the next:
 
 | After running... | Always follow up with... |
 |-------------------|--------------------------|
-| `epis analyze` | `epis infer` on the same file for ranked refactorings |
-| `epis infer` | `epis graph neighbors SMELL_ID --relation-type solved_by --json` to check for alternative fixes |
-| `epis search` | `epis graph entity` on top 1-2 results for full context |
-| `epis graph entity` (smell) | `epis graph neighbors ID --relation-type violates --json` to find impacted principles |
-| `epis graph entity` (pattern) | `epis graph neighbors ID --relation-type enforces --json` to find enforced laws |
-| `epis graph entity` (refactoring) | `epis graph neighbors ID --relation-type solved_by --json` inverse to find what it solves |
-| Multiple smells detected | `epis graph path SMELL_A SMELL_B --json` to map causation |
-| `epis graph neighbors` returns >3 entities | Summarize and offer `epis graph entity` on user's choice |
+| `POST /analyze` | `POST /refactor` on the same code for ranked refactorings |
+| `POST /refactor` | `GET /graph/{SMELL_ID}/neighbors?type=solved_by` to check for alternative fixes |
+| `GET /search` | `GET /graph/{ID}?detail=full` on top 1-2 results for full context |
+| `GET /graph/{ID}?detail=full` (smell) | `GET /graph/{ID}/neighbors?type=violates` to find impacted principles |
+| `GET /graph/{ID}?detail=full` (pattern) | `GET /graph/{ID}/neighbors?type=enforces` to find enforced laws |
+| `GET /graph/{ID}?detail=full` (refactoring) | `GET /graph/{ID}/neighbors?type=solved_by` inverse to find what it solves |
+| Multiple smells detected | `POST /graph/path` between smell pairs to map causation |
+| `GET /graph/{ID}/neighbors` returns >3 entities | Summarize and offer `GET /graph/{ID}?detail=full` on user's choice |
 
 ## Agent Handoff Protocol
 
@@ -160,9 +218,9 @@ When presenting next-step options after any workflow chain, use this format:
 
 ```
 ## Next Steps
-1. **[Action verb]** -- [Description] -> [agent name or command]
-2. **[Action verb]** -- [Description] -> [agent name or command]
-3. **[Action verb]** -- [Description] -> [agent name or command]
+1. **[Action verb]** -- [Description] -> [agent name or API call]
+2. **[Action verb]** -- [Description] -> [agent name or API call]
+3. **[Action verb]** -- [Description] -> [agent name or API call]
 ```
 
 Available agents for handoff:
@@ -182,28 +240,28 @@ Handoff rules:
 
 ### Code review / analysis workflow
 
-1. Write code to a temp file, then run `epis analyze /tmp/code_snippet.LANG --language LANG --json`.
-2. If smells found, run `epis infer /tmp/code_snippet.LANG --language LANG --json` for ranked fixes.
-3. For each smell, run `epis graph entity SMELL_ID` to map it to principles and laws.
-4. For each pair of smells, run `epis graph path SMELL_A SMELL_B --json` to discover causation chains.
+1. Run `curl -s -X POST http://localhost:58302/analyze -H 'Content-Type: application/json' -d '{"code":"...","language":"LANG"}'` to detect smells.
+2. If smells found, run `curl -s -X POST http://localhost:58302/refactor -H 'Content-Type: application/json' -d '{"code":"...","language":"LANG"}'` for ranked fixes.
+3. For each smell, run `curl -s 'http://localhost:58302/graph/SMELL_ID?detail=full'` to map it to principles and laws.
+4. For each pair of smells, run `curl -s -X POST http://localhost:58302/graph/path -H 'Content-Type: application/json' -d '{"from_id":"SMELL_A","to_id":"SMELL_B"}'` to discover causation chains.
 5. Present: smell name (entity ID), causation graph, refactoring options, and the underlying principle.
 6. Offer follow-up actions per the Agent Handoff Protocol.
 
 ### Architecture discussion workflow
 
-1. Run `epis search "QUERY" --json` with the core architectural question.
-2. For top results, run `epis graph neighbors ID --json` to find complementary and conflicting concepts.
-3. Run `epis graph path ENTITY_A ENTITY_B --json` between opposing concepts to surface trade-off chains.
+1. Run `curl -s 'http://localhost:58302/search?q=QUERY&limit=5'` with the core architectural question.
+2. For top results, run `curl -s 'http://localhost:58302/graph/ID/neighbors'` to find complementary and conflicting concepts.
+3. Run `curl -s -X POST http://localhost:58302/graph/path -H 'Content-Type: application/json' -d '{"from_id":"ENTITY_A","to_id":"ENTITY_B"}'` between opposing concepts to surface trade-off chains.
 4. Present grounded trade-off analysis citing entity IDs.
 5. Offer follow-up actions per the Agent Handoff Protocol.
 
 ### Problem diagnosis workflow
 
 1. Translate the user's informal complaint into 2-3 technical search queries.
-2. Run `epis search "QUERY" --json` with each, merge results by relevance score.
-3. Deep-dive top 2-3 entities with `epis graph entity ID`.
-4. Explore relationships with `epis graph neighbors ID --json` to find root causes.
-5. Map causation with `epis graph path SMELL_A SMELL_B --json` between related smells.
+2. Run `curl -s 'http://localhost:58302/search?q=QUERY&limit=5'` with each, merge results by relevance score.
+3. Deep-dive top 2-3 entities with `curl -s 'http://localhost:58302/graph/ID?detail=full'`.
+4. Explore relationships with `curl -s 'http://localhost:58302/graph/ID/neighbors'` to find root causes.
+5. Map causation with `curl -s -X POST http://localhost:58302/graph/path -H 'Content-Type: application/json' -d '{"from_id":"SMELL_A","to_id":"SMELL_B"}'` between related smells.
 6. Synthesize: Problem Summary, Root Cause (entity IDs), Actionable Recommendations, Trade-offs.
 7. Offer follow-up actions per the Agent Handoff Protocol.
 

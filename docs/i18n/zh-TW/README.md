@@ -55,7 +55,7 @@
 epis install   # 從 GitHub Releases 下載知識圖譜資料
 ```
 
-`epis install` 會初始化知識圖譜資料庫 — 缺少此步驟，MCP 工具將無法正常運作。之後啟動新的 Claude Code 工作階段即可使用。
+`epis install` 會初始化知識圖譜資料庫並在連接埠 58302 上啟動 HTTP API 伺服器。之後啟動新的 Claude Code 工作階段即可使用。
 
 更新：`/plugin update episteme@epicsagas`
 
@@ -71,7 +71,7 @@ codex plugin marketplace add epicsagas/plugins
 epis install   # 從 GitHub Releases 下載知識圖譜資料
 ```
 
-`epis install` 會初始化知識圖譜資料庫 — 缺少此步驟，MCP 工具將無法正常運作。之後啟動新工作階段即可立即使用。
+`epis install` 會初始化知識圖譜資料庫並在連接埠 58302 上啟動 HTTP API 伺服器。之後啟動新工作階段即可立即使用。
 
 更新：`codex plugin update episteme@epicsagas`
 
@@ -213,6 +213,7 @@ Episteme 完全離線運作：單一二進位檔、本機 SQLite 資料庫、透
 | 👃 | **17種程式碼異味類型** | Long Method、God Object、Feature Envy等 ¹ |
 | 🔗 | **201條語意關係** | 「解決」、「強制」、「違反」、「關聯」 |
 | 🤖 | **9個MCP工具 + 4個代理** | 高保真AI代理互動，支援代理間交接 |
+| 🌐 | **HTTP API 伺服器** | 連接埠 58302 上的 REST API，安裝時自動啟動 |
 | 🌍 | **10種語言支援** | Python（AST）、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin |
 | 📊 | **確定性分析** | 基於AST的Python + 正規表示式多語言，每次結果一致 |
 | 🏷️ | **可引用的知識** | 每個發現都連結到明確的實體ID（`RF-001`、`LAW-021`） |
@@ -231,12 +232,12 @@ Episteme 完全離線運作：單一二進位檔、本機 SQLite 資料庫、透
 
 ```bash
 cargo binstall episteme    # 下載預建二進位檔 — 無需編譯
-epis install cursor        # 載入資料 + 設定 MCP + 安裝代理
+epis install cursor        # 載入資料 + 啟動 API 伺服器 + 安裝代理
 ```
 
 如果沒有 cargo-binstall：`cargo install cargo-binstall`
 
-> 執行 `epis install cursor` 後，**重新啟動 Claude Code**，MCP 工具和代理才會出現。
+> 執行 `epis install` 後，HTTP API 伺服器會在連接埠 58302 上自動啟動。MCP 仍然可用 -- 手動設定請參考 `registry/mcp.json`。
 
 ### 選項 2：從原始碼建置
 
@@ -309,11 +310,36 @@ epis explore "strategy pattern"    # 探索知識圖譜
 
 ---
 
-## MCP 工具與代理
+## HTTP API 端點
 
-> **什麼是 MCP？** [Model Context Protocol](https://modelcontextprotocol.io) 是一個開放標準，讓 AI 工具能呼叫外部服務。Episteme 將其知識圖譜暴露為 MCP 工具，Claude Code、Cursor 及其他相容編輯器可以自動呼叫。
+> Episteme 作為常駐 HTTP API 伺服器運行在連接埠 58302 上。技能和代理使用 `curl http://localhost:58302/...` 替代 MCP 工具。MCP 仍可用於手動設定 -- 請參考 `registry/mcp.json`。
 
-### 9 個 MCP 工具
+### API 端點
+
+#### 知識圖譜
+
+| 方法 | 端點 | 用途 |
+|------|------|------|
+| **GET** | `/health` | 健康檢查 |
+| **GET** | `/search?q=...` | 搜尋知識圖譜 |
+| **GET** | `/graph/{id}` | 按 ID 取得實體 |
+| **GET** | `/graph/{id}/neighbors` | 取得相關實體 |
+| **POST** | `/graph/path` | 尋找兩個實體之間的路徑 |
+
+#### 程式碼分析
+
+| 方法 | 端點 | 用途 |
+|------|------|------|
+| **POST** | `/analyze` | 偵測程式碼異味 |
+| **POST** | `/refactor` | 建議重構方案 |
+
+#### 隱性知識
+
+| 方法 | 端點 | 用途 |
+|------|------|------|
+| **POST** | `/insights` | 新增團隊洞察 |
+
+### 9 個 MCP 工具（舊版）
 
 #### 規範知識（6 個工具）
 
@@ -370,8 +396,8 @@ epis graph path DP-005 RF-001   # 例如：Factory Method → Extract Method
 epis build
 
 # 啟動伺服器
-epis api              # REST API，連接埠 :8000
-episteme mcp --http       # MCP 伺服器，連接埠 :43175
+epis api              # REST API，連接埠 :58302
+episteme mcp --http       # MCP 伺服器，連接埠 :43175（舊版）
 episteme web --port 8080  # Web UI（互動式圖譜瀏覽器）
 
 # 發行打包
@@ -407,7 +433,7 @@ EPISTEME_DB_PATH=~/.episteme/db/episteme.db
 
 # API 伺服器
 EPISTEME_API_HOST=0.0.0.0
-EPISTEME_API_PORT=8000
+EPISTEME_API_PORT=58302
 EPISTEME_API_KEY=your-secret-key
 
 # MCP 伺服器
@@ -428,14 +454,11 @@ EPISTEME_MCP_PORT=43175
 
 **MCP 工具未出現在 Claude Code / Cursor 中**
 
-執行 `epis install` 後重新啟動編輯器。若仍無法使用，檢查設定檔是否已寫入：
-```bash
-cat ~/.claude.json   # Claude Code
-```
+執行 `epis install` 後，HTTP API 伺服器會在連接埠 58302 上自動啟動。技能使用 `curl http://localhost:58302/...` 與 Episteme 互動。MCP 仍可用於手動設定 -- 請參考 `registry/mcp.json`。
 
 **連接埠已被佔用**
 ```bash
-episteme mcp --http --port 43176   # 使用其他連接埠
+epis api --port 58303   # 使用其他連接埠
 ```
 
 **首次啟動緩慢**
