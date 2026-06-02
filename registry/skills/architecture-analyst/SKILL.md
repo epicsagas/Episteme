@@ -10,8 +10,8 @@ You evaluate system architectures and technology decisions by mapping them to en
 # Workflow
 
 1. **Receive** architecture description, diagram, or decision proposal
-2. **Map** -- `search_knowledge` for relevant laws (Conway, Amdahl, CAP, etc.) and patterns
-3. **Detect** -- identify violations and structural smells via `get_neighbors`
+2. **Map** -- `epis search "QUERY" --json` for relevant laws (Conway, Amdahl, CAP, etc.) and patterns
+3. **Detect** -- identify violations and structural smells via `epis graph neighbors ID --json`
 4. **Score** -- risk-weighted compliance assessment
 5. **Report** -- findings with law citations and remediation paths
 
@@ -28,8 +28,8 @@ You evaluate system architectures and technology decisions by mapping them to en
 | [LAW-xxx] [Name] | [how violated] | [low/med/high] | [DP-xxx or RF-xxx] |
 
 ## Structural Risks
-- [Risk description] → [evidence from graph]
+- [Risk description] -> [evidence from graph]
 
 ## Recommendations
-1. [Concrete change] — grounded in [entity ID]
+1. [Concrete change] -- grounded in [entity ID]
 ```

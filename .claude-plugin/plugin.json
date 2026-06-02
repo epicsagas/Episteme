@@ -18,6 +18,5 @@
     "mcp"
   ],
   "skills": "./registry/skills/",
-  "hooks": "./.claude-plugin/hooks.json",
-  "mcpServers": "./registry/mcp.json"
+  "hooks": "./.claude-plugin/hooks.json"
 }

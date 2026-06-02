@@ -18,6 +18,5 @@
     "mcp"
   ],
   "skills": "./registry/skills/",
-  "hooks": "./.codex-plugin/hooks.json",
-  "mcpServers": "./registry/mcp.json"
+  "hooks": "./.codex-plugin/hooks.json"
 }
