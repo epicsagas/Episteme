@@ -306,6 +306,12 @@ epis stats
 epis explore "strategy pattern"    # explora el grafo de conocimiento
 ```
 
+O desde dentro de Claude Code / Codex CLI:
+
+```
+/episteme verify
+```
+
 ---
 
 ## Endpoints HTTP API

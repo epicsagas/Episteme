@@ -306,6 +306,12 @@ epis stats
 epis explore "strategy pattern"    # 지식 그래프 탐색
 ```
 
+Claude Code / Codex CLI 안에서 바로 실행할 수도 있습니다:
+
+```
+/episteme verify
+```
+
 ---
 
 ## HTTP API 엔드포인트

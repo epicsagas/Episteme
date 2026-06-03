@@ -308,6 +308,12 @@ epis stats
 epis explore "strategy pattern"    # 探索知識圖譜
 ```
 
+也可以在 Claude Code / Codex CLI 中直接執行:
+
+```
+/episteme verify
+```
+
 ---
 
 ## HTTP API 端點

@@ -306,6 +306,12 @@ epis stats
 epis explore "strategy pattern"    # ナレッジグラフの探索
 ```
 
+Claude Code / Codex CLI 内から直接実行することもできます:
+
+```
+/episteme verify
+```
+
 ---
 
 ## HTTP APIエンドポイント

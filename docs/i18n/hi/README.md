@@ -306,6 +306,12 @@ epis stats
 epis explore "strategy pattern"    # ज्ञान ग्राफ का अन्वेषण करें
 ```
 
+या Claude Code / Codex CLI के अंदर से:
+
+```
+/episteme verify
+```
+
 ---
 
 ## HTTP API एंडपॉइंट
