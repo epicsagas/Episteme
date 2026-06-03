@@ -14,8 +14,7 @@
     "design-patterns",
     "code-smells",
     "refactoring",
-    "architecture",
-    "mcp"
+    "architecture"
   ],
   "skills": "./registry/skills/",
   "hooks": "./.claude-plugin/hooks.json"
