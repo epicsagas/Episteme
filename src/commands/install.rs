@@ -72,19 +72,22 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
                 }
             };
 
-        let cfg = EpistemeConfig::load().unwrap_or_default();
-        if let Some(redis) = episteme::adapters::install_wizard::configure_redis_tui(
-            episteme::adapters::install_wizard::RedisConfig {
-                enabled: cfg.redis_enabled,
-                host: cfg.redis_host.clone(),
-                port: cfg.redis_port,
-                db: cfg.redis_db,
-                ttl: cfg.redis_ttl,
-            },
-        )
-        .map_err(|e| anyhow::anyhow!(e))?
+        #[cfg(feature = "redis-cache")]
         {
-            upsert_config_yaml(redis.enabled, &redis.host, redis.port, redis.db, redis.ttl)?;
+            let cfg = EpistemeConfig::load().unwrap_or_default();
+            if let Some(redis) = episteme::adapters::install_wizard::configure_redis_tui(
+                episteme::adapters::install_wizard::RedisConfig {
+                    enabled: cfg.redis_enabled,
+                    host: cfg.redis_host.clone(),
+                    port: cfg.redis_port,
+                    db: cfg.redis_db,
+                    ttl: cfg.redis_ttl,
+                },
+            )
+            .map_err(|e| anyhow::anyhow!(e))?
+            {
+                upsert_config_yaml(redis.enabled, &redis.host, redis.port, redis.db, redis.ttl)?;
+            }
         }
 
         let telemetry_enabled = episteme::adapters::install_wizard::configure_telemetry_tui()
@@ -316,6 +319,7 @@ pub fn detect_installed_tools() -> std::collections::HashSet<&'static str> {
     installed
 }
 
+#[cfg(feature = "redis-cache")]
 fn upsert_config_yaml(
     redis_enabled: bool,
     redis_host: &str,

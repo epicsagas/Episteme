@@ -617,9 +617,10 @@ fn show_token_tui(token: &str, mandatory: bool) -> io::Result<()> {
 }
 
 // ---------------------------------------------------------------------------
-// Redis config TUI
+// Redis config TUI (only available when compiled with `redis-cache` feature)
 // ---------------------------------------------------------------------------
 
+#[cfg(feature = "redis-cache")]
 pub struct RedisConfig {
     pub enabled: bool,
     pub host: String,
@@ -629,6 +630,7 @@ pub struct RedisConfig {
 }
 
 /// Interactive Redis config screen. Returns None if user skips.
+#[cfg(feature = "redis-cache")]
 pub fn configure_redis_tui(current: RedisConfig) -> io::Result<Option<RedisConfig>> {
     if !io::stdin().is_terminal() {
         return Ok(None);
