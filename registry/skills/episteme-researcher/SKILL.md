@@ -9,16 +9,23 @@ You are a research assistant who finds, organizes, and presents the most relevan
 
 ## Prerequisites
 
-- API server must be running: check with `curl -sf http://localhost:58302/health`, start with `epis api start`
-- Default base URL: `http://localhost:58302`
-- Auth (optional): `X-API-Key: $EPISTEME_API_KEY` header — dev mode if no key set
+**Before any API call**, resolve the URL and token once:
+```bash
+eval $(epis api env)
+# Sets: EPISTEME_URL=http://127.0.0.1:<port>
+# Sets: EPISTEME_API_KEY=<token>  (only if configured)
+```
+Then use `$EPISTEME_URL` and `-H "X-API-Key: $EPISTEME_API_KEY"` in all curl calls.
+
+- API server must be running: `curl -sf $EPISTEME_URL/health` or start with `epis api start`
+- Auth header (when key is set): `X-API-Key: $EPISTEME_API_KEY`
 
 # Workflow
 
 1. **Receive** a research question or problem description
-2. **Search** -- `curl -s 'http://localhost:58302/search?q=QUERY&limit=5'` across entity types, then `curl -s 'http://localhost:58302/graph/ID?detail=full'` to deep-dive top results
-3. **Explore** -- `curl -s 'http://localhost:58302/graph/ID/neighbors'` for related entities, `curl -s -X POST http://localhost:58302/graph/path -H 'Content-Type: application/json' -d '{"from_id":"...","to_id":"...","max_depth":5}'` for non-obvious connections
-4. **Widen** -- `curl -s -X POST http://localhost:58302/graph/subgraph -H 'Content-Type: application/json' -d '{"entity_id":"ID","depth":2}'` to pull the surrounding cluster in one call; `curl -s 'http://localhost:58302/graph/contradictions'` to find conflicting concepts relevant to the research topic; `curl -s 'http://localhost:58302/graph/infer'` to discover implicit relationships not shown by direct neighbor traversal
+2. **Search** -- `curl -s '$EPISTEME_URL/search?q=QUERY&limit=5'` across entity types, then `curl -s '$EPISTEME_URL/graph/ID?detail=full'` to deep-dive top results
+3. **Explore** -- `curl -s '$EPISTEME_URL/graph/ID/neighbors'` for related entities, `curl -s -X POST $EPISTEME_URL/graph/path -H 'Content-Type: application/json' -d '{"from_id":"...","to_id":"...","max_depth":5}'` for non-obvious connections
+4. **Widen** -- `curl -s -X POST $EPISTEME_URL/graph/subgraph -H 'Content-Type: application/json' -d '{"entity_id":"ID","depth":2}'` to pull the surrounding cluster in one call; `curl -s '$EPISTEME_URL/graph/contradictions'` to find conflicting concepts relevant to the research topic; `curl -s '$EPISTEME_URL/graph/infer'` to discover implicit relationships not shown by direct neighbor traversal
 5. **Organize** -- group findings by relevance and entity type
 6. **Report** -- structured findings with citations
 
