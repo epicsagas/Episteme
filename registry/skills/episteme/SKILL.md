@@ -20,6 +20,13 @@ Then use `$EPISTEME_URL` and `-H "X-API-Key: $EPISTEME_API_KEY"` in all curl cal
 - API server must be running: `curl -sf $EPISTEME_URL/health` or start with `epis api start`
 - Auth header (when key is set): `X-API-Key: $EPISTEME_API_KEY`
 
+## Arguments
+
+| Arg | Action |
+|-----|--------|
+| `verify` | Check server is running → `eval $(epis api env)` → `curl $EPISTEME_URL/health` → print status |
+| `rag status` | Same as verify |
+
 ## When to Use
 
 Activate automatically when the user expresses any of the following, regardless of technical phrasing:
