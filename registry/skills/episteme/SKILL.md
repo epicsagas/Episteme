@@ -71,6 +71,9 @@ All commands use `curl` via the Bash tool. Add `-H "X-API-Key: $EPISTEME_API_KEY
 | `/analyze` | POST | Detect code smells: `{"code":"...","language":"python"}` |
 | `/refactor` | POST | Ranked refactoring suggestions: `{"code":"...","language":"python","top_k":3}` |
 | `/insights` | POST | Add user insight: `{"text":"...","tags":["t1"],"linked_entities":["DP-005"]}` |
+| `/graph/subgraph` | POST | Extract subgraph around entity: `{"entity_id":"DP-005","depth":2}` |
+| `/graph/contradictions` | GET | List all conflicting entity pairs in the graph |
+| `/graph/infer` | GET | Infer transitive enforcement relationships |
 | `/health` | GET | Health check |
 | `/stats` | GET | Graph statistics |
 
@@ -115,6 +118,17 @@ curl -s -X POST http://localhost:58302/refactor \
 curl -s -X POST http://localhost:58302/insights \
   -H 'Content-Type: application/json' \
   -d '{"text":"Team decided to use Repository pattern","tags":["decision"],"linked_entities":["DP-005"]}'
+
+# Extract subgraph (depth=2 default)
+curl -s -X POST http://localhost:58302/graph/subgraph \
+  -H 'Content-Type: application/json' \
+  -d '{"entity_id":"DP-005","depth":2}'
+
+# List contradictions
+curl -s 'http://localhost:58302/graph/contradictions'
+
+# Infer transitive enforcements
+curl -s 'http://localhost:58302/graph/infer'
 ```
 
 ### Code analysis workflow
