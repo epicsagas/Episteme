@@ -95,7 +95,7 @@ pub enum Commands {
         #[arg(long, default_value_t = String::from("0.0.0.0"))]
         host: String,
         /// Bind port (for foreground mode)
-        #[arg(long, default_value_t = 8000)]
+        #[arg(long, default_value_t = 58302)]
         port: u16,
     },
     /// (deprecated) Use 'mcp start/stop/restart/status/enable/disable' instead
@@ -212,6 +212,8 @@ pub enum ServiceLifecycle {
     },
     /// Show daemon status
     Status,
+    /// Print shell exports for URL and API key (eval $(epis api env))
+    Env,
     /// Register as OS login service (macOS: launchd, Linux: systemd)
     Enable {
         /// Start immediately after enabling

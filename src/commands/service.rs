@@ -50,6 +50,9 @@ pub enum ServiceOp {
         now: bool,
         kind: ServiceKind,
     },
+    Env {
+        kind: ServiceKind,
+    },
 }
 
 pub fn cmd_service(sub: ServiceOp) -> Result<()> {
@@ -122,6 +125,30 @@ pub fn cmd_service(sub: ServiceOp) -> Result<()> {
             let msg = episteme::adapters::service::disable_service(kind, now)
                 .map_err(|e| anyhow::anyhow!(e))?;
             println!("{msg}");
+            Ok(())
+        }
+        ServiceOp::Env { kind } => {
+            let cfg = EpistemeConfig::load().unwrap_or_default();
+            let (host, port, token, url_var, key_var) = match kind {
+                ServiceKind::Api => (
+                    cfg.api_host.replace("0.0.0.0", "127.0.0.1"),
+                    cfg.api_port,
+                    cfg.api_keys,
+                    "EPISTEME_URL",
+                    "EPISTEME_API_KEY",
+                ),
+                ServiceKind::Mcp => (
+                    cfg.mcp_host.clone(),
+                    cfg.mcp_port,
+                    cfg.mcp_token,
+                    "EPISTEME_MCP_URL",
+                    "EPISTEME_MCP_TOKEN",
+                ),
+            };
+            println!("export {url_var}=http://{host}:{port}");
+            if !token.is_empty() {
+                println!("export {key_var}={token}");
+            }
             Ok(())
         }
     }

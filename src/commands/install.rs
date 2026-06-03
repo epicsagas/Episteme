@@ -1,6 +1,5 @@
 //! Install command: install Episteme into AI tools.
 
-use std::io::Write;
 use std::path::PathBuf;
 
 use anyhow::Result;
@@ -100,35 +99,7 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     selected.sort();
     selected.dedup();
 
-    // --- Transport selection (TTY only; non-TTY defaults to HTTP + 43175) ---
-    let mut transport: Transport = if io::stdin().is_terminal() {
-        episteme::adapters::install_wizard::select_transport().map_err(|e| anyhow::anyhow!(e))?
-    } else {
-        Transport::default()
-    };
-
-    // --- Server configuration (host + token, HTTP transport only, TTY only) ---
-    if matches!(transport, Transport::Http { .. }) && io::stdin().is_terminal() && !dry_run {
-        let cfg = EpistemeConfig::load().unwrap_or_default();
-        let current_port = match &transport {
-            Transport::Http { port, .. } => *port,
-            _ => 43175,
-        };
-        let sc = episteme::adapters::install_wizard::configure_server_tui(
-            &cfg.mcp_host,
-            current_port,
-            &cfg.mcp_token,
-        )
-        .map_err(|e| anyhow::anyhow!(e))?;
-        upsert_server_config_yaml(&sc.host, sc.port, sc.token.as_deref())?;
-        if let Some(ref token) = sc.token {
-            seed_token_to_shell_rc(token)?;
-        }
-        transport = Transport::Http {
-            port: sc.port,
-            token: sc.token,
-        };
-    }
+    let transport = Transport::default();
 
     for tool in &selected {
         let result = match tool.as_str() {
@@ -149,17 +120,40 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
         }
     }
 
-    // --- Enable launchd for API server ---
-    if matches!(transport, Transport::Http { .. }) && !dry_run && io::stdin().is_terminal() {
-        print!("\nEnable episteme API server as login item and start now? [Y/n]: ");
-        io::stdout().flush().ok();
-        let mut line = String::new();
-        io::stdin().read_line(&mut line).ok();
-        if !line.trim().eq_ignore_ascii_case("n") {
-            match episteme::adapters::service::enable_service(episteme::adapters::service::ServiceKind::Api, true) {
-                Ok(msg) => println!("  {msg}"),
-                Err(e) => eprintln!("  Warning: {e}"),
-            }
+    // --- API server configuration ---
+    let api_port = if io::stdin().is_terminal() && !dry_run {
+        let cfg = EpistemeConfig::load().unwrap_or_default();
+        let sc = episteme::adapters::install_wizard::configure_server_tui(
+            "API server",
+            &cfg.api_host,
+            cfg.api_port,
+            &cfg.api_keys,
+        )
+        .map_err(|e| anyhow::anyhow!(e))?;
+        upsert_api_config_yaml(&sc.host, sc.port, sc.token.as_deref())?;
+        // Ensure enable_service (and install_launchd_agent_for) sees the chosen port
+        // even in binary versions that predate yaml api-section reading.
+        // SAFETY: single-threaded install path, no concurrent env reads.
+        unsafe {
+            std::env::set_var("UVICORN_PORT", sc.port.to_string());
+            std::env::set_var("UVICORN_HOST", &sc.host);
+        }
+        sc.port
+    } else {
+        EpistemeConfig::load().unwrap_or_default().api_port
+    };
+
+    // --- Enable API server as login service ---
+    if !dry_run {
+        use episteme::adapters::service::{ServiceKind, enable_service};
+        // Non-TTY path: propagate port so enable_service uses the configured value.
+        if !io::stdin().is_terminal() {
+            // SAFETY: single-threaded install path, no concurrent env reads.
+            unsafe { std::env::set_var("UVICORN_PORT", api_port.to_string()) };
+        }
+        match enable_service(ServiceKind::Api, true) {
+            Ok(msg) => println!("  {msg}"),
+            Err(e) => eprintln!("  Warning: could not enable API server: {e}\n  Run 'epis api enable --now' manually."),
         }
     }
 
@@ -370,7 +364,7 @@ fn upsert_config_yaml(
     Ok(())
 }
 
-fn upsert_server_config_yaml(host: &str, port: u16, token: Option<&str>) -> Result<()> {
+fn upsert_api_config_yaml(host: &str, port: u16, keys: Option<&str>) -> Result<()> {
     use serde_yaml::{Mapping, Value};
     let path = episteme::adapters::paths::episteme_home().join("config.yaml");
     let mut root = if path.exists() {
@@ -379,74 +373,25 @@ fn upsert_server_config_yaml(host: &str, port: u16, token: Option<&str>) -> Resu
     } else {
         Value::Mapping(Mapping::new())
     };
-
     if !root.is_mapping() {
         root = Value::Mapping(Mapping::new());
     }
     let root_map = root.as_mapping_mut().expect("mapping checked above");
 
-    let mut mcp_map = Mapping::new();
-    mcp_map.insert(
-        Value::String("host".to_owned()),
-        Value::String(host.to_owned()),
-    );
-    mcp_map.insert(
+    let mut api_map = Mapping::new();
+    api_map.insert(Value::String("host".to_owned()), Value::String(host.to_owned()));
+    api_map.insert(
         Value::String("port".to_owned()),
         Value::Number(serde_yaml::Number::from(port)),
     );
-    if let Some(t) = token {
-        mcp_map.insert(
-            Value::String("token".to_owned()),
-            Value::String(t.to_owned()),
-        );
+    if let Some(k) = keys.filter(|k| !k.is_empty()) {
+        api_map.insert(Value::String("keys".to_owned()), Value::String(k.to_owned()));
     }
-    root_map.insert(Value::String("mcp".to_owned()), Value::Mapping(mcp_map));
+    root_map.insert(Value::String("api".to_owned()), Value::Mapping(api_map));
 
     std::fs::create_dir_all(episteme::adapters::paths::episteme_home())?;
     let yaml = serde_yaml::to_string(&root)?;
     std::fs::write(path, yaml)?;
-    Ok(())
-}
-
-const TOKEN_MARKER_BEGIN: &str = "# >>> episteme-token >>>";
-const TOKEN_MARKER_END: &str = "# <<< episteme-token <<<";
-
-fn seed_token_to_shell_rc(token: &str) -> Result<()> {
-    let home = std::env::var("HOME").unwrap_or_default();
-    let export_line = format!(r#"export EPISTEME_MCP_TOKEN="{token}""#);
-    let block = format!("{TOKEN_MARKER_BEGIN}\n{export_line}\n{TOKEN_MARKER_END}\n");
-
-    let rc_files = [".zshrc", ".bashrc", ".bash_profile", ".profile"];
-    for rc_name in &rc_files {
-        let rc_path = PathBuf::from(&home).join(rc_name);
-        if !rc_path.exists() {
-            continue;
-        }
-        let content = std::fs::read_to_string(&rc_path)?;
-
-        if content.contains(TOKEN_MARKER_BEGIN) {
-            // Replace existing block
-            let start = content.find(TOKEN_MARKER_BEGIN).unwrap();
-            let end = content.find(TOKEN_MARKER_END).unwrap() + TOKEN_MARKER_END.len();
-            let new_content = format!(
-                "{}{}{}",
-                &content[..start],
-                block.trim_end(),
-                &content[end..]
-            );
-            if new_content != content {
-                std::fs::write(&rc_path, new_content)?;
-                println!("  Updated EPISTEME_MCP_TOKEN in ~/{rc_name}");
-            }
-        } else {
-            // Append new block
-            let new_content = format!("{}\n{}", content.trim_end(), block,);
-            std::fs::write(&rc_path, new_content)?;
-            println!("  Added EPISTEME_MCP_TOKEN to ~/{rc_name}");
-        }
-        // Only update the first matching rc file
-        break;
-    }
     Ok(())
 }
 

@@ -5,7 +5,6 @@
 //! Linux systemd).
 
 use std::fs;
-use std::net::TcpListener;
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
@@ -121,9 +120,13 @@ pub fn find_pid_by_port(port: u16) -> Option<u32> {
 // Port helpers
 // ---------------------------------------------------------------------------
 
-/// Returns `true` when something is already bound on `127.0.0.1:port`.
+/// Returns `true` when something is listening on `127.0.0.1:port`.
+///
+/// Uses a TCP connect rather than a bind attempt: on macOS, binding
+/// `127.0.0.1:PORT` succeeds even when a server holds `0.0.0.0:PORT`,
+/// so the bind approach produces false negatives.
 pub fn is_port_in_use(port: u16) -> bool {
-    TcpListener::bind(("127.0.0.1", port)).is_err()
+    std::net::TcpStream::connect(("127.0.0.1", port)).is_ok()
 }
 
 /// Poll until the port is free, up to `timeout_secs`.
@@ -176,7 +179,7 @@ fn get_host_port(kind: ServiceKind) -> (String, u16) {
                 .as_ref()
                 .map(|c| c.api_host.clone())
                 .unwrap_or_else(|| "0.0.0.0".to_owned());
-            let port = cfg.as_ref().map(|c| c.api_port).unwrap_or(8000);
+            let port = cfg.as_ref().map(|c| c.api_port).unwrap_or(58302);
             (host, port)
         }
     }
@@ -187,18 +190,16 @@ fn get_port(kind: ServiceKind) -> u16 {
     get_host_port(kind).1
 }
 
-/// Resolve the configured bearer token for MCP, if any.
+/// Resolve the configured access token/key for the given service kind.
 fn get_token(kind: ServiceKind) -> Option<String> {
+    let cfg = crate::adapters::config::EpistemeConfig::load().ok()?;
     match kind {
         ServiceKind::Mcp => {
-            let cfg = crate::adapters::config::EpistemeConfig::load().ok()?;
-            if cfg.mcp_token.is_empty() {
-                None
-            } else {
-                Some(cfg.mcp_token)
-            }
+            if cfg.mcp_token.is_empty() { None } else { Some(cfg.mcp_token) }
         }
-        ServiceKind::Api => None,
+        ServiceKind::Api => {
+            if cfg.api_keys.is_empty() { None } else { Some(cfg.api_keys) }
+        }
     }
 }
 
@@ -522,11 +523,15 @@ pub fn install_launchd_agent_for(
             ),
         };
 
+        let env_key = match kind {
+            ServiceKind::Mcp => "EPISTEME_MCP_TOKEN",
+            ServiceKind::Api => "EPISTEME_API_KEYS",
+        };
         let env_vars_section = match token {
             Some(t) => format!(
                 r#"  <key>EnvironmentVariables</key>
   <dict>
-    <key>EPISTEME_MCP_TOKEN</key>
+    <key>{env_key}</key>
     <string>{t}</string>
   </dict>
 "#
@@ -585,22 +590,23 @@ pub fn install_launchd_agent_for(
             ])
             .status()
             .map_err(|e| e.to_string())?;
-        if st.success() {
-            if already_loaded {
-                Ok(format!(
-                    "{kind} launchd agent reloaded: {path}",
-                    kind = kind_label(kind),
-                    path = plist_path.display(),
-                ))
-            } else {
-                Ok(format!(
-                    "{kind} launchd agent installed: {path}",
-                    kind = kind_label(kind),
-                    path = plist_path.display(),
-                ))
-            }
+        if !st.success() {
+            return Err("failed to bootstrap launchd agent".to_owned());
+        }
+
+
+        if already_loaded {
+            Ok(format!(
+                "{kind} launchd agent reloaded: {path}",
+                kind = kind_label(kind),
+                path = plist_path.display(),
+            ))
         } else {
-            Err("failed to bootstrap launchd agent".to_owned())
+            Ok(format!(
+                "{kind} launchd agent installed: {path}",
+                kind = kind_label(kind),
+                path = plist_path.display(),
+            ))
         }
     }
 }
@@ -891,28 +897,38 @@ pub fn enable_service(kind: ServiceKind, now: bool) -> Result<String, String> {
     }
 
     if now {
-        let _ = cmd_stop(kind);
-        match cmd_start(kind, &host, port) {
-            Ok(StartOutcome::Started(pid)) => {
-                if msg.is_empty() {
-                    msg.push_str(&format!(
-                        "{label} started (PID {pid})",
-                        label = kind_label(kind),
-                    ));
-                } else {
-                    msg.push_str(&format!(
-                        "\n{label} started in background (PID {pid})",
-                        label = kind_label(kind),
-                    ));
-                }
-            }
-            Ok(StartOutcome::AlreadyRunning(pid)) => {
-                msg.push_str(&format!(
-                    "\n{label} already running (PID {pid})",
-                    label = kind_label(kind),
+        // On macOS, launchctl bootstrap (called inside install_launchd_agent_for) already
+        // starts the daemon via RunAtLoad. Calling cmd_stop + cmd_start on top of that
+        // creates a race: cmd_stop unloads the agent, launchd KeepAlive re-spawns it, and
+        // cmd_start spawns a second process — both compete for the same port.
+        // Instead, just wait for launchd to bring the port up.
+        #[cfg(target_os = "macos")]
+        {
+            let label = kind_label(kind);
+            if wait_port_open(port, 10) {
+                let pid = find_pid_by_port(port).unwrap_or(0);
+                let _ = write_pid_for(kind, pid);
+                msg.push_str(&format!("\n{label} started via launchd (PID {pid})"));
+            } else {
+                return Err(format!(
+                    "{label} launchd agent registered but server did not open port {port} within 10 seconds. \
+                     Check logs: ~/.episteme/logs/launchd-api.err"
                 ));
             }
-            Err(e) => return Err(e),
+        }
+        // On Linux / other platforms there is no service manager yet — fall back to direct spawn.
+        #[cfg(not(target_os = "macos"))]
+        {
+            let label = kind_label(kind);
+            match cmd_start(kind, &host, port) {
+                Ok(StartOutcome::Started(pid)) => {
+                    msg.push_str(&format!("\n{label} started (PID {pid})"));
+                }
+                Ok(StartOutcome::AlreadyRunning(pid)) => {
+                    msg.push_str(&format!("\n{label} already running (PID {pid})"));
+                }
+                Err(e) => return Err(e),
+            }
         }
     }
     Ok(msg)

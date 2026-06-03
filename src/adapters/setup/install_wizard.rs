@@ -372,6 +372,7 @@ pub struct ServerConfig {
 ///
 /// Non-TTY returns defaults (127.0.0.1, current port, no token).
 pub fn configure_server_tui(
+    server_label: &str,
     current_host: &str,
     current_port: u16,
     current_token: &str,
@@ -398,7 +399,7 @@ pub fn configure_server_tui(
         // Optional but recommended
         let generate = run_yes_no_tui(
             "Server auth",
-            "Generate a bearer token for MCP access? (recommended)",
+            &format!("Generate a bearer token for {server_label} access? (recommended)"),
             true,
         )?;
         if generate {
@@ -414,7 +415,7 @@ pub fn configure_server_tui(
     };
 
     // Step 3: Port (reuse existing)
-    let port = prompt_numeric_tui::<u16>("MCP server", "port", current_port)?;
+    let port = prompt_numeric_tui::<u16>(server_label, "port", current_port)?;
 
     Ok(ServerConfig { host, port, token })
 }

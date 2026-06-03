@@ -245,6 +245,7 @@ fn service_lifecycle_op(sub: ServiceLifecycle, kind: ServiceKind) -> commands::S
             }
         }
         ServiceLifecycle::Status => commands::ServiceOp::Status { kind },
+        ServiceLifecycle::Env => commands::ServiceOp::Env { kind },
         ServiceLifecycle::Enable { now } => commands::ServiceOp::Enable { now, kind },
         ServiceLifecycle::Disable { now } => commands::ServiceOp::Disable { now, kind },
         ServiceLifecycle::Serve { host, port } => commands::ServiceOp::Serve { host, port, kind },

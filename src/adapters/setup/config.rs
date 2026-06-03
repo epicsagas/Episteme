@@ -35,7 +35,7 @@ impl Default for EpistemeConfig {
     fn default() -> Self {
         Self {
             api_host: "0.0.0.0".into(),
-            api_port: 8000,
+            api_port: 58302,
             api_keys: String::new(),
             log_level: "INFO".into(),
             enable_json_logging: true,
@@ -64,6 +64,7 @@ impl Default for EpistemeConfig {
 
 #[derive(Debug, Default, Deserialize)]
 struct YamlConfig {
+    api: Option<HashMap<String, serde_yaml::Value>>,
     redis: Option<HashMap<String, serde_yaml::Value>>,
     mcp: Option<HashMap<String, serde_yaml::Value>>,
 }
@@ -73,9 +74,10 @@ impl EpistemeConfig {
         let mut config = Self::default();
         let yaml = load_yaml_config()?;
 
-        config.api_host = env_or("UVICORN_HOST", &config.api_host);
-        config.api_port = env_parse_or("UVICORN_PORT", config.api_port);
-        config.api_keys = env_or("EPISTEME_API_KEYS", &config.api_keys);
+        config.api_host = cfg_val(&yaml, "api", "host", "UVICORN_HOST", &config.api_host);
+        config.api_port = cfg_parse_val(&yaml, "api", "port", "UVICORN_PORT", config.api_port);
+        config.api_port = env_parse_or("EPISTEME_API_PORT", config.api_port);
+        config.api_keys = cfg_val(&yaml, "api", "keys", "EPISTEME_API_KEYS", &config.api_keys);
         config.log_level = env_or("LOG_LEVEL", &config.log_level);
         config.enable_json_logging = env_bool_or("ENABLE_JSON_LOGGING", config.enable_json_logging);
         config.enable_debug_endpoints =
@@ -169,6 +171,7 @@ fn cfg_val(yaml: &YamlConfig, section: &str, key: &str, env_var: &str, default: 
         return v;
     }
     let map = match section {
+        "api" => yaml.api.as_ref(),
         "redis" => yaml.redis.as_ref(),
         "mcp" => yaml.mcp.as_ref(),
         _ => None,
@@ -192,6 +195,7 @@ fn cfg_parse_val<T: std::str::FromStr>(
         return parsed;
     }
     let map = match section {
+        "api" => yaml.api.as_ref(),
         "redis" => yaml.redis.as_ref(),
         "mcp" => yaml.mcp.as_ref(),
         _ => None,
