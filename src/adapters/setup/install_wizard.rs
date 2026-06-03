@@ -456,7 +456,7 @@ fn run_host_select_tui() -> io::Result<String> {
 
     loop {
         queue!(stdout, MoveTo(0, 0), Clear(ClearType::All))?;
-        tui_header(&mut stdout, "MCP bind address")?;
+        tui_header(&mut stdout, "API bind address")?;
         queue!(stdout, Print("\r\n"))?;
 
         for (i, (addr, label, desc)) in options.iter().enumerate() {
