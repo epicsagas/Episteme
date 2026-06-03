@@ -195,10 +195,18 @@ fn get_token(kind: ServiceKind) -> Option<String> {
     let cfg = crate::adapters::config::EpistemeConfig::load().ok()?;
     match kind {
         ServiceKind::Mcp => {
-            if cfg.mcp_token.is_empty() { None } else { Some(cfg.mcp_token) }
+            if cfg.mcp_token.is_empty() {
+                None
+            } else {
+                Some(cfg.mcp_token)
+            }
         }
         ServiceKind::Api => {
-            if cfg.api_keys.is_empty() { None } else { Some(cfg.api_keys) }
+            if cfg.api_keys.is_empty() {
+                None
+            } else {
+                Some(cfg.api_keys)
+            }
         }
     }
 }
@@ -593,7 +601,6 @@ pub fn install_launchd_agent_for(
         if !st.success() {
             return Err("failed to bootstrap launchd agent".to_owned());
         }
-
 
         if already_loaded {
             Ok(format!(

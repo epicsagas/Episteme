@@ -153,7 +153,9 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
         }
         match enable_service(ServiceKind::Api, true) {
             Ok(msg) => println!("  {msg}"),
-            Err(e) => eprintln!("  Warning: could not enable API server: {e}\n  Run 'epis api enable --now' manually."),
+            Err(e) => eprintln!(
+                "  Warning: could not enable API server: {e}\n  Run 'epis api enable --now' manually."
+            ),
         }
     }
 
@@ -379,13 +381,19 @@ fn upsert_api_config_yaml(host: &str, port: u16, keys: Option<&str>) -> Result<(
     let root_map = root.as_mapping_mut().expect("mapping checked above");
 
     let mut api_map = Mapping::new();
-    api_map.insert(Value::String("host".to_owned()), Value::String(host.to_owned()));
+    api_map.insert(
+        Value::String("host".to_owned()),
+        Value::String(host.to_owned()),
+    );
     api_map.insert(
         Value::String("port".to_owned()),
         Value::Number(serde_yaml::Number::from(port)),
     );
     if let Some(k) = keys.filter(|k| !k.is_empty()) {
-        api_map.insert(Value::String("keys".to_owned()), Value::String(k.to_owned()));
+        api_map.insert(
+            Value::String("keys".to_owned()),
+            Value::String(k.to_owned()),
+        );
     }
     root_map.insert(Value::String("api".to_owned()), Value::Mapping(api_map));
 
