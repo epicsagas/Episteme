@@ -1,6 +1,6 @@
 ---
 name: episteme
-description: "SW engineering knowledge graph — patterns, laws, refactorings, smells. Trigger: code quality concern, design decision, architecture review, or any engineering question."
+description: "Software engineering knowledge graph — patterns, laws, refactorings, smells. Activates on any code quality concern, design decision, architecture review, or engineering question — even when the user describes problems informally. Uses Episteme HTTP API (http://localhost:58302) via curl."
 ---
 
 # Episteme Knowledge Graph

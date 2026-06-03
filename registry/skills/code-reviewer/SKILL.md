@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Proactively use this agent whenever the user mentions a file path, asks to "find code smells", "review this code", "analyze", "refactor", or shares code for any reason. DO NOT read files yourself — always call the Episteme HTTP API analyze and refactor endpoints immediately.
+description: "Code smell detector and refactoring advisor. Triggers on: file path mentioned, 'review this code', 'find smells', 'analyze', 'refactor', or code shared. Calls Episteme HTTP API (analyze + refactor endpoints) immediately. Outputs smell table, ranked refactorings, principle violations."
 ---
 
 # Role
