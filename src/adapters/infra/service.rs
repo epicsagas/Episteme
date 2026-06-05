@@ -128,12 +128,11 @@ pub fn find_pid_by_port(port: u16) -> Option<u32> {
         for line in stdout.lines() {
             if line.contains("LISTENING") {
                 let parts: Vec<&str> = line.split_whitespace().collect();
-                if parts.len() >= 5 {
-                    if let Some(addr) = parts.get(1) {
-                        if addr.ends_with(&format!(":{port}")) {
-                            return parts.last().and_then(|pid| pid.parse().ok());
-                        }
-                    }
+                if parts.len() >= 5
+                    && let Some(addr) = parts.get(1)
+                    && addr.ends_with(&format!(":{port}"))
+                {
+                    return parts.last().and_then(|pid| pid.parse().ok());
                 }
             }
         }
@@ -908,19 +907,19 @@ fn validate_host_port(host: &str, port: u16) -> Result<(), String> {
 /// Enable (install OS service unit and optionally start) the given service.
 pub fn enable_service(kind: ServiceKind, now: bool) -> Result<String, String> {
     let (host, port) = get_host_port(kind);
-    let token = get_token(kind);
+    let _token = get_token(kind);
     validate_host_port(&host, port)?;
 
     let mut msg = String::new();
 
     #[cfg(target_os = "macos")]
     {
-        let install_msg = install_launchd_agent_for(kind, &host, port, token.as_deref())?;
+        let install_msg = install_launchd_agent_for(kind, &host, port, _token.as_deref())?;
         msg.push_str(&install_msg);
     }
     #[cfg(target_os = "linux")]
     {
-        let install_msg = install_systemd_unit(kind, &host, port, token.as_deref())?;
+        let install_msg = install_systemd_unit(kind, &host, port, _token.as_deref())?;
         msg.push_str(&install_msg);
     }
     #[cfg(not(any(target_os = "macos", target_os = "linux")))]
