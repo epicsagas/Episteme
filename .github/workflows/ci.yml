@@ -1,9 +1,10 @@
 name: CI
 
-# Disabled: GitHub Actions billing limit exceeded.
-# Re-enable by restoring the `on:` triggers below.
 on:
-  workflow_dispatch: # manual trigger only
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: read
@@ -42,6 +43,21 @@ jobs:
       - name: Test
         run: cargo test
 
+  check-windows:
+    name: Check (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: "1.95"
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Check
+        run: cargo check --all-targets --features directml
+      - name: Clippy
+        run: cargo clippy --features directml -- -D warnings
+
   audit:
     name: Security Audit
     runs-on: ubuntu-latest
@@ -54,20 +70,3 @@ jobs:
         run: cargo install cargo-audit --locked
       - name: Run audit
         run: cargo audit
-
-  sbom:
-    name: Generate SBOM
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: "1.95"
-      - name: Install cargo-cyclonedx
-        run: cargo install cargo-cyclonedx --locked
-      - name: Generate SBOM
-        run: cargo cyclonedx -f json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: sbom
-          path: "*.cdx.json"
