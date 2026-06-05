@@ -5,7 +5,6 @@
 //! Linux systemd).
 
 use std::fs;
-#[cfg(any(target_os = "macos", target_os = "linux"))]
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use std::time::{Duration, Instant};

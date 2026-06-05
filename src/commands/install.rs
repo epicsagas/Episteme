@@ -414,6 +414,7 @@ mod tests {
 
     /// Cline이 VS Code globalStorage 경로로 감지되는지 확인.
     /// 임시 디렉토리에 경로를 생성한 뒤 HOME을 덮어써서 격리 테스트.
+    #[cfg(target_os = "macos")]
     #[test]
     fn detect_cline_via_vscode_global_storage() {
         let tmp = tempfile::tempdir().unwrap();
