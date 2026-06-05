@@ -90,6 +90,7 @@ epis install --all        # 所有支援的工具
 |------|------|
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
 | **Shell 指令碼** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh \| sh` |
+| **PowerShell** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex` |
 | **cargo** | `cargo binstall episteme` ⚡ 或 `cargo install episteme` |
 | **Docker** | 見 [選項 3](#選項-3docker無需-rust) |
 
@@ -283,9 +284,11 @@ docker-compose up -d
 從 [GitHub Releases](https://github.com/epicsagas/Episteme/releases) 下載適合你平台的最新二進位檔：
 
 | 平台 | 檔案 |
-|------|------|
-| **macOS**（Apple Silicon） | `episteme-aarch64-apple-darwin.tar.xz` |
-| **Linux**（x86_64） | `episteme-x86_64-unknown-linux-gnu.tar.xz` |
+|----------|------|
+| **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.xz` |
+| **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.xz` |
+| **Linux** (ARM64) | `episteme-aarch64-unknown-linux-gnu.tar.xz` |
+| **Windows** (x86_64) | `episteme-x86_64-pc-windows-msvc.zip` |
 
 ```bash
 # macOS / Linux
@@ -487,12 +490,12 @@ rustup show   # 確認使用中的工具鏈
 
 **已發布**
 - [x] `epis install` — 從 GitHub Releases 一鍵完成資料初始化
-- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux x86_64
+- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux (x86_64 + ARM64)
 - [x] Claude Code & Codex CLI 外掛市集支援
 - [x] README 多語言翻譯 — 9 種語言 (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+- [x] **跨平台建置** — macOS、Linux、Windows (支援 DirectML GPU 加速)
 
 **規劃中**
-- [ ] **跨平台建置** — 將 `fastembed` 遷移至 `candle`（Pure Rust）以支援 Intel macOS、Windows、Linux ARM64 ([#32](https://github.com/epicsagas/Episteme/issues/32))
 - [ ] **自訂實體** — 新增團隊特定的模式/壞味道
 - [ ] **多語言中繼資料** — 實體標題與摘要的 CJK 語言支援
 - [ ] **互動式教學** — 應用程式內的 MCP 工具導覽

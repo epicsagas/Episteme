@@ -103,15 +103,41 @@ pub fn is_running(pid: u32) -> bool {
     }
 }
 
-/// Find the PID of the process listening on `port` using `lsof`.
+/// Find the PID of the process listening on `port`.
+///
+/// Uses `lsof` on Unix and `netstat` on Windows.
 pub fn find_pid_by_port(port: u16) -> Option<u32> {
-    let output = Command::new("lsof")
-        .args(["-ti", &format!(":{port}")])
-        .output()
-        .ok()?;
-    if output.status.success() {
-        String::from_utf8_lossy(&output.stdout).trim().parse().ok()
-    } else {
+    #[cfg(unix)]
+    {
+        let output = Command::new("lsof")
+            .args(["-ti", &format!(":{port}")])
+            .output()
+            .ok()?;
+        if output.status.success() {
+            String::from_utf8_lossy(&output.stdout).trim().parse().ok()
+        } else {
+            None
+        }
+    }
+    #[cfg(windows)]
+    {
+        let output = Command::new("netstat")
+            .args(["-ano", "-p", "TCP"])
+            .output()
+            .ok()?;
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        for line in stdout.lines() {
+            if line.contains("LISTENING") {
+                let parts: Vec<&str> = line.split_whitespace().collect();
+                if parts.len() >= 5 {
+                    if let Some(addr) = parts.get(1) {
+                        if addr.ends_with(&format!(":{port}")) {
+                            return parts.last().and_then(|pid| pid.parse().ok());
+                        }
+                    }
+                }
+            }
+        }
         None
     }
 }

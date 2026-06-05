@@ -324,53 +324,30 @@ jobs:
           done
           git push
 
-  upload-data-archive:
-    name: Upload knowledge data archive
+  custom-publish-crates:
     needs:
       - plan
       - host
-    if: ${{ always() && needs.host.result == 'success' && needs.plan.outputs.publishing == 'true' }}
-    runs-on: ubuntu-22.04
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-      - name: Upload data archive to release
-        run: |
-          ARCHIVE=$(ls dist/episteme-data-*.tar.gz 2>/dev/null | head -1)
-          if [ -z "$ARCHIVE" ]; then
-            echo "ERROR: dist/episteme-data-*.tar.gz not found. Run 'episteme dist' locally and commit the archive."
-            exit 1
-          fi
-          echo "Uploading $ARCHIVE to release ${{ needs.plan.outputs.tag }}"
-          gh release upload "${{ needs.plan.outputs.tag }}" "$ARCHIVE" --clobber
-
-  publish-crates:
-    name: Publish to crates.io
-    needs:
-      - plan
-      - host
-    if: ${{ always() && needs.host.result == 'success' && needs.plan.outputs.publishing == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-      - name: Publish
-        run: cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+    if: ${{ !fromJson(needs.plan.outputs.val).announcement_is_prerelease || fromJson(needs.plan.outputs.val).publish_prereleases }}
+    uses: ./.github/workflows/publish-crates.yml
+    with:
+      plan: ${{ needs.plan.outputs.val }}
+    secrets: inherit
+    # publish jobs get escalated permissions
+    permissions:
+      "id-token": "write"
+      "packages": "write"
 
   announce:
     needs:
       - plan
       - host
       - publish-homebrew-formula
-      - publish-crates
+      - custom-publish-crates
     # use "always() && ..." to allow us to wait for all publish jobs while
     # still allowing individual publish jobs to skip themselves (for prereleases).
     # "host" however must run to completion, no skipping allowed!
-    if: ${{ always() && needs.host.result == 'success' && (needs.publish-homebrew-formula.result == 'skipped' || needs.publish-homebrew-formula.result == 'success') && (needs.publish-crates.result == 'skipped' || needs.publish-crates.result == 'success') }}
+    if: ${{ always() && needs.host.result == 'success' && (needs.publish-homebrew-formula.result == 'skipped' || needs.publish-homebrew-formula.result == 'success') && (needs.custom-publish-crates.result == 'skipped' || needs.custom-publish-crates.result == 'success') }}
     runs-on: "ubuntu-22.04"
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

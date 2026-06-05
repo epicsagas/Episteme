@@ -1,7 +1,24 @@
 use crate::ports::embeddings::EmbeddingProvider;
 use fastembed::{EmbeddingModel, TextEmbedding, TextInitOptions};
+#[cfg(all(feature = "directml", target_os = "windows"))]
+use ort::ep::DirectML;
 use std::sync::{Mutex, OnceLock};
 use tracing::warn;
+
+/// Build execution providers for the current platform.
+///
+/// On Windows with the `directml` feature, uses DirectML GPU acceleration.
+/// On all other configurations, returns an empty vec (CPU-only default).
+fn execution_providers() -> Vec<fastembed::ExecutionProviderDispatch> {
+    #[cfg(all(feature = "directml", target_os = "windows"))]
+    {
+        vec![DirectML::default().build()]
+    }
+    #[cfg(not(all(feature = "directml", target_os = "windows")))]
+    {
+        vec![]
+    }
+}
 
 /// Lightweight local embedding provider.
 ///
@@ -23,7 +40,8 @@ fn model() -> &'static Mutex<Option<TextEmbedding>> {
         let inner = match TextEmbedding::try_new(
             TextInitOptions::new(EmbeddingModel::AllMiniLML6V2)
                 .with_show_download_progress(false)
-                .with_cache_dir(cache_dir),
+                .with_cache_dir(cache_dir)
+                .with_execution_providers(execution_providers()),
         ) {
             Ok(m) => Some(m),
             Err(err) => {

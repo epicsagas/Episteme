@@ -90,6 +90,7 @@ epis install --all        # Tous les outils supportes
 |---------|----------|
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
 | **Script shell** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh \| sh` |
+| **PowerShell** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex` |
 | **cargo** | `cargo binstall episteme` ⚡ ou `cargo install episteme` |
 | **Docker** | Voir [Option 3](#option-3-docker-rust-non-requis) |
 
@@ -283,9 +284,11 @@ Ajoutez a votre fichier de configuration MCP :
 Telechargez le dernier binaire pour votre plateforme depuis [GitHub Releases](https://github.com/epicsagas/Episteme/releases) :
 
 | Plateforme | Fichier |
-|------------|---------|
+|----------|------|
 | **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.xz` |
 | **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.xz` |
+| **Linux** (ARM64) | `episteme-aarch64-unknown-linux-gnu.tar.xz` |
+| **Windows** (x86_64) | `episteme-x86_64-pc-windows-msvc.zip` |
 
 ```bash
 # macOS / Linux
@@ -487,12 +490,12 @@ rustup show   # confirmer la toolchain active
 
 **Publié**
 - [x] `epis install` — configuration des données en une seule commande depuis GitHub Releases
-- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux x86_64
+- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux (x86_64 + ARM64)
 - [x] Support du marketplace de plugins Claude Code & Codex CLI
 - [x] Traductions du README — 9 langues (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+- [x] **Builds multiplateformes** — macOS, Linux, Windows (avec accélération GPU DirectML)
 
 **Prévu**
-- [ ] **Builds multi-plateformes** — Migrer `fastembed` → `candle` (Pure Rust) pour prendre en charge Intel macOS, Windows, Linux ARM64 ([#32](https://github.com/epicsagas/Episteme/issues/32))
 - [ ] **Entités personnalisées** — Ajouter des motifs/smells spécifiques à l'équipe
 - [ ] **Métadonnées multilingues** — Titres et résumés des entités en langues CJK
 - [ ] **Tutoriels interactifs** — Visites guidées intégrées pour les outils MCP

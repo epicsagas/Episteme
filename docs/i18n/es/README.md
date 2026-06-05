@@ -88,6 +88,7 @@ epis install --all        # Todas las herramientas soportadas
 |--------|---------|
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
 | **Script shell** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh \| sh` |
+| **PowerShell** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex` |
 | **cargo** | `cargo binstall episteme` ⚡ o `cargo install episteme` |
 | **Docker** | Consulta [Opcion 3](#opcion-3-docker-no-se-requiere-rust) |
 
@@ -281,9 +282,11 @@ Agrega a tu archivo de configuracion MCP:
 Descarga el ultimo binario para tu plataforma desde [GitHub Releases](https://github.com/epicsagas/Episteme/releases):
 
 | Plataforma | Archivo |
-|------------|---------|
+|----------|------|
 | **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.xz` |
 | **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.xz` |
+| **Linux** (ARM64) | `episteme-aarch64-unknown-linux-gnu.tar.xz` |
+| **Windows** (x86_64) | `episteme-x86_64-pc-windows-msvc.zip` |
 
 ```bash
 # macOS / Linux
@@ -485,12 +488,12 @@ rustup show   # confirma el toolchain activo
 
 **Publicado**
 - [x] `epis install` — configuración de datos con un solo comando desde GitHub Releases
-- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux x86_64
+- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux (x86_64 + ARM64)
 - [x] Soporte del marketplace de plugins de Claude Code & Codex CLI
 - [x] Traducciones del README — 9 idiomas (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+- [x] **Compilaciones multiplataforma** — macOS, Linux, Windows (con aceleración GPU DirectML)
 
 **Planificado**
-- [ ] **Builds multiplataforma** — Migrar `fastembed` → `candle` (Pure Rust) para soportar Intel macOS, Windows, Linux ARM64 ([#32](https://github.com/epicsagas/Episteme/issues/32))
 - [ ] **Entidades Personalizadas** — Agregar patrones/smells específicos del equipo
 - [ ] **Metadatos Multilingüe** — Títulos y resúmenes de entidades en idiomas CJK
 - [ ] **Tutoriales Interactivos** — Guías integradas en la aplicación para herramientas MCP

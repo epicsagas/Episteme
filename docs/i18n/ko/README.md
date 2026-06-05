@@ -88,6 +88,7 @@ epis install --all        # 지원되는 모든 도구
 |------|--------|
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
 | **Shell 스크립트** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh \| sh` |
+| **PowerShell** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex` |
 | **cargo** | `cargo binstall episteme` ⚡ 또는 `cargo install episteme` |
 | **Docker** | [옵션 3](#옵션-3-docker-rust-불필요) 참조 |
 
@@ -284,6 +285,8 @@ MCP 설정 파일에 추가합니다:
 |----------|------|
 | **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.xz` |
 | **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.xz` |
+| **Linux** (ARM64) | `episteme-aarch64-unknown-linux-gnu.tar.xz` |
+| **Windows** (x86_64) | `episteme-x86_64-pc-windows-msvc.zip` |
 
 ```bash
 # macOS / Linux
@@ -485,12 +488,12 @@ rustup show   # 활성 툴체인 확인
 
 **출시 완료**
 - [x] `epis install` — GitHub Releases에서 한 번에 데이터 설정
-- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux x86_64
+- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux (x86_64 + ARM64)
 - [x] Claude Code & Codex CLI 플러그인 마켓플레이스 지원
 - [x] README 다국어 번역 — 9개 언어 (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+- [x] **크로스 플랫폼 빌드** — macOS, Linux, Windows (DirectML GPU 가속 지원)
 
 **예정**
-- [ ] **크로스 플랫폼 빌드** — `fastembed` → `candle` (Pure Rust)로 마이그레이션하여 Intel macOS, Windows, Linux ARM64 지원 ([#32](https://github.com/epicsagas/Episteme/issues/32))
 - [ ] **사용자 정의 엔티티** — 팀별 패턴/스멜 추가
 - [ ] **다국어 메타데이터** — 엔티티 제목 및 요약의 CJK 언어 지원
 - [ ] **대화형 튜토리얼** — MCP 도구에 대한 앱 내 가이드 투어

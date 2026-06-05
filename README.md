@@ -99,6 +99,7 @@ epis install --all        # All supported tools
 |--------|---------|
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
 | **Shell script** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh \| sh` |
+| **PowerShell** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex` |
 | **cargo** | `cargo binstall episteme` ⚡ or `cargo install episteme` |
 | **Docker** | See [Option 3](#option-3-docker-no-rust-required) |
 
@@ -310,6 +311,8 @@ Download the latest binary for your platform from [GitHub Releases](https://gith
 |----------|------|
 | **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.xz` |
 | **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.xz` |
+| **Linux** (ARM64) | `episteme-aarch64-unknown-linux-gnu.tar.xz` |
+| **Windows** (x86_64) | `episteme-x86_64-pc-windows-msvc.zip` |
 
 ```bash
 # macOS / Linux
@@ -561,12 +564,12 @@ Alcove manages 3 tiers of documentation (7 core + 19 supplementary + 15 public f
 
 **Released**
 - [x] `epis install` — one-command data setup from GitHub Releases
-- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux x86_64
+- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux (x86_64 + ARM64)
 - [x] Claude Code & Codex CLI plugin marketplace support
 - [x] README translations — 9 languages (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+- [x] **Cross-platform builds** — macOS, Linux, Windows with DirectML GPU acceleration
 
 **Planned**
-- [ ] **Cross-platform builds** — Migrate `fastembed` → `candle` (Pure Rust) to support Intel macOS, Windows, Linux ARM64 ([#32](https://github.com/epicsagas/Episteme/issues/32))
 - [ ] **Custom Entities** — Add team-specific patterns and code smells
 - [ ] **Multilingual Metadata** — Entity titles and summaries in CJK languages
 - [ ] **Interactive Tutorials** — In-app guided tours for MCP tools

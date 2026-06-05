@@ -88,6 +88,7 @@ epis install --all        # सभी समर्थित टूल्स
 |------|--------|
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
 | **Shell स्क्रिप्ट** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh \| sh` |
+| **PowerShell** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex` |
 | **cargo** | `cargo binstall episteme` ⚡ या `cargo install episteme` |
 | **Docker** | [विकल्प 3](#विकल्प-3-docker-rust-की-आवश्यकता-नहीं) देखें |
 
@@ -284,6 +285,8 @@ docker-compose up -d
 |----------|------|
 | **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.xz` |
 | **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.xz` |
+| **Linux** (ARM64) | `episteme-aarch64-unknown-linux-gnu.tar.xz` |
+| **Windows** (x86_64) | `episteme-x86_64-pc-windows-msvc.zip` |
 
 ```bash
 # macOS / Linux
@@ -485,12 +488,12 @@ rustup show   # सक्रिय टूलचेन की पुष्टि 
 
 **जारी किया गया**
 - [x] `epis install` — GitHub Releases से एक कमांड में डेटा सेटअप
-- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux x86_64
+- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux (x86_64 + ARM64)
 - [x] Claude Code & Codex CLI प्लगइन मार्केटप्लेस सपोर्ट
 - [x] README अनुवाद — 9 भाषाएँ (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+- [x] **क्रॉस-प्लेटफ़ॉर्म बिल्ड** — macOS, Linux, Windows (DirectML GPU त्वरण के साथ)
 
 **योजनाबद्ध**
-- [ ] **क्रॉस-प्लेटफ़ॉर्म बिल्ड** — Intel macOS, Windows, Linux ARM64 के समर्थन के लिए `fastembed` → `candle` (Pure Rust) में माइग्रेशन ([#32](https://github.com/epicsagas/Episteme/issues/32))
 - [ ] **कस्टम एंटिटीज़** — टीम-विशिष्ट पैटर्न्स/स्मेल्स जोड़ें
 - [ ] **बहुभाषी मेटाडेटा** — CJK भाषाओं में एंटिटी शीर्षक और सारांश
 - [ ] **इंटरैक्टिव ट्यूटोरियल** — MCP टूल्स के लिए इन-ऐप गाइडेड टूर

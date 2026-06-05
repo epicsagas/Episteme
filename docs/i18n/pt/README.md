@@ -90,6 +90,7 @@ epis install --all        # Todas as ferramentas suportadas
 |--------|---------|
 | **Homebrew** | `brew install epicsagas/tap/episteme` |
 | **Script shell** | `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.sh \| sh` |
+| **PowerShell** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex` |
 | **cargo** | `cargo binstall episteme` ⚡ ou `cargo install episteme` |
 | **Docker** | Veja [Opção 3](#opção-3-docker-sem-rust-necessário) |
 
@@ -283,9 +284,11 @@ Adicione ao seu arquivo de configuração MCP:
 Baixe o binário mais recente para sua plataforma em [GitHub Releases](https://github.com/epicsagas/Episteme/releases):
 
 | Plataforma | Arquivo |
-|------------|---------|
+|----------|------|
 | **macOS** (Apple Silicon) | `episteme-aarch64-apple-darwin.tar.xz` |
 | **Linux** (x86_64) | `episteme-x86_64-unknown-linux-gnu.tar.xz` |
+| **Linux** (ARM64) | `episteme-aarch64-unknown-linux-gnu.tar.xz` |
+| **Windows** (x86_64) | `episteme-x86_64-pc-windows-msvc.zip` |
 
 ```bash
 # macOS / Linux
@@ -487,12 +490,12 @@ rustup show   # confirme a toolchain ativa
 
 **Lançado**
 - [x] `epis install` — configuração de dados com um único comando a partir do GitHub Releases
-- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux x86_64
+- [x] Homebrew tap (`epicsagas/tap/episteme`) — macOS Apple Silicon + Linux (x86_64 + ARM64)
 - [x] Suporte ao marketplace de plugins do Claude Code & Codex CLI
 - [x] Traduções do README — 9 idiomas (ko, ja, zh-CN, zh-TW, de, fr, es, pt, hi)
+- [x] **Builds multiplataforma** — macOS, Linux, Windows (com aceleração GPU DirectML)
 
 **Planejado**
-- [ ] **Builds multiplataforma** — Migrar `fastembed` → `candle` (Pure Rust) para suportar Intel macOS, Windows, Linux ARM64 ([#32](https://github.com/epicsagas/Episteme/issues/32))
 - [ ] **Entidades Personalizadas** — Adicionar padrões/smells específicos da equipe
 - [ ] **Metadados Multilíngues** — Títulos e resumos de entidades em idiomas CJK
 - [ ] **Tutoriais Interativos** — Tours guiados no aplicativo para ferramentas MCP

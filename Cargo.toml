@@ -114,6 +114,8 @@ tar = "0.4"
 rustpython-parser = "0.4"
 fxhash = "0.2"
 fastembed = { version = "5.13.4", default-features = false, features = ["hf-hub-native-tls", "ort-download-binaries-native-tls"] }
+# Same version pin as fastembed's internal ort dependency — enables DirectML EP on Windows.
+ort = { version = "=2.0.0-rc.12", default-features = false, optional = true }
 crossterm = "0.29.0"
 rand = "0.10"
 
@@ -143,6 +145,7 @@ proptest = "1"
 
 [features]
 default = []
+directml = ["dep:ort", "ort/directml"]
 openai-embeddings = []
 redis-cache = ["dep:redis", "dep:deadpool-redis"]
 redis-pool = ["dep:deadpool-redis"]
