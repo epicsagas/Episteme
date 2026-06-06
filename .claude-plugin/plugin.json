@@ -1,6 +1,6 @@
 {
   "name": "episteme",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Software engineering knowledge graph — design patterns, laws, refactorings, and code smells with graph traversal and AI-powered code analysis.",
   "author": {
     "name": "epicsagas",
