@@ -97,7 +97,7 @@ indicatif = "0.18"
 rustyline = "18"
 
 # HTTP client
-reqwest = { version = "0.13", features = ["json", "blocking", "native-tls"] }
+reqwest = { version = "0.13", default-features = false, features = ["json", "blocking", "rustls"] }
 
 # Redis (optional, for response caching)
 redis = { version = "1.2.1", features = ["tokio-comp"], optional = true }
