@@ -38,10 +38,5 @@ pub const DEFAULT_SEARCH_LIMIT: usize = 5;
 pub const MAX_SEARCH_LIMIT: usize = 20;
 pub const MAX_TOKENS_PER_RESPONSE: usize = 500;
 
-pub const EMBEDDING_MODEL: &str = "all-MiniLM-L6-v2";
-pub const EMBEDDING_DIMENSIONS: usize = 384;
-pub const OPENAI_EMBED_DIM: usize = 1536;
-pub const OPENAI_EMBED_MODEL: &str = "text-embedding-3-small";
-
 pub const MAX_CODE_BYTES: usize = 500_000;
 pub const MAX_REQUEST_BYTES: usize = 2 * 1024 * 1024;

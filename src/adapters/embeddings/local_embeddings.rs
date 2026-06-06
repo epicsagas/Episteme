@@ -74,11 +74,20 @@ pub fn create_local_provider(model_name: &str) -> Result<Box<dyn EmbeddingProvid
 
 /// Create a local provider reading the model from config (`EPISTEME_EMBEDDING_MODEL`).
 ///
-/// Falls back to `MultilingualE5Small` (384-dim) when the config model is unknown.
+/// Falls back to `NoopEmbeddingProvider` (384-dim zero vectors) when model loading fails,
+/// so that MCP server startup is never fatal due to a missing model download.
 pub fn create_configured_local_provider() -> Box<dyn EmbeddingProvider> {
     let cfg = crate::adapters::config::EpistemeConfig::load().unwrap_or_default();
-    create_local_provider(&cfg.embedding_model)
-        .expect("embedding provider creation should not fail")
+    match create_local_provider(&cfg.embedding_model) {
+        Ok(provider) => provider,
+        Err(e) => {
+            tracing::warn!(
+                "Failed to load local embedding model '{}', falling back to noop provider: {e}",
+                cfg.embedding_model
+            );
+            Box::new(crate::adapters::noop_embeddings::NoopEmbeddingProvider::new(384))
+        }
+    }
 }
 
 /// Create an OpenAI embedding provider using llm-kernel.

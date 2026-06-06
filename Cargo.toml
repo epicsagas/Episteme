@@ -121,8 +121,6 @@ llm-kernel = { version = "0.1.0", features = [
     "search",
 ] }
 
-# Same version pin as fastembed's internal ort dependency — enables DirectML EP on Windows.
-ort = { version = "=2.0.0-rc.12", default-features = false, optional = true }
 crossterm = "0.29.0"
 rand = "0.10"
 
@@ -152,7 +150,6 @@ proptest = "1"
 
 [features]
 default = []
-directml = ["dep:ort", "ort/directml"]
 openai-embeddings = []
 redis-cache = ["dep:redis", "dep:deadpool-redis"]
 redis-pool = ["dep:deadpool-redis"]
