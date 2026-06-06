@@ -1,191 +1,178 @@
+//! Thin adapter wrapping [`llm_kernel::embedding::EmbeddingProvider`] behind
+//! Episteme's [`crate::ports::embeddings::EmbeddingProvider`] trait.
+//!
+//! This module replaces the previous direct fastembed + reqwest implementations
+//! with llm-kernel's unified embedding providers.
+
+use llm_kernel::embedding::EmbeddingProvider as LkProvider;
+
 use crate::ports::embeddings::EmbeddingProvider;
-use fastembed::{EmbeddingModel, TextEmbedding, TextInitOptions};
-#[cfg(all(feature = "directml", target_os = "windows"))]
-use ort::ep::DirectML;
-use std::sync::{Mutex, OnceLock};
-use tracing::warn;
 
-/// Build execution providers for the current platform.
+/// Adapter wrapping an [`LkProvider`] behind Episteme's [`EmbeddingProvider`] trait.
 ///
-/// On Windows with the `directml` feature, uses DirectML GPU acceleration.
-/// On all other configurations, returns an empty vec (CPU-only default).
-fn execution_providers() -> Vec<fastembed::ExecutionProviderDispatch> {
-    #[cfg(all(feature = "directml", target_os = "windows"))]
-    {
-        vec![DirectML::default().build()]
-    }
-    #[cfg(not(all(feature = "directml", target_os = "windows")))]
-    {
-        vec![]
+/// Translates between the two trait signatures:
+/// - `dim()` → `embedding_dim()`
+/// - `anyhow::Result<EmbeddingResult>` → `Result<Vec<f32>, String>`
+/// - `embed_batch(&[&str])` → `embed_batch(&[&str], batch_size)` with manual chunking
+pub struct LkEmbeddingAdapter {
+    inner: Box<dyn LkProvider>,
+}
+
+impl LkEmbeddingAdapter {
+    pub fn new(inner: Box<dyn LkProvider>) -> Self {
+        Self { inner }
     }
 }
 
-/// Lightweight local embedding provider.
-///
-/// This is a deterministic CPU-only fallback that avoids external APIs.
-/// It hashes token n-grams into a fixed-size normalized vector, providing
-/// better semantic separation than zero-vectors while remaining dependency-light.
-pub struct LocalEmbeddingProvider {
-    dim: usize,
-}
-
-// Shared model instance — loaded once per process on first embed() call or explicit warmup().
-static MODEL: OnceLock<Mutex<Option<TextEmbedding>>> = OnceLock::new();
-
-fn model() -> &'static Mutex<Option<TextEmbedding>> {
-    MODEL.get_or_init(|| {
-        // Pin the cache to ~/.episteme/models so the model is found regardless
-        // of the process working directory (e.g. when spawned by Claude Code).
-        let cache_dir = crate::adapters::paths::episteme_home().join("models");
-        let inner = match TextEmbedding::try_new(
-            TextInitOptions::new(EmbeddingModel::AllMiniLML6V2)
-                .with_show_download_progress(false)
-                .with_cache_dir(cache_dir)
-                .with_execution_providers(execution_providers()),
-        ) {
-            Ok(m) => Some(m),
-            Err(err) => {
-                warn!(
-                    "Failed to initialize local embedding model, falling back to hash embeddings: {err}"
-                );
-                None
-            }
-        };
-        Mutex::new(inner)
-    })
-}
-
-impl LocalEmbeddingProvider {
-    pub fn new(dim: usize) -> Self {
-        Self { dim: dim.max(8) }
-    }
-
-    /// Pre-load the embedding model. Call once at install/startup so the first
-    /// MCP tool call does not pay the cold-start cost.
-    pub fn warmup() {
-        let _ = model();
-    }
-
-    fn hash_embed(&self, text: &str) -> Vec<f32> {
-        let mut v = vec![0.0f32; self.dim];
-        if text.trim().is_empty() {
-            return v;
-        }
-
-        let lower = text.to_lowercase();
-        let words: Vec<&str> = lower.split_whitespace().collect();
-        for (i, w) in words.iter().enumerate() {
-            let h = fxhash::hash64(w.as_bytes()) as usize;
-            v[h % self.dim] += 1.0;
-            if i + 1 < words.len() {
-                let bigram = format!("{w} {}", words[i + 1]);
-                let hb = fxhash::hash64(bigram.as_bytes()) as usize;
-                v[hb % self.dim] += 1.5;
-            }
-        }
-
-        // L2 normalize so cosine similarity remains meaningful.
-        let norm = v
-            .iter()
-            .map(|x| (*x as f64) * (*x as f64))
-            .sum::<f64>()
-            .sqrt() as f32;
-        if norm > 0.0 {
-            for x in &mut v {
-                *x /= norm;
-            }
-        }
-        v
-    }
-
-    fn embed_with_fastembed(&self, text: &str) -> Result<Vec<f32>, String> {
-        let mut guard = model()
-            .lock()
-            .map_err(|_| "local embedding model lock poisoned".to_owned())?;
-        let Some(m) = guard.as_mut() else {
-            return Ok(self.hash_embed(text));
-        };
-        let vectors = m
-            .embed(vec![text], Some(1))
-            .map_err(|e| format!("fastembed inference failed: {e}"))?;
-        vectors
-            .into_iter()
-            .next()
-            .ok_or_else(|| "fastembed returned empty embedding response".to_owned())
-    }
-}
-
-impl EmbeddingProvider for LocalEmbeddingProvider {
+impl EmbeddingProvider for LkEmbeddingAdapter {
     fn embedding_dim(&self) -> usize {
-        self.dim
+        self.inner.dim()
     }
 
     fn embed(&self, text: &str) -> Result<Vec<f32>, String> {
-        match self.embed_with_fastembed(text) {
-            Ok(v) => Ok(v),
-            Err(err) => {
-                warn!("Falling back to hash embeddings after local inference error: {err}");
-                Ok(self.hash_embed(text))
-            }
-        }
+        self.inner
+            .embed(text)
+            .map(|r| r.vector)
+            .map_err(|e| e.to_string())
     }
 
     fn embed_batch(&self, texts: &[&str], batch_size: usize) -> Result<Vec<Vec<f32>>, String> {
-        let chunk_size = batch_size.max(1);
-        let mut guard = model()
-            .lock()
-            .map_err(|_| "local embedding model lock poisoned".to_owned())?;
-        let Some(m) = guard.as_mut() else {
-            return Ok(texts.iter().map(|t| self.hash_embed(t)).collect());
-        };
-        let mut out = Vec::with_capacity(texts.len());
-        for chunk in texts.chunks(chunk_size) {
-            let vectors = m
-                .embed(chunk, Some(chunk_size))
-                .map_err(|e| format!("fastembed inference failed: {e}"))?;
-            out.extend(vectors);
+        if batch_size == 0 || batch_size >= texts.len() {
+            return self
+                .inner
+                .embed_batch(texts)
+                .map(|results| results.into_iter().map(|r| r.vector).collect())
+                .map_err(|e| e.to_string());
         }
-        if out.len() == texts.len() {
-            Ok(out)
-        } else {
-            warn!("Falling back to hash embeddings due to fastembed batch size mismatch");
-            Ok(texts.iter().map(|t| self.hash_embed(t)).collect())
+
+        // Chunk manually to respect batch_size memory limits.
+        let mut all = Vec::with_capacity(texts.len());
+        for chunk in texts.chunks(batch_size) {
+            let batch = self.inner.embed_batch(chunk).map_err(|e| e.to_string())?;
+            all.extend(batch.into_iter().map(|r| r.vector));
         }
+        Ok(all)
     }
+}
+
+/// Create a local fastembed-based embedding provider using llm-kernel.
+///
+/// `model_name` is parsed case-insensitively via [`llm_kernel::embedding::catalog::EmbeddingModel::parse`].
+/// Falls back to `MultilingualE5Small` (384-dim) on parse failure.
+pub fn create_local_provider(model_name: &str) -> Result<Box<dyn EmbeddingProvider>, String> {
+    use llm_kernel::embedding::FastembedProvider;
+    use llm_kernel::embedding::catalog::EmbeddingModel;
+
+    let model = EmbeddingModel::parse(model_name).unwrap_or(EmbeddingModel::MultilingualE5Small);
+    let cache_dir = crate::adapters::paths::episteme_home().join("models");
+
+    let provider = FastembedProvider::new(model, Some(cache_dir))
+        .map_err(|e| format!("failed to create embedding provider: {e}"))?;
+
+    Ok(Box::new(LkEmbeddingAdapter::new(Box::new(provider))))
+}
+
+/// Create a local provider reading the model from config (`EPISTEME_EMBEDDING_MODEL`).
+///
+/// Falls back to `MultilingualE5Small` (384-dim) when the config model is unknown.
+pub fn create_configured_local_provider() -> Box<dyn EmbeddingProvider> {
+    let cfg = crate::adapters::config::EpistemeConfig::load().unwrap_or_default();
+    create_local_provider(&cfg.embedding_model)
+        .expect("embedding provider creation should not fail")
+}
+
+/// Create an OpenAI embedding provider using llm-kernel.
+///
+/// `model` is matched against known OpenAI model names to pick the right constructor.
+/// Falls back to `new_small` for unrecognized model names.
+#[cfg(feature = "openai-embeddings")]
+pub fn create_openai_provider(
+    api_key: String,
+    model: String,
+) -> Result<Box<dyn EmbeddingProvider>, String> {
+    use llm_kernel::embedding::OpenAIEmbeddingClient;
+
+    let provider = if model.contains("large") {
+        OpenAIEmbeddingClient::new_large(api_key)
+    } else {
+        OpenAIEmbeddingClient::new_small(api_key)
+    };
+
+    Ok(Box::new(LkEmbeddingAdapter::new(Box::new(provider))))
 }
 
 #[cfg(test)]
 mod tests {
-    use super::LocalEmbeddingProvider;
-    use crate::ports::embeddings::EmbeddingProvider;
+    use llm_kernel::embedding::types::{EmbeddingProvider as LkProvider, EmbeddingResult};
 
-    #[test]
-    fn local_embedding_dim_matches_configured_dim() {
-        let provider = LocalEmbeddingProvider::new(384);
-        assert_eq!(provider.embedding_dim(), 384);
+    use super::*;
+
+    /// Mock that implements llm-kernel's `EmbeddingProvider` for unit testing.
+    struct MockLkProvider {
+        dim: usize,
+    }
+
+    impl LkProvider for MockLkProvider {
+        fn dim(&self) -> usize {
+            self.dim
+        }
+
+        fn name(&self) -> &str {
+            "mock"
+        }
+
+        fn embed(&self, text: &str) -> anyhow::Result<EmbeddingResult> {
+            Ok(EmbeddingResult {
+                vector: vec![1.0f32; self.dim],
+                text_preview: text[..text.len().min(64)].to_string(),
+            })
+        }
+
+        fn embed_batch(&self, texts: &[&str]) -> anyhow::Result<Vec<EmbeddingResult>> {
+            Ok(texts
+                .iter()
+                .map(|t| EmbeddingResult {
+                    vector: vec![1.0f32; self.dim],
+                    text_preview: t[..t.len().min(64)].to_string(),
+                })
+                .collect())
+        }
+    }
+
+    fn mock_adapter(dim: usize) -> LkEmbeddingAdapter {
+        LkEmbeddingAdapter::new(Box::new(MockLkProvider { dim }))
     }
 
     #[test]
-    fn non_empty_text_produces_non_zero_embedding() {
-        let provider = LocalEmbeddingProvider::new(384);
-        let v = provider
-            .embed("factory method pattern reduces conditional complexity")
-            .unwrap();
-        assert_eq!(v.len(), provider.embedding_dim());
-        let sum_abs: f32 = v.iter().map(|x| x.abs()).sum();
-        assert!(sum_abs > 0.0);
+    fn adapter_dim_delegates() {
+        let adapter = mock_adapter(384);
+        assert_eq!(adapter.embedding_dim(), 384);
     }
 
     #[test]
-    fn semantically_different_texts_produce_different_embeddings() {
-        let provider = LocalEmbeddingProvider::new(384);
-        let a = provider
-            .embed("dependency inversion and interface boundaries")
-            .unwrap();
-        let b = provider
-            .embed("recipe for sourdough bread starter hydration")
-            .unwrap();
-        assert_eq!(a.len(), b.len());
-        assert_ne!(a, b);
+    fn adapter_embed_delegates() {
+        let adapter = mock_adapter(128);
+        let vec = adapter.embed("test").unwrap();
+        assert_eq!(vec.len(), 128);
+        assert!(vec.iter().all(|&v| v == 1.0));
+    }
+
+    #[test]
+    fn adapter_embed_batch_no_chunking() {
+        let adapter = mock_adapter(64);
+        // batch_size=0 → single call
+        let results = adapter.embed_batch(&["a", "b"], 0).unwrap();
+        assert_eq!(results.len(), 2);
+        for v in &results {
+            assert_eq!(v.len(), 64);
+        }
+    }
+
+    #[test]
+    fn adapter_embed_batch_with_chunking() {
+        let adapter = mock_adapter(64);
+        // 3 items, batch_size=2 → 2 chunks [a,b] + [c]
+        let results = adapter.embed_batch(&["a", "b", "c"], 2).unwrap();
+        assert_eq!(results.len(), 3);
     }
 }

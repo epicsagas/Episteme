@@ -20,6 +20,7 @@ pub struct EpistemeConfig {
     pub redis_ttl: u64,
     pub redis_enabled: bool,
     pub embedding_provider: String,
+    pub embedding_model: String,
     pub openai_api_key: String,
     pub openai_embed_model: String,
     pub openai_embed_dim: usize,
@@ -49,6 +50,7 @@ impl Default for EpistemeConfig {
             redis_ttl: 3600,
             redis_enabled: true,
             embedding_provider: "local".into(),
+            embedding_model: "MultilingualE5Small".into(),
             openai_api_key: String::new(),
             openai_embed_model: "text-embedding-3-small".into(),
             openai_embed_dim: 1536,
@@ -124,6 +126,7 @@ impl EpistemeConfig {
 
         config.embedding_provider =
             env_or("EPISTEME_EMBEDDING_PROVIDER", &config.embedding_provider);
+        config.embedding_model = env_or("EPISTEME_EMBEDDING_MODEL", &config.embedding_model);
         config.openai_api_key = env_or("OPENAI_API_KEY", &config.openai_api_key);
         config.openai_embed_model =
             env_or("EPISTEME_OPENAI_EMBED_MODEL", &config.openai_embed_model);

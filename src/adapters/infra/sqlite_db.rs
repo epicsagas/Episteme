@@ -3,38 +3,57 @@ use rusqlite::{Connection, params};
 use crate::adapters::error::{InfraError, Result};
 
 // ---------------------------------------------------------------------------
-// Schema initialization
+// Schema
 // ---------------------------------------------------------------------------
 
-/// Create the `chunks` and `embeddings` tables plus supporting indexes.
-pub fn init_database(conn: &Connection) -> Result<()> {
-    conn.execute_batch(
-        "
-        CREATE TABLE IF NOT EXISTS chunks (
-            id TEXT PRIMARY KEY,
-            text TEXT NOT NULL,
-            entity_id TEXT NOT NULL,
-            entity_type TEXT NOT NULL,
-            title TEXT,
-            section TEXT,
-            chunk_index INTEGER,
-            metadata TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
+/// Current schema version (bumped when DDL changes).
+const SCHEMA_VERSION: u32 = 1;
 
-        CREATE TABLE IF NOT EXISTS embeddings (
-            chunk_id TEXT PRIMARY KEY,
-            embedding BLOB NOT NULL,
-            FOREIGN KEY (chunk_id) REFERENCES chunks(id)
-        );
+/// Full DDL for the RAG database.
+///
+/// Includes `_meta` table required by [`llm_kernel::store::init_schema`].
+const SCHEMA_DDL: &str = "
+    CREATE TABLE IF NOT EXISTS _meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+    INSERT OR IGNORE INTO _meta (key, value) VALUES ('schema_version', '0');
 
-        CREATE INDEX IF NOT EXISTS idx_entity_id ON chunks(entity_id);
-        CREATE INDEX IF NOT EXISTS idx_entity_type ON chunks(entity_type);
-        ",
-    )
-    .map_err(|e| InfraError::Database(e.to_string()))?;
+    CREATE TABLE IF NOT EXISTS chunks (
+        id TEXT PRIMARY KEY,
+        text TEXT NOT NULL,
+        entity_id TEXT NOT NULL,
+        entity_type TEXT NOT NULL,
+        title TEXT,
+        section TEXT,
+        chunk_index INTEGER,
+        metadata TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
-    Ok(())
+    CREATE TABLE IF NOT EXISTS embeddings (
+        chunk_id TEXT PRIMARY KEY,
+        embedding BLOB NOT NULL,
+        FOREIGN KEY (chunk_id) REFERENCES chunks(id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_entity_id ON chunks(entity_id);
+    CREATE INDEX IF NOT EXISTS idx_entity_type ON chunks(entity_type);
+";
+
+// ---------------------------------------------------------------------------
+// Database initialization
+// ---------------------------------------------------------------------------
+
+/// Initialize the RAG database at `path` using llm-kernel's `init_schema`.
+///
+/// Creates parent directories, applies PRAGMAs (WAL, foreign keys, busy timeout),
+/// runs the DDL, and validates schema versioning.
+pub fn open_database(path: &std::path::Path) -> Result<Connection> {
+    llm_kernel::store::init_schema(path, SCHEMA_DDL, SCHEMA_VERSION)
+        .map_err(|e| InfraError::Database(e.to_string()))
+}
+
+/// Initialize an in-memory database for testing.
+pub fn init_in_memory() -> Result<Connection> {
+    llm_kernel::store::init_in_memory(SCHEMA_DDL).map_err(|e| InfraError::Database(e.to_string()))
 }
 
 // ---------------------------------------------------------------------------

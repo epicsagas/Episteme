@@ -73,8 +73,7 @@ rusqlite = { version = "0.40", features = ["bundled"] }
 # Regex
 regex = "1"
 
-# Numerics
-ndarray = "0.17"
+# Numerics (removed — was only used by fastembed, now via llm-kernel)
 
 # Error handling
 thiserror = "2"
@@ -112,8 +111,16 @@ uuid = { version = "1", features = ["v4"] }
 flate2 = "1"
 tar = "0.4"
 rustpython-parser = "0.4"
-fxhash = "0.2"
-fastembed = { version = "5.13.4", default-features = false, features = ["hf-hub-native-tls", "ort-download-binaries-native-tls"] }
+
+# llm-kernel: shared foundation for AI-native apps
+llm-kernel = { version = "0.1.0", features = [
+    "embedding",
+    "embedding-fastembed",
+    "embedding-openai",
+    "store",
+    "search",
+] }
+
 # Same version pin as fastembed's internal ort dependency — enables DirectML EP on Windows.
 ort = { version = "=2.0.0-rc.12", default-features = false, optional = true }
 crossterm = "0.29.0"

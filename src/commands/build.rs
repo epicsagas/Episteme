@@ -7,7 +7,6 @@ use anyhow::{Context, Result};
 use tracing::info;
 
 use episteme::adapters::config::EpistemeConfig;
-use episteme::adapters::constants::EMBEDDING_DIMENSIONS;
 
 use super::prelude::*;
 
@@ -74,16 +73,8 @@ pub fn cmd_build(
                         .ok()
                         .filter(|m| !m.is_empty())
                         .unwrap_or(config.openai_embed_model.clone());
-                    let dim = std::env::var("EPISTEME_OPENAI_EMBED_DIM")
-                        .ok()
-                        .and_then(|s| s.parse().ok())
-                        .unwrap_or(config.openai_embed_dim);
-                    info!("Using OpenAI embedding provider (model={model}, dim={dim})");
-                    Box::new(
-                        episteme::adapters::openai_embeddings::OpenAIEmbeddingProvider::new(
-                            key, model, dim,
-                        ),
-                    )
+                    info!("Using OpenAI embedding provider (model={model})");
+                    episteme::adapters::local_embeddings::create_openai_provider(key, model)?
                 } else {
                     anyhow::bail!(
                         "embedding provider is set to openai but no API key was found (set OPENAI_API_KEY or EPISTEME_OPENAI_API_KEY)"
@@ -91,22 +82,14 @@ pub fn cmd_build(
                 }
             } else {
                 info!("Using local embedding provider");
-                Box::new(
-                    episteme::adapters::local_embeddings::LocalEmbeddingProvider::new(
-                        EMBEDDING_DIMENSIONS,
-                    ),
-                )
+                episteme::adapters::local_embeddings::create_configured_local_provider()
             }
         }
 
         #[cfg(not(feature = "openai-embeddings"))]
         {
             let _ = &config;
-            Box::new(
-                episteme::adapters::local_embeddings::LocalEmbeddingProvider::new(
-                    EMBEDDING_DIMENSIONS,
-                ),
-            )
+            episteme::adapters::local_embeddings::create_configured_local_provider()
         }
     };
 
