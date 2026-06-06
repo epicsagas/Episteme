@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking: OpenAI embedding model selection is now strict** — previously, unrecognized model names silently fell back to `text-embedding-3-small`. Now only `text-embedding-3-small` and `text-embedding-3-large` are accepted; other values (e.g. `text-embedding-ada-002`) produce a clear error. Set `EPISTEME_OPENAI_EMBED_MODEL` to a supported model name.
 - CLI: `explore` renamed to `search` (old name works as deprecated alias)
 - CLI: `mcp` and `api` now own their full service lifecycle (`start`, `stop`, `restart`, `status`, `enable [--now]`, `disable [--now]`)
 - CLI: `service` top-level command deprecated — use `mcp start/stop/restart/status/enable/disable` instead
