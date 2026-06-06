@@ -372,6 +372,7 @@ $RECYCLE.BIN/
 
 ### Project ###
 *.db
+!db/*.db
 .cache/
 models/
 .fastembed_cache/
@@ -380,3 +381,5 @@ models/
 .claude/settings.local.json
 src/episteme/_keys.py
 dist/*.tar.gz
+db/*.db-shm
+db/*.db-wal
