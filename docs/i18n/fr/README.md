@@ -431,6 +431,56 @@ episteme dist --out-dir release/
 
 ---
 
+## Modèles d'embedding
+
+Episteme utilise des embeddings locaux pour la recherche sémantique — aucune API externe n'est requise.
+
+### Par défaut : MultilingualE5Small (inclus)
+
+`epis install` fournit une **base de données préconstruite** avec 913 chunks déjà intégrés à l'aide de **MultilingualE5Small** (384 dimensions, ONNX Runtime). Cela signifie :
+
+- **Aucun indexage nécessaire** après l'installation — la recherche fonctionne immédiatement
+- **Entièrement hors-ligne** — le modèle s'exécute localement via fastembed (ONNX Runtime)
+- **Multilingue** — prend en charge l'anglais, le coréen, le japonais, le chinois et plus de 90 autres langues
+
+### Utiliser un modèle personnalisé
+
+Pour passer à un autre modèle local, définissez la variable d'environnement et reconstruisez l'index :
+
+```bash
+# Définir le modèle souhaité
+export EPISTEME_EMBEDDING_MODEL=AllMiniLML6V2
+
+# Reconstruire l'index avec le nouveau modèle
+epis build --rebuild
+```
+
+Modèles locaux disponibles (ONNX, aucune clé API requise) :
+
+| Modèle | Dimensions | Idéal pour |
+|--------|-----------|------------|
+| `MultilingualE5Small` (défaut) | 384 | Multilingue, équilibre vitesse/qualité |
+| `AllMiniLML6V2` | 384 | Axé anglais, rapide |
+| `BGEBaseEN` | 768 | Anglais, qualité supérieure |
+
+Consultez [les modèles d'embedding supportés](https://github.com/epicsagas/llm-kernel/blob/main/EMBEDDING_MODELS.md) pour le catalogue complet.
+
+### Utiliser les embeddings OpenAI
+
+```bash
+# Activer le provider OpenAI
+export EPISTEME_OPENAI_API_KEY=sk-...
+export EPISTEME_EMBEDDING_MODEL_PROVIDER=openai
+export EPISTEME_OPENAI_EMBED_MODEL=text-embedding-3-small
+
+# Reconstruire avec OpenAI
+epis build --rebuild
+```
+
+Nécessite le feature flag `openai-embeddings` à la compilation.
+
+> **Remarque :** Après avoir changé de modèle, vous **devez** exécuter `epis build --rebuild` pour régénérer les embeddings. La base de données enregistre le modèle utilisé et affichera un avertissement en cas de discordance.
+
 ## Configuration
 
 ### Variables d'environnement

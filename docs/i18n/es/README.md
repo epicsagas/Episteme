@@ -429,6 +429,56 @@ episteme dist --out-dir release/
 
 ---
 
+## Modelos de Embeddings
+
+Episteme utiliza embeddings locales para la búsqueda semántica — no se requiere ninguna API externa.
+
+### Por defecto: MultilingualE5Small (incluido)
+
+`epis install` incluye una **base de datos precompilada** con 913 fragmentos ya embedidos usando **MultilingualE5Small** (384 dimensiones, ONNX Runtime). Esto significa:
+
+- **No se necesita indexación** tras la instalación — la búsqueda funciona de inmediato
+- **Completamente offline** — el modelo se ejecuta localmente via fastembed (ONNX Runtime)
+- **Multilingüe** — compatible con inglés, coreano, japonés, chino y más de 90 idiomas
+
+### Usar un modelo personalizado
+
+Para cambiar a un modelo local diferente, define la variable de entorno y reconstruye:
+
+```bash
+# Define tu modelo preferido
+export EPISTEME_EMBEDDING_MODEL=AllMiniLML6V2
+
+# Reconstruye el índice con el nuevo modelo
+epis build --rebuild
+```
+
+Modelos locales disponibles (ONNX, sin necesidad de clave API):
+
+| Modelo | Dimensiones | Mejor para |
+|--------|------------|------------|
+| `MultilingualE5Small` (por defecto) | 384 | Multilingüe, equilibrio entre velocidad y calidad |
+| `AllMiniLML6V2` | 384 | Orientado al inglés, rápido |
+| `BGEBaseEN` | 768 | Inglés, mayor calidad |
+
+Consulta [Modelos de Embedding compatibles](https://github.com/epicsagas/llm-kernel/blob/main/EMBEDDING_MODELS.md) para el catálogo completo.
+
+### Usar embeddings de OpenAI
+
+```bash
+# Activa el proveedor OpenAI
+export EPISTEME_OPENAI_API_KEY=sk-...
+export EPISTEME_EMBEDDING_MODEL_PROVIDER=openai
+export EPISTEME_OPENAI_EMBED_MODEL=text-embedding-3-small
+
+# Reconstruye con OpenAI
+epis build --rebuild
+```
+
+Requiere el flag de función `openai-embeddings` en tiempo de compilación.
+
+> **Nota:** Al cambiar de modelo, **debes** ejecutar `epis build --rebuild` para regenerar los embeddings. La base de datos almacena qué modelo fue utilizado y advertirá si hay una discrepancia.
+
 ## Configuracion
 
 ### Variables de Entorno

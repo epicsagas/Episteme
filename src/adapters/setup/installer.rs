@@ -2,6 +2,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
+use rusqlite;
+
 #[cfg(test)]
 use serde_json::{Value, json};
 
@@ -259,6 +261,9 @@ fn seed_from_extracted(
                 fs::create_dir_all(&target).map_err(|e| e.to_string())?;
                 copy_dir_recursive(&src, &target)?;
                 messages.push(format!("Seeded {dir} from {label}"));
+                if *dir == "db" {
+                    report_db_model_info(messages);
+                }
                 copied = true;
             }
         }
@@ -267,6 +272,48 @@ fn seed_from_extracted(
         }
     }
     Ok(copied)
+}
+
+/// Read embedding model metadata from the installed DB and append info messages.
+fn report_db_model_info(messages: &mut Vec<String>) {
+    let db_path = crate::adapters::paths::db_path();
+    if !db_path.exists() {
+        return;
+    }
+    let Ok(conn) = rusqlite::Connection::open(&db_path) else {
+        return;
+    };
+    let model: Option<String> = conn
+        .query_row(
+            "SELECT value FROM _meta WHERE key = 'embedding_model'",
+            [],
+            |r| r.get(0),
+        )
+        .ok();
+    let dim: Option<String> = conn
+        .query_row(
+            "SELECT value FROM _meta WHERE key = 'embedding_dim'",
+            [],
+            |r| r.get(0),
+        )
+        .ok();
+    match (model, dim) {
+        (Some(m), Some(d)) => {
+            messages.push(format!(
+                "Pre-built index: {m} ({d}-dim) — semantic search ready, no re-indexing needed"
+            ));
+            let configured = std::env::var("EPISTEME_EMBEDDING_MODEL").unwrap_or_default();
+            if !configured.is_empty() && configured != m {
+                messages.push(format!(
+                    "Warning: configured model ({configured}) differs from pre-built ({m}). Run 'epis build --rebuild' to re-index."
+                ));
+            }
+        }
+        (Some(m), None) => {
+            messages.push(format!("Pre-built index: {m} — semantic search ready"));
+        }
+        _ => {}
+    }
 }
 
 pub fn seed_data_from_local_archive(path: &Path, dry_run: bool) -> Result<Vec<String>, String> {

@@ -431,6 +431,56 @@ episteme dist --out-dir release/
 
 ---
 
+## Embedding-Modelle
+
+Episteme verwendet lokale Embeddings für die semantische Suche — keine externe API erforderlich.
+
+### Standard: MultilingualE5Small (enthalten)
+
+`epis install` liefert eine **vorgefertigte Datenbank** mit 913 bereits eingebetteten Chunks unter Verwendung von **MultilingualE5Small** (384 Dimensionen, ONNX Runtime). Das bedeutet:
+
+- **Kein Indexing erforderlich** nach der Installation — die Suche funktioniert sofort
+- **Vollständig offline** — das Modell läuft lokal via fastembed (ONNX Runtime)
+- **Mehrsprachig** — unterstützt Englisch, Koreanisch, Japanisch, Chinesisch und über 90 weitere Sprachen
+
+### Benutzerdefiniertes Modell verwenden
+
+Um zu einem anderen lokalen Modell zu wechseln, setzen Sie die Umgebungsvariable und bauen Sie den Index neu:
+
+```bash
+# Bevorzugtes Modell festlegen
+export EPISTEME_EMBEDDING_MODEL=AllMiniLML6V2
+
+# Index mit dem neuen Modell neu erstellen
+epis build --rebuild
+```
+
+Verfügbare lokale Modelle (ONNX, kein API-Schlüssel erforderlich):
+
+| Modell | Dimensionen | Geeignet für |
+|--------|-------------|--------------|
+| `MultilingualE5Small` (Standard) | 384 | Mehrsprachig, ausgewogenes Verhältnis Geschwindigkeit/Qualität |
+| `AllMiniLML6V2` | 384 | Englisch-fokussiert, schnell |
+| `BGEBaseEN` | 768 | Englisch, höhere Qualität |
+
+Die vollständige Liste finden Sie unter [Unterstützte Embedding-Modelle](https://github.com/epicsagas/llm-kernel/blob/main/EMBEDDING_MODELS.md).
+
+### OpenAI-Embeddings verwenden
+
+```bash
+# OpenAI-Provider aktivieren
+export EPISTEME_OPENAI_API_KEY=sk-...
+export EPISTEME_EMBEDDING_MODEL_PROVIDER=openai
+export EPISTEME_OPENAI_EMBED_MODEL=text-embedding-3-small
+
+# Mit OpenAI neu bauen
+epis build --rebuild
+```
+
+Erfordert das Feature-Flag `openai-embeddings` zur Kompilierzeit.
+
+> **Hinweis:** Nach dem Modellwechsel müssen Sie zwingend `epis build --rebuild` ausführen, um die Embeddings neu zu generieren. Die Datenbank speichert, welches Modell verwendet wurde, und gibt eine Warnung aus, wenn ein Modell nicht übereinstimmt.
+
 ## Konfiguration
 
 ### Umgebungsvariablen

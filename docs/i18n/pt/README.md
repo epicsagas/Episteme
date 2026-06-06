@@ -431,6 +431,56 @@ episteme dist --out-dir release/
 
 ---
 
+## Modelos de Embedding
+
+O Episteme usa embeddings locais para busca semântica — nenhuma API externa é necessária.
+
+### Padrão: MultilingualE5Small (incluído)
+
+`epis install` fornece um **banco de dados pré-construído** com 913 chunks já embedidos usando **MultilingualE5Small** (384 dimensões, ONNX Runtime). Isso significa:
+
+- **Sem necessidade de indexação** após a instalação — a busca funciona imediatamente
+- **Totalmente offline** — o modelo roda localmente via fastembed (ONNX Runtime)
+- **Multilíngue** — suporta inglês, coreano, japonês, chinês e mais de 90 idiomas
+
+### Usando um modelo personalizado
+
+Para mudar para um modelo local diferente, defina a variável de ambiente e reconstrua:
+
+```bash
+# Defina seu modelo preferido
+export EPISTEME_EMBEDDING_MODEL=AllMiniLML6V2
+
+# Reconstrua o índice com o novo modelo
+epis build --rebuild
+```
+
+Modelos locais disponíveis (ONNX, sem necessidade de chave de API):
+
+| Modelo | Dimensões | Melhor para |
+|--------|----------|-------------|
+| `MultilingualE5Small` (padrão) | 384 | Multilíngue, equilíbrio entre velocidade e qualidade |
+| `AllMiniLML6V2` | 384 | Focado em inglês, rápido |
+| `BGEBaseEN` | 768 | Inglês, maior qualidade |
+
+Veja [Modelos de Embedding suportados](https://github.com/epicsagas/llm-kernel/blob/main/EMBEDDING_MODELS.md) para o catálogo completo.
+
+### Usando embeddings do OpenAI
+
+```bash
+# Ativar provedor OpenAI
+export EPISTEME_OPENAI_API_KEY=sk-...
+export EPISTEME_EMBEDDING_MODEL_PROVIDER=openai
+export EPISTEME_OPENAI_EMBED_MODEL=text-embedding-3-small
+
+# Reconstruir com OpenAI
+epis build --rebuild
+```
+
+Requer a flag de funcionalidade `openai-embeddings` em tempo de compilação.
+
+> **Nota:** Após trocar de modelo, você **deve** executar `epis build --rebuild` para regenerar os embeddings. O banco de dados armazena qual modelo foi usado e emitirá um aviso se houver incompatibilidade.
+
 ## Configuração
 
 ### Variáveis de Ambiente

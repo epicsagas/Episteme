@@ -455,6 +455,56 @@ episteme dist --out-dir release/
 
 ---
 
+## Embedding Models
+
+Episteme uses local embeddings for semantic search — no external API required.
+
+### Default: MultilingualE5Small (included)
+
+`epis install` ships a **pre-built database** with 913 chunks already embedded using **MultilingualE5Small** (384 dimensions, ONNX Runtime). This means:
+
+- **No indexing needed** after install — search works immediately
+- **Fully offline** — model runs locally via fastembed (ONNX Runtime)
+- **Multilingual** — supports English, Korean, Japanese, Chinese, and 90+ languages
+
+### Using a custom model
+
+To switch to a different local model, set the environment variable and rebuild:
+
+```bash
+# Set your preferred model
+export EPISTEME_EMBEDDING_MODEL=AllMiniLML6V2
+
+# Rebuild the index with the new model
+epis build --rebuild
+```
+
+Available local models (ONNX, no API key needed):
+
+| Model | Dimensions | Best for |
+|-------|-----------|----------|
+| `MultilingualE5Small` (default) | 384 | Multilingual, balanced speed/quality |
+| `AllMiniLML6V2` | 384 | English-focused, fast |
+| `BGEBaseEN` | 768 | English, higher quality |
+
+See [Supported Embedding Models](https://github.com/epicsagas/llm-kernel/blob/main/EMBEDDING_MODELS.md) for the full catalog.
+
+### Using OpenAI embeddings
+
+```bash
+# Enable OpenAI provider
+export EPISTEME_OPENAI_API_KEY=sk-...
+export EPISTEME_EMBEDDING_MODEL_PROVIDER=openai
+export EPISTEME_OPENAI_EMBED_MODEL=text-embedding-3-small
+
+# Rebuild with OpenAI
+epis build --rebuild
+```
+
+Requires the `openai-embeddings` feature flag at compile time.
+
+> **Note:** After switching models, you **must** run `epis build --rebuild` to regenerate embeddings. The database stores which model was used and will warn if there is a mismatch.
+
 ## Configuration
 
 ### Environment Variables
@@ -478,8 +528,6 @@ EPISTEME_MCP_TOKEN=epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
 EPISTEME_EMBEDDING_MODEL=MultilingualE5Small   # local (fastembed), default: MultilingualE5Small
 EPISTEME_OPENAI_EMBED_MODEL=text-embedding-3-small  # OpenAI, requires OPENAI_API_KEY
 ```
-
-See [Supported Embedding Models](https://github.com/epicsagas/llm-kernel/blob/main/EMBEDDING_MODELS.md) for the full catalog of local (ONNX) and OpenAI models with dimensions and descriptions.
 
 ---
 

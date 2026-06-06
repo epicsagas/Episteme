@@ -429,6 +429,56 @@ episteme dist --out-dir release/
 
 ---
 
+## 埋め込みモデル
+
+Epistemeはローカル埋め込みによるセマンティック検索を提供します — 外部APIは不要です。
+
+### デフォルト: MultilingualE5Small (同梱)
+
+`epis install` は **MultilingualE5Small**（384次元、ONNX Runtime）で事前に埋め込み済みの913チャンクを含む**ビルド済みデータベース**を提供します。これにより:
+
+- インストール後に**インデックス構築は不要** — 検索はすぐに使えます
+- **完全オフライン** — fastembed（ONNX Runtime）でローカル実行
+- **多言語対応** — 英語、韓国語、日本語、中国語など90以上の言語をサポート
+
+### カスタムモデルを使用する
+
+別のローカルモデルに切り替えるには、環境変数を設定してリビルドします:
+
+```bash
+# 使用するモデルを設定
+export EPISTEME_EMBEDDING_MODEL=AllMiniLML6V2
+
+# 新しいモデルでインデックスを再構築
+epis build --rebuild
+```
+
+利用可能なローカルモデル（ONNX、APIキー不要）:
+
+| モデル | 次元数 | 向いているケース |
+|--------|--------|-----------------|
+| `MultilingualE5Small`（デフォルト） | 384 | 多言語、速度と品質のバランス |
+| `AllMiniLML6V2` | 384 | 英語特化、高速 |
+| `BGEBaseEN` | 768 | 英語、高品質 |
+
+全モデル一覧は [対応埋め込みモデル](https://github.com/epicsagas/llm-kernel/blob/main/EMBEDDING_MODELS.md) を参照してください。
+
+### OpenAI埋め込みを使用する
+
+```bash
+# OpenAIプロバイダーを有効化
+export EPISTEME_OPENAI_API_KEY=sk-...
+export EPISTEME_EMBEDDING_MODEL_PROVIDER=openai
+export EPISTEME_OPENAI_EMBED_MODEL=text-embedding-3-small
+
+# OpenAIでリビルド
+epis build --rebuild
+```
+
+コンパイル時に `openai-embeddings` フィーチャーフラグが必要です。
+
+> **注意:** モデルを切り替えた後は、必ず `epis build --rebuild` を実行して埋め込みを再生成してください。データベースは使用したモデルを記録しており、不一致がある場合は警告を表示します。
+
 ## 設定
 
 ### 環境変数

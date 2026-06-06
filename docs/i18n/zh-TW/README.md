@@ -431,6 +431,56 @@ episteme dist --out-dir release/
 
 ---
 
+## 嵌入模型
+
+Episteme 使用本地嵌入進行語意搜尋 — 無需外部 API。
+
+### 預設：MultilingualE5Small（已內建）
+
+`epis install` 附帶一個**預先建置的資料庫**，其中已使用 **MultilingualE5Small**（384 維，ONNX Runtime）對 913 個文字區塊完成嵌入。這代表：
+
+- **安裝後無需索引** — 搜尋立即可用
+- **完全離線** — 模型透過 fastembed (ONNX Runtime) 在本機執行
+- **多語言支援** — 支援英語、韓語、日語、中文及 90 多種語言
+
+### 使用自訂模型
+
+若需切換至其他本機模型，請設定環境變數後重新建置：
+
+```bash
+# 設定你偏好的模型
+export EPISTEME_EMBEDDING_MODEL=AllMiniLML6V2
+
+# 使用新模型重建索引
+epis build --rebuild
+```
+
+可用的本機模型（ONNX，無需 API 金鑰）：
+
+| 模型 | 維度 | 適用場景 |
+|------|------|---------|
+| `MultilingualE5Small`（預設） | 384 | 多語言，速度與品質均衡 |
+| `AllMiniLML6V2` | 384 | 英語最佳化，速度快 |
+| `BGEBaseEN` | 768 | 英語，品質更高 |
+
+完整目錄請參閱[支援的嵌入模型](https://github.com/epicsagas/llm-kernel/blob/main/EMBEDDING_MODELS.md)。
+
+### 使用 OpenAI 嵌入
+
+```bash
+# 啟用 OpenAI 提供者
+export EPISTEME_OPENAI_API_KEY=sk-...
+export EPISTEME_EMBEDDING_MODEL_PROVIDER=openai
+export EPISTEME_OPENAI_EMBED_MODEL=text-embedding-3-small
+
+# 使用 OpenAI 重建
+epis build --rebuild
+```
+
+需要在編譯時啟用 `openai-embeddings` feature flag。
+
+> **注意：** 切換模型後，**必須**執行 `epis build --rebuild` 以重新產生嵌入。資料庫會記錄所使用的模型，若出現不符將發出警告。
+
 ## 設定
 
 ### 環境變數
