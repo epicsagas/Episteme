@@ -89,8 +89,6 @@ impl EpistemeMCP {
             &db_path,
             rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY,
         ) {
-            use crate::adapters::constants::EMBEDDING_DIMENSIONS;
-
             // Prefer OpenAI provider when configured and key is present.
             #[cfg(feature = "openai-embeddings")]
             {
@@ -113,26 +111,24 @@ impl EpistemeMCP {
                         .ok()
                         .filter(|m| !m.is_empty())
                         .unwrap_or_else(|| cfg.openai_embed_model.clone());
-                    let dim: usize = std::env::var("EPISTEME_OPENAI_EMBED_DIM")
-                        .ok()
-                        .and_then(|s| s.parse().ok())
-                        .unwrap_or(cfg.openai_embed_dim);
-                    self.embedding_provider = Some(Box::new(
-                        crate::adapters::openai_embeddings::OpenAIEmbeddingProvider::new(
-                            key, model, dim,
-                        ),
-                    ));
-                    self.db = Some(Mutex::new(conn));
-                    return;
+                    match crate::adapters::embedding_providers::create_openai_provider(key, model) {
+                        Ok(provider) => {
+                            self.embedding_provider = Some(provider);
+                            self.db = Some(Mutex::new(conn));
+                            return;
+                        }
+                        Err(e) => {
+                            tracing::warn!(
+                                "Failed to create OpenAI provider, falling back to local: {e}"
+                            );
+                        }
+                    }
                 }
             }
 
-            // Fallback: local provider — instantiate now (cheap), model loads on first embed() call.
-            self.embedding_provider = Some(Box::new(
-                crate::adapters::local_embeddings::LocalEmbeddingProvider::new(
-                    EMBEDDING_DIMENSIONS,
-                ),
-            ));
+            // Fallback: local provider via llm-kernel.
+            self.embedding_provider =
+                Some(crate::adapters::embedding_providers::create_configured_local_provider());
             self.db = Some(Mutex::new(conn));
             // Do NOT call warmup() here — let the first search request trigger model load
             // so MCP server startup is instant for the user.

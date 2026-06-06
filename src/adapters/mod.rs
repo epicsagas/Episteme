@@ -17,10 +17,8 @@ pub mod web;
 
 // Backward-compat re-exports: embeddings
 pub use embeddings::chunker;
-pub use embeddings::local_embeddings;
+pub use embeddings::embedding_providers;
 pub use embeddings::noop_embeddings;
-#[cfg(feature = "openai-embeddings")]
-pub use embeddings::openai_embeddings;
 
 // Backward-compat re-exports: parsing
 pub use parsing::python_ast_parser;
@@ -48,7 +46,7 @@ pub use web::rate_limiter_mw;
 pub use config::EpistemeConfig;
 pub use error::InfraError;
 pub use json_loader::load_graph;
-pub use local_embeddings::LocalEmbeddingProvider;
+pub use embedding_providers::LkEmbeddingAdapter;
 pub use noop_embeddings::NoopEmbeddingProvider;
 pub use regex_parsers::get_parser;
 pub use user_graph_store::UserGraphStore;

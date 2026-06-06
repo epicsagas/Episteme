@@ -38,9 +38,8 @@ pub fn build(
     provider: &dyn EmbeddingProvider,
     batch_size: usize,
 ) -> Result<BuildStats> {
-    // Open database and initialise schema.
-    let conn = Connection::open(db_path).map_err(|e| InfraError::Database(e.to_string()))?;
-    sqlite_db::init_database(&conn)?;
+    // Open database and initialise schema via llm-kernel.
+    let conn = sqlite_db::open_database(db_path)?;
 
     // Load file_to_entity mapping.
     let f2e_path = data_dir.join("file_to_entity.json");
