@@ -74,7 +74,8 @@ pub fn cmd_build(
                         .filter(|m| !m.is_empty())
                         .unwrap_or(config.openai_embed_model.clone());
                     info!("Using OpenAI embedding provider (model={model})");
-                    episteme::adapters::local_embeddings::create_openai_provider(key, model)?
+                    episteme::adapters::embedding_providers::create_openai_provider(key, model)
+                        .map_err(|e| anyhow::anyhow!(e))?
                 } else {
                     anyhow::bail!(
                         "embedding provider is set to openai but no API key was found (set OPENAI_API_KEY or EPISTEME_OPENAI_API_KEY)"
@@ -82,14 +83,14 @@ pub fn cmd_build(
                 }
             } else {
                 info!("Using local embedding provider");
-                episteme::adapters::local_embeddings::create_configured_local_provider()
+                episteme::adapters::embedding_providers::create_configured_local_provider()
             }
         }
 
         #[cfg(not(feature = "openai-embeddings"))]
         {
             let _ = &config;
-            episteme::adapters::local_embeddings::create_configured_local_provider()
+            episteme::adapters::embedding_providers::create_configured_local_provider()
         }
     };
 

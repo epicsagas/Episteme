@@ -17,7 +17,7 @@ pub mod web;
 
 // Backward-compat re-exports: embeddings
 pub use embeddings::chunker;
-pub use embeddings::local_embeddings;
+pub use embeddings::embedding_providers;
 pub use embeddings::noop_embeddings;
 
 // Backward-compat re-exports: parsing
@@ -46,7 +46,7 @@ pub use web::rate_limiter_mw;
 pub use config::EpistemeConfig;
 pub use error::InfraError;
 pub use json_loader::load_graph;
-pub use local_embeddings::LkEmbeddingAdapter;
+pub use embedding_providers::LkEmbeddingAdapter;
 pub use noop_embeddings::NoopEmbeddingProvider;
 pub use regex_parsers::get_parser;
 pub use user_graph_store::UserGraphStore;

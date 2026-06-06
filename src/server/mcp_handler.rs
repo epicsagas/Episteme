@@ -111,7 +111,7 @@ impl EpistemeMCP {
                         .ok()
                         .filter(|m| !m.is_empty())
                         .unwrap_or_else(|| cfg.openai_embed_model.clone());
-                    match crate::adapters::local_embeddings::create_openai_provider(key, model) {
+                    match crate::adapters::embedding_providers::create_openai_provider(key, model) {
                         Ok(provider) => {
                             self.embedding_provider = Some(provider);
                             self.db = Some(Mutex::new(conn));
@@ -128,7 +128,7 @@ impl EpistemeMCP {
 
             // Fallback: local provider via llm-kernel.
             self.embedding_provider =
-                Some(crate::adapters::local_embeddings::create_configured_local_provider());
+                Some(crate::adapters::embedding_providers::create_configured_local_provider());
             self.db = Some(Mutex::new(conn));
             // Do NOT call warmup() here — let the first search request trigger model load
             // so MCP server startup is instant for the user.

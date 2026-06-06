@@ -1,3 +1,3 @@
 pub mod chunker;
-pub mod local_embeddings;
+pub mod embedding_providers;
 pub mod noop_embeddings;

@@ -74,18 +74,23 @@ pub fn create_local_provider(model_name: &str) -> Result<Box<dyn EmbeddingProvid
 
 /// Create a local provider reading the model from config (`EPISTEME_EMBEDDING_MODEL`).
 ///
-/// Falls back to `NoopEmbeddingProvider` (384-dim zero vectors) when model loading fails,
-/// so that MCP server startup is never fatal due to a missing model download.
+/// Falls back to `NoopEmbeddingProvider` when model loading fails, using the configured
+/// model's dimension so stored vectors remain compatible with the noop fallback.
 pub fn create_configured_local_provider() -> Box<dyn EmbeddingProvider> {
+    use llm_kernel::embedding::catalog::EmbeddingModel;
+
     let cfg = crate::adapters::config::EpistemeConfig::load().unwrap_or_default();
+    let fallback_dim = EmbeddingModel::parse(&cfg.embedding_model)
+        .unwrap_or(EmbeddingModel::MultilingualE5Small)
+        .dimension();
     match create_local_provider(&cfg.embedding_model) {
         Ok(provider) => provider,
         Err(e) => {
             tracing::warn!(
-                "Failed to load local embedding model '{}', falling back to noop provider: {e}",
+                "Failed to load local embedding model '{}', falling back to noop provider ({fallback_dim}-dim): {e}",
                 cfg.embedding_model
             );
-            Box::new(crate::adapters::noop_embeddings::NoopEmbeddingProvider::new(384))
+            Box::new(crate::adapters::noop_embeddings::NoopEmbeddingProvider::new(fallback_dim))
         }
     }
 }

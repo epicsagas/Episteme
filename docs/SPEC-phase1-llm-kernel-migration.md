@@ -1,6 +1,6 @@
 # SPEC: Phase 1 — Episteme → llm-kernel 마이그레이션
 
-**Status**: draft
+**Status**: implemented
 **Created**: 2026-06-06
 **Goal**: 임베딩, SQLite, 검색 모듈을 llm-kernel v0.1.0으로 교체하여 중복 코드 ~2,400줄 제거
 
