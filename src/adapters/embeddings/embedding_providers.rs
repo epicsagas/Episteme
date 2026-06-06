@@ -57,17 +57,29 @@ impl EmbeddingProvider for LkEmbeddingAdapter {
 
 /// Create a local fastembed-based embedding provider using llm-kernel.
 ///
+/// Uses `LazyFastembedProvider` so the constructor returns instantly — model
+/// download and ONNX session initialisation are deferred to the first embed
+/// call.  After 10 minutes of inactivity the ONNX session is evicted to
+/// release memory while keeping weights on disk for fast reload.
+///
 /// `model_name` is parsed case-insensitively via [`llm_kernel::embedding::catalog::EmbeddingModel::parse`].
 /// Falls back to `MultilingualE5Small` (384-dim) on parse failure.
 pub fn create_local_provider(model_name: &str) -> Result<Box<dyn EmbeddingProvider>, String> {
-    use llm_kernel::embedding::FastembedProvider;
     use llm_kernel::embedding::catalog::EmbeddingModel;
+    use llm_kernel::embedding::{LazyFastembedProvider, LazyOpts};
 
     let model = EmbeddingModel::parse(model_name).unwrap_or(EmbeddingModel::MultilingualE5Small);
     let cache_dir = crate::adapters::paths::episteme_home().join("models");
 
-    let provider = FastembedProvider::new(model, Some(cache_dir))
-        .map_err(|e| format!("failed to create embedding provider: {e}"))?;
+    tracing::info!(
+        "initialising lazy embedding provider: {} ({}-dim, {} MB, {} max tokens)",
+        model.model_id(),
+        model.dimension(),
+        model.size_mb(),
+        model.max_seq_length(),
+    );
+
+    let provider = LazyFastembedProvider::new(model, cache_dir, LazyOpts::default());
 
     Ok(Box::new(LkEmbeddingAdapter::new(Box::new(provider))))
 }
