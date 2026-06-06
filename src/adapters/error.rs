@@ -5,7 +5,7 @@ pub enum InfraError {
     #[error("JSON error: {0}")]
     Json(#[from] serde_json::Error),
     #[error("YAML error: {0}")]
-    Yaml(#[from] serde_yml::Error),
+    Yaml(#[from] noyalib::Error),
     #[error("Database error: {0}")]
     Database(String),
     #[error("Config error: {0}")]

@@ -64,9 +64,9 @@ impl Default for EpistemeConfig {
 
 #[derive(Debug, Default, Deserialize)]
 struct YamlConfig {
-    api: Option<HashMap<String, serde_yml::Value>>,
-    redis: Option<HashMap<String, serde_yml::Value>>,
-    mcp: Option<HashMap<String, serde_yml::Value>>,
+    api: Option<HashMap<String, noyalib::Value>>,
+    redis: Option<HashMap<String, noyalib::Value>>,
+    mcp: Option<HashMap<String, noyalib::Value>>,
 }
 
 impl EpistemeConfig {
@@ -146,7 +146,7 @@ fn load_yaml_config() -> std::result::Result<YamlConfig, InfraError> {
         return Ok(YamlConfig::default());
     }
     let text = std::fs::read_to_string(&path)?;
-    let config: YamlConfig = serde_yml::from_str(&text)?;
+    let config: YamlConfig = noyalib::from_str(&text)?;
     Ok(config)
 }
 
