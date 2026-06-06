@@ -114,7 +114,7 @@ pub fn create_openai_provider(
             return Err(format!(
                 "unsupported OpenAI embedding model: '{unknown}'; \
                  supported: text-embedding-3-small, text-embedding-3-large"
-            ))
+            ));
         }
     };
 
