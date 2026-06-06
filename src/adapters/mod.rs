@@ -44,9 +44,9 @@ pub use web::rate_limiter_mw;
 
 // Public type re-exports
 pub use config::EpistemeConfig;
+pub use embedding_providers::LkEmbeddingAdapter;
 pub use error::InfraError;
 pub use json_loader::load_graph;
-pub use embedding_providers::LkEmbeddingAdapter;
 pub use noop_embeddings::NoopEmbeddingProvider;
 pub use regex_parsers::get_parser;
 pub use user_graph_store::UserGraphStore;

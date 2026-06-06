@@ -54,9 +54,9 @@ jobs:
           components: clippy
       - uses: Swatinem/rust-cache@v2
       - name: Check
-        run: cargo check --all-targets --features directml
+        run: cargo check --all-targets
       - name: Clippy
-        run: cargo clippy --features directml -- -D warnings
+        run: cargo clippy -- -D warnings
 
   audit:
     name: Security Audit
