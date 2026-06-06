@@ -213,17 +213,41 @@ pub fn seed_data_from_release(url: &str, dry_run: bool) -> Result<Vec<String>, S
     messages.push("Extracted release archive".to_owned());
 
     // Copy discovered data folders into ~/.episteme
+    let copied = seed_from_extracted(&extract_dir, &mut messages, "release archive")?;
+    if !copied {
+        messages.push("Archive extracted but no raw/data/meta/db directories found".to_owned());
+    }
+    Ok(messages)
+}
+
+/// Copy data directories (`raw`, `data`, `meta`, `db`, `registry`) from an
+/// extracted archive into `~/.episteme/`.
+///
+/// Handles two archive layouts:
+/// - **Flat**: `extract/raw/`, `extract/meta/` (data dirs directly at root)
+/// - **Nested**: `extract/parent-dir/raw/`, `extract/parent-dir/meta/`
+fn seed_from_extracted(
+    extract_dir: &Path,
+    messages: &mut Vec<String>,
+    label: &str,
+) -> Result<bool, String> {
+    let data_dirs = ["raw", "data", "meta", "db", "registry"];
     let mut copied = false;
-    for entry in fs::read_dir(&extract_dir).map_err(|e| e.to_string())? {
+
+    // Collect candidate roots: the extract dir itself + any immediate subdirectories
+    let mut roots = vec![extract_dir.to_path_buf()];
+    for entry in fs::read_dir(extract_dir).map_err(|e| e.to_string())? {
         let entry = entry.map_err(|e| e.to_string())?;
-        let root = entry.path();
-        if !root.is_dir() {
-            continue;
+        if entry.path().is_dir() {
+            roots.push(entry.path());
         }
-        for dir in ["raw", "data", "meta", "db", "registry"] {
+    }
+
+    for root in &roots {
+        for dir in &data_dirs {
             let src = root.join(dir);
             if src.exists() && src.is_dir() {
-                let target = match dir {
+                let target = match *dir {
                     "raw" => crate::adapters::paths::raw_dir(),
                     "db" => crate::adapters::paths::db_path()
                         .parent()
@@ -234,15 +258,15 @@ pub fn seed_data_from_release(url: &str, dry_run: bool) -> Result<Vec<String>, S
                 };
                 fs::create_dir_all(&target).map_err(|e| e.to_string())?;
                 copy_dir_recursive(&src, &target)?;
-                messages.push(format!("Seeded {dir} from release archive"));
+                messages.push(format!("Seeded {dir} from {label}"));
                 copied = true;
             }
         }
+        if copied {
+            break;
+        }
     }
-    if !copied {
-        messages.push("Archive extracted but no raw/data/meta/db directories found".to_owned());
-    }
-    Ok(messages)
+    Ok(copied)
 }
 
 pub fn seed_data_from_local_archive(path: &Path, dry_run: bool) -> Result<Vec<String>, String> {
@@ -266,32 +290,7 @@ pub fn seed_data_from_local_archive(path: &Path, dry_run: bool) -> Result<Vec<St
     archive.unpack(&extract_dir).map_err(|e| e.to_string())?;
     messages.push(format!("Extracted local archive {}", path.display()));
 
-    let mut copied = false;
-    for entry in fs::read_dir(&extract_dir).map_err(|e| e.to_string())? {
-        let entry = entry.map_err(|e| e.to_string())?;
-        let root = entry.path();
-        if !root.is_dir() {
-            continue;
-        }
-        for dir in ["raw", "data", "meta", "db", "registry"] {
-            let src = root.join(dir);
-            if src.exists() && src.is_dir() {
-                let target = match dir {
-                    "raw" => crate::adapters::paths::raw_dir(),
-                    "db" => crate::adapters::paths::db_path()
-                        .parent()
-                        .map(|p| p.to_path_buf())
-                        .unwrap_or_else(|| crate::adapters::paths::episteme_home().join("db")),
-                    "registry" => crate::adapters::paths::episteme_home().join("registry"),
-                    _ => crate::adapters::paths::data_dir(),
-                };
-                fs::create_dir_all(&target).map_err(|e| e.to_string())?;
-                copy_dir_recursive(&src, &target)?;
-                messages.push(format!("Seeded {dir} from local archive"));
-                copied = true;
-            }
-        }
-    }
+    let copied = seed_from_extracted(&extract_dir, &mut messages, "local archive")?;
     if !copied {
         messages.push("Archive extracted but no raw/data/meta directories found".to_owned());
     }

@@ -278,6 +278,25 @@ jobs:
 
           gh release create "${{ needs.plan.outputs.tag }}" --target "$RELEASE_COMMIT" $PRERELEASE_FLAG --title "$ANNOUNCEMENT_TITLE" --notes-file "$RUNNER_TEMP/notes.txt" artifacts/*
 
+      - name: Build and upload data archive
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ needs.plan.outputs.tag }}"
+          # Strip leading 'v' if present
+          VERSION_NUM="${VERSION#v}"
+          ARCHIVE_NAME="episteme-data-${VERSION_NUM}.tar.gz"
+
+          # Only create if data directories exist
+          if [ -d "raw" ] || [ -d "meta" ] || [ -d "registry" ]; then
+            tar czf "$ARCHIVE_NAME" raw/ meta/ registry/ 2>/dev/null || \
+              tar czf "$ARCHIVE_NAME" $(ls -d raw meta registry 2>/dev/null)
+            gh release upload "$VERSION" "$ARCHIVE_NAME"
+            echo "Uploaded $ARCHIVE_NAME"
+          else
+            echo "No data directories found, skipping data archive"
+          fi
+
   publish-homebrew-formula:
     needs:
       - plan
