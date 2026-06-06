@@ -379,3 +379,4 @@ models/
 .claude/worktrees/
 .claude/settings.local.json
 src/episteme/_keys.py
+dist/*.tar.gz
