@@ -7,7 +7,7 @@ use crate::adapters::error::{InfraError, Result};
 // ---------------------------------------------------------------------------
 
 /// Current schema version (bumped when DDL changes).
-const SCHEMA_VERSION: u32 = 1;
+const SCHEMA_VERSION: u32 = 2;
 
 /// Full DDL for the RAG database.
 ///
@@ -36,6 +36,28 @@ const SCHEMA_DDL: &str = "
 
     CREATE INDEX IF NOT EXISTS idx_entity_id ON chunks(entity_id);
     CREATE INDEX IF NOT EXISTS idx_entity_type ON chunks(entity_type);
+
+    -- Knowledge graph tables (schema version 2)
+    CREATE TABLE IF NOT EXISTS entities (
+        name TEXT PRIMARY KEY,
+        entity_type TEXT NOT NULL,
+        category TEXT,
+        description TEXT,
+        tags TEXT,
+        attributes TEXT,
+        file_path TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS relations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        source TEXT NOT NULL,
+        target TEXT NOT NULL,
+        relation_type TEXT NOT NULL,
+        metadata TEXT
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_relations_source ON relations(source);
+    CREATE INDEX IF NOT EXISTS idx_relations_target ON relations(target);
 ";
 
 // ---------------------------------------------------------------------------
@@ -217,4 +239,164 @@ pub fn get_embedding_count(conn: &Connection) -> Result<usize> {
         .query_row("SELECT COUNT(*) FROM embeddings", [], |row| row.get(0))
         .map_err(|e| InfraError::Database(e.to_string()))?;
     usize::try_from(count).map_err(|_| InfraError::Database("embedding count overflow".to_owned()))
+}
+
+// ---------------------------------------------------------------------------
+// Graph tables: entities + relations
+// ---------------------------------------------------------------------------
+
+/// Check whether graph data exists in the DB (entities table has rows).
+pub fn has_graph_data(conn: &Connection) -> Result<bool> {
+    let count: i64 = conn
+        .query_row("SELECT COUNT(*) FROM entities", [], |row| row.get(0))
+        .map_err(|e| InfraError::Database(e.to_string()))?;
+    Ok(count > 0)
+}
+
+/// Insert entities and relations from the knowledge graph into the DB.
+///
+/// Clears existing graph data first to allow idempotent rebuilds.
+pub fn insert_graph(
+    conn: &Connection,
+    entities: &std::collections::HashMap<String, crate::domain::types::Entity>,
+) -> Result<()> {
+    let tx = conn
+        .unchecked_transaction()
+        .map_err(|e| InfraError::Database(e.to_string()))?;
+
+    tx.execute("DELETE FROM relations", [])
+        .map_err(|e| InfraError::Database(e.to_string()))?;
+    tx.execute("DELETE FROM entities", [])
+        .map_err(|e| InfraError::Database(e.to_string()))?;
+
+    for (id, entity) in entities {
+        let tags_json = serde_json::to_string(&entity.tags).unwrap_or_else(|_| "[]".to_owned());
+        let attrs = serde_json::json!({
+            "name": entity.name,
+            "context": entity.context,
+            "source": entity.source,
+        });
+        let attrs_json = serde_json::to_string(&attrs).unwrap_or_else(|_| "{}".to_owned());
+
+        tx.execute(
+            "INSERT OR REPLACE INTO entities (name, entity_type, category, description, tags, attributes, file_path)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+            params![
+                id,
+                entity.r#type,
+                entity.category,
+                entity.description,
+                tags_json,
+                attrs_json,
+                entity.file_path,
+            ],
+        )
+        .map_err(|e| InfraError::Database(e.to_string()))?;
+
+        for (rel_type, targets) in &entity.relations {
+            for target in targets {
+                tx.execute(
+                    "INSERT INTO relations (source, target, relation_type, metadata) VALUES (?1, ?2, ?3, NULL)",
+                    params![id, target, rel_type],
+                )
+                .map_err(|e| InfraError::Database(e.to_string()))?;
+            }
+        }
+    }
+
+    tx.commit()
+        .map_err(|e| InfraError::Database(e.to_string()))?;
+    Ok(())
+}
+
+/// Load all entities and relations from the DB into a knowledge graph.
+///
+/// Returns `None` if the entities table is empty (no graph data in DB).
+pub fn load_graph_from_db(
+    conn: &Connection,
+) -> Result<Option<std::collections::HashMap<String, crate::domain::types::Entity>>> {
+    let entity_count: i64 = conn
+        .query_row("SELECT COUNT(*) FROM entities", [], |row| row.get(0))
+        .map_err(|e| InfraError::Database(e.to_string()))?;
+
+    if entity_count == 0 {
+        return Ok(None);
+    }
+
+    let mut entities = std::collections::HashMap::new();
+
+    // Load entities
+    let mut stmt = conn
+        .prepare("SELECT name, entity_type, category, description, tags, attributes, file_path FROM entities")
+        .map_err(|e| InfraError::Database(e.to_string()))?;
+
+    let entity_rows = stmt
+        .query_map([], |row| {
+            let name: String = row.get(0)?;
+            let entity_type: String = row.get(1)?;
+            let category: String = row.get(2)?;
+            let description: String = row.get(3)?;
+            let tags_json: String = row.get(4)?;
+            let attrs_json: String = row.get(5)?;
+            let file_path: String = row.get(6)?;
+
+            let tags: Vec<String> = serde_json::from_str(&tags_json).unwrap_or_default();
+            let attrs: serde_json::Value = serde_json::from_str(&attrs_json)
+                .unwrap_or(serde_json::Value::Object(Default::default()));
+
+            let entity = crate::domain::types::Entity {
+                id: name.clone(),
+                r#type: entity_type,
+                title: String::new(),
+                description,
+                name: attrs
+                    .get("name")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_owned(),
+                category,
+                tags,
+                relations: std::collections::HashMap::new(),
+                context: attrs
+                    .get("context")
+                    .and_then(|v| serde_json::from_value(v.clone()).ok())
+                    .unwrap_or_default(),
+                file_path,
+                source: attrs
+                    .get("source")
+                    .cloned()
+                    .unwrap_or(serde_json::Value::Null),
+            };
+            Ok((name, entity))
+        })
+        .map_err(|e| InfraError::Database(e.to_string()))?;
+
+    for row in entity_rows {
+        let (id, entity) = row.map_err(|e| InfraError::Database(e.to_string()))?;
+        entities.insert(id, entity);
+    }
+
+    // Load relations
+    let mut rel_stmt = conn
+        .prepare("SELECT source, target, relation_type FROM relations")
+        .map_err(|e| InfraError::Database(e.to_string()))?;
+
+    let rel_rows = rel_stmt
+        .query_map([], |row| {
+            Ok((
+                row.get::<_, String>(0)?,
+                row.get::<_, String>(1)?,
+                row.get::<_, String>(2)?,
+            ))
+        })
+        .map_err(|e| InfraError::Database(e.to_string()))?;
+
+    for row in rel_rows {
+        let (source, target, rel_type) = row.map_err(|e| InfraError::Database(e.to_string()))?;
+        if let Some(entity) = entities.get_mut(&source) {
+            entity.relations.entry(rel_type).or_default().push(target);
+        }
+    }
+
+    Ok(Some(entities))
 }

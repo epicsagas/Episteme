@@ -3,12 +3,36 @@ use std::path::Path;
 
 use crate::adapters::error::{InfraError, Result};
 use crate::adapters::paths;
+use crate::adapters::sqlite_db;
 use crate::domain::graph::KnowledgeGraph;
 use crate::domain::types::Entity;
 
 const ENTITY_PREFIXES: &[&str] = &["DP-", "RF-", "LAW-", "SMELL-"];
 
+/// Load the knowledge graph, trying the DB first.
+///
+/// 1. If `episteme.db` exists and has graph data in `entities` table → load from DB.
+/// 2. Otherwise, fall back to `relations.json` + `raw/` enrichment.
 pub fn load_graph(data_dir: &Path) -> Result<KnowledgeGraph> {
+    // Try DB-first path.
+    let db_path = paths::db_path();
+    if db_path.exists()
+        && let Ok(conn) = rusqlite::Connection::open_with_flags(
+            &db_path,
+            rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY,
+        )
+        && let Ok(Some(entities)) = sqlite_db::load_graph_from_db(&conn)
+    {
+        tracing::info!(entities = entities.len(), "loaded knowledge graph from DB");
+        return Ok(KnowledgeGraph::from_entities(entities));
+    }
+
+    // Fallback: load from JSON + raw/.
+    load_graph_from_json(data_dir)
+}
+
+/// Load graph from `relations.json` with optional `raw/` description enrichment.
+fn load_graph_from_json(data_dir: &Path) -> Result<KnowledgeGraph> {
     let relations_path = data_dir.join("relations.json");
     let raw = std::fs::read_to_string(&relations_path).map_err(InfraError::Io)?;
     let json_map: serde_json::Map<String, serde_json::Value> =
@@ -32,6 +56,10 @@ pub fn load_graph(data_dir: &Path) -> Result<KnowledgeGraph> {
             }
         }
     }
+    tracing::info!(
+        entities = entities.len(),
+        "loaded knowledge graph from JSON (fallback)"
+    );
     Ok(KnowledgeGraph::from_entities(entities))
 }
 

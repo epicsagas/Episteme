@@ -1,5 +1,4 @@
 use std::collections::{HashMap, HashSet, VecDeque};
-use std::path::Path;
 
 use tracing;
 
@@ -47,9 +46,6 @@ impl From<serde_json::Error> for GraphError {
 }
 
 pub type Result<T> = std::result::Result<T, GraphError>;
-
-// Prefixes that identify valid entity keys in relations.json.
-const ENTITY_PREFIXES: &[&str] = &["DP-", "RF-", "LAW-", "SMELL-"];
 
 // ---------------------------------------------------------------------------
 // Knowledge graph
@@ -132,45 +128,6 @@ impl KnowledgeGraph {
                 entity.relations.insert(inverse_key.to_owned(), sources);
             }
         }
-    }
-
-    /// Load the knowledge graph from `data_dir`, which must contain
-    /// a `relations.json` file.
-    ///
-    /// The JSON file may contain non-entity keys (e.g. `"version"`).
-    /// Only entries whose key starts with a known entity prefix
-    /// (`DP-`, `RF-`, `LAW-`, `SMELL-`) are kept; everything else
-    /// is silently ignored.
-    pub fn load(data_dir: &Path) -> Result<Self> {
-        let relations_path = data_dir.join("relations.json");
-        let raw = std::fs::read_to_string(&relations_path)?;
-
-        let json_map: serde_json::Map<String, serde_json::Value> = serde_json::from_str(&raw)?;
-
-        let mut entities = HashMap::new();
-
-        for (key, value) in json_map {
-            if !ENTITY_PREFIXES.iter().any(|prefix| key.starts_with(prefix)) {
-                continue;
-            }
-            match serde_json::from_value::<Entity>(value) {
-                Ok(mut entity) => {
-                    entity.id = key.clone();
-                    entities.insert(key, entity);
-                }
-                Err(_e) => {
-                    // Skip malformed entities silently
-                }
-            }
-        }
-
-        tracing::info!(
-            entities = entities.len(),
-            "loaded knowledge graph from {}",
-            relations_path.display()
-        );
-
-        Ok(Self::from_entities(entities))
     }
 
     fn build_reverse_index(
