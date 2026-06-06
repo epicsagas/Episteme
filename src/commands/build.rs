@@ -55,7 +55,10 @@ pub fn cmd_build(
     );
     pb.set_message("Building RAG index...");
 
-    let provider: Box<dyn episteme::ports::embeddings::EmbeddingProvider> = {
+    let (provider, model_name): (
+        Box<dyn episteme::ports::embeddings::EmbeddingProvider>,
+        String,
+    ) = {
         #[cfg(feature = "openai-embeddings")]
         {
             let provider_pref = config.embedding_provider.to_lowercase();
@@ -74,8 +77,12 @@ pub fn cmd_build(
                         .filter(|m| !m.is_empty())
                         .unwrap_or(config.openai_embed_model.clone());
                     info!("Using OpenAI embedding provider (model={model})");
-                    episteme::adapters::embedding_providers::create_openai_provider(key, model)
-                        .map_err(|e| anyhow::anyhow!(e))?
+                    let p = episteme::adapters::embedding_providers::create_openai_provider(
+                        key,
+                        model.clone(),
+                    )
+                    .map_err(|e| anyhow::anyhow!(e))?;
+                    (p, format!("openai:{model}"))
                 } else {
                     anyhow::bail!(
                         "embedding provider is set to openai but no API key was found (set OPENAI_API_KEY or EPISTEME_OPENAI_API_KEY)"
@@ -83,14 +90,17 @@ pub fn cmd_build(
                 }
             } else {
                 info!("Using local embedding provider");
-                episteme::adapters::embedding_providers::create_configured_local_provider()
+                let name = config.embedding_model.clone();
+                let p = episteme::adapters::embedding_providers::create_configured_local_provider();
+                (p, name)
             }
         }
 
         #[cfg(not(feature = "openai-embeddings"))]
         {
-            let _ = &config;
-            episteme::adapters::embedding_providers::create_configured_local_provider()
+            let name = config.embedding_model.clone();
+            let p = episteme::adapters::embedding_providers::create_configured_local_provider();
+            (p, name)
         }
     };
 
@@ -103,12 +113,15 @@ pub fn cmd_build(
         info!("--no-gpu requested; CPU-only behavior applies for local embedding providers");
     }
 
+    let model_dim = provider.embedding_dim();
     let stats = episteme::adapters::builder::build(
         &db_path,
         &data_dir,
         &raw_dir,
         provider.as_ref(),
         batch_size,
+        &model_name,
+        model_dim,
     )
     .with_context(|| "RAG build failed")?;
 

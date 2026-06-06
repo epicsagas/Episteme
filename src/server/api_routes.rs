@@ -90,10 +90,18 @@ fn gather_components(mcp: &EpistemeMCP) -> Components {
     } else {
         "noop".to_owned()
     };
+
+    let (embedding_model, embedding_dim) = mcp
+        .embedding_info()
+        .map(|info| (info.stored_model.clone(), info.stored_dim))
+        .unwrap_or((None, None));
+
     Components {
         knowledge_graph,
         rag_database,
         embedding_provider,
+        embedding_model,
+        embedding_dim,
     }
 }
 
@@ -153,11 +161,13 @@ pub async fn health(
 
 pub async fn stats(State(mcp): State<AppState>) -> impl IntoResponse {
     let resource = mcp.handle_resource_read("episteme://stats");
+    let embedding = mcp.embedding_info();
     match serde_json::from_value::<GraphStats>(resource.clone()) {
         Ok(gs) => Json(StatsResponse {
             total_entities: gs.total_entities,
             total_edges: gs.total_edges,
             by_type: gs.by_type,
+            embedding,
         }),
         Err(_) => {
             // Fallback: if the resource returned something unexpected, try
@@ -183,6 +193,7 @@ pub async fn stats(State(mcp): State<AppState>) -> impl IntoResponse {
                 total_entities,
                 total_edges,
                 by_type,
+                embedding,
             })
         }
     }

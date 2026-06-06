@@ -157,6 +157,41 @@ impl EpistemeMCP {
     pub fn has_embedding_provider(&self) -> bool {
         self.embedding_provider.is_some()
     }
+
+    /// Read embedding model metadata from the DB and compare with current config.
+    ///
+    /// Returns `None` when the RAG database is not attached.
+    pub fn embedding_info(&self) -> Option<crate::server::api_models::EmbeddingInfo> {
+        use crate::adapters::config::EpistemeConfig;
+        use crate::adapters::infra::sqlite_db;
+
+        let db = self.db.as_ref()?;
+        let conn = db.lock().ok()?;
+
+        let stored_model = sqlite_db::get_meta(&conn, "embedding_model").ok().flatten();
+        let stored_dim = sqlite_db::get_meta(&conn, "embedding_dim")
+            .ok()
+            .flatten()
+            .and_then(|v| v.parse::<usize>().ok());
+
+        let cfg = EpistemeConfig::load().unwrap_or_default();
+        let configured_model = match cfg.embedding_provider.to_lowercase().as_str() {
+            "openai" => Some(format!("openai:{}", cfg.openai_embed_model)),
+            _ => Some(cfg.embedding_model.clone()),
+        };
+
+        let mismatch = match (&stored_model, &configured_model) {
+            (Some(stored), Some(configured)) => stored != configured,
+            _ => false,
+        };
+
+        Some(crate::server::api_models::EmbeddingInfo {
+            stored_model,
+            stored_dim,
+            configured_model,
+            mismatch,
+        })
+    }
 }
 
 // -- tool implementations (delegating to service modules) ---------------------
