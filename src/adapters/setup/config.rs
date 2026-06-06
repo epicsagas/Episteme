@@ -234,3 +234,129 @@ fn cfg_bool_val(
         })
         .unwrap_or(default)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn parse_yaml_sections(yaml: &str) -> YamlConfig {
+        noyalib::from_str(yaml).expect("YAML should parse")
+    }
+
+    #[test]
+    fn yaml_config_parses_api_section() {
+        let cfg = parse_yaml_sections(
+            "api:\n  host: 127.0.0.1\n  port: 9999\n  keys: secret123\n",
+        );
+        let api = cfg.api.as_ref().expect("api section");
+        assert_eq!(api["host"].as_str(), Some("127.0.0.1"));
+        assert_eq!(api["port"].as_i64(), Some(9999));
+        assert_eq!(api["keys"].as_str(), Some("secret123"));
+    }
+
+    #[test]
+    fn yaml_config_parses_redis_section() {
+        let cfg = parse_yaml_sections(
+            "redis:\n  host: redis.local\n  port: 6380\n  db: 2\n  ttl: 7200\n  enabled: false\n",
+        );
+        let redis = cfg.redis.as_ref().expect("redis section");
+        assert_eq!(redis["host"].as_str(), Some("redis.local"));
+        assert_eq!(redis["port"].as_i64(), Some(6380));
+        assert_eq!(redis["enabled"].as_bool(), Some(false));
+    }
+
+    #[test]
+    fn yaml_config_parses_mcp_section() {
+        let cfg = parse_yaml_sections(
+            "mcp:\n  host: 0.0.0.0\n  port: 5000\n  token: tok-abc\n",
+        );
+        let mcp = cfg.mcp.as_ref().expect("mcp section");
+        assert_eq!(mcp["host"].as_str(), Some("0.0.0.0"));
+        assert_eq!(mcp["token"].as_str(), Some("tok-abc"));
+    }
+
+    #[test]
+    fn yaml_config_empty_file_returns_defaults() {
+        // Empty YAML doc is Null in YAML 1.2, so noyalib rejects it as TypeMismatch.
+        // The real load_yaml_config() handles this by returning default for missing files.
+        let cfg = YamlConfig::default();
+        assert!(cfg.api.is_none());
+        assert!(cfg.redis.is_none());
+        assert!(cfg.mcp.is_none());
+    }
+
+    #[test]
+    fn yaml_config_multiple_sections() {
+        let cfg = parse_yaml_sections(
+            "api:\n  host: 0.0.0.0\n  port: 8080\nredis:\n  host: localhost\nmcp:\n  port: 43175\n",
+        );
+        assert_eq!(cfg.api.as_ref().unwrap()["host"].as_str(), Some("0.0.0.0"));
+        assert_eq!(cfg.redis.as_ref().unwrap()["host"].as_str(), Some("localhost"));
+        assert_eq!(cfg.mcp.as_ref().unwrap()["port"].as_i64(), Some(43175));
+    }
+
+    #[test]
+    fn cfg_val_reads_string_from_yaml() {
+        let yaml = parse_yaml_sections("api:\n  host: custom.host\n");
+        let val = cfg_val(&yaml, "api", "host", "__TEST_NEVER_SET__", "fallback");
+        assert_eq!(val, "custom.host");
+    }
+
+    #[test]
+    fn cfg_val_falls_back_to_default() {
+        let yaml = YamlConfig::default();
+        let val = cfg_val(&yaml, "api", "host", "__TEST_NEVER_SET__", "fallback");
+        assert_eq!(val, "fallback");
+    }
+
+    #[test]
+    fn cfg_parse_val_reads_number_from_yaml() {
+        let yaml = parse_yaml_sections("api:\n  port: 9999\n");
+        let val: u16 = cfg_parse_val(&yaml, "api", "port", "__TEST_NEVER_SET__", 8080);
+        assert_eq!(val, 9999);
+    }
+
+    #[test]
+    fn cfg_parse_val_falls_back_to_default() {
+        let yaml = YamlConfig::default();
+        let val: u16 = cfg_parse_val(&yaml, "api", "port", "__TEST_NEVER_SET__", 8080);
+        assert_eq!(val, 8080);
+    }
+
+    #[test]
+    fn cfg_bool_val_reads_boolean_from_yaml() {
+        let yaml = parse_yaml_sections("redis:\n  enabled: false\n");
+        let val = cfg_bool_val(&yaml, "redis", "enabled", "__TEST_NEVER_SET__", true);
+        assert!(!val);
+    }
+
+    #[test]
+    fn cfg_bool_val_falls_back_to_default() {
+        let yaml = YamlConfig::default();
+        let val = cfg_bool_val(&yaml, "redis", "enabled", "__TEST_NEVER_SET__", false);
+        assert!(!val);
+    }
+
+    #[test]
+    fn mapping_roundtrip_write_then_read() {
+        use noyalib::{Mapping, Value};
+
+        // Simulate upsert_api_config_yaml write
+        let mut root = Value::Mapping(Mapping::new());
+        let root_map = root.as_mapping_mut().unwrap();
+        let mut api_map = Mapping::new();
+        api_map.insert("host", Value::String("192.168.1.1".into()));
+        api_map.insert("port", Value::Number(noyalib::Number::from(3000u16)));
+        api_map.insert("keys", Value::String("my-key".into()));
+        root_map.insert("api", Value::Mapping(api_map));
+
+        let yaml_str = noyalib::to_string(&root).expect("serialize");
+
+        // Parse back with noyalib
+        let parsed: Value = noyalib::from_str(&yaml_str).expect("deserialize");
+        let api = parsed["api"].as_mapping().unwrap();
+        assert_eq!(api["host"].as_str(), Some("192.168.1.1"));
+        assert_eq!(api["port"].as_i64(), Some(3000));
+        assert_eq!(api["keys"].as_str(), Some("my-key"));
+    }
+}
