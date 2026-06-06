@@ -245,9 +245,7 @@ mod tests {
 
     #[test]
     fn yaml_config_parses_api_section() {
-        let cfg = parse_yaml_sections(
-            "api:\n  host: 127.0.0.1\n  port: 9999\n  keys: secret123\n",
-        );
+        let cfg = parse_yaml_sections("api:\n  host: 127.0.0.1\n  port: 9999\n  keys: secret123\n");
         let api = cfg.api.as_ref().expect("api section");
         assert_eq!(api["host"].as_str(), Some("127.0.0.1"));
         assert_eq!(api["port"].as_i64(), Some(9999));
@@ -267,9 +265,7 @@ mod tests {
 
     #[test]
     fn yaml_config_parses_mcp_section() {
-        let cfg = parse_yaml_sections(
-            "mcp:\n  host: 0.0.0.0\n  port: 5000\n  token: tok-abc\n",
-        );
+        let cfg = parse_yaml_sections("mcp:\n  host: 0.0.0.0\n  port: 5000\n  token: tok-abc\n");
         let mcp = cfg.mcp.as_ref().expect("mcp section");
         assert_eq!(mcp["host"].as_str(), Some("0.0.0.0"));
         assert_eq!(mcp["token"].as_str(), Some("tok-abc"));
@@ -291,7 +287,10 @@ mod tests {
             "api:\n  host: 0.0.0.0\n  port: 8080\nredis:\n  host: localhost\nmcp:\n  port: 43175\n",
         );
         assert_eq!(cfg.api.as_ref().unwrap()["host"].as_str(), Some("0.0.0.0"));
-        assert_eq!(cfg.redis.as_ref().unwrap()["host"].as_str(), Some("localhost"));
+        assert_eq!(
+            cfg.redis.as_ref().unwrap()["host"].as_str(),
+            Some("localhost")
+        );
         assert_eq!(cfg.mcp.as_ref().unwrap()["port"].as_i64(), Some(43175));
     }
 
