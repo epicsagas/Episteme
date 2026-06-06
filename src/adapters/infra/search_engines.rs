@@ -301,9 +301,9 @@ pub fn sparse_entity_boost(counts: &HashMap<String, usize>, entity_id: &str) -> 
 
 /// Compute cosine similarity between two f32 vectors.
 ///
-/// Delegates to [`llm_kernel::embedding::cosine_similarity`] (single-pass f32).
+/// Delegates to [`llm_kernel::embedding::cosine_similarity`] (f64-precision accumulation).
 pub fn cosine_similarity(a: &[f32], b: &[f32]) -> f64 {
-    llm_kernel::embedding::cosine_similarity(a, b) as f64
+    llm_kernel::embedding::cosine_similarity(a, b)
 }
 
 // ---------------------------------------------------------------------------

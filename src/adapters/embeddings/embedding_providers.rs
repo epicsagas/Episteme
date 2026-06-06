@@ -97,8 +97,9 @@ pub fn create_configured_local_provider() -> Box<dyn EmbeddingProvider> {
 
 /// Create an OpenAI embedding provider using llm-kernel.
 ///
-/// `model` is matched against known OpenAI model names to pick the right constructor.
-/// Falls back to `new_small` for unrecognized model names.
+/// Dispatches to `new_small` / `new_large` for the two standard models.
+/// Returns an error for unsupported model names so callers can surface a
+/// clear diagnostic rather than silently using the wrong dimension.
 #[cfg(feature = "openai-embeddings")]
 pub fn create_openai_provider(
     api_key: String,
@@ -106,10 +107,15 @@ pub fn create_openai_provider(
 ) -> Result<Box<dyn EmbeddingProvider>, String> {
     use llm_kernel::embedding::OpenAIEmbeddingClient;
 
-    let provider = if model.contains("large") {
-        OpenAIEmbeddingClient::new_large(api_key)
-    } else {
-        OpenAIEmbeddingClient::new_small(api_key)
+    let provider = match model.as_str() {
+        "text-embedding-3-small" => OpenAIEmbeddingClient::new_small(api_key),
+        "text-embedding-3-large" => OpenAIEmbeddingClient::new_large(api_key),
+        unknown => {
+            return Err(format!(
+                "unsupported OpenAI embedding model: '{unknown}'; \
+                 supported: text-embedding-3-small, text-embedding-3-large"
+            ))
+        }
     };
 
     Ok(Box::new(LkEmbeddingAdapter::new(Box::new(provider))))
