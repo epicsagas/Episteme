@@ -252,7 +252,10 @@ pub fn cmd_stats() -> Result<()> {
             if let Some(stored) = &stored_model
                 && stored != &configured
             {
-                println!("  ⚠  WARNING: model mismatch — DB was built with '{}', current config is '{}'", stored, configured);
+                println!(
+                    "  ⚠  WARNING: model mismatch — DB was built with '{}', current config is '{}'",
+                    stored, configured
+                );
             }
         }
     }

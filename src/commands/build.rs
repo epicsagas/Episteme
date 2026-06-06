@@ -55,7 +55,10 @@ pub fn cmd_build(
     );
     pb.set_message("Building RAG index...");
 
-    let (provider, model_name): (Box<dyn episteme::ports::embeddings::EmbeddingProvider>, String) = {
+    let (provider, model_name): (
+        Box<dyn episteme::ports::embeddings::EmbeddingProvider>,
+        String,
+    ) = {
         #[cfg(feature = "openai-embeddings")]
         {
             let provider_pref = config.embedding_provider.to_lowercase();
@@ -74,8 +77,11 @@ pub fn cmd_build(
                         .filter(|m| !m.is_empty())
                         .unwrap_or(config.openai_embed_model.clone());
                     info!("Using OpenAI embedding provider (model={model})");
-                    let p = episteme::adapters::embedding_providers::create_openai_provider(key, model.clone())
-                        .map_err(|e| anyhow::anyhow!(e))?;
+                    let p = episteme::adapters::embedding_providers::create_openai_provider(
+                        key,
+                        model.clone(),
+                    )
+                    .map_err(|e| anyhow::anyhow!(e))?;
                     (p, format!("openai:{model}"))
                 } else {
                     anyhow::bail!(
