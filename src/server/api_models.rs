@@ -22,6 +22,10 @@ pub struct Components {
     pub knowledge_graph: String,
     pub rag_database: String,
     pub embedding_provider: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub embedding_model: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub embedding_dim: Option<usize>,
 }
 
 #[derive(Debug, Serialize)]
@@ -53,6 +57,17 @@ pub struct StatsResponse {
     pub total_entities: usize,
     pub total_edges: usize,
     pub by_type: std::collections::HashMap<String, usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub embedding: Option<EmbeddingInfo>,
+}
+
+/// Embedding model metadata: what's stored in the DB vs what's currently configured.
+#[derive(Debug, Serialize)]
+pub struct EmbeddingInfo {
+    pub stored_model: Option<String>,
+    pub stored_dim: Option<usize>,
+    pub configured_model: Option<String>,
+    pub mismatch: bool,
 }
 
 // ---------------------------------------------------------------------------

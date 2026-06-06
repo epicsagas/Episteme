@@ -37,9 +37,15 @@ pub fn build(
     raw_dir: &Path,
     provider: &dyn EmbeddingProvider,
     batch_size: usize,
+    model_name: &str,
+    model_dim: usize,
 ) -> Result<BuildStats> {
     // Open database and initialise schema via llm-kernel.
     let conn = sqlite_db::open_database(db_path)?;
+
+    // Persist embedding model metadata so consumers can inspect it later.
+    sqlite_db::set_meta(&conn, "embedding_model", model_name)?;
+    sqlite_db::set_meta(&conn, "embedding_dim", &model_dim.to_string())?;
 
     // Load file_to_entity mapping.
     let f2e_path = data_dir.join("file_to_entity.json");

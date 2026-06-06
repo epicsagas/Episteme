@@ -57,6 +57,33 @@ pub fn init_in_memory() -> Result<Connection> {
 }
 
 // ---------------------------------------------------------------------------
+// _meta key-value helpers
+// ---------------------------------------------------------------------------
+
+/// Read a value from the `_meta` table. Returns `None` if the key does not exist.
+pub fn get_meta(conn: &Connection, key: &str) -> Result<Option<String>> {
+    match conn.query_row(
+        "SELECT value FROM _meta WHERE key = ?1",
+        params![key],
+        |row| row.get::<_, String>(0),
+    ) {
+        Ok(v) => Ok(Some(v)),
+        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+        Err(e) => Err(InfraError::Database(e.to_string())),
+    }
+}
+
+/// Write (upsert) a value into the `_meta` table.
+pub fn set_meta(conn: &Connection, key: &str, value: &str) -> Result<()> {
+    conn.execute(
+        "INSERT OR REPLACE INTO _meta (key, value) VALUES (?1, ?2)",
+        params![key, value],
+    )
+    .map_err(|e| InfraError::Database(e.to_string()))?;
+    Ok(())
+}
+
+// ---------------------------------------------------------------------------
 // Chunk type
 // ---------------------------------------------------------------------------
 

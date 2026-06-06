@@ -212,6 +212,51 @@ pub fn cmd_stats() -> Result<()> {
         println!("  {:20} {}", t, count);
     }
 
+    // Embedding model info from RAG database.
+    let db_path = episteme::adapters::paths::db_path();
+    if db_path.exists() {
+        use episteme::adapters::config::EpistemeConfig;
+        use episteme::adapters::infra::sqlite_db;
+
+        if let Ok(conn) = rusqlite::Connection::open_with_flags(
+            &db_path,
+            rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY,
+        ) {
+            let stored_model = sqlite_db::get_meta(&conn, "embedding_model").ok().flatten();
+            let stored_dim = sqlite_db::get_meta(&conn, "embedding_dim")
+                .ok()
+                .flatten()
+                .and_then(|v| v.parse::<usize>().ok());
+
+            let cfg = EpistemeConfig::load().unwrap_or_default();
+            let configured = match cfg.embedding_provider.to_lowercase().as_str() {
+                "openai" => format!("openai:{}", cfg.openai_embed_model),
+                _ => cfg.embedding_model.clone(),
+            };
+
+            println!();
+            println!("Embedding:");
+            match (&stored_model, &stored_dim) {
+                (Some(m), Some(d)) => {
+                    println!("  DB model:           {} ({}-dim)", m, d);
+                }
+                (Some(m), None) => {
+                    println!("  DB model:           {}", m);
+                }
+                _ => {
+                    println!("  DB model:           (not recorded)");
+                }
+            }
+            println!("  Configured now:     {}", configured);
+
+            if let Some(stored) = &stored_model
+                && stored != &configured
+            {
+                println!("  ⚠  WARNING: model mismatch — DB was built with '{}', current config is '{}'", stored, configured);
+            }
+        }
+    }
+
     Ok(())
 }
 
