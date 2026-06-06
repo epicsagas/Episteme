@@ -486,6 +486,55 @@ rustup show   # aktive Toolchain bestaetigen
 
 ---
 
+## Ökosystem: Alcove-Integration
+
+Episteme verfügt über zwei Ebenen zur Wissenserfassung: den **kanonischen Graphen** (universelle Muster, Gesetze, Code-Smells) und die **implizite Wissensebene** (TK-* — Team-Erkenntnisse, automatisch mit kanonischen Entitäten verknüpft). Für eine umfassendere Projektdokumentation — Architekturentscheidungen, Coding-Konventionen, Onboarding-Leitfäden, Technical-Depot-Register — ist **[Alcove](https://github.com/epicsagas/alcove)** das empfohlene Begleitwerkzeug.
+
+```mermaid
+flowchart LR
+    U["Developer"] --> A["AI Agent"]
+    A -->|"What pattern applies?"| E["Episteme<br/>Canonical Graph"]
+    A -->|"Quick insight?"| T["Episteme<br/>Tacit Knowledge (TK-*)"]
+    A -->|"Team decisions?"| L["Alcove<br/>Project Docs"]
+    E --> R["Grounded Recommendation"]
+    T --> R
+    L --> R
+```
+
+### Episteme vs. Alcove — Wann welches Werkzeug verwenden?
+
+| Szenario | Werkzeug | Begründung |
+|----------|----------|------------|
+| Code-Smells in einem Modul erkennen | **Episteme** `analyze_code` | Regex/AST-Erkennung + priorisierte Refactoring-Vorschläge |
+| Kurzfristige Erkenntnis festhalten („wir stoßen hier immer auf N+1") | **Episteme** `add_insight` | Automatische Verknüpfung mit relevanten kanonischen Entitäten (SMELL-*, LAW-*) |
+| Beziehung zwischen SRP und Extract Class finden | **Episteme** `find_path` | Multi-Hop-Graphdurchquerung über Entitätstypen hinweg |
+| Dokumentation für ein neues Projekt starten | **Alcove** `init_project` | 7 Kernvorlagen (PRD, ARCHITECTURE, DECISIONS, ...) werden automatisch erstellt |
+| Formale Architekturentscheidung (ADR) dokumentieren | **Alcove** DECISIONS.md | Strukturiertes ADR-Format mit Kontext, Optionen, Konsequenzen |
+| Prüfen, ob Dokumentation veraltet ist oder defekte Links enthält | **Alcove** `lint_project` | Erkennt WIP/TODO/DEPRECATED-Marker, verwaiste Dateien, veraltete Datumsangaben |
+| Namenskonventionen oder Pflichtabschnitte durchsetzen | **Alcove** `validate_docs` | Richtlinienbasierte Validierung mit pass/warn/fail |
+| Obsidian-Notizen für Agenten-Zugriff importieren | **Alcove** `promote_document` | Symlink-Vaults + BM25/Vektor-Indizierung |
+| Eine Empfehlung auf Prinzipien und Teamregeln gleichzeitig stützen | **Beide** | Universelles Wissen + teamspezifische Einschränkungen |
+
+### Implizites Wissen (TK-*) vs. Alcove-Dokumentation
+
+Die implizite Wissensebene von Episteme ist für **kurze, augenblickliche Erkenntnisse** konzipiert, die automatisch mit dem Wissensgraphen verknüpft werden — „Wir haben uns für Event-Driven statt Polling entschieden, weil X", automatisch verknüpft mit DP-018 (Observer) und LAW-012 (Fail Fast). Alcove hingegen verwaltet **strukturierte, langlebige Dokumentation** — vollständige ADRs mit Abschnitten, Architekturdiagrammen, Coding-Standards und Onboarding-Checklisten.
+
+| | Episteme TK-* | Alcove |
+|---|---|---|
+| **Granularität** | Atomarer Freitext-Eintrag | Strukturiertes Mehrabschnitts-Dokument |
+| **Automatische Verknüpfung** | Schlüsselworterkennung → kanonische Entitäten | Wikilinks zwischen Dokumenten |
+| **Lebenszyklus** | Erstellen + Suchen | Vollständiges CRUD + Validieren + Linten + Auditieren + Backup |
+| **Suche** | FTS5-Schlüsselwortsuche | BM25 + Vektor-Hybridsuche (CJK-Unterstützung) |
+| **Optimal für** | Schnelle Beobachtungen, gewonnene Erkenntnisse | Formale Entscheidungen, Projektgerüst, Dokumentationsgovernance |
+
+Alcove verwaltet 3 Dokumentationsebenen (7 Kerndateien + 19 ergänzende Dateien + 15 öffentliche Dateien), bietet eine BM25 + Vektor-Hybridsuche mit CJK-Unterstützung und integriert Obsidian-Vaults. Es umfasst richtlinienbasierte Validierung, semantisches Linten (defekte Links, veraltete Marker, verwaiste Dateien) und git-basierte Backups.
+
+**Vollständige Analyse**: [Alcove-Ökosystem-Vergleich](../../alcove-ecosystem.md) — Speichermodelle, Suchfähigkeiten, Funktionsumfang und Use-Case-Entweder-Oder-Matrix.
+
+**Nutzungsmuster**: [Alcove-Integrationsleitfaden](../../alcove-integration.md) — Agenten-Workflows, Code-Review mit dualem Kontext und Einrichtungsanleitung.
+
+---
+
 ## Roadmap
 
 **Veröffentlicht**

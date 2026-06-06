@@ -484,6 +484,55 @@ rustup show   # confirma el toolchain activo
 
 ---
 
+## Ecosistema: Integración con Alcove
+
+Episteme tiene dos capas para capturar conocimiento: el **grafo canónico** (patrones universales, leyes, code smells) y la **capa de conocimiento tácito** (TK-* — perspectivas del equipo vinculadas automáticamente a entidades canónicas). Para documentación de proyectos más completa — decisiones de arquitectura, convenciones de codificación, guías de incorporación, registros de deuda técnica — **[Alcove](https://github.com/epicsagas/alcove)** es el complemento recomendado.
+
+```mermaid
+flowchart LR
+    U["Developer"] --> A["AI Agent"]
+    A -->|"What pattern applies?"| E["Episteme<br/>Canonical Graph"]
+    A -->|"Quick insight?"| T["Episteme<br/>Tacit Knowledge (TK-*)"]
+    A -->|"Team decisions?"| L["Alcove<br/>Project Docs"]
+    E --> R["Grounded Recommendation"]
+    T --> R
+    L --> R
+```
+
+### Episteme vs Alcove — cuándo usar cada uno
+
+| Escenario | Usar | Motivo |
+|----------|-----|--------|
+| Detectar code smells en un módulo | **Episteme** `analyze_code` | Detección mediante Regex/AST + sugerencias de refactoring priorizadas |
+| Registrar una observación momentánea ("siempre tenemos N+1 aquí") | **Episteme** `add_insight` | Vinculación automática a entidades canónicas relevantes (SMELL-*, LAW-*) |
+| Encontrar la relación entre SRP y Extract Class | **Episteme** `find_path` | Recorrido multi-hop del grafo entre tipos de entidades |
+| Iniciar la documentación de un nuevo proyecto | **Alcove** `init_project` | 7 plantillas base (PRD, ARCHITECTURE, DECISIONS, ...) generadas automáticamente |
+| Registrar una decisión de arquitectura formal (ADR) | **Alcove** DECISIONS.md | Formato ADR estructurado con contexto, opciones y consecuencias |
+| Verificar si la documentación está desactualizada o tiene enlaces rotos | **Alcove** `lint_project` | Detecta marcadores WIP/TODO/DEPRECATED, archivos huérfanos y fechas obsoletas |
+| Aplicar convenciones de nomenclatura o secciones obligatorias | **Alcove** `validate_docs` | Validación basada en políticas con resultados pass/warn/fail |
+| Importar notas de Obsidian para acceso del agente | **Alcove** `promote_document` | Symlinks a vaults + indexación BM25/vectorial |
+| Fundamentar una recomendación en principios y reglas del equipo | **Ambos** | Conocimiento universal + restricciones específicas del equipo |
+
+### Conocimiento Tácito (TK-*) vs Documentación de Alcove
+
+La capa de conocimiento tácito de Episteme está diseñada para **observaciones breves y momentáneas** que se conectan automáticamente al grafo de conocimiento — "elegimos event-driven sobre polling por X", vinculado automáticamente a DP-018 (Observer) y LAW-012 (Fail Fast). Alcove gestiona **documentación estructurada y duradera** — ADRs completos con secciones, diagramas de arquitectura, estándares de codificación y listas de incorporación.
+
+| | Episteme TK-* | Alcove |
+|---|---|---|
+| **Granularidad** | Observación atómica en texto libre | Documento estructurado con múltiples secciones |
+| **Vinculación automática** | Detección de palabras clave → entidades canónicas | wikilinks entre documentos |
+| **Ciclo de vida** | Crear + buscar | CRUD completo + validar + lint + auditoría + backup |
+| **Búsqueda** | FTS5 por palabras clave | Híbrida BM25 + vectorial (soporte CJK) |
+| **Ideal para** | Observaciones rápidas, lecciones aprendidas | Decisiones formales, scaffolding de proyectos, gobernanza documental |
+
+Alcove gestiona 3 niveles de documentación (7 documentos base + 19 complementarios + 15 archivos públicos), proporciona búsqueda híbrida BM25 + vectorial con soporte CJK, y se integra con vaults de Obsidian. Incluye validación de políticas, linting semántico (enlaces rotos, marcadores obsoletos, archivos huérfanos) y copias de seguridad basadas en git.
+
+**Análisis completo**: [Comparación del Ecosistema Alcove](../../alcove-ecosystem.md) — modelos de almacenamiento, capacidades de búsqueda, completitud de funcionalidades y matriz de decisiones por caso de uso.
+
+**Patrones de uso**: [Guía de Integración con Alcove](../../alcove-integration.md) — flujos de trabajo del agente, revisión de código con contexto dual e instrucciones de configuración.
+
+---
+
 ## Hoja de Ruta
 
 **Publicado**

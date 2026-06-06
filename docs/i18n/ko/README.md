@@ -484,6 +484,55 @@ rustup show   # 활성 툴체인 확인
 
 ---
 
+## 생태계: Alcove 연동
+
+Episteme는 지식을 포착하는 두 가지 계층을 제공합니다: **정규 그래프**(보편적 패턴, 법칙, 스멜)와 **암묵지 계층**(TK-* — 정규 엔티티에 자동으로 연결되는 팀 인사이트). 더 풍부한 프로젝트 문서화 — 아키텍처 결정, 코딩 컨벤션, 온보딩 가이드, 기술 부채 관리 대장 — 이 필요하다면 **[Alcove](https://github.com/epicsagas/alcove)** 가 권장 컴패니언입니다.
+
+```mermaid
+flowchart LR
+    U["Developer"] --> A["AI Agent"]
+    A -->|"What pattern applies?"| E["Episteme<br/>Canonical Graph"]
+    A -->|"Quick insight?"| T["Episteme<br/>Tacit Knowledge (TK-*)"]
+    A -->|"Team decisions?"| L["Alcove<br/>Project Docs"]
+    E --> R["Grounded Recommendation"]
+    T --> R
+    L --> R
+```
+
+### Episteme vs Alcove — 어느 것을 사용할 것인가
+
+| 시나리오 | 사용 도구 | 이유 |
+|----------|-----------|------|
+| 모듈에서 코드 스멜 감지 | **Episteme** `analyze_code` | 정규식/AST 감지 + 순위가 매겨진 리팩토링 제안 |
+| 순간적인 인사이트 기록 ("여기서 항상 N+1이 발생함") | **Episteme** `add_insight` | 관련 정규 엔티티(SMELL-*, LAW-*)에 자동 연결 |
+| SRP와 Extract Class 간의 관계 탐색 | **Episteme** `find_path` | 엔티티 유형을跨越하는 다중 홉 그래프 탐색 |
+| 새 프로젝트의 문서화 시작 | **Alcove** `init_project` | 7개 핵심 템플릿(PRD, ARCHITECTURE, DECISIONS, ...) 자동 생성 |
+| 공식 아키텍처 결정(ADR) 기록 | **Alcove** DECISIONS.md | 맥락, 옵션, 결과가 포함된 구조화된 ADR 형식 |
+| 문서가 오래되었거나 끊어진 링크가 있는지 확인 | **Alcove** `lint_project` | WIP/TODO/DEPRECATED 마커, 고아 파일, 오래된 날짜 감지 |
+| 명명 규칙 또는 필수 섹션 강제 | **Alcove** `validate_docs` | 통과/경고/실패 기반 정책 검증 |
+| 에이전트 접근을 위해 Obsidian 노트 가져오기 | **Alcove** `promote_document` | 볼트 심볼릭 링크 + BM25/벡터 인덱싱 |
+| 원칙과 팀 규칙 모두에 근거한 권장 사항 도출 | **둘 다** | 보편적 지식 + 팀별 제약 조건 |
+
+### 암묵지(TK-*) vs Alcove 문서
+
+Episteme의 암묵지 계층은 지식 그래프에 자동으로 연결되는 **짧고 순간적인 인사이트**를 위해 설계되었습니다 — "X 때문에 폴링 대신 이벤트 기반을 선택함"이 DP-018(Observer) 및 LAW-012(Fail Fast)에 자동으로 연결되는 식입니다. Alcove는 **구조화되고 장기 보존되는 문서**를 담당합니다 — 섹션이 포함된 전체 ADR, 아키텍처 다이어그램, 코딩 표준, 온보딩 체크리스트 등입니다.
+
+| | Episteme TK-* | Alcove |
+|---|---|---|
+| **세분성** | 원자적 자유 텍스트 인사이트 | 구조화된 다중 섹션 문서 |
+| **자동 연결** | 키워드 감지 → 정규 엔티티 | 문서 간 wikilink |
+| **수명주기** | 생성 + 검색 | 전체 CRUD + 검증 + 린트 + 감사 + 백업 |
+| **검색** | FTS5 키워드 | BM25 + 벡터 하이브리드(CJK 지원) |
+| **적합한 용도** | 빠른 관찰, 교훈 | 공식 결정, 프로젝트 스캐폴딩, 문서 거버넌스 |
+
+Alcove는 3단계의 문서 계층(7개 핵심 + 19개 보충 + 15개 공개 파일)을 관리하고, CJK 지원이 포함된 BM25 + 벡터 하이브리드 검색을 제공하며, Obsidian 볼트와 통합됩니다. 정책 검증, 의미론적 린팅(끊어진 링크, 오래된 마커, 고아 파일), git 기반 백업도 포함되어 있습니다.
+
+**상세 분석**: [Alcove 생태계 비교](../../alcove-ecosystem.md) — 저장 모델, 검색 기능, 기능 완성도, 사용 사례 결정 매트릭스.
+
+**사용 패턴**: [Alcove 통합 가이드](../../alcove-integration.md) — 에이전트 워크플로, 이중 컨텍스트 코드 리뷰, 설정 안내.
+
+---
+
 ## 로드맵
 
 **출시 완료**

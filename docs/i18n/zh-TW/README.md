@@ -486,6 +486,55 @@ rustup show   # 確認使用中的工具鏈
 
 ---
 
+## 生態系：Alcove 整合
+
+Episteme 有兩個擷取知識的層次：**正規圖譜**（通用模式、法則、壞味道）與**隱性知識層**（TK-* — 自動連結至正規實體的團隊洞見）。若需要更豐富的專案文件 — 架構決策、程式碼慣例、新人上手指南、技術債登錄 — **[Alcove](https://github.com/epicsagas/alcove)** 是推薦的搭配工具。
+
+```mermaid
+flowchart LR
+    U["Developer"] --> A["AI Agent"]
+    A -->|"What pattern applies?"| E["Episteme<br/>Canonical Graph"]
+    A -->|"Quick insight?"| T["Episteme<br/>Tacit Knowledge (TK-*)"]
+    A -->|"Team decisions?"| L["Alcove<br/>Project Docs"]
+    E --> R["Grounded Recommendation"]
+    T --> R
+    L --> R
+```
+
+### Episteme 與 Alcove — 何時使用何者
+
+| 場景 | 使用 | 原因 |
+|----------|-----|-----|
+| 偵測模組中的程式碼壞味道 | **Episteme** `analyze_code` | 正規表示式/AST 偵測 + 排序後的重構建議 |
+| 記錄當下的洞見（「我們在這裡總是遇到 N+1 問題」） | **Episteme** `add_insight` | 自動連結至相關的正規實體（SMELL-*、LAW-*） |
+| 尋找 SRP 與 Extract Class 之間的關係 | **Episteme** `find_path` | 跨實體類型的多跳圖譜遍歷 |
+| 為新專案建立文件 | **Alcove** `init_project` | 自動產生 7 個核心範本（PRD、ARCHITECTURE、DECISIONS 等） |
+| 記錄正式的架構決策（ADR） | **Alcove** DECISIONS.md | 結構化的 ADR 格式，包含背景、選項與後果 |
+| 檢查文件是否過時或有失效連結 | **Alcove** `lint_project` | 偵測 WIP/TODO/DEPRECATED 標記、孤立檔案、過期日期 |
+| 強制執行命名慣例或必要章節 | **Alcove** `validate_docs` | 基於策略的驗證，結果為通過/警告/失敗 |
+| 匯入 Obsidian 筆記供 Agent 存取 | **Alcove** `promote_document` | 符號連結 Vault + BM25/向量索引 |
+| 將建議同時建立在原則與團隊規範之上 | **兩者** | 通用知識 + 團隊特定限制 |
+
+### 隱性知識（TK-*）與 Alcove 文件
+
+Episteme 的隱性知識層是為**簡短、即時的洞見**而設計，這些洞見會自動連結至知識圖譜 — 例如「我們選擇事件驅動而非輪詢，因為 X」，會自動連結至 DP-018（Observer）與 LAW-012（Fail Fast）。Alcove 則處理**結構化、長期維護的文件** — 包含各章節的完整 ADR、架構圖、程式碼標準、新人上手清單。
+
+| | Episteme TK-* | Alcove |
+|---|---|---|
+| **粒度** | 原子化的自由文字洞見 | 結構化的多章節文件 |
+| **自動連結** | 關鍵字偵測 → 正規實體 | 文件間的 wikilink |
+| **生命週期** | 建立 + 搜尋 | 完整 CRUD + 驗證 + 檢查 + 稽核 + 備份 |
+| **搜尋** | FTS5 關鍵字 | BM25 + 向量混合搜尋（支援 CJK） |
+| **最適用於** | 快速觀察、經驗教訓 | 正式決策、專案鷹架、文件治理 |
+
+Alcove 管理 3 個層級的文件（7 個核心 + 19 個補充 + 15 個公開檔案），提供支援 CJK 的 BM25 + 向量混合搜尋，並與 Obsidian Vault 整合。它包含策略驗證、語意檢查（失效連結、過期標記、孤立檔案）以及基於 Git 的備份。
+
+**完整分析**：[Alcove 生態系比較](../../alcove-ecosystem.md) — 儲存模型、搜尋能力、功能完整性與使用場景決策矩陣。
+
+**使用模式**：[Alcove 整合指南](../../alcove-integration.md) — Agent 工作流程、雙重情境的程式碼審查，以及設定說明。
+
+---
+
 ## 發展路線圖
 
 **已發布**

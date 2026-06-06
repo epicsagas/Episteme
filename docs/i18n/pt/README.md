@@ -486,6 +486,55 @@ rustup show   # confirme a toolchain ativa
 
 ---
 
+## Ecossistema: Integração com Alcove
+
+O Episteme possui duas camadas para captura de conhecimento: o **grafo canônico** (padrões universais, leis, code smells) e a **camada de conhecimento tácito** (TK-* — insights da equipe vinculados automaticamente a entidades canônicas). Para documentação de projeto mais rica — decisões arquiteturais, convenções de código, guias de onboarding, registros de débito técnico — o **[Alcove](https://github.com/epicsagas/alcove)** é o companheiro recomendado.
+
+```mermaid
+flowchart LR
+    U["Developer"] --> A["AI Agent"]
+    A -->|"What pattern applies?"| E["Episteme<br/>Canonical Graph"]
+    A -->|"Quick insight?"| T["Episteme<br/>Tacit Knowledge (TK-*)"]
+    A -->|"Team decisions?"| L["Alcove<br/>Project Docs"]
+    E --> R["Grounded Recommendation"]
+    T --> R
+    L --> R
+```
+
+### Episteme vs Alcove — quando usar cada um
+
+| Cenário | Usar | Motivo |
+|----------|-----|-----|
+| Detectar code smells em um módulo | **Episteme** `analyze_code` | Detecção via Regex/AST + sugestões de refatoração ranqueadas |
+| Registrar um insight momentâneo ("sempre temos N+1 aqui") | **Episteme** `add_insight` | Vincula automaticamente às entidades canônicas relevantes (SMELL-*, LAW-*) |
+| Encontrar relação entre SRP e Extract Class | **Episteme** `find_path` | Percurso multi-hop no grafo entre tipos de entidades |
+| Iniciar documentação para um novo projeto | **Alcove** `init_project` | 7 templates principais (PRD, ARCHITECTURE, DECISIONS, ...) gerados automaticamente |
+| Registrar uma decisão arquitetural formal (ADR) | **Alcove** DECISIONS.md | Formato ADR estruturado com contexto, opções e consequências |
+| Verificar se docs estão desatualizados ou com links quebrados | **Alcove** `lint_project` | Detecta marcadores WIP/TODO/DEPRECATED, arquivos órfãos e datas obsoletas |
+| Impor convenções de nomenclatura ou seções obrigatórias | **Alcove** `validate_docs` | Validação baseada em políticas com status pass/warn/fail |
+| Importar notas do Obsidian para acesso por agentes | **Alcove** `promote_document` | Symlinks de vaults + indexação BM25/vetorial |
+| Embasar uma recomendação em princípios e regras da equipe | **Ambos** | Conhecimento universal + restrições específicas da equipe |
+
+### Conhecimento Tácito (TK-*) vs Docs do Alcove
+
+A camada de conhecimento tácito do Episteme é projetada para **insights curtos e momentâneos** que se conectam automaticamente ao grafo de conhecimento — "escolhemos event-driven ao invés de polling por causa de X", vinculado automaticamente a DP-018 (Observer) e LAW-012 (Fail Fast). O Alcove gerencia **documentação estruturada e de longo prazo** — ADRs completos com seções, diagramas de arquitetura, padrões de codificação e checklists de onboarding.
+
+| | Episteme TK-* | Alcove |
+|---|---|---|
+| **Granularidade** | Insight atômico em texto livre | Documento estruturado com múltiplas seções |
+| **Vinculação automática** | Detecção por palavras-chave → entidades canônicas | wikilinks entre documentos |
+| **Ciclo de vida** | Criação + busca | CRUD completo + validação + lint + auditoria + backup |
+| **Busca** | FTS5 por palavras-chave | Híbrida BM25 + vetorial (suporte a CJK) |
+| **Ideal para** | Observações rápidas, lições aprendidas | Decisões formais, scaffolding de projeto, governança de docs |
+
+O Alcove gerencia 3 camadas de documentação (7 templates principais + 19 suplementares + 15 arquivos públicos), oferece busca híbrida BM25 + vetorial com suporte a CJK e integra-se com vaults do Obsidian. Inclui validação por políticas, lint semântico (links quebrados, marcadores obsoletos, órfãos) e backups baseados em git.
+
+**Análise completa**: [Comparação do Ecossistema Alcove](../../alcove-ecosystem.md) — modelos de armazenamento, capacidades de busca, completude de funcionalidades e matriz de decisão por caso de uso.
+
+**Padrões de uso**: [Guia de Integração com Alcove](../../alcove-integration.md) — fluxos de trabalho com agentes, revisão de código com contexto duplo e instruções de configuração.
+
+---
+
 ## Roteiro
 
 **Lançado**

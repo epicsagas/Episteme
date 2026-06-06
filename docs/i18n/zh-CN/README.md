@@ -484,6 +484,55 @@ rustup show   # 确认当前工具链
 
 ---
 
+## 生态系统：Alcove 集成
+
+Episteme 有两个知识捕获层：**规范图谱**（通用模式、法则、坏味道）和**隐性知识层**（TK-* — 自动关联到规范实体的团队洞察）。对于更丰富的项目文档——架构决策、编码规范、入职指南、技术债务登记——推荐使用 **[Alcove](https://github.com/epicsagas/alcove)**。
+
+```mermaid
+flowchart LR
+    U["Developer"] --> A["AI Agent"]
+    A -->|"What pattern applies?"| E["Episteme<br/>Canonical Graph"]
+    A -->|"Quick insight?"| T["Episteme<br/>Tacit Knowledge (TK-*)"]
+    A -->|"Team decisions?"| L["Alcove<br/>Project Docs"]
+    E --> R["Grounded Recommendation"]
+    T --> R
+    L --> R
+```
+
+### Episteme 与 Alcove — 使用场景对比
+
+| 场景 | 使用工具 | 原因 |
+|----------|-----|-----|
+| 检测模块中的代码坏味道 | **Episteme** `analyze_code` | 正则/AST 检测 + 排序后的重构建议 |
+| 记录临时洞察（"我们总是在这里遇到 N+1 问题"） | **Episteme** `add_insight` | 自动关联到相关的规范实体（SMELL-*、LAW-*） |
+| 查找 SRP 与 Extract Class 之间的关系 | **Episteme** `find_path` | 跨实体类型的多跳图遍历 |
+| 为新项目创建文档 | **Alcove** `init_project` | 自动生成 7 个核心模板（PRD、ARCHITECTURE、DECISIONS 等） |
+| 记录正式的架构决策（ADR） | **Alcove** DECISIONS.md | 结构化 ADR 格式，包含背景、选项、后果 |
+| 检查文档是否过时或存在失效链接 | **Alcove** `lint_project` | 检测 WIP/TODO/DEPRECATED 标记、孤立文件、过期日期 |
+| 强制执行命名约定或必填章节 | **Alcove** `validate_docs` | 基于策略的验证，支持通过/警告/失败 |
+| 导入 Obsidian 笔记供代理访问 | **Alcove** `promote_document` | 符号链接 vault + BM25/向量索引 |
+| 同时基于原则和团队规则提出建议 | **两者结合** | 通用知识 + 团队特定约束 |
+
+### 隐性知识（TK-*）与 Alcove 文档
+
+Episteme 的隐性知识层专为**简短的临时洞察**设计，可自动连接到知识图谱——"我们选择事件驱动而非轮询，原因是 X"，自动关联到 DP-018（Observer）和 LAW-012（Fail Fast）。Alcove 处理**结构化的长期文档**——包含多个章节的完整 ADR、架构图、编码标准、入职清单。
+
+| | Episteme TK-* | Alcove |
+|---|---|---|
+| **粒度** | 原子化自由文本洞察 | 结构化多章节文档 |
+| **自动关联** | 关键词检测 → 规范实体 | 文档间 wikilink |
+| **生命周期** | 创建 + 搜索 | 完整 CRUD + 验证 + 检查 + 审计 + 备份 |
+| **搜索** | FTS5 关键词 | BM25 + 向量混合（支持 CJK） |
+| **适用场景** | 快速观察、经验教训 | 正式决策、项目脚手架、文档治理 |
+
+Alcove 管理 3 个层级的文档（7 个核心 + 19 个补充 + 15 个公开文件），提供支持 CJK 的 BM25 + 向量混合搜索，并与 Obsidian vault 集成。它包含策略验证、语义检查（失效链接、过期标记、孤立文件）和基于 git 的备份。
+
+**完整分析**：[Alcove 生态系统对比](../../alcove-ecosystem.md) — 存储模型、搜索能力、功能完整性和用例决策矩阵。
+
+**使用模式**：[Alcove 集成指南](../../alcove-integration.md) — 代理工作流、双上下文代码审查和设置说明。
+
+---
+
 ## 路线图
 
 **已发布**
