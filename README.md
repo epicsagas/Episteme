@@ -473,7 +473,13 @@ EPISTEME_API_KEY=your-secret-key
 EPISTEME_MCP_HOST=127.0.0.1
 EPISTEME_MCP_PORT=43175
 EPISTEME_MCP_TOKEN=epis-a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+
+# Embedding models
+EPISTEME_EMBEDDING_MODEL=MultilingualE5Small   # local (fastembed), default: MultilingualE5Small
+EPISTEME_OPENAI_EMBED_MODEL=text-embedding-3-small  # OpenAI, requires OPENAI_API_KEY
 ```
+
+See [Supported Embedding Models](https://github.com/epicsagas/llm-kernel/blob/main/EMBEDDING_MODELS.md) for the full catalog of local (ONNX) and OpenAI models with dimensions and descriptions.
 
 ---
 
