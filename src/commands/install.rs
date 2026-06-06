@@ -327,11 +327,11 @@ fn upsert_config_yaml(
     redis_db: u16,
     redis_ttl: u64,
 ) -> Result<()> {
-    use serde_yaml::{Mapping, Value};
+    use serde_yml::{Mapping, Value};
     let path = episteme::adapters::paths::episteme_home().join("config.yaml");
     let mut root = if path.exists() {
         let text = std::fs::read_to_string(&path)?;
-        serde_yaml::from_str::<Value>(&text).unwrap_or_else(|_| Value::Mapping(Mapping::new()))
+        serde_yml::from_str::<Value>(&text).unwrap_or_else(|_| Value::Mapping(Mapping::new()))
     } else {
         Value::Mapping(Mapping::new())
     };
@@ -342,40 +342,25 @@ fn upsert_config_yaml(
     let root_map = root.as_mapping_mut().expect("mapping checked above");
 
     let mut redis_map = Mapping::new();
-    redis_map.insert(
-        Value::String("enabled".to_owned()),
-        Value::Bool(redis_enabled),
-    );
-    redis_map.insert(
-        Value::String("host".to_owned()),
-        Value::String(redis_host.to_owned()),
-    );
-    redis_map.insert(
-        Value::String("port".to_owned()),
-        Value::Number(serde_yaml::Number::from(redis_port)),
-    );
-    redis_map.insert(
-        Value::String("db".to_owned()),
-        Value::Number(serde_yaml::Number::from(redis_db)),
-    );
-    redis_map.insert(
-        Value::String("ttl".to_owned()),
-        Value::Number(serde_yaml::Number::from(redis_ttl)),
-    );
-    root_map.insert(Value::String("redis".to_owned()), Value::Mapping(redis_map));
+    redis_map.insert("enabled", Value::Bool(redis_enabled));
+    redis_map.insert("host", Value::String(redis_host.to_owned()));
+    redis_map.insert("port", Value::Number(serde_yml::Number::from(redis_port)));
+    redis_map.insert("db", Value::Number(serde_yml::Number::from(redis_db)));
+    redis_map.insert("ttl", Value::Number(serde_yml::Number::from(redis_ttl)));
+    root_map.insert("redis", Value::Mapping(redis_map));
 
     std::fs::create_dir_all(episteme::adapters::paths::episteme_home())?;
-    let yaml = serde_yaml::to_string(&root)?;
+    let yaml = serde_yml::to_string(&root)?;
     std::fs::write(path, yaml)?;
     Ok(())
 }
 
 fn upsert_api_config_yaml(host: &str, port: u16, keys: Option<&str>) -> Result<()> {
-    use serde_yaml::{Mapping, Value};
+    use serde_yml::{Mapping, Value};
     let path = episteme::adapters::paths::episteme_home().join("config.yaml");
     let mut root = if path.exists() {
         let text = std::fs::read_to_string(&path)?;
-        serde_yaml::from_str::<Value>(&text).unwrap_or_else(|_| Value::Mapping(Mapping::new()))
+        serde_yml::from_str::<Value>(&text).unwrap_or_else(|_| Value::Mapping(Mapping::new()))
     } else {
         Value::Mapping(Mapping::new())
     };
@@ -385,24 +370,15 @@ fn upsert_api_config_yaml(host: &str, port: u16, keys: Option<&str>) -> Result<(
     let root_map = root.as_mapping_mut().expect("mapping checked above");
 
     let mut api_map = Mapping::new();
-    api_map.insert(
-        Value::String("host".to_owned()),
-        Value::String(host.to_owned()),
-    );
-    api_map.insert(
-        Value::String("port".to_owned()),
-        Value::Number(serde_yaml::Number::from(port)),
-    );
+    api_map.insert("host", Value::String(host.to_owned()));
+    api_map.insert("port", Value::Number(serde_yml::Number::from(port)));
     if let Some(k) = keys.filter(|k| !k.is_empty()) {
-        api_map.insert(
-            Value::String("keys".to_owned()),
-            Value::String(k.to_owned()),
-        );
+        api_map.insert("keys", Value::String(k.to_owned()));
     }
-    root_map.insert(Value::String("api".to_owned()), Value::Mapping(api_map));
+    root_map.insert("api", Value::Mapping(api_map));
 
     std::fs::create_dir_all(episteme::adapters::paths::episteme_home())?;
-    let yaml = serde_yaml::to_string(&root)?;
+    let yaml = serde_yml::to_string(&root)?;
     std::fs::write(path, yaml)?;
     Ok(())
 }
