@@ -287,12 +287,16 @@ jobs:
           VERSION_NUM="${VERSION#v}"
           ARCHIVE_NAME="episteme-data-${VERSION_NUM}.tar.gz"
 
-          # Only create if data directories exist
-          if [ -d "raw" ] || [ -d "meta" ] || [ -d "registry" ]; then
-            tar czf "$ARCHIVE_NAME" raw/ meta/ registry/ 2>/dev/null || \
-              tar czf "$ARCHIVE_NAME" $(ls -d raw meta registry 2>/dev/null)
+          # Collect existing data directories
+          DIRS=""
+          for d in raw meta registry db; do
+            [ -d "$d" ] && DIRS="$DIRS $d"
+          done
+
+          if [ -n "$DIRS" ]; then
+            tar czf "$ARCHIVE_NAME" $DIRS
             gh release upload "$VERSION" "$ARCHIVE_NAME"
-            echo "Uploaded $ARCHIVE_NAME"
+            echo "Uploaded $ARCHIVE_NAME (contains:$DIRS)"
           else
             echo "No data directories found, skipping data archive"
           fi
