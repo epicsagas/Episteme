@@ -29,11 +29,10 @@ import json
 import math
 import os
 import re
-import statistics
+import shutil
 import subprocess
 import sys
 import tempfile
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -43,7 +42,6 @@ from typing import Any
 # ---------------------------------------------------------------------------
 
 ENTITY_ID_RE = re.compile(r"\[([A-Z]+-[A-Z0-9-]+)\]")
-ENTITY_ID_RE_RELAXED = re.compile(r"([A-Z]{2,6}-[0-9]{2,3}(?:-[A-Z])?)")
 
 BIN_DEFAULT = "target/debug/episteme"
 
@@ -148,7 +146,12 @@ def eval_search_positive(epis: Path, top_k: int, repeats: int) -> dict:
 
     # Warmup
     for q in queries[:3]:
-        run_cli([str(epis), "explore", q["query"], "--limit", str(top_k)])
+        proc = run_cli([str(epis), "explore", q["query"], "--limit", str(top_k)])
+        if proc.returncode != 0:
+            print(
+                f"  WARNING: warmup query failed (rc={proc.returncode}): {q['query']}"
+            )
+            print(f"    stderr: {proc.stderr[:200]}")
 
     hit1 = hit3 = hit5 = 0
     mrr_sum = ndcg_sum = 0.0
@@ -334,8 +337,9 @@ def eval_smell_negative(epis: Path, min_confidence: float) -> dict:
         ".java": "java",
     }
 
+    ignored = {".DS_Store", ".gitkeep"}
     for entry in sorted(corpus_dir.iterdir()):
-        if entry.is_dir():
+        if entry.is_dir() or entry.name in ignored:
             continue
         ext = entry.suffix
         lang = lang_map.get(ext)
@@ -704,23 +708,27 @@ def check_regression(current: dict, prev_path: Path) -> dict:
                 f"{metric} dropped by {abs(m_delta):.4f} (threshold: 0.05)"
             )
 
-    # Historical rank-1 FP check (warn if previous run had rank-1 FP unresolved)
+    # Historical rank-1 FP note (informational, not a regression)
+    warnings: list[str] = []
     search_neg = prev.get("suites", {}).get("search_negative", {})
     if search_neg.get("status") == "ok":
         for q in search_neg.get("per_query", []):
             if q.get("fp@1", 0) == 1:
-                regressions.append(
+                warnings.append(
                     f"[historical] must_not_contain entity at rank 1: '{q['query']}'"
                 )
                 break  # one is enough to flag
 
     status = "FAIL" if regressions else "PASS"
-    return {
+    result = {
         "status": status,
         "prev_composite": prev_composite,
         "delta": delta,
         "regressions": regressions,
     }
+    if warnings:
+        result["warnings"] = warnings
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -896,6 +904,19 @@ def main() -> int:
         check_regression(composite, prev_path) if args.suite == "full" else None
     )
 
+    # Pre-check: rank-1 FP in current run is a hard failure
+    # Check BEFORE saving so failed results don't become the regression baseline
+    rank1_fp_queries: list[str] = []
+    sn = suites.get("search_negative", {})
+    if sn.get("status") == "ok":
+        for q in sn.get("per_query", []):
+            if q.get("fp@1") == 1:
+                rank1_fp_queries.append(q["query"])
+
+    # Regression failure also prevents saving as baseline
+    has_regression = regression and regression.get("status") == "FAIL"
+    should_save_baseline = not rank1_fp_queries and not has_regression
+
     # Build report
     report = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -914,46 +935,38 @@ def main() -> int:
     if args.output:
         out_path = Path(args.output)
     else:
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         out_path = out_dir / f"eval_{ts}.json"
 
     out_path.write_text(
         json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
-    # Update latest pointer (symlink on Unix, copy on Windows)
-    latest = out_dir / "latest.json"
-    try:
-        latest.unlink(missing_ok=True)
-        os.symlink(out_path.name, latest)
-    except OSError:
-        # Windows may not support symlinks without privileges; fall back to copy
+    # Update latest pointer only for passing runs (used as regression baseline)
+    if should_save_baseline:
+        latest = out_dir / "latest.json"
         try:
-            import shutil
-
-            shutil.copy2(out_path, latest)
+            latest.unlink(missing_ok=True)
+            os.symlink(out_path.name, latest)
         except OSError:
-            pass
+            try:
+                shutil.copy2(out_path, latest)
+            except OSError:
+                pass
 
     # Print report
     print_report(composite, suites, regression)
     print(f"\nSaved: {out_path}")
 
     # Exit code
-    if regression and regression.get("status") == "FAIL":
+    if has_regression:
         print("\n❌ REGRESSION DETECTED — evaluation failed")
         return 1
 
-    # Hard fail: any rank-1 FP in current run is an immediate failure
-    # (unlike check_regression which compares against previous run)
-    sn = suites.get("search_negative", {})
-    if sn.get("status") == "ok":
-        for q in sn.get("per_query", []):
-            if q.get("fp@1") == 1:
-                print(
-                    f"\n❌ CRITICAL: must_not_contain entity at rank 1 for query: '{q['query']}'"
-                )
-                return 1
+    if rank1_fp_queries:
+        for q in rank1_fp_queries:
+            print(f"\n❌ CRITICAL: must_not_contain entity at rank 1 for query: '{q}'")
+        return 1
 
     print("\n✅ Evaluation passed")
     return 0

@@ -10,6 +10,7 @@ from eval_runner import (
     check_regression,
     compute_composite,
     dedup,
+    parse_entity_ids,
     parse_json_output,
 )
 
@@ -119,14 +120,24 @@ class TestCheckRegression:
 
     def test_no_regression(self) -> None:
         prev = {
-            "composite_score": {"composite": 0.5, "recall": 0.6, "precision": 0.7, "specificity": 0.8},
+            "composite_score": {
+                "composite": 0.5,
+                "recall": 0.6,
+                "precision": 0.7,
+                "specificity": 0.8,
+            },
             "suites": {"search_negative": {"status": "ok", "per_query": []}},
         }
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             f.write(json.dumps(prev))
             f.flush()
             result = check_regression(
-                {"composite": 0.55, "recall": 0.65, "precision": 0.75, "specificity": 0.85},
+                {
+                    "composite": 0.55,
+                    "recall": 0.65,
+                    "precision": 0.75,
+                    "specificity": 0.85,
+                },
                 Path(f.name),
             )
         assert result["status"] == "PASS"
@@ -134,14 +145,24 @@ class TestCheckRegression:
 
     def test_composite_regression(self) -> None:
         prev = {
-            "composite_score": {"composite": 0.5, "recall": 0.6, "precision": 0.7, "specificity": 0.8},
+            "composite_score": {
+                "composite": 0.5,
+                "recall": 0.6,
+                "precision": 0.7,
+                "specificity": 0.8,
+            },
             "suites": {},
         }
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             f.write(json.dumps(prev))
             f.flush()
             result = check_regression(
-                {"composite": 0.45, "recall": 0.6, "precision": 0.7, "specificity": 0.8},
+                {
+                    "composite": 0.45,
+                    "recall": 0.6,
+                    "precision": 0.7,
+                    "specificity": 0.8,
+                },
                 Path(f.name),
             )
         assert result["status"] == "FAIL"
@@ -149,7 +170,12 @@ class TestCheckRegression:
 
     def test_single_metric_regression(self) -> None:
         prev = {
-            "composite_score": {"composite": 0.5, "recall": 0.8, "precision": 0.7, "specificity": 0.8},
+            "composite_score": {
+                "composite": 0.5,
+                "recall": 0.8,
+                "precision": 0.7,
+                "specificity": 0.8,
+            },
             "suites": {},
         }
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
@@ -209,3 +235,34 @@ class TestDedup:
 
     def test_no_dupes(self) -> None:
         assert dedup(["A", "B", "C"]) == ["A", "B", "C"]
+
+
+# ---------------------------------------------------------------------------
+# parse_entity_ids
+# ---------------------------------------------------------------------------
+
+
+class TestParseEntityIds:
+    def test_single_id(self) -> None:
+        assert parse_entity_ids("  [SMELL-01] Long Method") == ["SMELL-01"]
+
+    def test_multiple_ids_same_line(self) -> None:
+        output = "  [DP-003] solved by [RF-001]"
+        assert parse_entity_ids(output) == ["DP-003", "RF-001"]
+
+    def test_multiple_lines(self) -> None:
+        output = "[SMELL-01] Long Method\n  Related: [LAW-040]\n  See [RF-005]"
+        assert parse_entity_ids(output) == ["SMELL-01", "LAW-040", "RF-005"]
+
+    def test_no_ids(self) -> None:
+        assert parse_entity_ids("just plain text, no entities") == []
+
+    def test_empty(self) -> None:
+        assert parse_entity_ids("") == []
+
+    def test_non_matching_brackets(self) -> None:
+        assert parse_entity_ids("[lowercase-id] [123-BAD]") == []
+
+    def test_mixed_valid_and_invalid(self) -> None:
+        output = "[SMELL-01] text [not-an-id] [DP-003]"
+        assert parse_entity_ids(output) == ["SMELL-01", "DP-003"]
