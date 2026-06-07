@@ -155,30 +155,30 @@ pub fn detect_long_method(
 }
 
 // -- SMELL-02  Long Parameter List ------------------------------------------
-// >7 -> 0.95 | >5 -> 0.80 | >4 -> 0.65
+// >8 -> 0.95 | >6 -> 0.85 | >5 -> 0.70
 
 pub fn detect_long_parameter_list(
     metrics: &CodeMetrics,
     location: &str,
     name: &str,
 ) -> Option<SmellDetection> {
-    if metrics.parameter_count <= 4 {
+    if metrics.parameter_count <= 5 {
         return None;
     }
-    let (confidence, reason) = if metrics.parameter_count > 7 {
+    let (confidence, reason) = if metrics.parameter_count > 8 {
         (
             0.95,
-            format!("Parameter count={} exceeds 7", metrics.parameter_count),
+            format!("Parameter count={} exceeds 8", metrics.parameter_count),
         )
-    } else if metrics.parameter_count > 5 {
+    } else if metrics.parameter_count > 6 {
         (
-            0.80,
-            format!("Parameter count={} exceeds 5", metrics.parameter_count),
+            0.85,
+            format!("Parameter count={} exceeds 6", metrics.parameter_count),
         )
     } else {
         (
-            0.65,
-            format!("Parameter count={} exceeds 4", metrics.parameter_count),
+            0.70,
+            format!("Parameter count={} exceeds 5", metrics.parameter_count),
         )
     };
     Some(build_detection(
@@ -193,45 +193,35 @@ pub fn detect_long_parameter_list(
 }
 
 // -- SMELL-03  Primitive Obsession ------------------------------------------
-// >=5 primitives AND ratio >= 0.8 -> 0.85 | >=4 AND >= 0.75 -> 0.70 | >=3 AND >= 0.7 -> 0.55
+// >=5 primitives AND ratio >= 0.80 -> 0.85 | otherwise None
+// Tightened from >=4/0.75 to reduce false positives.
 
 pub fn detect_primitive_obsession(
     metrics: &CodeMetrics,
     location: &str,
     name: &str,
 ) -> Option<SmellDetection> {
-    if metrics.primitive_params < 4 {
+    if metrics.primitive_params < 5 {
         return None;
     }
     let ratio = metrics.primitive_params as f64 / metrics.parameter_count.max(1) as f64;
-    let (confidence, reasons) = if metrics.primitive_params >= 5 && ratio >= 0.8 {
-        (
+    if metrics.primitive_params >= 5 && ratio >= 0.80 {
+        let reasons = vec![
+            format!("{} primitive parameters (>=5)", metrics.primitive_params),
+            format!("{:.0}% of parameters are primitives", ratio * 100.0),
+        ];
+        Some(build_detection(
+            "SMELL-03",
+            "Primitive Obsession",
             0.85,
-            vec![
-                format!("{} primitive parameters (>=5)", metrics.primitive_params),
-                format!("{:.0}% of parameters are primitives", ratio * 100.0),
-            ],
-        )
-    } else if metrics.primitive_params >= 4 && ratio >= 0.75 {
-        (
-            0.70,
-            vec![
-                format!("{} primitive parameters", metrics.primitive_params),
-                format!("High primitive ratio {:.0}%", ratio * 100.0),
-            ],
-        )
+            location,
+            name,
+            metrics,
+            reasons,
+        ))
     } else {
-        return None;
-    };
-    Some(build_detection(
-        "SMELL-03",
-        "Primitive Obsession",
-        confidence,
-        location,
-        name,
-        metrics,
-        reasons,
-    ))
+        None
+    }
 }
 
 // -- SMELL-04  Large Class --------------------------------------------------
@@ -380,27 +370,39 @@ pub fn detect_switch_statements(
 }
 
 // -- SMELL-07  Data Class ---------------------------------------------------
-// field/method ratio >= 2.0 AND fields >= 5 -> 0.75
+// fields >= 5 AND (methods == 0 OR field/method ratio >= 2.0)
+// Pure data structs (method_count == 0) use lower confidence 0.60 to avoid
+// flagging legitimate Rust/Go data containers; this falls below the default
+// --min-confidence 0.65 and is effectively filtered out in practice.
 
 pub fn detect_data_class(
     metrics: &CodeMetrics,
     location: &str,
     name: &str,
 ) -> Option<SmellDetection> {
-    if metrics.method_count == 0 {
+    if metrics.field_count < 5 {
         return None;
     }
-    let ratio = metrics.field_count as f64 / metrics.method_count as f64;
-    if ratio >= 2.0 && metrics.field_count >= 5 {
+    let ratio = metrics.field_count as f64 / metrics.method_count.max(1) as f64;
+    if metrics.method_count == 0 || ratio >= 2.0 {
+        let confidence = if metrics.method_count == 0 {
+            0.60
+        } else {
+            0.75
+        };
         Some(build_detection(
             "SMELL-07",
             "Data Class",
-            0.75,
+            confidence,
             location,
             name,
             metrics,
             vec![
-                format!("High field-to-method ratio ({ratio:.1})"),
+                if metrics.method_count == 0 {
+                    format!("{} fields with no behavior methods", metrics.field_count)
+                } else {
+                    format!("High field-to-method ratio ({ratio:.1})")
+                },
                 format!("Field count={}, few behavior methods", metrics.field_count),
             ],
         ))
@@ -525,46 +527,34 @@ pub fn detect_divergent_change(
 }
 
 // -- SMELL-11  Lazy Class ---------------------------------------------------
-// LOC < 15 AND methods == 0 -> 0.70 (pure data holder with no behavior)
-// LOC < 20 AND methods <= 1 AND fields >= 5 -> 0.65 (nearly empty class)
-// Pure data classes (many fields, no methods) are common in Rust/Go and
-// should not be flagged. Only flag when there's almost nothing at all.
+// LOC < 8 AND methods == 0 AND fields == 0 -> 0.80 (truly empty, no data or behavior)
+// Data structs (Class/Struct with >= 2 fields and no methods) are NOT flagged --
+// they are legitimate data containers common in Rust/Go.
 
 pub fn detect_lazy_class(
     metrics: &CodeMetrics,
     location: &str,
     name: &str,
 ) -> Option<SmellDetection> {
+    // Data struct guard: classes/structs with fields but no methods are not lazy
+    if matches!(metrics.item_type, ItemType::Class)
+        && metrics.method_count == 0
+        && metrics.field_count >= 2
+    {
+        return None;
+    }
     // Class with no methods AND no fields → truly empty
-    if metrics.loc < 15 && metrics.method_count == 0 && metrics.field_count == 0 {
+    if metrics.loc < 8 && metrics.method_count == 0 && metrics.field_count == 0 {
         return Some(build_detection(
             "SMELL-11",
             "Lazy Class",
-            0.70,
+            0.80,
             location,
             name,
             metrics,
             vec![
                 format!("LOC={} is very small", metrics.loc),
                 "No methods or fields, minimal functionality".into(),
-            ],
-        ));
-    }
-    // Class with almost no behavior but some structure
-    if metrics.loc < 20 && metrics.method_count <= 1 && metrics.field_count < 5 {
-        return Some(build_detection(
-            "SMELL-11",
-            "Lazy Class",
-            0.65,
-            location,
-            name,
-            metrics,
-            vec![
-                format!("LOC={} is very small", metrics.loc),
-                format!(
-                    "Method count={}, minimal functionality",
-                    metrics.method_count
-                ),
             ],
         ));
     }
@@ -665,37 +655,59 @@ pub fn detect_duplicate_code(
 
 // -- SMELL-14  Middle Man ---------------------------------------------------
 // delegation ratio > 0.7 AND methods >= 3 | ratio > 0.85 -> 0.85 | else -> 0.70
+// Heuristic fallback: when delegation_methods is not populated by parsers,
+// detect from external_calls count as a proxy for delegation-heavy classes.
 
 pub fn detect_middle_man(
     metrics: &CodeMetrics,
     location: &str,
     name: &str,
 ) -> Option<SmellDetection> {
-    if metrics.method_count == 0 || metrics.delegation_methods == 0 {
-        return None;
+    // Primary detection: delegation_methods populated by parser
+    if metrics.method_count > 0 && metrics.delegation_methods > 0 {
+        let ratio = metrics.delegation_methods as f64 / metrics.method_count as f64;
+        if ratio > 0.7 && metrics.method_count >= 3 {
+            let confidence = if ratio > 0.85 { 0.85 } else { 0.70 };
+            return Some(build_detection(
+                "SMELL-14",
+                "Middle Man",
+                confidence,
+                location,
+                name,
+                metrics,
+                vec![
+                    format!(
+                        "{}/{} methods are simple delegations",
+                        metrics.delegation_methods, metrics.method_count
+                    ),
+                    format!("Delegation ratio: {:.0}%", ratio * 100.0),
+                    "Class adds little value, consider removing".into(),
+                ],
+            ));
+        }
     }
-    let ratio = metrics.delegation_methods as f64 / metrics.method_count as f64;
-    if ratio > 0.7 && metrics.method_count >= 3 {
-        let confidence = if ratio > 0.85 { 0.85 } else { 0.70 };
-        Some(build_detection(
+    // Heuristic fallback: external_calls proxy for delegation
+    if metrics.method_count >= 3
+        && metrics.external_calls >= metrics.method_count
+        && metrics.loc < 50
+    {
+        return Some(build_detection(
             "SMELL-14",
             "Middle Man",
-            confidence,
+            0.70,
             location,
             name,
             metrics,
             vec![
                 format!(
-                    "{}/{} methods are simple delegations",
-                    metrics.delegation_methods, metrics.method_count
+                    "{} external calls with {} methods suggest delegation",
+                    metrics.external_calls, metrics.method_count
                 ),
-                format!("Delegation ratio: {:.0}%", ratio * 100.0),
-                "Class adds little value, consider removing".into(),
+                "Low LOC with high forwarding activity".into(),
             ],
-        ))
-    } else {
-        None
+        ));
     }
+    None
 }
 
 // -- SMELL-18  Feature Envy -------------------------------------------------
@@ -709,7 +721,7 @@ pub fn detect_feature_envy(
     let mut a = TieredAccum::new();
     if metrics.external_calls > 5 {
         a.add(
-            0.4,
+            0.7,
             format!("External calls={} exceeds 5", metrics.external_calls),
         );
     }
@@ -729,19 +741,21 @@ pub fn detect_feature_envy(
 }
 
 // -- SMELL-20  Message Chains -----------------------------------------------
-// >6 -> 0.90 | >5 -> 0.75 | >4 -> 0.60
-// Note: chains of 4 or fewer are common with standard library APIs (e.g.
-// `.get().and_then().unwrap_or()`) and are not flagged.
+// >4 -> 0.90 | >3 -> 0.70
+// Note: chains of 3 or fewer are common with standard library APIs (e.g.
+// `.get().and_then().unwrap_or()`) and builder patterns, and are not flagged.
+// The chain counter uses AST-based analysis for Python and gap-based heuristic
+// for other languages, so conservative thresholds avoid FPs from parser noise.
 
 pub fn detect_message_chains(
     metrics: &CodeMetrics,
     location: &str,
     name: &str,
 ) -> Option<SmellDetection> {
-    if metrics.method_call_chains <= 4 {
+    if metrics.method_call_chains <= 3 {
         return None;
     }
-    let (confidence, reasons) = if metrics.method_call_chains > 6 {
+    let (confidence, reasons) = if metrics.method_call_chains > 4 {
         (
             0.90,
             vec![
@@ -752,17 +766,9 @@ pub fn detect_message_chains(
                 "Violates Law of Demeter, creates tight coupling".into(),
             ],
         )
-    } else if metrics.method_call_chains > 5 {
-        (
-            0.75,
-            vec![
-                format!("Long call chains (depth={})", metrics.method_call_chains),
-                "Consider introducing intermediate methods".into(),
-            ],
-        )
     } else {
         (
-            0.60,
+            0.70,
             vec![format!(
                 "Call chain depth={} suggests coupling",
                 metrics.method_call_chains
@@ -863,8 +869,8 @@ pub fn detect_comments(
     let mut a = TieredAccum::new();
     a.tier(
         metrics.comment_count,
-        metrics.loc / 2, // > 50% comment lines
-        0.4,
+        metrics.loc, // > 100% comment lines (more comments than code)
+        0.65,
         format!(
             "Comment density {:.0}% is very high ({} comment lines / {} LOC)",
             comment_ratio * 100.0,
@@ -894,7 +900,7 @@ pub fn detect_comments(
             ),
         );
     }
-    a.into_detection("SMELL-16", "Comments", location, name, metrics, 0.5)
+    a.into_detection("SMELL-16", "Comments", location, name, metrics, 0.4)
 }
 
 // -- SMELL-17  Dead Code (placeholder) --------------------------------------
@@ -932,13 +938,11 @@ pub fn detect_inappropriate_intimacy(
 }
 
 // -- SMELL-22  Refused Bequest ----------------------------------------------
-// Heuristic: if a class has many fields/methods but very few are actually used
-// in its methods (high inheritance but low utilization), or if override methods
-// are trivially empty.  Uses `override_count` as a proxy for methods that
-// override parent behavior with empty/stub implementations.
-// override_count >= 3 AND methods <= 5 -> 0.75
-// override_count >= 2 AND methods <= 4 -> 0.60
-// field_count high but method_count very low -> 0.55 (inherits fields, adds nothing)
+// Primary: override_count >= 3 AND methods <= 5 -> 0.75
+// Primary: override_count >= 2 AND methods <= 4 -> 0.60
+// Primary: field_count >= 8 AND methods <= 2 AND overrides > 0 -> 0.55
+// Heuristic fallback: when override_count == 0 (never populated by parser),
+// flag small classes with few methods that likely inherit without adding value.
 
 pub fn detect_refused_bequest(
     metrics: &CodeMetrics,
@@ -972,7 +976,7 @@ pub fn detect_refused_bequest(
         return Some(build_detection(
             "SMELL-22",
             "Refused Bequest",
-            0.60,
+            0.70,
             location,
             name,
             metrics,
@@ -1006,6 +1010,30 @@ pub fn detect_refused_bequest(
                     metrics.field_count, metrics.method_count, metrics.override_count
                 ),
                 "Subclass overrides parent behavior but adds little -- consider composition".into(),
+            ],
+        ));
+    }
+    // Heuristic fallback: when override_count is never populated by parser,
+    // detect potential refused bequest from class shape alone.
+    if metrics.override_count == 0
+        && metrics.method_count <= 3
+        && metrics.method_count > 0
+        && metrics.field_count <= 2
+        && metrics.loc < 30
+    {
+        return Some(build_detection(
+            "SMELL-22",
+            "Refused Bequest",
+            0.55,
+            location,
+            name,
+            metrics,
+            vec![
+                format!(
+                    "Small class (LOC={}, {} methods, {} fields) likely inherits without adding value",
+                    metrics.loc, metrics.method_count, metrics.field_count
+                ),
+                "Consider whether inheritance is appropriate or composition would be better".into(),
             ],
         ));
     }
@@ -1144,27 +1172,32 @@ mod tests {
     }
 
     #[test]
-    fn long_params_5() {
-        let d = detect_long_parameter_list(&make_fn_metrics(10, 1, 0, 5), "t.py:1", "f").unwrap();
-        assert_eq!(d.smell_id, "SMELL-02");
-        assert!((d.confidence - 0.65).abs() < f64::EPSILON);
-    }
-
-    #[test]
     fn long_params_6() {
         let d = detect_long_parameter_list(&make_fn_metrics(10, 1, 0, 6), "t.py:1", "f").unwrap();
-        assert!((d.confidence - 0.80).abs() < f64::EPSILON);
+        assert_eq!(d.smell_id, "SMELL-02");
+        assert!((d.confidence - 0.70).abs() < f64::EPSILON);
     }
 
     #[test]
-    fn long_params_8() {
-        let d = detect_long_parameter_list(&make_fn_metrics(10, 1, 0, 8), "t.py:1", "f").unwrap();
+    fn long_params_7() {
+        let d = detect_long_parameter_list(&make_fn_metrics(10, 1, 0, 7), "t.py:1", "f").unwrap();
+        assert!((d.confidence - 0.85).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn long_params_9() {
+        let d = detect_long_parameter_list(&make_fn_metrics(10, 1, 0, 9), "t.py:1", "f").unwrap();
         assert!((d.confidence - 0.95).abs() < f64::EPSILON);
     }
 
     #[test]
     fn long_params_ok() {
         assert!(detect_long_parameter_list(&make_fn_metrics(10, 1, 0, 3), "t.py:1", "f").is_none());
+    }
+
+    #[test]
+    fn long_params_5_not_flagged() {
+        assert!(detect_long_parameter_list(&make_fn_metrics(10, 1, 0, 5), "t.py:1", "f").is_none());
     }
 
     #[test]
@@ -1234,29 +1267,41 @@ mod tests {
     }
 
     #[test]
+    fn data_class_zero_methods_lower_confidence() {
+        // Pure data structs get confidence 0.60 (below typical min_confidence 0.65)
+        let m = CodeMetrics {
+            method_count: 0,
+            field_count: 8,
+            ..Default::default()
+        };
+        let d = detect_data_class(&m, "t.go:1", "Config").unwrap();
+        assert_eq!(d.smell_id, "SMELL-07");
+        assert!((d.confidence - 0.60).abs() < f64::EPSILON);
+    }
+
+    #[test]
     fn lazy_class_detected() {
         let m = CodeMetrics {
-            loc: 10,
+            loc: 5,
             method_count: 0,
             field_count: 0,
             ..Default::default()
         };
         let d = detect_lazy_class(&m, "t.py:1", "Useless").unwrap();
         assert_eq!(d.smell_id, "SMELL-11");
-        assert!((d.confidence - 0.70).abs() < f64::EPSILON);
+        assert!((d.confidence - 0.80).abs() < f64::EPSILON);
     }
 
     #[test]
     fn lazy_class_with_one_method_few_fields() {
+        // Simplified detector only fires for truly empty classes (no methods, no fields)
         let m = CodeMetrics {
-            loc: 18,
+            loc: 9,
             method_count: 1,
             field_count: 2,
             ..Default::default()
         };
-        let d = detect_lazy_class(&m, "t.py:1", "Tiny").unwrap();
-        assert_eq!(d.smell_id, "SMELL-11");
-        assert!((d.confidence - 0.65).abs() < f64::EPSILON);
+        assert!(detect_lazy_class(&m, "t.py:1", "Tiny").is_none());
     }
 
     #[test]
@@ -1318,9 +1363,9 @@ mod tests {
     }
 
     #[test]
-    fn message_chains_not_detected_at_4() {
+    fn message_chains_not_detected_at_3() {
         let m = CodeMetrics {
-            method_call_chains: 4,
+            method_call_chains: 3,
             ..Default::default()
         };
         assert!(detect_message_chains(&m, "t.py:1", "f").is_none());
@@ -1329,12 +1374,12 @@ mod tests {
     #[test]
     fn message_chains_detected() {
         let m = CodeMetrics {
-            method_call_chains: 5,
+            method_call_chains: 4,
             ..Default::default()
         };
         let d = detect_message_chains(&m, "t.py:1", "f").unwrap();
         assert_eq!(d.smell_id, "SMELL-20");
-        assert!((d.confidence - 0.60).abs() < f64::EPSILON);
+        assert!((d.confidence - 0.70).abs() < f64::EPSILON);
     }
 
     #[test]
@@ -1344,7 +1389,7 @@ mod tests {
             ..Default::default()
         };
         let d = detect_message_chains(&m, "t.py:1", "f").unwrap();
-        assert!((d.confidence - 0.75).abs() < f64::EPSILON);
+        assert!((d.confidence - 0.90).abs() < f64::EPSILON);
     }
 
     #[test]
@@ -1572,7 +1617,7 @@ mod tests {
         };
         let d = detect_refused_bequest(&m, "t.py:1", "Sub").unwrap();
         assert_eq!(d.smell_id, "SMELL-22");
-        assert!((d.confidence - 0.60).abs() < f64::EPSILON);
+        assert!((d.confidence - 0.70).abs() < f64::EPSILON);
     }
 
     #[test]

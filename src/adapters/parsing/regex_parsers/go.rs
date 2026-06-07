@@ -6,8 +6,8 @@ use crate::ports::parser::CodeParser;
 
 use super::{
     GenericParser, build_func_metrics_full, cached_regex, cached_regex_owned, calculate_cc,
-    count_block_comment_lines, count_line_comment_lines, count_loc, count_local_vars,
-    count_primitive_params_go, find_matching_brace, line_number,
+    count_block_comment_lines, count_delegation_methods, count_line_comment_lines, count_loc,
+    count_local_vars, count_overrides, count_primitive_params_go, find_matching_brace, line_number,
 };
 
 /// Extended Go parser that counts struct receiver methods across the full file.
@@ -96,10 +96,27 @@ impl CodeParser for GoFullParser {
             let method_re = cached_regex_owned(&format!(r"(?m)func\s+\([^)]*\s+\*?{name}\)\s+\w+"));
             let method_count = method_re.find_iter(&cleaned).count();
 
+            // Collect all receiver method bodies for delegation/override counting
+            let mut method_bodies = String::new();
+            for m in method_re.find_iter(&cleaned) {
+                let m_start = m.start();
+                if let Some(off) = cleaned[m_start..].find('{') {
+                    let brace_pos = m_start + off;
+                    if let Some(end) = find_matching_brace(&cleaned, brace_pos) {
+                        method_bodies.push_str(&cleaned[brace_pos..=end]);
+                    }
+                }
+            }
+
+            let delegation_methods = count_delegation_methods(&method_bodies);
+            let override_count = count_overrides(&method_bodies);
+
             let metrics = CodeMetrics {
                 loc: count_loc(body),
                 method_count,
                 field_count,
+                delegation_methods,
+                override_count,
                 item_type: ItemType::Class,
                 ..Default::default()
             };

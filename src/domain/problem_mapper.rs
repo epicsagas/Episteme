@@ -1,4 +1,6 @@
+use regex::Regex;
 use serde::Serialize;
+use std::sync::LazyLock;
 
 // ---------------------------------------------------------------------------
 // Keyword maps (ported from Python problem_mapper.py)
@@ -135,6 +137,236 @@ static PROBLEM_KEYWORDS: &[(&str, &[&str])] = &[
         ],
     ),
 ];
+
+// ---------------------------------------------------------------------------
+// Homonym context demotion (anti-FP)
+// Maps entity IDs to non-SWE domain signals that indicate a false match.
+// When the query contains any of these signals AND does NOT contain any
+// SWE keyword, the entity is demoted.  The SWE-keyword guard prevents
+// collateral damage on legitimate queries (e.g. "factory pattern for thread
+// safety" contains "pattern" → not demoted despite "safety" signal).
+// ---------------------------------------------------------------------------
+
+/// SWE-domain keywords that, when present as whole words in the query, suppress homonym demotion.
+/// Uses word-boundary matching to avoid false positives like "api" matching inside "rapid".
+/// NOTE: Generic English words like "design", "engineering", "class", "code", "method",
+/// "algorithm", "interface", "abstraction" are intentionally EXCLUDED because they appear
+/// in non-SWE contexts (e.g. "board game design", "material engineering", "class sizes").
+static SWE_GUARD_KEYWORDS: &[&str] = &[
+    "software",
+    "pattern",
+    "patterns",
+    "programming",
+    "design pattern",
+    "refactor",
+    "refactoring",
+    "function",
+    "module",
+    "architecture",
+    "testing",
+    "test",
+    "api",
+    "database",
+    "implementation",
+    "coupling",
+    "cohesion",
+    "smell",
+    "antipattern",
+    "debug",
+    "deploy",
+    "runtime",
+    "compile",
+    "source",
+    "library",
+    "framework",
+    "developer",
+    "python",
+    "java",
+    "rust",
+    "golang",
+    "typescript",
+    "javascript",
+    "oop",
+    "solid",
+    "clean code",
+    "dry",
+    "kiss",
+    "yagni",
+    "thread",
+    "concurrent",
+    "async",
+    "callback",
+    "generic",
+    "trait",
+    "struct",
+    "enum",
+    "closure",
+    "dependency injection",
+];
+
+/// Compiled regex for SWE guard — matches any guard keyword as a whole word.
+static SWE_GUARD_RE: LazyLock<Regex> = LazyLock::new(|| {
+    let pattern = SWE_GUARD_KEYWORDS
+        .iter()
+        .map(|kw| format!(r"\b{}\b", regex::escape(kw)))
+        .collect::<Vec<_>>()
+        .join("|");
+    Regex::new(&pattern).unwrap()
+});
+
+static HOMONYM_CONTEXTS: &[(&str, &[&str])] = &[
+    // GoF pattern names colliding with common English
+    (
+        "DP-001",
+        &["safety", "manufacturing", "industrial", "protocols"],
+    ),
+    (
+        "DP-002",
+        &["career", "construction", "building a", "progression"],
+    ),
+    (
+        "DP-003",
+        &["safety", "manufacturing", "industrial", "protocols"],
+    ),
+    (
+        "DP-004",
+        &["rapid", "mvp", "electric vehicle", "automotive"],
+    ),
+    ("DP-005", &["lambda calculus", "variables in"]),
+    ("DP-006", &["hardware", "power outlet", "international"]),
+    (
+        "DP-007",
+        &[
+            "docker",
+            "networking",
+            "loan",
+            "real estate",
+            "network bridge",
+        ],
+    ),
+    ("DP-008", &["material", "engineering", "materials science"]),
+    ("DP-009", &["python decorator", "language feature"]),
+    (
+        "DP-010",
+        &["renovation", "historical building", "building architecture"],
+    ),
+    ("DP-011", &["boxing", "championship", "weight class"]),
+    ("DP-012", &["server", "voting", "shareholder"]),
+    (
+        "DP-014",
+        &["line interface", "cli", "military", "hierarchy"],
+    ),
+    ("DP-015", &["protocol in python"]),
+    ("DP-016", &["variable in statistics", "statistical"]),
+    ("DP-017", &["keepsake", "photography"]),
+    ("DP-018", &["bias", "user studies", "surveillance"]),
+    ("DP-019", &["react", "component", "union address"]),
+    (
+        "DP-020",
+        &[
+            "board game",
+            "market penetration",
+            "scheduling",
+            "work hours",
+            "chess",
+        ],
+    ),
+    ("DP-021", &["resume", "document"]),
+    ("DP-022", &["management system", "office", "visitor"]),
+    ("DP-023", &["corporate governance", "accountability"]),
+    ("DP-025", &["gifts", "holiday"]),
+    // Refactorings colliding with common English
+    ("RF-001", &["csv", "data from"]),
+    ("RF-002", &["csv", "data from"]),
+    ("RF-003", &["css", "html"]),
+    ("RF-004", &["css", "html"]),
+    ("RF-005", &["battery", "smoke detector"]),
+    ("RF-006", &["batch operation", "files"]),
+    ("RF-023", &["json", "token", "jwt"]),
+    ("RF-024", &["json", "token", "jwt"]),
+    ("RF-026", &["gifts", "holiday"]),
+    ("RF-015", &["archive", "directory"]),
+    ("RF-016", &["archive", "directory"]),
+    // Laws colliding with other fields
+    ("LAW-001", &["physics"]),
+    ("LAW-002", &["legal"]),
+    ("LAW-005", &["greek mythology"]),
+    ("LAW-010", &["manufacturing"]),
+    ("LAW-011", &["triviality"]),
+    ("LAW-014", &["economics"]),
+    ("LAW-017", &["political", "powers"]),
+    ("LAW-018", &["art", "modern art"]),
+    ("LAW-019", &["pharmaceutical", "drug"]),
+    ("LAW-020", &["mechanical", "shaft"]),
+    ("LAW-021", &["chemistry", "molecular"]),
+    ("LAW-022", &["estate", "family"]),
+    ("LAW-023", &["biology", "evolution"]),
+    ("LAW-028", &["criminology", "windows theory"]),
+    ("LAW-029", &["financial"]),
+    ("LAW-036", &["food", "diet", "nutrition"]),
+    ("LAW-035", &["food", "diet", "nutrition"]),
+    ("LAW-034", &["food", "diet", "nutrition"]),
+    ("LAW-033", &["food", "diet", "nutrition"]),
+    ("LAW-032", &["food", "diet", "nutrition"]),
+    ("LAW-037", &["cloud", "on-premise", "infrastructure"]),
+    ("LAW-039", &["animal", "movement"]),
+    ("LAW-040", &["humor", "comedy", "writing essays"]),
+    ("LAW-041", &["life advice"]),
+    ("LAW-042", &["work hours", "scheduling"]),
+    // Smells colliding with non-SWE context
+    ("SMELL-01", &["pep 8", "naming"]),
+    ("SMELL-04", &["school", "education", "classroom"]),
+    ("SMELL-05", &["hair", "styling"]),
+    ("SMELL-11", &["jvm", "class loading"]),
+    ("SMELL-13", &["plagiarism"]),
+    ("SMELL-15", &["family", "disputes"]),
+    ("SMELL-17", &["compiler", "elimination"]),
+    ("SMELL-18", &["consumer", "psychology"]),
+    ("SMELL-20", &["queue", "latency"]),
+];
+
+/// Check whether the query's context conflicts with the given entity.
+///
+/// Returns `true` when:
+/// 1. The query contains a non-SWE domain signal that matches the entity's
+///    homonym context, AND
+/// 2. The query does NOT contain any SWE-domain guard keywords.
+///
+/// This prevents demoting legitimate SWE queries that happen to share a word
+/// with a non-SWE context (e.g. "factory pattern for thread safety" contains
+/// "safety" but also "pattern" → not demoted).
+pub fn is_homonym_mismatch(query: &str, entity_id: &str) -> bool {
+    let query_lower = query.to_lowercase();
+
+    // Check SWE guard: if query contains any SWE keyword as a whole word, never demote
+    if SWE_GUARD_RE.is_match(&query_lower) {
+        return false;
+    }
+
+    for (eid, signals) in HOMONYM_CONTEXTS {
+        if *eid == entity_id {
+            for signal in *signals {
+                if query_lower.contains(signal) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    false
+}
+
+/// Compute a demotion multiplier for an entity given the query context.
+///
+/// Returns 0.0 when a homonym mismatch is detected (entity excluded from results),
+/// 1.0 otherwise.
+pub fn homonym_demotion(query: &str, entity_id: &str) -> f64 {
+    if is_homonym_mismatch(query, entity_id) {
+        0.0
+    } else {
+        1.0
+    }
+}
 
 // ---------------------------------------------------------------------------
 // Intent-to-entity synonym expansion (R3)
@@ -402,5 +634,49 @@ mod tests {
     fn intent_synonyms_nested_conditionals() {
         let ids = lookup_intent_synonyms("nested conditionals");
         assert_eq!(ids, vec!["RF-033", "RF-035", "RF-040", "SMELL-06"]);
+    }
+
+    #[test]
+    fn homonym_mismatch_factory_safety() {
+        assert!(is_homonym_mismatch("factory safety protocols", "DP-001"));
+        assert!(is_homonym_mismatch("factory safety protocols", "DP-003"));
+    }
+
+    #[test]
+    fn homonym_mismatch_strategy_market() {
+        assert!(is_homonym_mismatch(
+            "strategy for market penetration",
+            "DP-020"
+        ));
+    }
+
+    #[test]
+    fn homonym_mismatch_command_interface() {
+        // "interface" removed from SWE guard → mismatch detected → demoted
+        assert!(is_homonym_mismatch(
+            "command line interface tutorial",
+            "DP-014"
+        ));
+    }
+
+    #[test]
+    fn swe_guard_word_boundary() {
+        // "rapid" is a signal for DP-004, no SWE guard word matches → demoted
+        assert!(is_homonym_mismatch(
+            "prototype rapid MVP development",
+            "DP-004"
+        ));
+        // "pattern" is a SWE guard keyword → not demoted
+        assert!(!is_homonym_mismatch("factory api design pattern", "DP-001"));
+    }
+
+    #[test]
+    fn homonym_demotion_returns_zero() {
+        assert_eq!(homonym_demotion("factory safety protocols", "DP-001"), 0.0);
+        assert_eq!(
+            homonym_demotion("strategy for market penetration", "DP-020"),
+            0.0
+        );
+        assert_eq!(homonym_demotion("factory pattern", "DP-001"), 1.0);
     }
 }

@@ -693,8 +693,10 @@ pub fn hybrid_search(
     if semantic_results.is_empty() {
         let mut results = keyword_results;
         for r in &mut results {
-            r.score = r.score.abs();
+            let h = crate::domain::problem_mapper::homonym_demotion(query, &r.entity_id);
+            r.score = r.score.abs() * h;
         }
+        results.retain(|r| r.score > 0.0);
         results.truncate(limit);
         return Ok(results);
     }
@@ -703,8 +705,10 @@ pub fn hybrid_search(
     if keyword_results.is_empty() {
         let mut results = semantic_results;
         for r in &mut results {
-            r.score = r.similarity;
+            let h = crate::domain::problem_mapper::homonym_demotion(query, &r.entity_id);
+            r.score = r.similarity * h;
         }
+        results.retain(|r| r.score > 0.0);
         results.truncate(limit);
         return Ok(results);
     }
@@ -722,8 +726,9 @@ pub fn hybrid_search(
         let t_boost = title_match_boost(&kr.title, &query_lower_rrf);
         let s_boost = section_boost(&kr.section);
         let sparse_boost = sparse_entity_boost(&chunk_counts, &kr.entity_id);
+        let h = crate::domain::problem_mapper::homonym_demotion(query, &kr.entity_id);
         let rrf_score =
-            KEYWORD_WEIGHT / (RRF_K as f64 + rank as f64) * t_boost * s_boost * sparse_boost;
+            KEYWORD_WEIGHT / (RRF_K as f64 + rank as f64) * t_boost * s_boost * sparse_boost * h;
         chunk_scores.insert(
             kr.chunk_id.clone(),
             SearchResult {
@@ -737,7 +742,8 @@ pub fn hybrid_search(
     // Score semantic results, merging with keyword if present.
     for (rank_idx, sr) in semantic_results.into_iter().enumerate() {
         let rank = rank_idx + 1; // 1-based
-        let rrf_score = SEMANTIC_WEIGHT / (RRF_K as f64 + rank as f64);
+        let h = crate::domain::problem_mapper::homonym_demotion(query, &sr.entity_id);
+        let rrf_score = SEMANTIC_WEIGHT / (RRF_K as f64 + rank as f64) * h;
 
         if let Some(existing) = chunk_scores.get_mut(&sr.chunk_id) {
             existing.semantic_rank = Some(rank);
@@ -764,6 +770,8 @@ pub fn hybrid_search(
             .partial_cmp(&a.score)
             .unwrap_or(std::cmp::Ordering::Equal)
     });
+    // Filter out zero-score results (homonym demotion removed them)
+    ranked.retain(|r| r.score > 0.0);
     let mut seen_entities = std::collections::HashSet::new();
     ranked.retain(|r| seen_entities.insert(r.entity_id.clone()));
     ranked.truncate(limit);

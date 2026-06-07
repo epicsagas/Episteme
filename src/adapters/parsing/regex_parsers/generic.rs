@@ -10,12 +10,13 @@ use crate::ports::parser::CodeParser;
 use super::{
     build_func_metrics_full, calculate_cc, calculate_cc_cpp, calculate_cc_csharp,
     calculate_cc_java, calculate_cc_kotlin, calculate_cc_php, calculate_cc_rust,
-    count_block_comment_lines, count_line_comment_lines, count_loc, count_local_vars,
-    count_local_vars_cpp, count_local_vars_csharp, count_local_vars_kotlin, count_local_vars_php,
-    count_primitive_params_csharp, count_primitive_params_go, count_primitive_params_java,
-    count_primitive_params_kotlin, count_primitive_params_none, count_primitive_params_php,
-    count_primitive_params_rust, find_matching_brace, line_number, remove_block_comments,
-    remove_hash_comments, remove_line_comments,
+    count_block_comment_lines, count_delegation_methods, count_line_comment_lines, count_loc,
+    count_local_vars, count_local_vars_cpp, count_local_vars_csharp, count_local_vars_kotlin,
+    count_local_vars_php, count_overrides, count_primitive_params_csharp,
+    count_primitive_params_go, count_primitive_params_java, count_primitive_params_kotlin,
+    count_primitive_params_none, count_primitive_params_php, count_primitive_params_rust,
+    find_matching_brace, line_number, remove_block_comments, remove_hash_comments,
+    remove_line_comments,
 };
 
 /// Configuration for a brace-based language parser.
@@ -202,11 +203,15 @@ impl CodeParser for GenericParser {
                     .get_class_field_re()
                     .map(|re| re.find_iter(body).count())
                     .unwrap_or(0);
+                let delegation_methods = count_delegation_methods(body);
+                let override_count = count_overrides(body);
 
                 let metrics = CodeMetrics {
                     loc: count_loc(body),
                     method_count,
                     field_count,
+                    delegation_methods,
+                    override_count,
                     item_type: ItemType::Class,
                     ..Default::default()
                 };

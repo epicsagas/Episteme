@@ -6,9 +6,9 @@ use crate::ports::parser::CodeParser;
 
 use super::{
     cached_regex, calculate_cc_python, calculate_nesting_python, count_branches_python,
-    count_external_calls, count_keyword, count_method_call_chains, count_params,
-    count_primitive_params_python, count_python_loc, count_returns, line_number,
-    remove_hash_comments, strip_python_docstrings,
+    count_delegation_methods, count_external_calls, count_keyword, count_method_call_chains,
+    count_overrides, count_params, count_primitive_params_python, count_python_loc, count_returns,
+    line_number, remove_hash_comments, strip_python_docstrings,
 };
 
 pub struct PythonParser;
@@ -93,11 +93,15 @@ impl CodeParser for PythonParser {
 
             let method_count = python_method_re.find_iter(body).count();
             let field_count = count_keyword(body, r"self\.\w+\s*=");
+            let delegation_methods = count_delegation_methods(body);
+            let override_count = count_overrides(body);
 
             let metrics = CodeMetrics {
                 loc: count_python_loc(body),
                 method_count,
                 field_count,
+                delegation_methods,
+                override_count,
                 item_type: ItemType::Class,
                 ..Default::default()
             };

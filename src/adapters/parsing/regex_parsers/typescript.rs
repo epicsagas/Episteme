@@ -5,9 +5,9 @@ use crate::domain::metrics::{CodeMetrics, ItemType, SmellDetection};
 use crate::ports::parser::CodeParser;
 
 use super::{
-    build_func_metrics_full, cached_regex, calculate_cc, count_keyword, count_loc,
-    count_local_vars, count_primitive_params_typescript, find_matching_brace, line_number,
-    remove_block_comments, remove_line_comments,
+    build_func_metrics_full, cached_regex, calculate_cc, count_delegation_methods, count_keyword,
+    count_loc, count_local_vars, count_overrides, count_primitive_params_typescript,
+    find_matching_brace, line_number, remove_block_comments, remove_line_comments,
 };
 
 pub struct TypeScriptParser;
@@ -129,11 +129,15 @@ impl CodeParser for TypeScriptParser {
             let method_count = ts_method_re.find_iter(body).count();
             let field_count =
                 count_keyword(body, r"(?:public|private|protected|readonly)\s+\w+\s*[:=]");
+            let delegation_methods = count_delegation_methods(body);
+            let override_count = count_overrides(body);
 
             let metrics = CodeMetrics {
                 loc: count_loc(body),
                 method_count,
                 field_count,
+                delegation_methods,
+                override_count,
                 item_type: ItemType::Class,
                 ..Default::default()
             };

@@ -5,8 +5,9 @@ use crate::domain::metrics::{CodeMetrics, ItemType, SmellDetection};
 use crate::ports::parser::CodeParser;
 
 use super::{
-    cached_regex, count_external_calls, count_keyword, count_method_call_chains, count_params,
-    count_python_loc, count_returns, line_number, remove_hash_comments, remove_ruby_block_comments,
+    cached_regex, count_delegation_methods, count_external_calls, count_keyword,
+    count_method_call_chains, count_overrides, count_params, count_python_loc, count_returns,
+    line_number, remove_hash_comments, remove_ruby_block_comments,
 };
 
 pub struct RubyParser;
@@ -81,11 +82,15 @@ impl CodeParser for RubyParser {
 
             let method_count = ruby_method_re.find_iter(body).count();
             let field_count = count_keyword(body, r"@\w+");
+            let delegation_methods = count_delegation_methods(body);
+            let override_count = count_overrides(body);
 
             let metrics = CodeMetrics {
                 loc: count_python_loc(body),
                 method_count,
                 field_count,
+                delegation_methods,
+                override_count,
                 item_type: ItemType::Class,
                 ..Default::default()
             };

@@ -98,7 +98,7 @@ pub fn search_knowledge(
 
     // Fallback: keyword search over graph entities
     let etype = entity_types.first().map(|s| s.as_str());
-    let results = keyword_search(graph, &terms, etype, limit);
+    let results = keyword_search(graph, query, &terms, etype, limit);
 
     serde_json::json!({
         "results": results,
@@ -135,8 +135,10 @@ pub fn rag_results_to_json(
 /// Internal keyword search over graph entities.
 ///
 /// Scores entities by counting term matches across their text fields.
+/// Applies homonym demotion to filter out context-mismatched results.
 pub fn keyword_search(
     graph: &KnowledgeGraph,
+    query: &str,
     terms: &[&str],
     entity_type: Option<&str>,
     limit: usize,
@@ -197,6 +199,10 @@ pub fn keyword_search(
 
     results
         .into_iter()
+        .filter(|(id, _)| {
+            // Apply homonym demotion: skip entities that mismatch the query context
+            !crate::domain::problem_mapper::is_homonym_mismatch(query, id)
+        })
         .map(|(id, composite_score)| {
             let entity = batch.get(&id);
             // Recover the original total match count from the composite score.
