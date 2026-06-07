@@ -562,8 +562,14 @@ pub fn detect_lazy_class(
             ],
         ));
     }
-    // Class with almost no behavior but some structure
-    if metrics.loc < 10 && metrics.method_count <= 1 && metrics.field_count < 3 {
+    // Class with almost no behavior but some structure.
+    // Exclude data containers: a class with fields + a constructor/accessor
+    // is a legitimate value object, not a lazy class.
+    if metrics.loc < 10
+        && metrics.method_count <= 1
+        && metrics.field_count < 3
+        && !(metrics.field_count >= 1 && metrics.method_count == 1)
+    {
         return Some(build_detection(
             "SMELL-11",
             "Lazy Class",
@@ -1315,16 +1321,29 @@ mod tests {
     }
 
     #[test]
-    fn lazy_class_with_one_method_few_fields() {
+    fn lazy_class_with_one_method_no_fields() {
+        // A class with one method but no fields — still suspicious
+        let m = CodeMetrics {
+            loc: 9,
+            method_count: 1,
+            field_count: 0,
+            ..Default::default()
+        };
+        let d = detect_lazy_class(&m, "t.py:1", "Tiny").unwrap();
+        assert_eq!(d.smell_id, "SMELL-11");
+        assert!((d.confidence - 0.75).abs() < f64::EPSILON);
+    }
+
+    #[test]
+    fn lazy_class_one_method_with_fields_not_flagged() {
+        // A class with fields + one method is a value object, not lazy
         let m = CodeMetrics {
             loc: 9,
             method_count: 1,
             field_count: 2,
             ..Default::default()
         };
-        let d = detect_lazy_class(&m, "t.py:1", "Tiny").unwrap();
-        assert_eq!(d.smell_id, "SMELL-11");
-        assert!((d.confidence - 0.75).abs() < f64::EPSILON);
+        assert!(detect_lazy_class(&m, "t.py:1", "Tiny").is_none());
     }
 
     #[test]
