@@ -53,16 +53,14 @@ const SCHEMA_DDL: &str = "
     );
 
     CREATE TABLE IF NOT EXISTS relations (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
         source TEXT NOT NULL,
         target TEXT NOT NULL,
         relation_type TEXT NOT NULL,
-        metadata TEXT, -- reserved for future use (e.g. confidence scores, provenance)
+        PRIMARY KEY (source, target, relation_type),
         FOREIGN KEY (source) REFERENCES entities(name),
         FOREIGN KEY (target) REFERENCES entities(name)
     );
 
-    CREATE INDEX IF NOT EXISTS idx_relations_source ON relations(source);
     CREATE INDEX IF NOT EXISTS idx_relations_target ON relations(target);
 ";
 
@@ -251,19 +249,17 @@ pub fn get_embedding_count(conn: &Connection) -> Result<usize> {
 // Graph tables: entities + relations
 // ---------------------------------------------------------------------------
 
-/// Insert entities and relations from the knowledge graph into the DB.
+/// Upsert entities and their relations into the DB.
 ///
-/// Clears existing graph data first to allow idempotent rebuilds.
+/// Uses INSERT OR REPLACE so only the supplied entities are touched;
+/// existing entities not in the input are left unchanged. Relations for
+/// each upserted entity are replaced (delete-then-insert) to stay in sync.
 pub fn insert_graph(conn: &Connection, entities: &HashMap<String, Entity>) -> Result<()> {
     let tx = conn
         .unchecked_transaction()
         .map_err(|e| InfraError::Database(e.to_string()))?;
 
-    tx.execute("DELETE FROM relations", [])
-        .map_err(|e| InfraError::Database(e.to_string()))?;
-    tx.execute("DELETE FROM entities", [])
-        .map_err(|e| InfraError::Database(e.to_string()))?;
-
+    // Pass 1: upsert all entities first so FK targets exist.
     for (id, entity) in entities {
         // Normalize entity_type to the canonical lowercase form via the domain enum.
         let entity_type_str = EntityType::from_str(&entity.r#type)
@@ -296,13 +292,15 @@ pub fn insert_graph(conn: &Connection, entities: &HashMap<String, Entity>) -> Re
         .map_err(|e| InfraError::Database(e.to_string()))?;
     }
 
-    // Insert relations in a second pass so all target entities exist before
-    // the FK constraint on relations.target is checked.
+    // Pass 2: replace relations per entity.
     for (id, entity) in entities {
+        tx.execute("DELETE FROM relations WHERE source = ?1", params![id])
+            .map_err(|e| InfraError::Database(e.to_string()))?;
+
         for (rel_type, targets) in &entity.relations {
             for target in targets {
                 tx.execute(
-                    "INSERT INTO relations (source, target, relation_type, metadata) VALUES (?1, ?2, ?3, NULL)",
+                    "INSERT OR IGNORE INTO relations (source, target, relation_type) VALUES (?1, ?2, ?3)",
                     params![id, target, rel_type],
                 )
                 .map_err(|e| InfraError::Database(e.to_string()))?;
@@ -654,7 +652,7 @@ mod tests {
         )
         .expect("insert bogus");
         conn.execute(
-            "INSERT INTO relations (source, target, relation_type, metadata) VALUES ('RF-001', 'BOGUS-01', 'solves', NULL)",
+            "INSERT INTO relations (source, target, relation_type) VALUES ('RF-001', 'BOGUS-01', 'solves')",
             [],
         )
         .expect("insert relation to bogus");
