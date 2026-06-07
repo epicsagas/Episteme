@@ -346,19 +346,19 @@
     },
     {
       "query": "feature envy in consumer psychology",
-      "must_not_contain": ["SMELL-08"],
+      "must_not_contain": ["SMELL-18"],
       "category": "context_mismatch",
       "reason": "Consumer feature desire, not Feature Envy smell"
     },
     {
       "query": "data clumps in hair styling products",
-      "must_not_contain": ["SMELL-14"],
+      "must_not_contain": ["SMELL-05"],
       "category": "context_mismatch",
       "reason": "Hair product clumping, not Data Clumps smell"
     },
     {
       "query": "refused bequest in family disputes",
-      "must_not_contain": ["SMELL-09"],
+      "must_not_contain": ["SMELL-15"],
       "category": "context_mismatch",
       "reason": "Inheritance refusal in legal context, not Refused Bequest smell"
     },

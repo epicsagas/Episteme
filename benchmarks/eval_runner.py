@@ -29,13 +29,10 @@ import json
 import math
 import os
 import re
-import shutil
 import subprocess
-import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -76,7 +73,8 @@ def parse_json_output(output: str) -> dict | list | None:
 
     Strategy:
       1. Try full output as-is.
-      2. Scan for the last complete JSON object/array using brace/bracket matching.
+      2. Find the outermost JSON object/array by scanning for the first
+         opening brace/bracket and its matching closer.
     """
     stripped = output.strip()
     if not stripped:
@@ -88,28 +86,29 @@ def parse_json_output(output: str) -> dict | list | None:
     except json.JSONDecodeError:
         pass
 
-    # Find the last complete JSON object or array by scanning backwards
-    # for a closing brace/bracket, then finding its matching opener.
-    close_chars = {"}": "{", "]": "["}
-    for close_ch, open_ch in close_chars.items():
-        end = stripped.rfind(close_ch)
-        if end == -1:
+    # Find the outermost JSON structure: scan forward for the first { or [
+    # then match its closer. This avoids picking up inner nested objects.
+    open_chars = {"{": "}", "[": "]"}
+    for i, ch in enumerate(stripped):
+        if ch not in open_chars:
             continue
-        # Walk backwards to find the matching opener (respecting nesting)
+        open_ch = ch
+        close_ch = open_chars[ch]
+        # Walk forward to find the matching closer (respecting nesting)
         depth = 0
-        start = -1
-        for i in range(end, -1, -1):
-            ch = stripped[i]
-            if ch == close_ch:
+        end = -1
+        for j in range(i, len(stripped)):
+            c = stripped[j]
+            if c == open_ch:
                 depth += 1
-            elif ch == open_ch:
+            elif c == close_ch:
                 depth -= 1
                 if depth == 0:
-                    start = i
+                    end = j
                     break
-        if start == -1:
+        if end == -1:
             continue
-        candidate = stripped[start : end + 1]
+        candidate = stripped[i : end + 1]
         try:
             return json.loads(candidate)
         except json.JSONDecodeError:
@@ -755,7 +754,7 @@ def print_report(
     sp = suites.get("search_positive", {})
     if sp.get("status") == "ok":
         m = sp["metrics"]
-        print(f"\n  Search Positive (recall):")
+        print("\n  Search Positive (recall):")
         print(
             f"    hit@1:  {m['hit@1']:.4f}  hit@3: {m['hit@3']:.4f}  hit@5: {m['hit@5']:.4f}"
         )
@@ -765,7 +764,7 @@ def print_report(
     sn = suites.get("search_negative", {})
     if sn.get("status") == "ok":
         m = sn["metrics"]
-        print(f"\n  Search Negative (precision):")
+        print("\n  Search Negative (precision):")
         print(
             f"    FP@1:   {m['fp@1']:.4f}  FP@3: {m['fp@3']:.4f}  FP@5: {m['fp@5']:.4f}"
         )
@@ -777,17 +776,17 @@ def print_report(
     smn = suites.get("smell_negative", {})
     if smn.get("status") == "ok":
         m = smn["metrics"]
-        print(f"\n  Smell Negative Corpus:")
+        print("\n  Smell Negative Corpus:")
         print(
             f"    FP Rate:     {m['fp_rate']:.4f}  ({m['fp_count']}/{m['total']} files)"
         )
         print(f"    Specificity: {m['specificity']:.4f}")
         if m["per_detector"]:
-            print(f"    Per Detector FP:")
+            print("    Per Detector FP:")
             for sid, count in m["per_detector"].items():
                 print(f"      {sid}: {count}")
         if m["per_language"]:
-            print(f"    Per Language FP Rate:")
+            print("    Per Language FP Rate:")
             for lang, rate in m["per_language"].items():
                 print(f"      {lang}: {rate:.4f}")
 
@@ -795,10 +794,10 @@ def print_report(
     ap = suites.get("analyze_positive", {})
     if ap.get("status") == "ok":
         m = ap["metrics"]
-        print(f"\n  Analyze Positive:")
+        print("\n  Analyze Positive:")
         print(f"    Recall: {m['recall']:.4f}  ({m['hits']}/{m['total']} cases)")
         if m["per_smell_recall"]:
-            print(f"    Per Smell Recall:")
+            print("    Per Smell Recall:")
             for sid, r in m["per_smell_recall"].items():
                 print(f"      {sid}: {r:.4f}")
 
@@ -806,7 +805,7 @@ def print_report(
     tr = suites.get("traversal", {})
     if tr.get("status") == "ok":
         m = tr["metrics"]
-        print(f"\n  Traversal:")
+        print("\n  Traversal:")
         print(
             f"    Neighbors: {m['neighbors']['recall']:.4f} ({m['neighbors']['hits']}/{m['neighbors']['total']})"
         )
@@ -848,7 +847,7 @@ def main() -> int:
     )
     parser.add_argument("--bin", default=None, help="Path to epis binary")
     parser.add_argument("--top-k", type=int, default=5, help="Top-K for search")
-    parser.add_argument("--repeats", type=int, default=1, help="Repeats per query")
+    parser.add_argument("--repeats", type=int, default=3, help="Repeats per query")
     parser.add_argument(
         "--min-confidence",
         type=float,
@@ -945,12 +944,17 @@ def main() -> int:
     # Update latest pointer only for passing runs (used as regression baseline)
     if should_save_baseline:
         latest = out_dir / "latest.json"
+        tmp_latest = out_dir / "latest.json.tmp"
         try:
-            latest.unlink(missing_ok=True)
-            os.symlink(out_path.name, latest)
+            tmp_latest.write_text(
+                json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
+            tmp_latest.replace(latest)
         except OSError:
+            pass
+        finally:
             try:
-                shutil.copy2(out_path, latest)
+                tmp_latest.unlink(missing_ok=True)
             except OSError:
                 pass
 

@@ -13,6 +13,18 @@ on:
       - 'meta/**'
       - 'benchmarks/**'
   workflow_dispatch:
+    inputs:
+      suite:
+        description: "Eval suite to run"
+        required: false
+        default: "full"
+        type: choice
+        options:
+          - full
+          - search-negative
+          - smell-negative
+          - analyze-positive
+          - traversal
 
 jobs:
   eval:
@@ -30,14 +42,24 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Lint Python
+        run: |
+          pip install ruff
+          ruff check benchmarks/
+
       - name: Build
         run: cargo build
 
       - name: Test
         run: cargo test
 
-      - name: Run full evaluation
-        run: python3 benchmarks/eval_runner.py full --repeats 1
+      - name: Run evaluation (PR — quick suite)
+        if: github.event_name == 'pull_request'
+        run: python3 benchmarks/eval_runner.py smell-negative --repeats 3
+
+      - name: Run evaluation (full)
+        if: github.event_name != 'pull_request'
+        run: python3 benchmarks/eval_runner.py ${{ github.event.inputs.suite || 'full' }} --repeats 3
 
       - name: Upload results
         if: always()
