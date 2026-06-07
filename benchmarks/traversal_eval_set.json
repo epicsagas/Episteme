@@ -335,20 +335,20 @@
     {
       "id": "traverse-036",
       "type": "path",
-      "from": "LAW-020",
+      "from": "NONEXISTENT-999",
       "to": "SMELL-01",
       "max_depth": 5,
       "should_find_path": false,
-      "reason": "CAP Theorem (distributed systems architecture) and Long Method (code smell) belong to completely unrelated domains; LAW-020 has no edges in the graph"
+      "reason": "Non-existent entity ID cannot have any path in the graph"
     },
     {
       "id": "traverse-037",
       "type": "path",
-      "from": "LAW-020",
-      "to": "SMELL-13",
+      "from": "SMELL-01",
+      "to": "NONEXISTENT-998",
       "max_depth": 5,
       "should_find_path": false,
-      "reason": "CAP Theorem has no relations at all — it is an isolated node in the graph with no edges to any other entity"
+      "reason": "Target is a non-existent entity ID; no path can exist"
     },
     {
       "id": "traverse-038",

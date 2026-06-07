@@ -60,7 +60,9 @@ def bin_path(arg_bin: str | None) -> Path:
 
 
 def run_cli(args: list[str], timeout: int = 30) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(args, capture_output=True, text=True, check=False, timeout=timeout)
+    return subprocess.run(
+        args, capture_output=True, text=True, check=False, timeout=timeout
+    )
 
 
 def parse_entity_ids(output: str) -> list[str]:
@@ -72,19 +74,50 @@ def parse_entity_ids(output: str) -> list[str]:
 
 
 def parse_json_output(output: str) -> dict | list | None:
-    """Try to parse JSON from CLI output (may have non-JSON lines)."""
-    for line in reversed(output.splitlines()):
-        line = line.strip()
-        if line.startswith("{") or line.startswith("["):
-            try:
-                return json.loads(line)
-            except json.JSONDecodeError:
-                continue
-    # Try the whole output
-    try:
-        return json.loads(output)
-    except json.JSONDecodeError:
+    """Try to parse JSON from CLI output (may have non-JSON prefix/suffix lines).
+
+    Strategy:
+      1. Try full output as-is.
+      2. Scan for the last complete JSON object/array using brace/bracket matching.
+    """
+    stripped = output.strip()
+    if not stripped:
         return None
+
+    # Fast path: entire output is valid JSON
+    try:
+        return json.loads(stripped)
+    except json.JSONDecodeError:
+        pass
+
+    # Find the last complete JSON object or array by scanning backwards
+    # for a closing brace/bracket, then finding its matching opener.
+    close_chars = {"}": "{", "]": "["}
+    for close_ch, open_ch in close_chars.items():
+        end = stripped.rfind(close_ch)
+        if end == -1:
+            continue
+        # Walk backwards to find the matching opener (respecting nesting)
+        depth = 0
+        start = -1
+        for i in range(end, -1, -1):
+            ch = stripped[i]
+            if ch == close_ch:
+                depth += 1
+            elif ch == open_ch:
+                depth -= 1
+                if depth == 0:
+                    start = i
+                    break
+        if start == -1:
+            continue
+        candidate = stripped[start : end + 1]
+        try:
+            return json.loads(candidate)
+        except json.JSONDecodeError:
+            continue
+
+    return None
 
 
 def dedup(ids: list[str]) -> list[str]:
@@ -100,6 +133,7 @@ def dedup(ids: list[str]) -> list[str]:
 # ---------------------------------------------------------------------------
 # Search Positive (extends existing benchmark)
 # ---------------------------------------------------------------------------
+
 
 def eval_search_positive(epis: Path, top_k: int, repeats: int) -> dict:
     """Run positive search quality eval using existing search_eval_set.json."""
@@ -123,11 +157,26 @@ def eval_search_positive(epis: Path, top_k: int, repeats: int) -> dict:
     for q in queries:
         text = q["query"]
         relevant = set(q["relevant_ids"])
-        ids_last: list[str] = []
 
-        for _ in range(repeats):
+        # Run repeats and aggregate via positional vote counting.
+        # Each run contributes a vote for IDs at their rank position;
+        # final ranking is by total votes (ties broken by best rank seen).
+        vote_counter: dict[str, int] = {}
+        best_rank: dict[str, int] = {}
+
+        for _ in range(max(repeats, 1)):
             proc = run_cli([str(epis), "explore", text, "--limit", str(top_k)])
-            ids_last = dedup(parse_entity_ids(proc.stdout))
+            for rank, eid in enumerate(
+                dedup(parse_entity_ids(proc.stdout))[:top_k], start=1
+            ):
+                vote_counter[eid] = vote_counter.get(eid, 0) + 1
+                if eid not in best_rank or rank < best_rank[eid]:
+                    best_rank[eid] = rank
+
+        ids_last = sorted(
+            vote_counter.keys(),
+            key=lambda e: (-vote_counter[e], best_rank.get(e, top_k + 1)),
+        )
 
         q_hit1 = 1 if any(i in relevant for i in ids_last[:1]) else 0
         q_hit3 = 1 if any(i in relevant for i in ids_last[:3]) else 0
@@ -141,15 +190,17 @@ def eval_search_positive(epis: Path, top_k: int, repeats: int) -> dict:
         mrr_sum += q_rr
         ndcg_sum += q_ndcg
 
-        per_query.append({
-            "query": text,
-            "top_ids": ids_last[:top_k],
-            "hit@1": q_hit1,
-            "hit@3": q_hit3,
-            "hit@5": q_hit5,
-            "rr@5": round(q_rr, 6),
-            "ndcg@5": round(q_ndcg, 6),
-        })
+        per_query.append(
+            {
+                "query": text,
+                "top_ids": ids_last[:top_k],
+                "hit@1": q_hit1,
+                "hit@3": q_hit3,
+                "hit@5": q_hit5,
+                "rr@5": round(q_rr, 6),
+                "ndcg@5": round(q_ndcg, 6),
+            }
+        )
 
     n = len(queries)
     metrics = {
@@ -186,11 +237,15 @@ def _ndcg_at_k(ids: list[str], relevant: set[str], k: int) -> float:
 # Search Negative (new)
 # ---------------------------------------------------------------------------
 
+
 def eval_search_negative(epis: Path, top_k: int) -> dict:
     """Run negative search FP evaluation."""
     eval_path = repo_root() / "benchmarks" / "search_negative_eval_set.json"
     if not eval_path.exists():
-        return {"status": "skipped", "reason": "search_negative_eval_set.json not found"}
+        return {
+            "status": "skipped",
+            "reason": "search_negative_eval_set.json not found",
+        }
 
     data = json.loads(eval_path.read_text())
     queries = data.get("queries", [])
@@ -224,16 +279,18 @@ def eval_search_negative(epis: Path, top_k: int) -> dict:
 
         violations = [i for i in ids[:top_k] if i in must_not]
 
-        per_query.append({
-            "query": text,
-            "category": category,
-            "must_not_contain": sorted(must_not),
-            "top_ids": ids[:top_k],
-            "fp@1": fp1,
-            "fp@3": fp3,
-            "fp@5": fp5,
-            "violations": violations,
-        })
+        per_query.append(
+            {
+                "query": text,
+                "category": category,
+                "must_not_contain": sorted(must_not),
+                "top_ids": ids[:top_k],
+                "fp@1": fp1,
+                "fp@3": fp3,
+                "fp@5": fp5,
+                "violations": violations,
+            }
+        )
 
     n = len(queries)
     specificity = round(tn / n, 6) if n > 0 else 0.0
@@ -253,6 +310,7 @@ def eval_search_negative(epis: Path, top_k: int) -> dict:
 # Smell Negative Corpus
 # ---------------------------------------------------------------------------
 
+
 def eval_smell_negative(epis: Path, min_confidence: float) -> dict:
     """Run smell detection on clean code corpus. Should detect zero smells."""
     corpus_dir = repo_root() / "benchmarks" / "smell_negative_corpus"
@@ -267,8 +325,13 @@ def eval_smell_negative(epis: Path, min_confidence: float) -> dict:
     per_language_total: dict[str, int] = {}
 
     lang_map = {
-        ".rs": "rust", ".py": "python", ".ts": "typescript",
-        ".tsx": "typescript", ".go": "go", ".rb": "ruby", ".java": "java",
+        ".rs": "rust",
+        ".py": "python",
+        ".ts": "typescript",
+        ".tsx": "typescript",
+        ".go": "go",
+        ".rb": "ruby",
+        ".java": "java",
     }
 
     for entry in sorted(corpus_dir.iterdir()):
@@ -283,7 +346,14 @@ def eval_smell_negative(epis: Path, min_confidence: float) -> dict:
         per_language_total[lang] = per_language_total.get(lang, 0) + 1
 
         proc = run_cli(
-            [str(epis), "analyze", str(entry), "--json", "--min-confidence", str(min_confidence)],
+            [
+                str(epis),
+                "analyze",
+                str(entry),
+                "--json",
+                "--min-confidence",
+                str(min_confidence),
+            ],
             timeout=60,
         )
 
@@ -301,12 +371,14 @@ def eval_smell_negative(epis: Path, min_confidence: float) -> dict:
             fp_count += 1
             per_language_fp[lang] = per_language_fp.get(lang, 0) + 1
 
-        results.append({
-            "file": entry.name,
-            "language": lang,
-            "false_positive": is_fp,
-            "detected_smells": detected,
-        })
+        results.append(
+            {
+                "file": entry.name,
+                "language": lang,
+                "false_positive": is_fp,
+                "detected_smells": detected,
+            }
+        )
 
     fp_rate = round(fp_count / total, 6) if total > 0 else 0.0
     per_lang_rate = {}
@@ -330,6 +402,7 @@ def eval_smell_negative(epis: Path, min_confidence: float) -> dict:
 # ---------------------------------------------------------------------------
 # Analyze Positive
 # ---------------------------------------------------------------------------
+
 
 def eval_analyze_positive(epis: Path, min_confidence: float) -> dict:
     """Run positive code smell detection evaluation."""
@@ -358,8 +431,12 @@ def eval_analyze_positive(epis: Path, min_confidence: float) -> dict:
 
         # Write to temp file
         ext_map = {
-            "rust": ".rs", "python": ".py", "typescript": ".ts",
-            "go": ".go", "ruby": ".rb", "java": ".java",
+            "rust": ".rs",
+            "python": ".py",
+            "typescript": ".ts",
+            "go": ".go",
+            "ruby": ".rb",
+            "java": ".java",
         }
         ext = ext_map.get(lang, ".txt")
 
@@ -369,8 +446,16 @@ def eval_analyze_positive(epis: Path, min_confidence: float) -> dict:
 
         try:
             proc = run_cli(
-                [str(epis), "analyze", tmp_path, "--language", lang,
-                 "--json", "--min-confidence", str(min_confidence)],
+                [
+                    str(epis),
+                    "analyze",
+                    tmp_path,
+                    "--language",
+                    lang,
+                    "--json",
+                    "--min-confidence",
+                    str(min_confidence),
+                ],
                 timeout=30,
             )
 
@@ -387,7 +472,9 @@ def eval_analyze_positive(epis: Path, min_confidence: float) -> dict:
             false_negatives = expected - detected_ids
             false_positives = detected_ids - expected
 
-            case_hit = len(true_positives) == len(expected) and len(false_negatives) == 0
+            case_hit = (
+                len(true_positives) == len(expected) and len(false_negatives) == 0
+            )
             if case_hit:
                 hits += 1
             total += 1
@@ -400,16 +487,18 @@ def eval_analyze_positive(epis: Path, min_confidence: float) -> dict:
                 if sid in detected_ids:
                     per_smell_hits[sid]["detected"] += 1
 
-            results.append({
-                "id": case_id,
-                "language": lang,
-                "expected": sorted(expected),
-                "detected": sorted(detected_ids),
-                "true_positives": sorted(true_positives),
-                "false_negatives": sorted(false_negatives),
-                "false_positives": sorted(false_positives),
-                "hit": case_hit,
-            })
+            results.append(
+                {
+                    "id": case_id,
+                    "language": lang,
+                    "expected": sorted(expected),
+                    "detected": sorted(detected_ids),
+                    "true_positives": sorted(true_positives),
+                    "false_negatives": sorted(false_negatives),
+                    "false_positives": sorted(false_positives),
+                    "hit": case_hit,
+                }
+            )
         finally:
             os.unlink(tmp_path)
 
@@ -432,6 +521,7 @@ def eval_analyze_positive(epis: Path, min_confidence: float) -> dict:
 # ---------------------------------------------------------------------------
 # Traversal
 # ---------------------------------------------------------------------------
+
 
 def eval_traversal(epis: Path) -> dict:
     """Run graph traversal evaluation."""
@@ -470,16 +560,18 @@ def eval_traversal(epis: Path) -> dict:
                 neighbor_hits += 1
             neighbor_total += 1
 
-            results.append({
-                "id": case_id,
-                "type": "neighbors",
-                "entity_id": entity_id,
-                "expected": sorted(expected),
-                "found": sorted(found_ids),
-                "coverage": round(coverage, 6),
-                "count_ok": count_ok,
-                "hit": hit,
-            })
+            results.append(
+                {
+                    "id": case_id,
+                    "type": "neighbors",
+                    "entity_id": entity_id,
+                    "expected": sorted(expected),
+                    "found": sorted(found_ids),
+                    "coverage": round(coverage, 6),
+                    "count_ok": count_ok,
+                    "hit": hit,
+                }
+            )
 
         elif case_type == "path":
             from_id = case.get("from", "")
@@ -488,13 +580,22 @@ def eval_traversal(epis: Path) -> dict:
             should_find = case.get("should_find_path", True)
             expected_len = case.get("expected_path_length")
 
-            proc = run_cli([
-                str(epis), "graph", "path", from_id, to_id,
-                "--max-depth", str(max_depth),
-            ])
+            proc = run_cli(
+                [
+                    str(epis),
+                    "graph",
+                    "path",
+                    from_id,
+                    to_id,
+                    "--max-depth",
+                    str(max_depth),
+                ]
+            )
 
             output = proc.stdout
-            path_found = "→" in output or "->" in output or "Path found" in output.lower()
+            path_found = (
+                "→" in output or "->" in output or "Path found" in output.lower()
+            )
             path_ids = dedup(parse_entity_ids(output))
 
             if should_find:
@@ -509,22 +610,30 @@ def eval_traversal(epis: Path) -> dict:
                 path_hits += 1
             path_total += 1
 
-            results.append({
-                "id": case_id,
-                "type": "path",
-                "from": from_id,
-                "to": to_id,
-                "should_find_path": should_find,
-                "path_found": path_found,
-                "path_ids": path_ids,
-                "hit": hit,
-            })
+            results.append(
+                {
+                    "id": case_id,
+                    "type": "path",
+                    "from": from_id,
+                    "to": to_id,
+                    "should_find_path": should_find,
+                    "path_found": path_found,
+                    "path_ids": path_ids,
+                    "hit": hit,
+                }
+            )
 
-    neighbor_recall = round(neighbor_hits / neighbor_total, 6) if neighbor_total > 0 else 0.0
+    neighbor_recall = (
+        round(neighbor_hits / neighbor_total, 6) if neighbor_total > 0 else 0.0
+    )
     path_recall = round(path_hits / path_total, 6) if path_total > 0 else 0.0
 
     metrics = {
-        "neighbors": {"recall": neighbor_recall, "hits": neighbor_hits, "total": neighbor_total},
+        "neighbors": {
+            "recall": neighbor_recall,
+            "hits": neighbor_hits,
+            "total": neighbor_total,
+        },
         "paths": {"recall": path_recall, "hits": path_hits, "total": path_total},
     }
 
@@ -535,15 +644,28 @@ def eval_traversal(epis: Path) -> dict:
 # Composite Score & Regression
 # ---------------------------------------------------------------------------
 
+
 def compute_composite(
     search_positive: dict,
     search_negative: dict,
     smell_negative: dict,
 ) -> dict:
     """Compute composite quality score."""
-    recall = search_positive.get("metrics", {}).get("hit@5", 0.0) if search_positive.get("status") == "ok" else 0.0
-    precision = 1.0 - search_negative.get("metrics", {}).get("fp@5", 0.0) if search_negative.get("status") == "ok" else 0.0
-    specificity = smell_negative.get("metrics", {}).get("specificity", 0.0) if smell_negative.get("status") == "ok" else 0.0
+    recall = (
+        search_positive.get("metrics", {}).get("hit@5", 0.0)
+        if search_positive.get("status") == "ok"
+        else 0.0
+    )
+    precision = (
+        1.0 - search_negative.get("metrics", {}).get("fp@5", 0.0)
+        if search_negative.get("status") == "ok"
+        else 0.0
+    )
+    specificity = (
+        smell_negative.get("metrics", {}).get("specificity", 0.0)
+        if smell_negative.get("status") == "ok"
+        else 0.0
+    )
 
     composite = 0.4 * recall + 0.3 * precision + 0.3 * specificity
 
@@ -578,14 +700,18 @@ def check_regression(current: dict, prev_path: Path) -> dict:
         curr_val = current.get(metric, 0.0)
         m_delta = round(curr_val - prev_val, 6)
         if m_delta < -0.05:
-            regressions.append(f"{metric} dropped by {abs(m_delta):.4f} (threshold: 0.05)")
+            regressions.append(
+                f"{metric} dropped by {abs(m_delta):.4f} (threshold: 0.05)"
+            )
 
-    # Rank-1 FP check
+    # Historical rank-1 FP check (warn if previous run had rank-1 FP unresolved)
     search_neg = prev.get("suites", {}).get("search_negative", {})
     if search_neg.get("status") == "ok":
         for q in search_neg.get("per_query", []):
             if q.get("fp@1", 0) == 1:
-                regressions.append(f"must_not_contain entity at rank 1: '{q['query']}'")
+                regressions.append(
+                    f"[historical] must_not_contain entity at rank 1: '{q['query']}'"
+                )
                 break  # one is enough to flag
 
     status = "FAIL" if regressions else "PASS"
@@ -600,6 +726,7 @@ def check_regression(current: dict, prev_path: Path) -> dict:
 # ---------------------------------------------------------------------------
 # Report
 # ---------------------------------------------------------------------------
+
 
 def print_report(
     composite: dict,
@@ -621,7 +748,9 @@ def print_report(
     if sp.get("status") == "ok":
         m = sp["metrics"]
         print(f"\n  Search Positive (recall):")
-        print(f"    hit@1:  {m['hit@1']:.4f}  hit@3: {m['hit@3']:.4f}  hit@5: {m['hit@5']:.4f}")
+        print(
+            f"    hit@1:  {m['hit@1']:.4f}  hit@3: {m['hit@3']:.4f}  hit@5: {m['hit@5']:.4f}"
+        )
         print(f"    MRR@5:  {m['mrr@5']:.4f}  NDCG@5: {m['ndcg@5']:.4f}")
 
     # Search negative
@@ -629,15 +758,21 @@ def print_report(
     if sn.get("status") == "ok":
         m = sn["metrics"]
         print(f"\n  Search Negative (precision):")
-        print(f"    FP@1:   {m['fp@1']:.4f}  FP@3: {m['fp@3']:.4f}  FP@5: {m['fp@5']:.4f}")
-        print(f"    Specificity: {m['specificity']:.4f}  ({m['true_negatives']}/{m['total']} clean)")
+        print(
+            f"    FP@1:   {m['fp@1']:.4f}  FP@3: {m['fp@3']:.4f}  FP@5: {m['fp@5']:.4f}"
+        )
+        print(
+            f"    Specificity: {m['specificity']:.4f}  ({m['true_negatives']}/{m['total']} clean)"
+        )
 
     # Smell negative
     smn = suites.get("smell_negative", {})
     if smn.get("status") == "ok":
         m = smn["metrics"]
         print(f"\n  Smell Negative Corpus:")
-        print(f"    FP Rate:     {m['fp_rate']:.4f}  ({m['fp_count']}/{m['total']} files)")
+        print(
+            f"    FP Rate:     {m['fp_rate']:.4f}  ({m['fp_count']}/{m['total']} files)"
+        )
         print(f"    Specificity: {m['specificity']:.4f}")
         if m["per_detector"]:
             print(f"    Per Detector FP:")
@@ -664,8 +799,12 @@ def print_report(
     if tr.get("status") == "ok":
         m = tr["metrics"]
         print(f"\n  Traversal:")
-        print(f"    Neighbors: {m['neighbors']['recall']:.4f} ({m['neighbors']['hits']}/{m['neighbors']['total']})")
-        print(f"    Paths:     {m['paths']['recall']:.4f} ({m['paths']['hits']}/{m['paths']['total']})")
+        print(
+            f"    Neighbors: {m['neighbors']['recall']:.4f} ({m['neighbors']['hits']}/{m['neighbors']['total']})"
+        )
+        print(
+            f"    Paths:     {m['paths']['recall']:.4f} ({m['paths']['hits']}/{m['paths']['total']})"
+        )
 
     # Regression
     if regression:
@@ -682,14 +821,19 @@ def print_report(
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Episteme batch evaluation runner"
-    )
+    parser = argparse.ArgumentParser(description="Episteme batch evaluation runner")
     parser.add_argument(
         "suite",
-        choices=["full", "search-positive", "search-negative",
-                 "smell-negative", "analyze-positive", "traversal"],
+        choices=[
+            "full",
+            "search-positive",
+            "search-negative",
+            "smell-negative",
+            "analyze-positive",
+            "traversal",
+        ],
         default="full",
         nargs="?",
         help="Evaluation suite to run (default: full)",
@@ -697,8 +841,15 @@ def main() -> int:
     parser.add_argument("--bin", default=None, help="Path to epis binary")
     parser.add_argument("--top-k", type=int, default=5, help="Top-K for search")
     parser.add_argument("--repeats", type=int, default=1, help="Repeats per query")
-    parser.add_argument("--min-confidence", type=float, default=0.5, help="Min confidence for smell detection")
-    parser.add_argument("--compare", default="", help="Previous eval result to compare against")
+    parser.add_argument(
+        "--min-confidence",
+        type=float,
+        default=0.5,
+        help="Min confidence for smell detection",
+    )
+    parser.add_argument(
+        "--compare", default="", help="Previous eval result to compare against"
+    )
     parser.add_argument("--output", default="", help="Output JSON path")
     args = parser.parse_args()
 
@@ -736,8 +887,14 @@ def main() -> int:
     )
 
     # Regression check
-    prev_path = Path(args.compare) if args.compare else repo_root() / "benchmarks" / "results" / "latest.json"
-    regression = check_regression(composite, prev_path) if args.suite == "full" else None
+    prev_path = (
+        Path(args.compare)
+        if args.compare
+        else repo_root() / "benchmarks" / "results" / "latest.json"
+    )
+    regression = (
+        check_regression(composite, prev_path) if args.suite == "full" else None
+    )
 
     # Build report
     report = {
@@ -760,15 +917,23 @@ def main() -> int:
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         out_path = out_dir / f"eval_{ts}.json"
 
-    out_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    out_path.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
-    # Update latest symlink
+    # Update latest pointer (symlink on Unix, copy on Windows)
     latest = out_dir / "latest.json"
     try:
         latest.unlink(missing_ok=True)
         os.symlink(out_path.name, latest)
     except OSError:
-        pass
+        # Windows may not support symlinks without privileges; fall back to copy
+        try:
+            import shutil
+
+            shutil.copy2(out_path, latest)
+        except OSError:
+            pass
 
     # Print report
     print_report(composite, suites, regression)
@@ -779,12 +944,15 @@ def main() -> int:
         print("\n❌ REGRESSION DETECTED — evaluation failed")
         return 1
 
-    # Check for rank-1 FP in search negative
+    # Hard fail: any rank-1 FP in current run is an immediate failure
+    # (unlike check_regression which compares against previous run)
     sn = suites.get("search_negative", {})
     if sn.get("status") == "ok":
         for q in sn.get("per_query", []):
             if q.get("fp@1") == 1:
-                print(f"\n❌ CRITICAL: must_not_contain entity at rank 1 for query: '{q['query']}'")
+                print(
+                    f"\n❌ CRITICAL: must_not_contain entity at rank 1 for query: '{q['query']}'"
+                )
                 return 1
 
     print("\n✅ Evaluation passed")
@@ -795,7 +963,9 @@ def _git_commit() -> str:
     try:
         proc = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
-            capture_output=True, text=True, check=False,
+            capture_output=True,
+            text=True,
+            check=False,
             cwd=str(repo_root()),
         )
         return proc.stdout.strip() or "unknown"
