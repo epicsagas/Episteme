@@ -374,6 +374,9 @@ pub fn detect_switch_statements(
 // Pure data structs (method_count == 0) use lower confidence 0.60 to avoid
 // flagging legitimate Rust/Go data containers; this falls below the default
 // --min-confidence 0.65 and is effectively filtered out in practice.
+// COUPLING NOTE: confidence 0.60 is above the server/API default (0.50) so it
+// will appear in API results, but below the CLI default (0.65) and audit high
+// tier (0.70). Changing either default would change SMELL-07's behavior.
 
 pub fn detect_data_class(
     metrics: &CodeMetrics,
@@ -528,6 +531,7 @@ pub fn detect_divergent_change(
 
 // -- SMELL-11  Lazy Class ---------------------------------------------------
 // LOC < 8 AND methods == 0 AND fields == 0 -> 0.80 (truly empty, no data or behavior)
+// LOC < 10 AND methods <= 1 AND fields < 3 -> 0.75 (nearly empty class)
 // Data structs (Class/Struct with >= 2 fields and no methods) are NOT flagged --
 // they are legitimate data containers common in Rust/Go.
 
@@ -555,6 +559,24 @@ pub fn detect_lazy_class(
             vec![
                 format!("LOC={} is very small", metrics.loc),
                 "No methods or fields, minimal functionality".into(),
+            ],
+        ));
+    }
+    // Class with almost no behavior but some structure
+    if metrics.loc < 10 && metrics.method_count <= 1 && metrics.field_count < 3 {
+        return Some(build_detection(
+            "SMELL-11",
+            "Lazy Class",
+            0.75,
+            location,
+            name,
+            metrics,
+            vec![
+                format!("LOC={} is very small", metrics.loc),
+                format!(
+                    "Method count={}, minimal functionality",
+                    metrics.method_count
+                ),
             ],
         ));
     }
@@ -869,8 +891,8 @@ pub fn detect_comments(
     let mut a = TieredAccum::new();
     a.tier(
         metrics.comment_count,
-        metrics.loc, // > 100% comment lines (more comments than code)
-        0.65,
+        (metrics.loc as f64 * 0.75) as usize, // > 75% comment lines
+        0.55,
         format!(
             "Comment density {:.0}% is very high ({} comment lines / {} LOC)",
             comment_ratio * 100.0,
@@ -1294,14 +1316,15 @@ mod tests {
 
     #[test]
     fn lazy_class_with_one_method_few_fields() {
-        // Simplified detector only fires for truly empty classes (no methods, no fields)
         let m = CodeMetrics {
             loc: 9,
             method_count: 1,
             field_count: 2,
             ..Default::default()
         };
-        assert!(detect_lazy_class(&m, "t.py:1", "Tiny").is_none());
+        let d = detect_lazy_class(&m, "t.py:1", "Tiny").unwrap();
+        assert_eq!(d.smell_id, "SMELL-11");
+        assert!((d.confidence - 0.75).abs() < f64::EPSILON);
     }
 
     #[test]

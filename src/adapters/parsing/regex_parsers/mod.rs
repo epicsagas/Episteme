@@ -269,6 +269,12 @@ pub(crate) fn count_external_calls(body: &str) -> usize {
 /// Avoids double-counting `else if` (counted once, not as `else if` + `if`).
 /// Rust `match` arms are counted via `=>` arrows rather than the `match` keyword,
 /// so a 12-arm match correctly produces branch_count=12.
+///
+/// NOTE: `=>` also appears in closures (JS/TS arrow functions), type aliases, and
+/// trait bounds, but those contexts are handled by language-specific `calculate_cc_*`
+/// variants rather than this base function.  The primary consumer of `=>` counting
+/// here is Rust code parsed via the regex path, where `=>` unambiguously denotes
+/// match arms.
 pub(crate) fn count_branches(body: &str) -> usize {
     let else_if = count_keyword(body, r"\belse\s+if\b");
     let standalone_if = count_keyword(body, r"\bif\b").saturating_sub(else_if);
@@ -303,8 +309,14 @@ pub(crate) fn count_method_call_chains(body: &str) -> usize {
     } else {
         0
     };
-    // Also check property chains: .prop.prop.prop (no parens, common in Ruby)
-    // Use gap=0 since chained property access has no space between segments
+    // Also check property chains: .prop.prop.prop (no parens, common in Ruby/JS)
+    // Use gap=0 since chained property access has no space between segments.
+    // NOTE: `\.\w+` matches ALL dot-accessor patterns including method calls.
+    // The gap=0 constraint prevents FPs because non-chained accesses (e.g.
+    // `obj.method(other.access())`) have gaps > 0 between matches.  Consecutive
+    // field initializers like `self.a = 1; self.b = 2;` could theoretically
+    // produce gap=0 false chains if on the same line, but message chain detection
+    // requires depth > 3 which limits the impact.
     let prop_re = cached_regex(r"\.\w+");
     let prop_matches: Vec<_> = prop_re.find_iter(body).collect();
     let prop_chain = if prop_matches.len() > 1 {
@@ -328,23 +340,26 @@ pub(crate) fn count_method_call_chains(body: &str) -> usize {
 
 /// Count delegation methods: methods whose body is primarily forwarding calls
 /// to another object (e.g., `self.delegate.method()` or `other.method()`).
-/// Heuristic: count lines that match `identifier.identifier(args)` where the
-/// result is returned directly.
+/// Matches complete delegation statements: `return obj.method(args);` or
+/// `self.delegate.handle(event);` — requires the call to end with `;` to
+/// avoid counting partial expressions or multi-statement lines.
 pub(crate) fn count_delegation_methods(body: &str) -> usize {
-    // Match patterns like `self.x.method(...)`, `this.client.get(...)`,
-    // `@service.send(...)`, or simple `obj.method(...)`.
-    let re = cached_regex(r"(?m)^\s*(return\s+)?[@\w]+(\.\w+)+\s*\(");
+    // Match complete forwarding statements like:
+    //   return self.x.method(args);
+    //   this.client.get(id);
+    //   @service.send(msg);
+    let re = cached_regex(r"(?m)^\s*(return\s+)?[@\w]+(\.\w+)+\s*\([^)]*\)\s*;");
     re.find_iter(body).count()
 }
 
 /// Count method overrides in a class body.
-/// Detects `@Override` (Java/TypeScript), `override` keyword (Rust/C#),
-/// and `super()` calls (Python/Ruby) as indicators.
+/// Detects `@Override` (Java/TypeScript) and `super()` calls (Python/Ruby).
+/// NOTE: Rust has no `override` keyword — trait impl methods are detected via
+/// `impl Trait for Type` in the Python AST parser's `override_count` field instead.
 pub(crate) fn count_overrides(body: &str) -> usize {
-    let java_ts = count_keyword(body, r"@override");
-    let rust = count_keyword(body, r"\boverride\s+fn\b");
+    let java_ts = count_keyword(body, r"(?i)@override");
     let py_rb = count_keyword(body, r"\bsuper\(\)");
-    java_ts + rust + py_rb
+    java_ts + py_rb
 }
 
 /// Line number for a byte offset (1-based).

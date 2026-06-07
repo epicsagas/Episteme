@@ -1,5 +1,6 @@
 use regex::Regex;
 use serde::Serialize;
+use std::collections::HashMap;
 use std::sync::LazyLock;
 
 // ---------------------------------------------------------------------------
@@ -325,6 +326,11 @@ static HOMONYM_CONTEXTS: &[(&str, &[&str])] = &[
     ("SMELL-20", &["queue", "latency"]),
 ];
 
+/// Pre-built HashMap for O(1) entity lookup in homonym mismatch detection.
+/// Derived from `HOMONYM_CONTEXTS` at first use.
+static HOMONYM_MAP: LazyLock<HashMap<&str, &[&str]>> =
+    LazyLock::new(|| HOMONYM_CONTEXTS.iter().copied().collect());
+
 /// Check whether the query's context conflicts with the given entity.
 ///
 /// Returns `true` when:
@@ -343,14 +349,13 @@ pub fn is_homonym_mismatch(query: &str, entity_id: &str) -> bool {
         return false;
     }
 
-    for (eid, signals) in HOMONYM_CONTEXTS {
-        if *eid == entity_id {
-            for signal in *signals {
-                if query_lower.contains(signal) {
-                    return true;
-                }
-            }
-            return false;
+    // O(1) HashMap lookup instead of linear scan over HOMONYM_CONTEXTS
+    let Some(signals) = HOMONYM_MAP.get(entity_id) else {
+        return false;
+    };
+    for signal in *signals {
+        if query_lower.contains(signal) {
+            return true;
         }
     }
     false
