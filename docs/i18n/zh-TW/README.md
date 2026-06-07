@@ -426,6 +426,7 @@ episteme dist --out-dir release/
 | [Alcove 整合指南](./alcove-integration.md) | 雙上下文工作流程、設定、最佳實務 |
 | [API 參考](./api.md) | REST 端點、身份驗證、範例 |
 | [發行](./distribution.md) | 發行打包與部署 |
+| [評估系統](../evaluation.md) | 搜尋品質基準、FP 降低、綜合評分 |
 | [開發與貢獻](./DEVELOPMENT.md) | 架構說明、如何貢獻 |
 | [更新日誌](./CHANGELOG.md) | 版本歷史與版本說明 |
 
@@ -615,7 +616,12 @@ cargo clippy -- -D warnings
 
 # 格式化
 cargo fmt
+
+# 執行評估套件（測量搜尋品質、程式碼異味偵測準確度、圖遍歷）
+python3 benchmarks/eval_runner.py full
 ```
+
+詳見[評估系統](../evaluation.md)文件。
 
 有任何問題？[開啟討論](https://github.com/epicsagas/Episteme/discussions) 或 [提交問題](https://github.com/epicsagas/Episteme/issues)。
 

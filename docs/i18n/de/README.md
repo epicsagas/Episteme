@@ -426,6 +426,7 @@ episteme dist --out-dir release/
 | [Alcove-Integrationsleitfaden](./alcove-integration.md) | Dual-Context-Workflows, Einrichtung, Best Practices |
 | [API-Referenz](./api.md) | REST-Endpunkte, Authentifizierung, Beispiele |
 | [Distribution](./distribution.md) | Release-Paketierung und Bereitstellung |
+| [Evaluierungssystem](../evaluation.md) | Suchqualitaets-Benchmarks, FP-Reduktion, Composite-Score |
 | [Entwicklung & Mitwirken](./DEVELOPMENT.md) | Architektur, wie man beitraegt |
 | [Aenderungsprotokoll](./CHANGELOG.md) | Release-Historie und Versionshinweise |
 
@@ -615,7 +616,12 @@ cargo clippy -- -D warnings
 
 # Formatieren
 cargo fmt
+
+# Evaluationssuite ausfuhren (Suchqualitat, Smell-Detektion, Graph-Traversierung)
+python3 benchmarks/eval_runner.py full
 ```
+
+Siehe [Evaluierungssystem](../evaluation.md) fur Details.
 
 Fragen? [Diskussion eroeffnen](https://github.com/epicsagas/Episteme/discussions) oder [Issue melden](https://github.com/epicsagas/Episteme/issues).
 

@@ -449,6 +449,7 @@ episteme dist --out-dir release/
 | [Alcove Ecosystem Comparison](docs/alcove-ecosystem.md) | Storage models, search capabilities, use-case matrix |
 | [Alcove Integration Guide](docs/alcove-integration.md) | Dual-context workflows, setup, best practices |
 | [API Reference](docs/api.md) | REST endpoints, authentication, examples |
+| [Evaluation System](docs/evaluation.md) | Search quality benchmarks, FP reduction, composite scoring |
 | [Distribution](docs/distribution.md) | Release packaging and deployment |
 | [Development & Contributing](DEVELOPMENT.md) | Architecture, how to contribute |
 | [Changelog](CHANGELOG.md) | Release history and version notes |
@@ -644,7 +645,12 @@ cargo clippy -- -D warnings
 
 # Format
 cargo fmt
+
+# Run evaluation suite (measures search quality, smell detection accuracy, graph traversal)
+python3 benchmarks/eval_runner.py full
 ```
+
+See [Evaluation System](docs/evaluation.md) for details on the 6 eval suites, composite scoring, and regression detection.
 
 Questions? [Open a discussion](https://github.com/epicsagas/Episteme/discussions) or [file an issue](https://github.com/epicsagas/Episteme/issues).
 

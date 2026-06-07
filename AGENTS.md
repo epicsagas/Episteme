@@ -49,6 +49,17 @@ fn detect_long_method(metrics: &CodeMetrics, loc: &str, name: &str) -> Option<Sm
 }
 ```
 
+## Evaluation
+- Runner: `python3 benchmarks/eval_runner.py full` (requires Python ≥ 3.12, `cargo build` first)
+- Suites: `search-positive`, `search-negative`, `smell-negative`, `analyze-positive`, `traversal`, `full`
+- Composite: `0.3*recall + 0.3*precision + 0.2*specificity + 0.2*smell_recall`
+- Regression: fails if composite drops ≥ 0.02 or any metric drops ≥ 0.05
+- CI: `.github/workflows/eval.yml` runs on PRs touching `src/`, `meta/`, `benchmarks/`
+- Test sets: `benchmarks/{search_eval_set,search_negative_eval_set,analyze_eval_set,traversal_eval_set}.json` + `smell_negative_corpus/`
+- Dashboard: `benchmarks/dashboard/` (Svelte 5, `npm run dev`)
+- Docs: `docs/evaluation.md`
+- Unit tests: `python3 -m pytest benchmarks/test_eval_runner.py`
+
 ## Testing
 - Framework: Built-in `#[test]` + `proptest` | Run all: `cargo test` | Coverage: N/A
 - File naming: Inline `mod tests` within each source file
@@ -62,12 +73,14 @@ fn detect_long_method(metrics: &CodeMetrics, loc: &str, name: &str) -> Option<Sm
 
 ## Boundaries
 - Always: Run `cargo clippy -- -D warnings` and `cargo test` before committing changes
+- Always: Run `python3 benchmarks/eval_runner.py full` before merging changes to `src/` or `meta/` — check for regression
 - Always: Keep `domain/` free of external crate dependencies (no thiserror, no serde in graph.rs)
 - Always: Implement new parsers via the `CodeParser` trait in `ports/parser.rs`
 - Always: Use `OnceLock<Regex>` for regex caching — never compile patterns in hot loops
 - Always: Add `#[cfg(test)] mod tests` at the bottom of the file you modified
 - Always: Use entity IDs (`DP-xxx`, `RF-xxx`, `LAW-xxx`, `SMELL-xxx`) when referencing knowledge graph entries
 - Ask first: Adding new dependencies to `Cargo.toml`
+- Ask first: Adding new test cases to eval sets — must follow existing schema and naming conventions
 - Ask first: Changing `ports/` trait signatures (affects all adapters)
 - Ask first: Modifying `meta/relations.json` — `solved_by` must NOT be stored (derived at load time from `solves`); `meta/schema.json` (knowledge graph schema)
 - Never: Import adapter types from `domain/` — depend on port traits instead
@@ -75,3 +88,4 @@ fn detect_long_method(metrics: &CodeMetrics, loc: &str, name: &str) -> Option<Sm
 - Never: Use `#[allow(...)]` to suppress warnings — fix the root cause; use `#[expect(...)]` only with a tracking issue comment
 - Never: Modify `dist/` or `db/` directly — use `episteme dist` and `episteme build` commands
 - Never: Commit `target/` or `.env` files
+- Never: Delete or modify eval test sets (`benchmarks/*_eval_set.json`, `smell_negative_corpus/`) without running `eval_runner.py full` before and after

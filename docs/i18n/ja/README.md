@@ -424,6 +424,7 @@ episteme dist --out-dir release/
 | [Alcove統合ガイド](./alcove-integration.md) | デュアルコンテキストのワークフロー、セットアップ、ベストプラクティス |
 | [APIリファレンス](./api.md) | RESTエンドポイント、認証、使用例 |
 | [配布](./distribution.md) | リリースパッケージングとデプロイメント |
+| [評価システム](../evaluation.md) | 検索品質ベンチマーク、FP削減、複合スコア |
 | [開発とコントリビューション](./DEVELOPMENT.md) | アーキテクチャ、コントリビューション方法 |
 | [変更履歴](./CHANGELOG.md) | リリース履歴とバージョンノート |
 
@@ -613,7 +614,12 @@ cargo clippy -- -D warnings
 
 # フォーマット
 cargo fmt
+
+# 評価スイートの実行（検索品質、コードスメル検出精度、グラフトラバーサルを測定）
+python3 benchmarks/eval_runner.py full
 ```
+
+詳細は[評価システム](../evaluation.md)を参照してください。
 
 質問がありますか？[ディスカッションを開く](https://github.com/epicsagas/Episteme/discussions)か[イシューを提出](https://github.com/epicsagas/Episteme/issues)してください。
 

@@ -424,6 +424,7 @@ episteme dist --out-dir release/
 | [Alcove एकीकरण गाइड](./alcove-integration.md) | डुअल-कॉन्टेक्स्ट वर्कफ़्लो, सेटअप, सर्वोत्तम अभ्यास |
 | [API संदर्भ](./api.md) | REST एंडपॉइंट्स, प्रमाणीकरण, उदाहरण |
 | [वितरण](./distribution.md) | रिलीज़ पैकेजिंग और परिनियोजन |
+| [मूल्यांकन प्रणाली](../evaluation.md) | खोज गुणवत्ता बेंचमार्क, FP में कमी, कंपोजिट स्कोरिंग |
 | [विकास और योगदान](./DEVELOPMENT.md) | आर्किटेक्चर, योगदान कैसे करें |
 | [बदलाव सूची](./CHANGELOG.md) | रिलीज़ इतिहास और संस्करण नोट्स |
 
@@ -613,7 +614,12 @@ cargo clippy -- -D warnings
 
 # फ़ॉर्मेट
 cargo fmt
+
+# मूल्यांकन सूट चलाएँ (खोज गुणवत्ता, स्मेल पहचान सटीकता, ग्राफ ट्रैवर्सल मापें)
+python3 benchmarks/eval_runner.py full
 ```
+
+विवरण के लिए [मूल्यांकन प्रणाली](../evaluation.md) देखें।
 
 प्रश्न हैं? [एक चर्चा खोलें](https://github.com/epicsagas/Episteme/discussions) या [एक इश्यू दर्ज करें](https://github.com/epicsagas/Episteme/issues)।
 

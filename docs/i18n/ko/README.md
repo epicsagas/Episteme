@@ -424,6 +424,7 @@ episteme dist --out-dir release/
 | [Alcove 통합 가이드](./alcove-integration.md) | 이중 컨텍스트 워크플로, 설정, 모범 사례 |
 | [API 참조](./api.md) | REST 엔드포인트, 인증, 예시 |
 | [배포](./distribution.md) | 릴리스 패키징 및 배포 |
+| [평가 시스템](../evaluation.md) | 검색 품질 벤치마크, FP 감소, 복합 점수 |
 | [개발 및 기여](./DEVELOPMENT.md) | 아키텍처, 기여 방법 |
 | [변경 이력](./CHANGELOG.md) | 릴리스 이력 및 버전 정보 |
 
@@ -613,7 +614,12 @@ cargo clippy -- -D warnings
 
 # 포맷
 cargo fmt
+
+# 평가 스위트 실행 (검색 품질, 스멜 탐지 정확도, 그래프 탐색 측정)
+python3 benchmarks/eval_runner.py full
 ```
+
+자세한 내용은 [평가 시스템](../evaluation.md) 문서를 참조하세요.
 
 질문이 있으신가요? [디스커션 열기](https://github.com/epicsagas/Episteme/discussions) 또는 [이슈 등록](https://github.com/epicsagas/Episteme/issues).
 
