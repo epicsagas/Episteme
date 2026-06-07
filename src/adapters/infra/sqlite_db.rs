@@ -53,7 +53,9 @@ const SCHEMA_DDL: &str = "
         source TEXT NOT NULL,
         target TEXT NOT NULL,
         relation_type TEXT NOT NULL,
-        metadata TEXT
+        metadata TEXT,
+        FOREIGN KEY (source) REFERENCES entities(name),
+        FOREIGN KEY (target) REFERENCES entities(name)
     );
 
     CREATE INDEX IF NOT EXISTS idx_relations_source ON relations(source);
@@ -245,14 +247,6 @@ pub fn get_embedding_count(conn: &Connection) -> Result<usize> {
 // Graph tables: entities + relations
 // ---------------------------------------------------------------------------
 
-/// Check whether graph data exists in the DB (entities table has rows).
-pub fn has_graph_data(conn: &Connection) -> Result<bool> {
-    let count: i64 = conn
-        .query_row("SELECT COUNT(*) FROM entities", [], |row| row.get(0))
-        .map_err(|e| InfraError::Database(e.to_string()))?;
-    Ok(count > 0)
-}
-
 /// Insert entities and relations from the knowledge graph into the DB.
 ///
 /// Clears existing graph data first to allow idempotent rebuilds.
@@ -273,6 +267,7 @@ pub fn insert_graph(
         let tags_json = serde_json::to_string(&entity.tags).unwrap_or_else(|_| "[]".to_owned());
         let attrs = serde_json::json!({
             "name": entity.name,
+            "title": entity.title,
             "context": entity.context,
             "source": entity.source,
         });
@@ -347,7 +342,11 @@ pub fn load_graph_from_db(
             let entity = crate::domain::types::Entity {
                 id: name.clone(),
                 r#type: entity_type,
-                title: String::new(),
+                title: attrs
+                    .get("title")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_owned(),
                 description,
                 name: attrs
                     .get("name")

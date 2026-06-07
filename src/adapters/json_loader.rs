@@ -16,15 +16,27 @@ const ENTITY_PREFIXES: &[&str] = &["DP-", "RF-", "LAW-", "SMELL-"];
 pub fn load_graph(data_dir: &Path) -> Result<KnowledgeGraph> {
     // Try DB-first path.
     let db_path = paths::db_path();
-    if db_path.exists()
-        && let Ok(conn) = rusqlite::Connection::open_with_flags(
+    if db_path.exists() {
+        match rusqlite::Connection::open_with_flags(
             &db_path,
             rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY,
-        )
-        && let Ok(Some(entities)) = sqlite_db::load_graph_from_db(&conn)
-    {
-        tracing::info!(entities = entities.len(), "loaded knowledge graph from DB");
-        return Ok(KnowledgeGraph::from_entities(entities));
+        ) {
+            Ok(conn) => match sqlite_db::load_graph_from_db(&conn) {
+                Ok(Some(entities)) => {
+                    tracing::info!(entities = entities.len(), "loaded knowledge graph from DB");
+                    return Ok(KnowledgeGraph::from_entities(entities));
+                }
+                Ok(None) => {
+                    tracing::debug!("DB has no graph data, falling back to JSON");
+                }
+                Err(e) => {
+                    tracing::debug!(error = %e, "DB graph load failed, falling back to JSON");
+                }
+            },
+            Err(e) => {
+                tracing::debug!(error = %e, "DB open failed, falling back to JSON");
+            }
+        }
     }
 
     // Fallback: load from JSON + raw/.
