@@ -1,7 +1,10 @@
-use rusqlite::{Connection, params};
+use std::collections::HashMap;
 use std::str::FromStr;
 
+use rusqlite::{Connection, params};
+
 use crate::adapters::error::{InfraError, Result};
+use crate::domain::types::{Entity, EntityType};
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -251,10 +254,7 @@ pub fn get_embedding_count(conn: &Connection) -> Result<usize> {
 /// Insert entities and relations from the knowledge graph into the DB.
 ///
 /// Clears existing graph data first to allow idempotent rebuilds.
-pub fn insert_graph(
-    conn: &Connection,
-    entities: &std::collections::HashMap<String, crate::domain::types::Entity>,
-) -> Result<()> {
+pub fn insert_graph(conn: &Connection, entities: &HashMap<String, Entity>) -> Result<()> {
     let tx = conn
         .unchecked_transaction()
         .map_err(|e| InfraError::Database(e.to_string()))?;
@@ -265,19 +265,19 @@ pub fn insert_graph(
         .map_err(|e| InfraError::Database(e.to_string()))?;
 
     for (id, entity) in entities {
+        // Normalize entity_type to the canonical lowercase form via the domain enum.
+        let entity_type_str = EntityType::from_str(&entity.r#type)
+            .map(|et| et.to_string())
+            .unwrap_or_else(|_| entity.r#type.clone());
+
         let tags_json = serde_json::to_string(&entity.tags).unwrap_or_else(|_| "[]".to_owned());
-        // Serialize the full entity as attributes, then strip fields already
-        // stored in dedicated columns to avoid redundancy.
-        let mut attrs = serde_json::to_value(entity)
-            .unwrap_or_else(|_| serde_json::json!({}));
-        if let Some(obj) = attrs.as_object_mut() {
-            obj.remove("id");
-            obj.remove("r#type");
-            obj.remove("category");
-            obj.remove("description");
-            obj.remove("tags");
-            obj.remove("file_path");
-        }
+        // Serialize only fields NOT stored in dedicated columns.
+        let attrs = serde_json::json!({
+            "title": entity.title,
+            "name": entity.name,
+            "context": entity.context,
+            "source": entity.source,
+        });
         let attrs_json = serde_json::to_string(&attrs).unwrap_or_else(|_| "{}".to_owned());
 
         tx.execute(
@@ -285,7 +285,7 @@ pub fn insert_graph(
              VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
             params![
                 id,
-                entity.r#type,
+                entity_type_str,
                 entity.category,
                 entity.description,
                 tags_json,
@@ -318,9 +318,7 @@ pub fn insert_graph(
 /// Load all entities and relations from the DB into a knowledge graph.
 ///
 /// Returns `None` if the entities table is empty (no graph data in DB).
-pub fn load_graph_from_db(
-    conn: &Connection,
-) -> Result<Option<std::collections::HashMap<String, crate::domain::types::Entity>>> {
+pub fn load_graph_from_db(conn: &Connection) -> Result<Option<HashMap<String, Entity>>> {
     let entity_count: i64 = conn
         .query_row("SELECT COUNT(*) FROM entities", [], |row| row.get(0))
         .map_err(|e| InfraError::Database(e.to_string()))?;
@@ -329,7 +327,7 @@ pub fn load_graph_from_db(
         return Ok(None);
     }
 
-    let mut entities = std::collections::HashMap::new();
+    let mut entities = HashMap::new();
 
     // Load entities
     let mut stmt = conn
@@ -346,7 +344,15 @@ pub fn load_graph_from_db(
             let attrs_json: Option<String> = row.get(5)?;
             let file_path: Option<String> = row.get(6)?;
 
-            Ok((name, entity_type, category, description, tags_json, attrs_json, file_path))
+            Ok((
+                name,
+                entity_type,
+                category,
+                description,
+                tags_json,
+                attrs_json,
+                file_path,
+            ))
         })
         .map_err(|e| InfraError::Database(e.to_string()))?;
 
@@ -354,11 +360,14 @@ pub fn load_graph_from_db(
         let (id, entity_type, category, description, tags_json, attrs_json, file_path) =
             row.map_err(|e| InfraError::Database(e.to_string()))?;
 
-        // Validate entity_type against the domain enum.
-        if crate::domain::types::EntityType::from_str(&entity_type).is_err() {
-            tracing::warn!(id = %id, entity_type = %entity_type, "skipping entity with invalid type");
-            continue;
-        }
+        // Normalize and validate entity_type against the domain enum.
+        let normalized_type = match EntityType::from_str(&entity_type) {
+            Ok(et) => et.to_string(),
+            Err(_) => {
+                tracing::warn!(id = %id, entity_type = %entity_type, "skipping entity with invalid type");
+                continue;
+            }
+        };
 
         let tags: Vec<String> = tags_json
             .as_deref()
@@ -369,9 +378,9 @@ pub fn load_graph_from_db(
             .and_then(|s| serde_json::from_str(s).ok())
             .unwrap_or(serde_json::Value::Object(Default::default()));
 
-        let entity = crate::domain::types::Entity {
+        let entity = Entity {
             id: id.clone(),
-            r#type: entity_type,
+            r#type: normalized_type,
             title: attrs
                 .get("title")
                 .and_then(|v| v.as_str())
@@ -385,7 +394,7 @@ pub fn load_graph_from_db(
                 .to_owned(),
             category: category.unwrap_or_default(),
             tags,
-            relations: std::collections::HashMap::new(),
+            relations: HashMap::new(),
             context: attrs
                 .get("context")
                 .and_then(|v| serde_json::from_value(v.clone()).ok())
@@ -399,7 +408,7 @@ pub fn load_graph_from_db(
         entities.insert(id, entity);
     }
 
-    // Load relations
+    // Load relations, skipping orphans whose source or target entity was discarded.
     let mut rel_stmt = conn
         .prepare("SELECT source, target, relation_type FROM relations")
         .map_err(|e| InfraError::Database(e.to_string()))?;
@@ -416,6 +425,11 @@ pub fn load_graph_from_db(
 
     for row in rel_rows {
         let (source, target, rel_type) = row.map_err(|e| InfraError::Database(e.to_string()))?;
+        // Skip if source entity was discarded or target entity is missing.
+        if !entities.contains_key(&target) {
+            tracing::debug!(source = %source, target = %target, "skipping orphan relation");
+            continue;
+        }
         if let Some(entity) = entities.get_mut(&source) {
             entity.relations.entry(rel_type).or_default().push(target);
         }
@@ -431,8 +445,6 @@ pub fn load_graph_from_db(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::types::Entity;
-    use std::collections::HashMap;
 
     /// Helper: build a minimal entity with the given id and type.
     fn make_entity(id: &str, entity_type: &str) -> Entity {
@@ -511,7 +523,9 @@ mod tests {
         map.insert("SMELL-01".to_owned(), e.clone());
         insert_graph(&conn, &map).expect("insert");
 
-        let loaded = load_graph_from_db(&conn).expect("load").expect("should have data");
+        let loaded = load_graph_from_db(&conn)
+            .expect("load")
+            .expect("should have data");
         assert_eq!(loaded.len(), 1);
         assert_entity_eq(&e, &loaded["SMELL-01"]);
     }
@@ -526,7 +540,9 @@ mod tests {
         map.insert("SMELL-01".to_owned(), target);
         insert_graph(&conn, &map).expect("insert");
 
-        let loaded = load_graph_from_db(&conn).expect("load").expect("should have data");
+        let loaded = load_graph_from_db(&conn)
+            .expect("load")
+            .expect("should have data");
         assert_eq!(loaded.len(), 2);
         assert_entity_eq(&e, &loaded["RF-001"]);
     }
@@ -545,7 +561,9 @@ mod tests {
         map.insert("RF-001".to_owned(), rf.clone());
         insert_graph(&conn, &map).expect("insert");
 
-        let loaded = load_graph_from_db(&conn).expect("load").expect("should have data");
+        let loaded = load_graph_from_db(&conn)
+            .expect("load")
+            .expect("should have data");
         assert_eq!(loaded.len(), 2);
         assert_entity_eq(&smell, &loaded["SMELL-01"]);
         assert_entity_eq(&rf, &loaded["RF-001"]);
@@ -563,7 +581,9 @@ mod tests {
         insert_graph(&conn, &map).expect("insert 1");
         insert_graph(&conn, &map).expect("insert 2");
 
-        let loaded = load_graph_from_db(&conn).expect("load").expect("should have data");
+        let loaded = load_graph_from_db(&conn)
+            .expect("load")
+            .expect("should have data");
         assert_eq!(loaded.len(), 2);
         assert_entity_eq(&e, &loaded["RF-001"]);
     }
@@ -586,7 +606,9 @@ mod tests {
         )
         .expect("insert bogus");
 
-        let loaded = load_graph_from_db(&conn).expect("load").expect("should have data");
+        let loaded = load_graph_from_db(&conn)
+            .expect("load")
+            .expect("should have data");
         assert_eq!(loaded.len(), 1, "only the valid entity should be loaded");
         assert!(loaded.contains_key("SMELL-01"));
     }
@@ -603,12 +625,70 @@ mod tests {
         )
         .expect("insert with nulls");
 
-        let loaded = load_graph_from_db(&conn).expect("load").expect("should have data");
+        let loaded = load_graph_from_db(&conn)
+            .expect("load")
+            .expect("should have data");
         assert_eq!(loaded.len(), 1);
         let e = &loaded["SMELL-01"];
         assert_eq!(e.category, "");
         assert_eq!(e.description, "");
         assert_eq!(e.file_path, "");
         assert!(e.tags.is_empty());
+    }
+
+    #[test]
+    fn load_skips_orphan_relations() {
+        let conn = init_in_memory().expect("in-memory DB");
+
+        // Insert a valid entity and a bogus one, plus a relation from valid → bogus.
+        conn.execute(
+            "INSERT INTO entities (name, entity_type, category, description, tags, attributes, file_path)
+             VALUES ('RF-001', 'refactoring', '', '', '[]', '{}', '')",
+            [],
+        )
+        .expect("insert valid");
+        conn.execute(
+            "INSERT INTO entities (name, entity_type, category, description, tags, attributes, file_path)
+             VALUES ('BOGUS-01', 'not_a_real_type', '', '', '[]', '{}', '')",
+            [],
+        )
+        .expect("insert bogus");
+        conn.execute(
+            "INSERT INTO relations (source, target, relation_type, metadata) VALUES ('RF-001', 'BOGUS-01', 'solves', NULL)",
+            [],
+        )
+        .expect("insert relation to bogus");
+
+        let loaded = load_graph_from_db(&conn)
+            .expect("load")
+            .expect("should have data");
+        assert_eq!(loaded.len(), 1, "only the valid entity should be loaded");
+        let rf = &loaded["RF-001"];
+        assert!(
+            rf.relations.is_empty(),
+            "orphan relation to discarded entity should be skipped"
+        );
+    }
+
+    #[test]
+    fn insert_normalizes_entity_type() {
+        let conn = init_in_memory().expect("in-memory DB");
+
+        // Entity with non-canonical casing in r#type.
+        let mut e = Entity::default();
+        e.id = "SMELL-01".to_owned();
+        e.r#type = "Smell".to_owned(); // non-canonical casing
+        let mut map = HashMap::new();
+        map.insert("SMELL-01".to_owned(), e);
+
+        insert_graph(&conn, &map).expect("insert");
+
+        let loaded = load_graph_from_db(&conn)
+            .expect("load")
+            .expect("should have data");
+        assert_eq!(
+            loaded["SMELL-01"].r#type, "smell",
+            "entity_type should be normalized"
+        );
     }
 }

@@ -14,33 +14,47 @@ const ENTITY_PREFIXES: &[&str] = &["DP-", "RF-", "LAW-", "SMELL-"];
 /// 1. If `episteme.db` exists and has graph data in `entities` table → load from DB.
 /// 2. Otherwise, fall back to `relations.json` + `raw/` enrichment.
 pub fn load_graph(data_dir: &Path) -> Result<KnowledgeGraph> {
-    // Try DB-first path.
+    if let Some(entities) = try_load_graph_from_db()? {
+        return Ok(KnowledgeGraph::from_entities(entities));
+    }
+    load_graph_from_json(data_dir)
+}
+
+/// Try loading the knowledge graph from the SQLite DB.
+///
+/// Returns `Ok(Some(..))` on success, `Ok(None)` if the DB has no graph data,
+/// and falls through silently on any I/O or query error.
+fn try_load_graph_from_db() -> Result<Option<HashMap<String, Entity>>> {
     let db_path = paths::db_path();
-    if db_path.exists() {
-        match rusqlite::Connection::open_with_flags(
-            &db_path,
-            rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY,
-        ) {
-            Ok(conn) => match sqlite_db::load_graph_from_db(&conn) {
-                Ok(Some(entities)) => {
-                    tracing::info!(entities = entities.len(), "loaded knowledge graph from DB");
-                    return Ok(KnowledgeGraph::from_entities(entities));
-                }
-                Ok(None) => {
-                    tracing::debug!("DB has no graph data, falling back to JSON");
-                }
-                Err(e) => {
-                    tracing::debug!(error = %e, "DB graph load failed, falling back to JSON");
-                }
-            },
-            Err(e) => {
-                tracing::debug!(error = %e, "DB open failed, falling back to JSON");
-            }
-        }
+    if !db_path.exists() {
+        return Ok(None);
     }
 
-    // Fallback: load from JSON + raw/.
-    load_graph_from_json(data_dir)
+    let conn = match rusqlite::Connection::open_with_flags(
+        &db_path,
+        rusqlite::OpenFlags::SQLITE_OPEN_READ_ONLY,
+    ) {
+        Ok(c) => c,
+        Err(e) => {
+            tracing::debug!(error = %e, "DB open failed, falling back to JSON");
+            return Ok(None);
+        }
+    };
+
+    match sqlite_db::load_graph_from_db(&conn) {
+        Ok(Some(entities)) => {
+            tracing::info!(entities = entities.len(), "loaded knowledge graph from DB");
+            Ok(Some(entities))
+        }
+        Ok(None) => {
+            tracing::debug!("DB has no graph data, falling back to JSON");
+            Ok(None)
+        }
+        Err(e) => {
+            tracing::debug!(error = %e, "DB graph load failed, falling back to JSON");
+            Ok(None)
+        }
+    }
 }
 
 /// Load graph from `relations.json` with optional `raw/` description enrichment.
