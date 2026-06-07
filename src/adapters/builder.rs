@@ -106,6 +106,9 @@ pub fn build(
     // Insert all chunks.
     sqlite_db::insert_chunks(&conn, &all_chunks)?;
 
+    // Persist graph data (entities + relations) into the DB.
+    sqlite_db::insert_graph(&conn, &kg.entities)?;
+
     // Generate embeddings for chunks that do not yet have one.
     stats.embeddings_generated = generate_embeddings(&conn, provider, batch_size)?;
 
