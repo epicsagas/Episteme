@@ -169,7 +169,7 @@ def eval_search_positive(epis: Path, top_k: int, repeats: int) -> dict:
 
     # Warmup
     for q in queries[:3]:
-        proc = run_cli([str(epis), "explore", q["query"], "--limit", str(top_k)])
+        proc = run_cli([str(epis), "search", q["query"], "--limit", str(top_k)])
         if proc.returncode != 0:
             print(
                 f"  WARNING: warmup query failed (rc={proc.returncode}): {q['query']}"
@@ -191,7 +191,7 @@ def eval_search_positive(epis: Path, top_k: int, repeats: int) -> dict:
         best_rank: dict[str, int] = {}
 
         for _ in range(max(repeats, 1)):
-            proc = run_cli([str(epis), "explore", text, "--limit", str(top_k)])
+            proc = run_cli([str(epis), "search", text, "--limit", str(top_k)])
             for rank, eid in enumerate(
                 dedup(parse_entity_ids(proc.stdout))[:top_k], start=1
             ):
@@ -289,7 +289,7 @@ def eval_search_negative(epis: Path, top_k: int) -> dict:
         must_not = set(q.get("must_not_contain", []))
         category = q.get("category", "unknown")
 
-        proc = run_cli([str(epis), "explore", text, "--limit", str(top_k)])
+        proc = run_cli([str(epis), "search", text, "--limit", str(top_k)])
         ids = dedup(parse_entity_ids(proc.stdout))
 
         # Check for false positives
