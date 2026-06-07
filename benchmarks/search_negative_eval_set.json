@@ -1,0 +1,426 @@
+{
+  "version": 1,
+  "description": "Negative test cases for search false positive measurement",
+  "queries": [
+    {
+      "query": "flexible work hours policy",
+      "must_not_contain": ["DP-020", "LAW-042"],
+      "category": "homonym",
+      "reason": "'flexible' is colloquial workplace term, not Strategy pattern or Open/Closed Principle"
+    },
+    {
+      "query": "factory safety protocols",
+      "must_not_contain": ["DP-001", "DP-003", "DP-004"],
+      "category": "homonym",
+      "reason": "Manufacturing factory, not Factory Method or Abstract Factory pattern"
+    },
+    {
+      "query": "observer bias in user studies",
+      "must_not_contain": ["DP-018"],
+      "category": "homonym",
+      "reason": "Research methodology bias, not Observer design pattern"
+    },
+    {
+      "query": "state management in React",
+      "must_not_contain": ["DP-019"],
+      "category": "homonym",
+      "reason": "UI component state, not State design pattern"
+    },
+    {
+      "query": "proxy server configuration",
+      "must_not_contain": ["DP-012"],
+      "category": "homonym",
+      "reason": "Network proxy server, not Proxy design pattern"
+    },
+    {
+      "query": "bridge networking between Docker containers",
+      "must_not_contain": ["DP-007"],
+      "category": "homonym",
+      "reason": "Docker network bridge, not Bridge design pattern"
+    },
+    {
+      "query": "singleton variables in lambda calculus",
+      "must_not_contain": ["DP-005"],
+      "category": "homonym",
+      "reason": "PL theory singleton variables, not Singleton design pattern"
+    },
+    {
+      "query": "adapter for hardware integration",
+      "must_not_contain": ["DP-006"],
+      "category": "homonym",
+      "reason": "Hardware adapter, not Adapter design pattern"
+    },
+    {
+      "query": "visitor management system for office",
+      "must_not_contain": ["DP-022"],
+      "category": "homonym",
+      "reason": "Physical visitor management, not Visitor design pattern"
+    },
+    {
+      "query": "template for resume generation",
+      "must_not_contain": ["DP-021"],
+      "category": "homonym",
+      "reason": "Document template, not Template Method design pattern"
+    },
+    {
+      "query": "decorator in Python decorators",
+      "must_not_contain": ["DP-009"],
+      "category": "homonym",
+      "reason": "Python language feature, not GoF Decorator pattern"
+    },
+    {
+      "query": "command line interface tutorial",
+      "must_not_contain": ["DP-014"],
+      "category": "homonym",
+      "reason": "CLI tutorial, not Command design pattern"
+    },
+    {
+      "query": "mediator variable in statistics",
+      "must_not_contain": ["DP-016"],
+      "category": "homonym",
+      "reason": "Statistical mediator variable, not Mediator design pattern"
+    },
+    {
+      "query": "composite material engineering",
+      "must_not_contain": ["DP-008"],
+      "category": "homonym",
+      "reason": "Materials science composite, not Composite design pattern"
+    },
+    {
+      "query": "iterator protocol in Python",
+      "must_not_contain": ["DP-015"],
+      "category": "homonym",
+      "reason": "Python language protocol, not Iterator design pattern"
+    },
+    {
+      "query": "chain of responsibility in corporate governance",
+      "must_not_contain": ["DP-023"],
+      "category": "homonym",
+      "reason": "Corporate accountability chain, not Chain of Responsibility pattern"
+    },
+    {
+      "query": "memento keepsake photography",
+      "must_not_contain": ["DP-017"],
+      "category": "homonym",
+      "reason": "Photography keepsake, not Memento design pattern"
+    },
+    {
+      "query": "strategy board game design",
+      "must_not_contain": ["DP-020"],
+      "category": "homonym",
+      "reason": "Tabletop game design, not Strategy design pattern"
+    },
+    {
+      "query": "extract data from CSV file",
+      "must_not_contain": ["RF-001", "RF-002"],
+      "category": "partial_match",
+      "reason": "Data extraction from files, not Extract Method or Extract Variable refactoring"
+    },
+    {
+      "query": "move files to archive directory",
+      "must_not_contain": ["RF-016", "RF-015"],
+      "category": "partial_match",
+      "reason": "File system move operation, not Move Method or Move Field refactoring"
+    },
+    {
+      "query": "inline CSS styles in HTML",
+      "must_not_contain": ["RF-003", "RF-004"],
+      "category": "partial_match",
+      "reason": "CSS inline styling, not Inline Method or Inline Temp refactoring"
+    },
+    {
+      "query": "encapsulate data in JSON web token",
+      "must_not_contain": ["RF-023", "RF-024"],
+      "category": "partial_match",
+      "reason": "JWT token encoding, not Encapsulate Collection or Encapsulate Field refactoring"
+    },
+    {
+      "query": "build a web server from scratch",
+      "must_not_contain": ["DP-002"],
+      "category": "partial_match",
+      "reason": "Software building activity, not Builder design pattern"
+    },
+    {
+      "query": "prototype rapid MVP development",
+      "must_not_contain": ["DP-004"],
+      "category": "partial_match",
+      "reason": "MVP prototyping process, not Prototype design pattern"
+    },
+    {
+      "query": "facade renovation of historical building",
+      "must_not_contain": ["DP-010"],
+      "category": "partial_match",
+      "reason": "Building architecture facade, not Facade design pattern"
+    },
+    {
+      "query": "flyweight boxing championship",
+      "must_not_contain": ["DP-011"],
+      "category": "partial_match",
+      "reason": "Boxing weight class, not Flyweight design pattern"
+    },
+    {
+      "query": "wrap gifts for holiday season",
+      "must_not_contain": ["DP-025", "RF-026"],
+      "category": "partial_match",
+      "reason": "Gift wrapping, not Decorator/Wrapper pattern or Wrap Return Value refactoring"
+    },
+    {
+      "query": "replace battery in smoke detector",
+      "must_not_contain": ["RF-005"],
+      "category": "partial_match",
+      "reason": "Hardware battery replacement, not Replace Method with Method Object refactoring"
+    },
+    {
+      "query": "rename files in batch operation",
+      "must_not_contain": ["RF-006"],
+      "category": "partial_match",
+      "reason": "File renaming, not Rename Method or Rename Variable refactoring"
+    },
+    {
+      "query": "flexible scheduling algorithm",
+      "must_not_contain": ["DP-020", "LAW-042"],
+      "category": "intent_collision",
+      "reason": "Scheduling algorithm flexibility, not Strategy pattern or Open/Closed Principle"
+    },
+    {
+      "query": "adapter for international power outlets",
+      "must_not_contain": ["DP-006"],
+      "category": "intent_collision",
+      "reason": "Travel power adapter, not Adapter design pattern"
+    },
+    {
+      "query": "observer design for surveillance system",
+      "must_not_contain": ["DP-018"],
+      "category": "intent_collision",
+      "reason": "Security surveillance design, not Observer design pattern"
+    },
+    {
+      "query": "strategy for market penetration",
+      "must_not_contain": ["DP-020"],
+      "category": "intent_collision",
+      "reason": "Business market strategy, not Strategy design pattern"
+    },
+    {
+      "query": "state of the union address",
+      "must_not_contain": ["DP-019"],
+      "category": "intent_collision",
+      "reason": "Political speech, not State design pattern"
+    },
+    {
+      "query": "command structure in military hierarchy",
+      "must_not_contain": ["DP-014"],
+      "category": "intent_collision",
+      "reason": "Military command chain, not Command design pattern"
+    },
+    {
+      "query": "builder career progression tips",
+      "must_not_contain": ["DP-002"],
+      "category": "intent_collision",
+      "reason": "Construction career advice, not Builder design pattern"
+    },
+    {
+      "query": "prototype of new electric vehicle",
+      "must_not_contain": ["DP-004"],
+      "category": "intent_collision",
+      "reason": "Automotive prototyping, not Prototype design pattern"
+    },
+    {
+      "query": "bridge loan for real estate",
+      "must_not_contain": ["DP-007"],
+      "category": "intent_collision",
+      "reason": "Financial bridge loan, not Bridge design pattern"
+    },
+    {
+      "query": "proxy voting in shareholder meetings",
+      "must_not_contain": ["DP-012"],
+      "category": "intent_collision",
+      "reason": "Corporate proxy voting, not Proxy design pattern"
+    },
+    {
+      "query": "broken windows theory in criminology",
+      "must_not_contain": ["LAW-028"],
+      "category": "cross_domain",
+      "reason": "Criminology theory, not software broken windows"
+    },
+    {
+      "query": "technical debt in financial markets",
+      "must_not_contain": ["LAW-029"],
+      "category": "cross_domain",
+      "reason": "Financial debt instruments, not software technical debt"
+    },
+    {
+      "query": "parking lot pattern in urban planning",
+      "must_not_contain": ["DP-020"],
+      "category": "cross_domain",
+      "reason": "Urban design parking layout, not software design pattern"
+    },
+    {
+      "query": "premature optimization in manufacturing",
+      "must_not_contain": ["LAW-010"],
+      "category": "cross_domain",
+      "reason": "Manufacturing process optimization, not software premature optimization"
+    },
+    {
+      "query": "scalability of cloud vs on-premise databases",
+      "must_not_contain": ["LAW-037", "LAW-020"],
+      "category": "cross_domain",
+      "reason": "Database infrastructure scaling, not software architecture law context"
+    },
+    {
+      "query": "agile animal movement patterns",
+      "must_not_contain": ["LAW-039"],
+      "category": "cross_domain",
+      "reason": "Animal locomotion, not Agile methodology"
+    },
+    {
+      "query": "coupling in mechanical engineering",
+      "must_not_contain": ["LAW-020"],
+      "category": "cross_domain",
+      "reason": "Mechanical shaft coupling, not software coupling"
+    },
+    {
+      "query": "cohesion in chemistry and molecular bonds",
+      "must_not_contain": ["LAW-021"],
+      "category": "cross_domain",
+      "reason": "Molecular cohesion, not software cohesion"
+    },
+    {
+      "query": "abstraction in modern art movement",
+      "must_not_contain": ["LAW-018"],
+      "category": "cross_domain",
+      "reason": "Artistic abstraction, not software abstraction principle"
+    },
+    {
+      "query": "encapsulation in pharmaceutical delivery",
+      "must_not_contain": ["LAW-019"],
+      "category": "cross_domain",
+      "reason": "Drug encapsulation, not software encapsulation"
+    },
+    {
+      "query": "inheritance law and estate planning",
+      "must_not_contain": ["LAW-022"],
+      "category": "cross_domain",
+      "reason": "Legal inheritance, not software inheritance"
+    },
+    {
+      "query": "polymorphism in biology and evolution",
+      "must_not_contain": ["LAW-023"],
+      "category": "cross_domain",
+      "reason": "Biological polymorphism, not software polymorphism"
+    },
+    {
+      "query": "duplicate code detection in plagiarism checker",
+      "must_not_contain": ["SMELL-13"],
+      "category": "context_mismatch",
+      "reason": "Plagiarism detection, not Duplicated Code smell"
+    },
+    {
+      "query": "long method names in Python PEP 8",
+      "must_not_contain": ["SMELL-01"],
+      "category": "context_mismatch",
+      "reason": "Naming convention discussion, not Long Method smell"
+    },
+    {
+      "query": "large class sizes in school education",
+      "must_not_contain": ["SMELL-04"],
+      "category": "context_mismatch",
+      "reason": "Education classroom size, not Large Class smell"
+    },
+    {
+      "query": "message queue latency optimization",
+      "must_not_contain": ["SMELL-20"],
+      "category": "context_mismatch",
+      "reason": "MQ systems performance, not Message Chains smell"
+    },
+    {
+      "query": "dead code elimination in compiler optimization",
+      "must_not_contain": ["SMELL-17"],
+      "category": "context_mismatch",
+      "reason": "Compiler dead code elimination pass, not Dead Code smell"
+    },
+    {
+      "query": "lazy class loading in JVM",
+      "must_not_contain": ["SMELL-11"],
+      "category": "context_mismatch",
+      "reason": "JVM class loading mechanism, not Lazy Class smell"
+    },
+    {
+      "query": "feature envy in consumer psychology",
+      "must_not_contain": ["SMELL-18"],
+      "category": "context_mismatch",
+      "reason": "Consumer feature desire, not Feature Envy smell"
+    },
+    {
+      "query": "data clumps in hair styling products",
+      "must_not_contain": ["SMELL-05"],
+      "category": "context_mismatch",
+      "reason": "Hair product clumping, not Data Clumps smell"
+    },
+    {
+      "query": "refused bequest in family disputes",
+      "must_not_contain": ["SMELL-15"],
+      "category": "context_mismatch",
+      "reason": "Inheritance refusal in legal context, not Refused Bequest smell"
+    },
+    {
+      "query": "don't repeat yourself in writing essays",
+      "must_not_contain": ["LAW-040"],
+      "category": "colloquial",
+      "reason": "Essay writing advice, not DRY principle"
+    },
+    {
+      "query": "keep it simple stupid life advice",
+      "must_not_contain": ["LAW-041"],
+      "category": "colloquial",
+      "reason": "General life simplification, not KISS principle"
+    },
+    {
+      "query": "goodhart's law in economics",
+      "must_not_contain": ["LAW-014"],
+      "category": "colloquial",
+      "reason": "Economic policy measurement, different domain from software Goodhart's law"
+    },
+    {
+      "query": "parkinson's law of triviality",
+      "must_not_contain": ["LAW-011"],
+      "category": "colloquial",
+      "reason": "Bikeshedding in general management, related but different law variant"
+    },
+    {
+      "query": "brooks law in legal context",
+      "must_not_contain": ["LAW-002"],
+      "category": "colloquial",
+      "reason": "Legal interpretation of Brooks, not software project management Brooks's Law"
+    },
+    {
+      "query": "conway's law of physics",
+      "must_not_contain": ["LAW-001"],
+      "category": "colloquial",
+      "reason": "Not related to Conway's Law in software architecture"
+    },
+    {
+      "query": "separation of concerns in political science",
+      "must_not_contain": ["LAW-017"],
+      "category": "colloquial",
+      "reason": "Political separation of powers, not software SoC"
+    },
+    {
+      "query": "law of demeter in greek mythology",
+      "must_not_contain": ["LAW-005"],
+      "category": "colloquial",
+      "reason": "Greek mythology reference, not Law of Demeter in software"
+    },
+    {
+      "query": "DRY clean humor in comedy",
+      "must_not_contain": ["LAW-040"],
+      "category": "colloquial",
+      "reason": "Comedy style, not Don't Repeat Yourself principle"
+    },
+    {
+      "query": "SOLID food diet for athletes",
+      "must_not_contain": ["LAW-036", "LAW-035", "LAW-034", "LAW-033", "LAW-032"],
+      "category": "colloquial",
+      "reason": "Nutrition diet, not SOLID principles"
+    }
+  ]
+}

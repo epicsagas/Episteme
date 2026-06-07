@@ -1,0 +1,384 @@
+{
+  "version": 1,
+  "description": "Graph traversal test cases for epis graph neighbors/path",
+  "cases": [
+    {
+      "id": "traverse-001",
+      "type": "neighbors",
+      "entity_id": "SMELL-01",
+      "expected_neighbors": ["RF-001", "RF-005", "RF-006", "RF-007", "RF-008", "RF-009", "DP-010", "SMELL-16"],
+      "expected_relation_types": ["solved_by", "violates", "related_to"],
+      "min_expected_count": 7,
+      "reason": "Long Method is solved by many refactorings (RF-001, RF-005, RF-006, RF-007, RF-008, RF-009, RF-034, RF-035, RF-036, RF-038, RF-040, RF-050, RF-051, RF-052, RF-054) and DP-010 Facade, violates LAW-042-S and LAW-041, related to SMELL-16"
+    },
+    {
+      "id": "traverse-002",
+      "type": "neighbors",
+      "entity_id": "DP-020",
+      "expected_neighbors": ["SMELL-06", "LAW-042-O", "DP-006", "DP-014", "DP-021", "RF-037"],
+      "expected_relation_types": ["solves", "enforces", "related_to"],
+      "min_expected_count": 5,
+      "reason": "Strategy solves SMELL-06, enforces LAW-042-O, related to Adapter/Command/Template-Method/RF-037"
+    },
+    {
+      "id": "traverse-003",
+      "type": "neighbors",
+      "entity_id": "RF-001",
+      "expected_neighbors": ["SMELL-01", "SMELL-04", "SMELL-06", "SMELL-09", "SMELL-13", "SMELL-16", "SMELL-18", "SMELL-21", "SMELL-23", "LAW-040", "LAW-041", "LAW-042-S", "LAW-043", "RF-002", "RF-003", "RF-005"],
+      "expected_relation_types": ["solves", "enforces", "related_to"],
+      "min_expected_count": 14,
+      "reason": "Extract Method is the most connected refactoring: solves 9 smells, enforces 4 laws, related to 3 refactorings"
+    },
+    {
+      "id": "traverse-004",
+      "type": "neighbors",
+      "entity_id": "LAW-042",
+      "expected_neighbors": ["LAW-040", "LAW-041", "LAW-043"],
+      "expected_relation_types": ["enforces", "related_to", "enforced_by", "violated_by"],
+      "min_expected_count": 3,
+      "reason": "SOLID Principles enforces DRY/SRP/LoD, related_to DRY, and is enforced_by and violated_by many entities"
+    },
+    {
+      "id": "traverse-005",
+      "type": "neighbors",
+      "entity_id": "SMELL-06",
+      "expected_neighbors": ["LAW-042-O", "DP-003", "DP-008", "DP-013", "DP-014", "DP-019", "DP-020", "DP-022", "RF-001", "RF-029", "RF-030", "RF-031", "RF-035", "RF-037", "RF-039"],
+      "expected_relation_types": ["violates", "solved_by", "related_to"],
+      "min_expected_count": 10,
+      "reason": "Switch Statements violates LAW-042-O, solved by many patterns (Factory Method, Composite, Chain of Responsibility, Command, State, Strategy, Visitor) and refactorings"
+    },
+    {
+      "id": "traverse-006",
+      "type": "neighbors",
+      "entity_id": "DP-009",
+      "expected_neighbors": ["SMELL-03", "LAW-042-O", "LAW-042-L", "DP-004", "DP-006"],
+      "expected_relation_types": ["solves", "enforces", "related_to"],
+      "min_expected_count": 4,
+      "reason": "Decorator solves Primitive Obsession, enforces OCP/LSP, related to Prototype and Adapter"
+    },
+    {
+      "id": "traverse-007",
+      "type": "neighbors",
+      "entity_id": "RF-039",
+      "expected_neighbors": ["SMELL-04", "SMELL-06", "LAW-040", "LAW-041"],
+      "expected_relation_types": ["solves", "enforces"],
+      "min_expected_count": 4,
+      "reason": "Replace Conditional With Polymorphism solves Large Class and Switch Statements, enforces DRY and SRP"
+    },
+    {
+      "id": "traverse-008",
+      "type": "neighbors",
+      "entity_id": "SMELL-13",
+      "expected_neighbors": ["LAW-040", "SMELL-15", "SMELL-23", "RF-001", "RF-008", "RF-019", "RF-021", "RF-022", "RF-027", "RF-034", "RF-044", "RF-058", "RF-059", "RF-060", "RF-061", "RF-062"],
+      "expected_relation_types": ["violates", "solved_by", "related_to"],
+      "min_expected_count": 10,
+      "reason": "Duplicate Code violates DRY, solved by many refactorings, related to Parallel Inheritance and Alternative Classes"
+    },
+    {
+      "id": "traverse-009",
+      "type": "neighbors",
+      "entity_id": "DP-005",
+      "expected_neighbors": ["LAW-042-S", "DP-001", "DP-002", "DP-004", "DP-010", "DP-011"],
+      "expected_relation_types": ["violates", "related_to"],
+      "min_expected_count": 5,
+      "reason": "Singleton violates SRP (LAW-042-S), related to Abstract Factory, Builder, Prototype, Facade, Flyweight"
+    },
+    {
+      "id": "traverse-010",
+      "type": "neighbors",
+      "entity_id": "LAW-043",
+      "expected_neighbors": ["LAW-040", "LAW-041"],
+      "expected_relation_types": ["related_to", "enforced_by"],
+      "min_expected_count": 2,
+      "reason": "Law of Demeter is related to DRY and SRP, and is enforced by RF-001, RF-011, RF-015, RF-016, DP-012, DP-016, DP-018"
+    },
+    {
+      "id": "traverse-011",
+      "type": "neighbors",
+      "entity_id": "DP-013",
+      "expected_neighbors": ["SMELL-06", "LAW-042-O", "LAW-042-S", "DP-014", "DP-016"],
+      "expected_relation_types": ["solves", "enforces", "related_to"],
+      "min_expected_count": 4,
+      "reason": "Chain of Responsibility solves Switch Statements, enforces OCP/SRP, related to Command and Mediator"
+    },
+    {
+      "id": "traverse-012",
+      "type": "neighbors",
+      "entity_id": "SMELL-21",
+      "expected_neighbors": ["LAW-042-S", "DP-010", "RF-001", "RF-010", "RF-016", "RF-033", "RF-035", "RF-040", "RF-049", "RF-054", "RF-056"],
+      "expected_relation_types": ["violates", "solved_by"],
+      "min_expected_count": 8,
+      "reason": "God Object violates SRP, solved by Facade, Extract Method, Extract Class, Move Method, and several other refactorings"
+    },
+    {
+      "id": "traverse-013",
+      "type": "neighbors",
+      "entity_id": "RF-010",
+      "expected_neighbors": ["SMELL-04", "SMELL-05", "SMELL-08", "SMELL-09", "SMELL-10", "SMELL-21", "LAW-040", "LAW-042-S", "RF-001", "RF-056", "RF-057", "RF-058"],
+      "expected_relation_types": ["solves", "enforces", "related_to"],
+      "min_expected_count": 10,
+      "reason": "Extract Class solves 6 smells (Large Class, Data Clumps, Temporary Field, Shotgun Surgery, Divergent Change, God Object), enforces DRY/SRP"
+    },
+    {
+      "id": "traverse-014",
+      "type": "neighbors",
+      "entity_id": "DP-018",
+      "expected_neighbors": ["SMELL-19", "LAW-042-O", "LAW-043", "LAW-042-D", "DP-016"],
+      "expected_relation_types": ["solves", "enforces", "related_to"],
+      "min_expected_count": 4,
+      "reason": "Observer solves Inappropriate Intimacy, enforces OCP/LoD/ISP, related to Mediator"
+    },
+    {
+      "id": "traverse-015",
+      "type": "neighbors",
+      "entity_id": "LAW-040",
+      "expected_neighbors": [],
+      "expected_relation_types": ["enforced_by", "violated_by", "related_to"],
+      "min_expected_count": 0,
+      "reason": "DRY has no direct relations in its own relations block, but is enforced_by DP-011/DP-021, violated_by SMELL-03/SMELL-05/SMELL-08/SMELL-11/SMELL-12/SMELL-13/SMELL-16/SMELL-17"
+    },
+    {
+      "id": "traverse-016",
+      "type": "neighbors",
+      "entity_id": "SMELL-18",
+      "expected_neighbors": ["LAW-043", "RF-001", "RF-013", "RF-015", "RF-016", "RF-045"],
+      "expected_relation_types": ["violates", "solved_by", "related_to"],
+      "min_expected_count": 5,
+      "reason": "Feature Envy violates LoD, solved by Extract Method, Introduce Foreign Method, Move Field, Move Method, Preserve Whole Object"
+    },
+    {
+      "id": "traverse-017",
+      "type": "neighbors",
+      "entity_id": "DP-016",
+      "expected_neighbors": ["SMELL-19", "LAW-042-S", "LAW-043", "LAW-001", "LAW-042-D", "DP-010", "DP-013", "DP-014", "DP-018"],
+      "expected_relation_types": ["solves", "enforces", "related_to"],
+      "min_expected_count": 7,
+      "reason": "Mediator solves Inappropriate Intimacy, enforces SRP/LoD/Conway/ISP, related to Facade/Chain/Command/Observer"
+    },
+    {
+      "id": "traverse-018",
+      "type": "neighbors",
+      "entity_id": "SMELL-04",
+      "expected_neighbors": ["LAW-042-S", "SMELL-08", "SMELL-22", "DP-002", "RF-001", "RF-010", "RF-016", "RF-039", "RF-057", "RF-058", "RF-063", "RF-064"],
+      "expected_relation_types": ["violates", "solved_by", "related_to"],
+      "min_expected_count": 8,
+      "reason": "Large Class violates SRP, solved by Builder, Extract Method, Extract Class, Move Method, Replace Conditional With Polymorphism, Extract Subclass/Superclass, Push Down Field/Method"
+    },
+    {
+      "id": "traverse-019",
+      "type": "neighbors",
+      "entity_id": "DP-010",
+      "expected_neighbors": ["SMELL-01", "SMELL-21", "LAW-041", "LAW-001", "LAW-042-D", "DP-001", "DP-005", "DP-006", "DP-012", "DP-016"],
+      "expected_relation_types": ["solves", "enforces", "related_to"],
+      "min_expected_count": 8,
+      "reason": "Facade solves Long Method and God Object, enforces SRP/Conway/ISP, related to many structural/behavioral patterns"
+    },
+    {
+      "id": "traverse-020",
+      "type": "neighbors",
+      "entity_id": "RF-016",
+      "expected_neighbors": ["SMELL-04", "SMELL-05", "SMELL-09", "SMELL-10", "SMELL-15", "SMELL-18", "SMELL-19", "SMELL-20", "SMELL-21", "SMELL-22", "LAW-042-S", "LAW-043", "RF-013", "RF-015"],
+      "expected_relation_types": ["solves", "enforces", "related_to"],
+      "min_expected_count": 12,
+      "reason": "Move Method solves 10 smells, enforces SRP and LoD, highly connected refactoring"
+    },
+    {
+      "id": "traverse-021",
+      "type": "path",
+      "from": "SMELL-01",
+      "to": "RF-001",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 2,
+      "reason": "Long Method -> solved_by -> Extract Method: direct 1-hop relationship"
+    },
+    {
+      "id": "traverse-022",
+      "type": "path",
+      "from": "SMELL-06",
+      "to": "RF-039",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 2,
+      "reason": "Switch Statements -> solved_by -> Replace Conditional With Polymorphism: direct 1-hop"
+    },
+    {
+      "id": "traverse-023",
+      "type": "path",
+      "from": "SMELL-21",
+      "to": "RF-010",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 2,
+      "reason": "God Object -> solved_by -> Extract Class: direct 1-hop"
+    },
+    {
+      "id": "traverse-024",
+      "type": "path",
+      "from": "DP-020",
+      "to": "LAW-042-O",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 2,
+      "reason": "Strategy -> enforces -> LAW-042-O (Open/Closed Principle): direct 1-hop"
+    },
+    {
+      "id": "traverse-025",
+      "type": "path",
+      "from": "SMELL-01",
+      "to": "DP-020",
+      "max_depth": 5,
+      "should_find_path": true,
+      "expected_path_length": 4,
+      "reason": "Long Method -> violates LAW-042-S <- enforced_by DP-008 (Composite) <- related_to DP-020, or Long Method -> solved_by DP-010 -> related_to DP-006 -> related_to DP-020"
+    },
+    {
+      "id": "traverse-026",
+      "type": "path",
+      "from": "SMELL-09",
+      "to": "RF-019",
+      "max_depth": 5,
+      "should_find_path": true,
+      "expected_path_length": 4,
+      "reason": "Shotgun Surgery -> solved_by RF-015 (Move Field) -> related_to RF-019, or via Duplicate Code -> solved_by RF-019"
+    },
+    {
+      "id": "traverse-027",
+      "type": "path",
+      "from": "LAW-042",
+      "to": "DP-006",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 3,
+      "reason": "SOLID -> enforced_by -> Adapter via LAW-042-L or LAW-042-I (Adapter enforces both)"
+    },
+    {
+      "id": "traverse-028",
+      "type": "path",
+      "from": "SMELL-04",
+      "to": "DP-002",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 2,
+      "reason": "Large Class -> solved_by -> Builder: direct 1-hop (DP-002 solves SMELL-04)"
+    },
+    {
+      "id": "traverse-029",
+      "type": "path",
+      "from": "SMELL-18",
+      "to": "RF-001",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 2,
+      "reason": "Feature Envy -> solved_by -> Extract Method: direct 1-hop"
+    },
+    {
+      "id": "traverse-030",
+      "type": "path",
+      "from": "DP-005",
+      "to": "LAW-042-S",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 2,
+      "reason": "Singleton -> violates -> LAW-042-S: direct 1-hop (Singleton violates SRP)"
+    },
+    {
+      "id": "traverse-031",
+      "type": "path",
+      "from": "SMELL-13",
+      "to": "LAW-040",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 2,
+      "reason": "Duplicate Code -> violates -> DRY: direct 1-hop"
+    },
+    {
+      "id": "traverse-032",
+      "type": "path",
+      "from": "SMELL-19",
+      "to": "DP-016",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 2,
+      "reason": "Inappropriate Intimacy -> solved_by -> Mediator: direct 1-hop"
+    },
+    {
+      "id": "traverse-033",
+      "type": "path",
+      "from": "SMELL-06",
+      "to": "DP-020",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 2,
+      "reason": "Switch Statements -> solved_by -> Strategy: direct 1-hop"
+    },
+    {
+      "id": "traverse-034",
+      "type": "path",
+      "from": "RF-010",
+      "to": "SMELL-21",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 2,
+      "reason": "Extract Class -> solves -> God Object: reverse direction, direct 1-hop"
+    },
+    {
+      "id": "traverse-035",
+      "type": "path",
+      "from": "SMELL-01",
+      "to": "DP-005",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 4,
+      "reason": "Long Method -> solved_by DP-010 (Facade) -> related_to DP-005 (Singleton): semantically distant but reachable via Facade"
+    },
+    {
+      "id": "traverse-036",
+      "type": "path",
+      "from": "NONEXISTENT-999",
+      "to": "SMELL-01",
+      "max_depth": 5,
+      "should_find_path": false,
+      "reason": "Non-existent entity ID cannot have any path in the graph"
+    },
+    {
+      "id": "traverse-037",
+      "type": "path",
+      "from": "SMELL-01",
+      "to": "NONEXISTENT-998",
+      "max_depth": 5,
+      "should_find_path": false,
+      "reason": "Target is a non-existent entity ID; no path can exist"
+    },
+    {
+      "id": "traverse-038",
+      "type": "path",
+      "from": "SMELL-07",
+      "to": "DP-002",
+      "max_depth": 4,
+      "should_find_path": true,
+      "expected_path_length": 5,
+      "reason": "Data Class -> violates LAW-042-S, Builder (DP-002) has no enforcement edges; path must be indirect via related_to chains through other patterns"
+    },
+    {
+      "id": "traverse-039",
+      "type": "path",
+      "from": "RF-037",
+      "to": "DP-020",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 2,
+      "reason": "Introduce Null Object -> related_to -> Strategy: direct 1-hop (RF-037 related_to DP-020)"
+    },
+    {
+      "id": "traverse-040",
+      "type": "path",
+      "from": "DP-021",
+      "to": "SMELL-03",
+      "max_depth": 3,
+      "should_find_path": true,
+      "expected_path_length": 4,
+      "reason": "Template Method -> enforces LAW-040 <- violated_by SMELL-03 (Primitive Obsession), or via related_to DP-003 -> solves SMELL-06 -> violated_by LAW-042-O chain"
+    }
+  ]
+}
