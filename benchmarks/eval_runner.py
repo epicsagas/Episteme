@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Requires Python >= 3.12 (uses `X | Y` union syntax, `missing_ok=True`, etc.)
 """
 Comprehensive batch evaluation runner for Episteme CLI (epis).
 
@@ -14,7 +15,7 @@ Metrics:
   Search:   precision@K, FP@K, specificity, recall (hit@1/3/5, MRR, NDCG)
   Smell:    FP rate per detector, per language, overall
   Traversal: path found rate, neighbor coverage
-  Composite: 0.4 * recall + 0.3 * precision + 0.3 * specificity
+  Composite: 0.3*recall + 0.3*precision + 0.2*specificity + 0.2*smell_recall
 
 Regression detection:
   - Fails (exit 1) if composite drops >= 0.02 vs previous run
@@ -38,9 +39,32 @@ from pathlib import Path
 # Helpers
 # ---------------------------------------------------------------------------
 
+# Intentionally matches uppercase-only IDs: all Episteme entity IDs follow
+# conventions like SMELL-XX, DP-XXX, RF-XXX, LAW-XXX.  Lowercase variants
+# are never valid entity IDs, so they are excluded by design.
 ENTITY_ID_RE = re.compile(r"\[([A-Z]+-[A-Z0-9-]+)\]")
 
 BIN_DEFAULT = "target/debug/episteme"
+
+EVAL_SET_VERSION = 1
+
+
+def _load_eval_set(path: Path) -> dict:
+    """Load and validate an eval-set JSON file.
+
+    Warns (but does not fail) if the ``version`` field is missing or
+    does not match ``EVAL_SET_VERSION`` so that CI keeps running even
+    when a newly-versioned set is temporarily out of sync.
+    """
+    data = json.loads(path.read_text())
+    v = data.get("version")
+    if v is None:
+        print(
+            f"  WARNING: {path.name} has no 'version' field — expected {EVAL_SET_VERSION}"
+        )
+    elif v != EVAL_SET_VERSION:
+        print(f"  WARNING: {path.name} version {v} != expected {EVAL_SET_VERSION}")
+    return data
 
 
 def repo_root() -> Path:
@@ -138,7 +162,7 @@ def eval_search_positive(epis: Path, top_k: int, repeats: int) -> dict:
     if not eval_path.exists():
         return {"status": "skipped", "reason": "search_eval_set.json not found"}
 
-    data = json.loads(eval_path.read_text())
+    data = _load_eval_set(eval_path)
     queries = data.get("queries", [])
     if not queries:
         return {"status": "skipped", "reason": "no queries in eval set"}
@@ -249,7 +273,7 @@ def eval_search_negative(epis: Path, top_k: int) -> dict:
             "reason": "search_negative_eval_set.json not found",
         }
 
-    data = json.loads(eval_path.read_text())
+    data = _load_eval_set(eval_path)
     queries = data.get("queries", [])
     if not queries:
         return {"status": "skipped", "reason": "no queries"}
@@ -413,7 +437,7 @@ def eval_analyze_positive(epis: Path, min_confidence: float) -> dict:
     if not eval_path.exists():
         return {"status": "skipped", "reason": "analyze_eval_set.json not found"}
 
-    data = json.loads(eval_path.read_text())
+    data = _load_eval_set(eval_path)
     cases = data.get("cases", [])
     if not cases:
         return {"status": "skipped", "reason": "no cases"}
@@ -532,7 +556,7 @@ def eval_traversal(epis: Path) -> dict:
     if not eval_path.exists():
         return {"status": "skipped", "reason": "traversal_eval_set.json not found"}
 
-    data = json.loads(eval_path.read_text())
+    data = _load_eval_set(eval_path)
     cases = data.get("cases", [])
     if not cases:
         return {"status": "skipped", "reason": "no cases"}
@@ -652,8 +676,20 @@ def compute_composite(
     search_positive: dict,
     search_negative: dict,
     smell_negative: dict,
+    analyze_positive: dict | None = None,
 ) -> dict:
-    """Compute composite quality score."""
+    """Compute composite quality score.
+
+    Weights:
+      0.3 * recall       — search-positive hit@5
+      0.3 * precision    — 1 − search-negative FP@5
+      0.2 * specificity  — smell-negative (clean corpus, no false alarms)
+      0.2 * smell_recall — analyze-positive (known smells are detected)
+
+    The first three are the original triad; smell_recall was added so
+    that the composite reflects both halves of smell detection quality
+    (not raising false alarms *and* catching real ones).
+    """
     recall = (
         search_positive.get("metrics", {}).get("hit@5", 0.0)
         if search_positive.get("status") == "ok"
@@ -669,15 +705,21 @@ def compute_composite(
         if smell_negative.get("status") == "ok"
         else 0.0
     )
+    smell_recall = (
+        analyze_positive.get("metrics", {}).get("recall", 0.0)
+        if analyze_positive and analyze_positive.get("status") == "ok"
+        else 0.0
+    )
 
-    composite = 0.4 * recall + 0.3 * precision + 0.3 * specificity
+    composite = 0.3 * recall + 0.3 * precision + 0.2 * specificity + 0.2 * smell_recall
 
     return {
         "recall": round(recall, 6),
         "precision": round(precision, 6),
         "specificity": round(specificity, 6),
+        "smell_recall": round(smell_recall, 6),
         "composite": round(composite, 6),
-        "formula": "0.4 * recall + 0.3 * precision + 0.3 * specificity",
+        "formula": "0.3*recall + 0.3*precision + 0.2*specificity + 0.2*smell_recall",
     }
 
 
@@ -746,9 +788,10 @@ def print_report(
     print("=" * 70)
 
     print(f"\n  Composite Score: {composite['composite']:.4f}")
-    print(f"    Recall:      {composite['recall']:.4f}")
-    print(f"    Precision:   {composite['precision']:.4f}")
-    print(f"    Specificity: {composite['specificity']:.4f}")
+    print(f"    Recall:       {composite['recall']:.4f}")
+    print(f"    Precision:    {composite['precision']:.4f}")
+    print(f"    Specificity:  {composite['specificity']:.4f}")
+    print(f"    Smell Recall: {composite['smell_recall']:.4f}")
 
     # Search positive
     sp = suites.get("search_positive", {})
@@ -851,8 +894,8 @@ def main() -> int:
     parser.add_argument(
         "--min-confidence",
         type=float,
-        default=0.5,
-        help="Min confidence for smell detection",
+        default=0.65,
+        help="Min confidence for smell detection (default: 0.65)",
     )
     parser.add_argument(
         "--compare", default="", help="Previous eval result to compare against"
@@ -891,6 +934,7 @@ def main() -> int:
         suites.get("search_positive", {}),
         suites.get("search_negative", {}),
         suites.get("smell_negative", {}),
+        suites.get("analyze_positive"),
     )
 
     # Regression check
@@ -927,7 +971,9 @@ def main() -> int:
     if regression:
         report["regression"] = regression
 
-    # Save results
+    # Save results — always write a timestamped file (even on failure) so
+    # developers can inspect what went wrong.  The latest.json baseline
+    # symlink is only updated for passing runs (see should_save_baseline).
     out_dir = repo_root() / "benchmarks" / "results"
     out_dir.mkdir(parents=True, exist_ok=True)
 

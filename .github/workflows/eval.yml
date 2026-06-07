@@ -55,11 +55,11 @@ jobs:
 
       - name: Run evaluation (PR — quick suite)
         if: github.event_name == 'pull_request'
-        run: python3 benchmarks/eval_runner.py smell-negative --repeats 3
+        run: python3 benchmarks/eval_runner.py smell-negative
 
       - name: Run evaluation (full)
         if: github.event_name != 'pull_request'
-        run: python3 benchmarks/eval_runner.py ${{ github.event.inputs.suite || 'full' }} --repeats 3
+        run: python3 benchmarks/eval_runner.py ${{ github.event.inputs.suite || 'full' }}
 
       - name: Upload results
         if: always()

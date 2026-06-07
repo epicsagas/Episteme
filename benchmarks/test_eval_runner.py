@@ -84,19 +84,32 @@ class TestComputeComposite:
         sp = {"status": "ok", "metrics": {"hit@5": 1.0}}
         sn = {"status": "ok", "metrics": {"fp@5": 0.0}}
         smn = {"status": "ok", "metrics": {"specificity": 1.0}}
-        result = compute_composite(sp, sn, smn)
+        ap = {"status": "ok", "metrics": {"recall": 1.0}}
+        result = compute_composite(sp, sn, smn, ap)
         assert result["composite"] == 1.0
         assert result["recall"] == 1.0
         assert result["precision"] == 1.0
         assert result["specificity"] == 1.0
+        assert result["smell_recall"] == 1.0
 
     def test_formula_weights(self) -> None:
-        """0.4 * 0.5 + 0.3 * 0.8 + 0.3 * 0.6 = 0.2 + 0.24 + 0.18 = 0.62"""
+        """0.3*0.5 + 0.3*0.8 + 0.2*0.6 + 0.2*0.7 = 0.15+0.24+0.12+0.14 = 0.65"""
         sp = {"status": "ok", "metrics": {"hit@5": 0.5}}
         sn = {"status": "ok", "metrics": {"fp@5": 0.2}}
         smn = {"status": "ok", "metrics": {"specificity": 0.6}}
+        ap = {"status": "ok", "metrics": {"recall": 0.7}}
+        result = compute_composite(sp, sn, smn, ap)
+        assert abs(result["composite"] - 0.65) < 1e-6
+
+    def test_no_analyze_positive(self) -> None:
+        """Without analyze_positive, smell_recall defaults to 0."""
+        sp = {"status": "ok", "metrics": {"hit@5": 1.0}}
+        sn = {"status": "ok", "metrics": {"fp@5": 0.0}}
+        smn = {"status": "ok", "metrics": {"specificity": 1.0}}
         result = compute_composite(sp, sn, smn)
-        assert abs(result["composite"] - 0.62) < 1e-6
+        assert result["smell_recall"] == 0.0
+        # 0.3*1 + 0.3*1 + 0.2*1 + 0.2*0 = 0.8
+        assert abs(result["composite"] - 0.8) < 1e-6
 
     def test_skipped_suite_gives_zero(self) -> None:
         sp = {"status": "skipped"}
