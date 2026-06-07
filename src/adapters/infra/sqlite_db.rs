@@ -1,4 +1,5 @@
 use rusqlite::{Connection, params};
+use std::str::FromStr;
 
 use crate::adapters::error::{InfraError, Result};
 
@@ -53,7 +54,7 @@ const SCHEMA_DDL: &str = "
         source TEXT NOT NULL,
         target TEXT NOT NULL,
         relation_type TEXT NOT NULL,
-        metadata TEXT,
+        metadata TEXT, -- reserved for future use (e.g. confidence scores, provenance)
         FOREIGN KEY (source) REFERENCES entities(name),
         FOREIGN KEY (target) REFERENCES entities(name)
     );
@@ -265,12 +266,18 @@ pub fn insert_graph(
 
     for (id, entity) in entities {
         let tags_json = serde_json::to_string(&entity.tags).unwrap_or_else(|_| "[]".to_owned());
-        let attrs = serde_json::json!({
-            "name": entity.name,
-            "title": entity.title,
-            "context": entity.context,
-            "source": entity.source,
-        });
+        // Serialize the full entity as attributes, then strip fields already
+        // stored in dedicated columns to avoid redundancy.
+        let mut attrs = serde_json::to_value(entity)
+            .unwrap_or_else(|_| serde_json::json!({}));
+        if let Some(obj) = attrs.as_object_mut() {
+            obj.remove("id");
+            obj.remove("r#type");
+            obj.remove("category");
+            obj.remove("description");
+            obj.remove("tags");
+            obj.remove("file_path");
+        }
         let attrs_json = serde_json::to_string(&attrs).unwrap_or_else(|_| "{}".to_owned());
 
         tx.execute(
@@ -287,7 +294,11 @@ pub fn insert_graph(
             ],
         )
         .map_err(|e| InfraError::Database(e.to_string()))?;
+    }
 
+    // Insert relations in a second pass so all target entities exist before
+    // the FK constraint on relations.target is checked.
+    for (id, entity) in entities {
         for (rel_type, targets) in &entity.relations {
             for target in targets {
                 tx.execute(
@@ -329,49 +340,62 @@ pub fn load_graph_from_db(
         .query_map([], |row| {
             let name: String = row.get(0)?;
             let entity_type: String = row.get(1)?;
-            let category: String = row.get(2)?;
-            let description: String = row.get(3)?;
-            let tags_json: String = row.get(4)?;
-            let attrs_json: String = row.get(5)?;
-            let file_path: String = row.get(6)?;
+            let category: Option<String> = row.get(2)?;
+            let description: Option<String> = row.get(3)?;
+            let tags_json: Option<String> = row.get(4)?;
+            let attrs_json: Option<String> = row.get(5)?;
+            let file_path: Option<String> = row.get(6)?;
 
-            let tags: Vec<String> = serde_json::from_str(&tags_json).unwrap_or_default();
-            let attrs: serde_json::Value = serde_json::from_str(&attrs_json)
-                .unwrap_or(serde_json::Value::Object(Default::default()));
-
-            let entity = crate::domain::types::Entity {
-                id: name.clone(),
-                r#type: entity_type,
-                title: attrs
-                    .get("title")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("")
-                    .to_owned(),
-                description,
-                name: attrs
-                    .get("name")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("")
-                    .to_owned(),
-                category,
-                tags,
-                relations: std::collections::HashMap::new(),
-                context: attrs
-                    .get("context")
-                    .and_then(|v| serde_json::from_value(v.clone()).ok())
-                    .unwrap_or_default(),
-                file_path,
-                source: attrs
-                    .get("source")
-                    .cloned()
-                    .unwrap_or(serde_json::Value::Null),
-            };
-            Ok((name, entity))
+            Ok((name, entity_type, category, description, tags_json, attrs_json, file_path))
         })
         .map_err(|e| InfraError::Database(e.to_string()))?;
 
     for row in entity_rows {
-        let (id, entity) = row.map_err(|e| InfraError::Database(e.to_string()))?;
+        let (id, entity_type, category, description, tags_json, attrs_json, file_path) =
+            row.map_err(|e| InfraError::Database(e.to_string()))?;
+
+        // Validate entity_type against the domain enum.
+        if crate::domain::types::EntityType::from_str(&entity_type).is_err() {
+            tracing::warn!(id = %id, entity_type = %entity_type, "skipping entity with invalid type");
+            continue;
+        }
+
+        let tags: Vec<String> = tags_json
+            .as_deref()
+            .and_then(|s| serde_json::from_str(s).ok())
+            .unwrap_or_default();
+        let attrs: serde_json::Value = attrs_json
+            .as_deref()
+            .and_then(|s| serde_json::from_str(s).ok())
+            .unwrap_or(serde_json::Value::Object(Default::default()));
+
+        let entity = crate::domain::types::Entity {
+            id: id.clone(),
+            r#type: entity_type,
+            title: attrs
+                .get("title")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_owned(),
+            description: description.unwrap_or_default(),
+            name: attrs
+                .get("name")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_owned(),
+            category: category.unwrap_or_default(),
+            tags,
+            relations: std::collections::HashMap::new(),
+            context: attrs
+                .get("context")
+                .and_then(|v| serde_json::from_value(v.clone()).ok())
+                .unwrap_or_default(),
+            file_path: file_path.unwrap_or_default(),
+            source: attrs
+                .get("source")
+                .cloned()
+                .unwrap_or(serde_json::Value::Null),
+        };
         entities.insert(id, entity);
     }
 
@@ -398,4 +422,193 @@ pub fn load_graph_from_db(
     }
 
     Ok(Some(entities))
+}
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::domain::types::Entity;
+    use std::collections::HashMap;
+
+    /// Helper: build a minimal entity with the given id and type.
+    fn make_entity(id: &str, entity_type: &str) -> Entity {
+        Entity {
+            id: id.to_owned(),
+            r#type: entity_type.to_owned(),
+            ..Default::default()
+        }
+    }
+
+    /// Helper: build a fully-populated entity for exhaustive roundtrip testing.
+    fn make_full_entity(id: &str) -> Entity {
+        let mut relations = HashMap::new();
+        relations.insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
+        let mut context = HashMap::new();
+        context.insert("when".to_owned(), vec!["long methods".to_owned()]);
+        Entity {
+            id: id.to_owned(),
+            r#type: "refactoring".to_owned(),
+            title: "Extract Method".to_owned(),
+            description: "Decompose long methods into smaller ones.".to_owned(),
+            name: "Extract Method".to_owned(),
+            category: "composition".to_owned(),
+            tags: vec!["methods".to_owned(), "decomposition".to_owned()],
+            relations,
+            context,
+            file_path: "refactorings/extract-method.md".to_owned(),
+            source: serde_json::json!({"url": "https://example.com"}),
+        }
+    }
+
+    /// Helper: compare two entities for semantic equality, ignoring relations
+    /// ordering (since DB roundtrip may reorder).
+    fn assert_entity_eq(a: &Entity, b: &Entity) {
+        assert_eq!(a.id, b.id);
+        assert_eq!(a.r#type, b.r#type);
+        assert_eq!(a.title, b.title);
+        assert_eq!(a.description, b.description);
+        assert_eq!(a.name, b.name);
+        assert_eq!(a.category, b.category);
+        let mut a_tags = a.tags.clone();
+        let mut b_tags = b.tags.clone();
+        a_tags.sort();
+        b_tags.sort();
+        assert_eq!(a_tags, b_tags);
+        assert_eq!(a.file_path, b.file_path);
+        assert_eq!(a.source, b.source);
+        assert_eq!(a.context, b.context);
+        // Relations: compare as sorted multisets per key.
+        let a_keys: std::collections::HashSet<_> = a.relations.keys().collect();
+        let b_keys: std::collections::HashSet<_> = b.relations.keys().collect();
+        assert_eq!(a_keys, b_keys, "relation keys mismatch");
+        for key in &a_keys {
+            let mut av = a.relations[*key].clone();
+            let mut bv = b.relations[*key].clone();
+            av.sort();
+            bv.sort();
+            assert_eq!(av, bv, "relations[{key}] mismatch");
+        }
+    }
+
+    #[test]
+    fn insert_and_load_empty_graph() {
+        let conn = init_in_memory().expect("in-memory DB");
+        let empty: HashMap<String, Entity> = HashMap::new();
+        insert_graph(&conn, &empty).expect("insert empty");
+        let loaded = load_graph_from_db(&conn).expect("load empty");
+        assert!(loaded.is_none(), "empty DB should return None");
+    }
+
+    #[test]
+    fn insert_and_load_single_entity() {
+        let conn = init_in_memory().expect("in-memory DB");
+        let e = make_entity("SMELL-01", "smell");
+        let mut map = HashMap::new();
+        map.insert("SMELL-01".to_owned(), e.clone());
+        insert_graph(&conn, &map).expect("insert");
+
+        let loaded = load_graph_from_db(&conn).expect("load").expect("should have data");
+        assert_eq!(loaded.len(), 1);
+        assert_entity_eq(&e, &loaded["SMELL-01"]);
+    }
+
+    #[test]
+    fn insert_and_load_full_entity_roundtrip() {
+        let conn = init_in_memory().expect("in-memory DB");
+        let e = make_full_entity("RF-001");
+        let target = make_entity("SMELL-01", "smell");
+        let mut map = HashMap::new();
+        map.insert("RF-001".to_owned(), e.clone());
+        map.insert("SMELL-01".to_owned(), target);
+        insert_graph(&conn, &map).expect("insert");
+
+        let loaded = load_graph_from_db(&conn).expect("load").expect("should have data");
+        assert_eq!(loaded.len(), 2);
+        assert_entity_eq(&e, &loaded["RF-001"]);
+    }
+
+    #[test]
+    fn insert_and_load_entities_with_relations() {
+        let conn = init_in_memory().expect("in-memory DB");
+
+        let smell = make_entity("SMELL-01", "smell");
+        let mut rf = make_entity("RF-001", "refactoring");
+        rf.relations
+            .insert("solves".to_owned(), vec!["SMELL-01".to_owned()]);
+
+        let mut map = HashMap::new();
+        map.insert("SMELL-01".to_owned(), smell.clone());
+        map.insert("RF-001".to_owned(), rf.clone());
+        insert_graph(&conn, &map).expect("insert");
+
+        let loaded = load_graph_from_db(&conn).expect("load").expect("should have data");
+        assert_eq!(loaded.len(), 2);
+        assert_entity_eq(&smell, &loaded["SMELL-01"]);
+        assert_entity_eq(&rf, &loaded["RF-001"]);
+    }
+
+    #[test]
+    fn insert_graph_is_idempotent() {
+        let conn = init_in_memory().expect("in-memory DB");
+        let e = make_full_entity("RF-001");
+        let target = make_entity("SMELL-01", "smell");
+        let mut map = HashMap::new();
+        map.insert("RF-001".to_owned(), e.clone());
+        map.insert("SMELL-01".to_owned(), target);
+
+        insert_graph(&conn, &map).expect("insert 1");
+        insert_graph(&conn, &map).expect("insert 2");
+
+        let loaded = load_graph_from_db(&conn).expect("load").expect("should have data");
+        assert_eq!(loaded.len(), 2);
+        assert_entity_eq(&e, &loaded["RF-001"]);
+    }
+
+    #[test]
+    fn load_skips_invalid_entity_type() {
+        let conn = init_in_memory().expect("in-memory DB");
+
+        // Insert a valid entity and a bogus one directly via SQL.
+        conn.execute(
+            "INSERT INTO entities (name, entity_type, category, description, tags, attributes, file_path)
+             VALUES ('SMELL-01', 'smell', '', '', '[]', '{}', '')",
+            [],
+        )
+        .expect("insert valid");
+        conn.execute(
+            "INSERT INTO entities (name, entity_type, category, description, tags, attributes, file_path)
+             VALUES ('BOGUS-01', 'not_a_real_type', '', '', '[]', '{}', '')",
+            [],
+        )
+        .expect("insert bogus");
+
+        let loaded = load_graph_from_db(&conn).expect("load").expect("should have data");
+        assert_eq!(loaded.len(), 1, "only the valid entity should be loaded");
+        assert!(loaded.contains_key("SMELL-01"));
+    }
+
+    #[test]
+    fn load_handles_null_columns() {
+        let conn = init_in_memory().expect("in-memory DB");
+
+        // Insert an entity with NULLs in nullable columns.
+        conn.execute(
+            "INSERT INTO entities (name, entity_type, category, description, tags, attributes, file_path)
+             VALUES ('SMELL-01', 'smell', NULL, NULL, NULL, NULL, NULL)",
+            [],
+        )
+        .expect("insert with nulls");
+
+        let loaded = load_graph_from_db(&conn).expect("load").expect("should have data");
+        assert_eq!(loaded.len(), 1);
+        let e = &loaded["SMELL-01"];
+        assert_eq!(e.category, "");
+        assert_eq!(e.description, "");
+        assert_eq!(e.file_path, "");
+        assert!(e.tags.is_empty());
+    }
 }
