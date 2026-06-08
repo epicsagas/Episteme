@@ -6,8 +6,9 @@ use crate::ports::parser::CodeParser;
 
 use super::{
     GenericParser, build_func_metrics_full, cached_regex, cached_regex_owned, calculate_cc_rust,
-    count_block_comment_lines, count_line_comment_lines, count_loc, count_local_vars,
-    count_primitive_params_rust, find_matching_brace, line_number,
+    count_block_comment_lines, count_delegation_methods, count_line_comment_lines, count_loc,
+    count_local_vars, count_overrides, count_primitive_params_rust, find_matching_brace,
+    line_number,
 };
 
 /// Extended Rust parser that counts `impl` block methods for each struct.
@@ -110,23 +111,27 @@ impl CodeParser for RustFullParser {
                 r"(?m)impl\s+(?:<[^>]*>\s*)?(?:\w+\s+for\s+)?{name}\s*(?:<[^>]*>\s*)?\{{"
             ));
             let method_re = cached_regex(r"(?m)(?:pub\s+)?(?:(?:async|unsafe|const)\s+)*fn\s+\w+");
-            let method_count: usize = impl_re
-                .find_iter(&cleaned)
-                .map(|m| {
-                    let impl_start = m.start();
-                    let brace_off = cleaned[impl_start..].find('{').unwrap_or(0);
-                    let brace_pos = impl_start + brace_off;
-                    match find_matching_brace(&cleaned, brace_pos) {
-                        Some(end) => method_re.find_iter(&cleaned[brace_pos..=end]).count(),
-                        None => 0,
-                    }
-                })
-                .sum();
+            let mut method_count: usize = 0;
+            let mut impl_body_combined = String::new();
+            for m in impl_re.find_iter(&cleaned) {
+                let impl_start = m.start();
+                let brace_off = cleaned[impl_start..].find('{').unwrap_or(0);
+                let brace_pos = impl_start + brace_off;
+                if let Some(end) = find_matching_brace(&cleaned, brace_pos) {
+                    method_count += method_re.find_iter(&cleaned[brace_pos..=end]).count();
+                    impl_body_combined.push_str(&cleaned[brace_pos..=end]);
+                }
+            }
+
+            let delegation_methods = count_delegation_methods(&impl_body_combined);
+            let override_count = count_overrides(&impl_body_combined);
 
             let metrics = CodeMetrics {
                 loc,
                 method_count,
                 field_count,
+                delegation_methods,
+                override_count,
                 item_type: ItemType::Class,
                 ..Default::default()
             };

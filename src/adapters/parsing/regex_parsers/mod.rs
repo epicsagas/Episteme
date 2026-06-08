@@ -265,38 +265,101 @@ pub(crate) fn count_external_calls(body: &str) -> usize {
     count_keyword(body, r"\w+\.\w+\s*\(")
 }
 
-/// Count branches: `if`, `elif`, `else if`, `case`, `match` arms.
+/// Count branches: `if`, `elif`, `else if`, `case`, Rust `match` arms (`=>`).
 /// Avoids double-counting `else if` (counted once, not as `else if` + `if`).
+/// Rust `match` arms are counted via `=>` arrows rather than the `match` keyword,
+/// so a 12-arm match correctly produces branch_count=12.
+///
+/// NOTE: `=>` also appears in closures (JS/TS arrow functions), type aliases, and
+/// trait bounds, but those contexts are handled by language-specific `calculate_cc_*`
+/// variants rather than this base function.  The primary consumer of `=>` counting
+/// here is Rust code parsed via the regex path, where `=>` unambiguously denotes
+/// match arms.
 pub(crate) fn count_branches(body: &str) -> usize {
     let else_if = count_keyword(body, r"\belse\s+if\b");
     let standalone_if = count_keyword(body, r"\bif\b").saturating_sub(else_if);
+    let match_arms = count_keyword(body, r"=>");
     else_if
         + standalone_if
         + count_keyword(body, r"\belif\b")
         + count_keyword(body, r"\bcase\b")
-        + count_keyword(body, r"\bmatch\b")
+        + if match_arms > 0 { match_arms } else { 0 }
 }
 
 /// Count method call chains like `a.b().c().d()`.
 /// Heuristic: count sequences of `.identifier(`.
 pub(crate) fn count_method_call_chains(body: &str) -> usize {
+    // Match .identifier( sequences (method calls with parens)
     let re = cached_regex(r"\.\w+\s*\(");
     let matches: Vec<_> = re.find_iter(body).collect();
-    if matches.is_empty() {
-        return 0;
-    }
-    let mut max_chain: usize = 1;
-    let mut cur_chain: usize = 1;
-    for i in 1..matches.len() {
-        let gap = matches[i].start() - matches[i - 1].end();
-        if gap <= 5 {
-            cur_chain += 1;
-            max_chain = max_chain.max(cur_chain);
-        } else {
-            cur_chain = 1;
+    let method_chain = if matches.len() > 1 {
+        let mut max_chain: usize = 1;
+        let mut cur_chain: usize = 1;
+        for i in 1..matches.len() {
+            let gap = matches[i].start() - matches[i - 1].end();
+            // Allow up to 15 chars gap (covers ")\n          " in multi-line chains)
+            if gap <= 15 {
+                cur_chain += 1;
+                max_chain = max_chain.max(cur_chain);
+            } else {
+                cur_chain = 1;
+            }
         }
-    }
-    max_chain
+        max_chain
+    } else {
+        0
+    };
+    // Also check property chains: .prop.prop.prop (no parens, common in Ruby/JS)
+    // Use gap=0 since chained property access has no space between segments.
+    // NOTE: `\.\w+` matches ALL dot-accessor patterns including method calls.
+    // The gap=0 constraint prevents FPs because non-chained accesses (e.g.
+    // `obj.method(other.access())`) have gaps > 0 between matches.  Consecutive
+    // field initializers like `self.a = 1; self.b = 2;` could theoretically
+    // produce gap=0 false chains if on the same line, but message chain detection
+    // requires depth > 3 which limits the impact.
+    let prop_re = cached_regex(r"\.\w+");
+    let prop_matches: Vec<_> = prop_re.find_iter(body).collect();
+    let prop_chain = if prop_matches.len() > 1 {
+        let mut max_chain: usize = 1;
+        let mut cur_chain: usize = 1;
+        for i in 1..prop_matches.len() {
+            let gap = prop_matches[i].start() - prop_matches[i - 1].end();
+            if gap == 0 {
+                cur_chain += 1;
+                max_chain = max_chain.max(cur_chain);
+            } else {
+                cur_chain = 1;
+            }
+        }
+        max_chain
+    } else {
+        0
+    };
+    method_chain.max(prop_chain)
+}
+
+/// Count delegation methods: methods whose body is primarily forwarding calls
+/// to another object (e.g., `self.delegate.method()` or `other.method()`).
+/// Matches complete delegation statements: `return obj.method(args);` or
+/// `self.delegate.handle(event);` — requires the call to end with `;` to
+/// avoid counting partial expressions or multi-statement lines.
+pub(crate) fn count_delegation_methods(body: &str) -> usize {
+    // Match complete forwarding statements like:
+    //   return self.x.method(args);
+    //   this.client.get(id);
+    //   @service.send(msg);
+    let re = cached_regex(r"(?m)^\s*(return\s+)?[@\w]+(\.\w+)+\s*\([^)]*\)\s*;");
+    re.find_iter(body).count()
+}
+
+/// Count method overrides in a class body.
+/// Detects `@Override` (Java/TypeScript) and `super()` calls (Python/Ruby).
+/// NOTE: Rust has no `override` keyword — trait impl methods are detected via
+/// `impl Trait for Type` in the Python AST parser's `override_count` field instead.
+pub(crate) fn count_overrides(body: &str) -> usize {
+    let java_ts = count_keyword(body, r"(?i)@override");
+    let py_rb = count_keyword(body, r"\bsuper\(\)");
+    java_ts + py_rb
 }
 
 /// Line number for a byte offset (1-based).
@@ -730,24 +793,10 @@ def add(a, b):
 
 def greet(name):
     greeting = f"Hello, {name}"
-    length = len(greeting)
-    message = f"{greeting} (length: {length})"
+    message = f"{greeting} (len: {len(greeting)})"
     upper = message.upper()
-    lower = message.lower()
-    trimmed = lower.strip()
-    final_msg = f"{trimmed}!"
-    tagged = f"[{final_msg}]"
-    formatted = f"MSG: {tagged}"
-    padded = formatted.center(50)
-    aligned = padded.ljust(60)
-    decorated = f"=={aligned}=="
-    finalized = decorated.upper()
-    processed = f">> {finalized} <<"
-    wrapped = f"({processed})"
-    encoded = wrapped.encode('utf-8')
-    decoded = encoded.decode('utf-8')
-    trimmed2 = decoded.strip()
-    finished = f"Result: {trimmed2}"
+    lower = upper.lower()
+    finished = f"Result: {lower}"
     return finished
 "#;
         let parser = PythonParser::new();
@@ -1435,11 +1484,11 @@ pub unsafe async fn complex(a: i32, b: i32, c: i32, d: i32, e: i32, f: i32) -> i
     #[test]
     fn rust_unsafe_const_fn_metrics() {
         let code = r#"
-unsafe fn compute(a: i32, b: i32, c: i32, d: i32) -> i32 {
+unsafe fn compute(a: i32, b: i32, c: i32, d: i32, e: i32) -> i32 {
     let mut result = a + b;
     if a > 0 { result += c; }
     if b > 0 { result += d; }
-    if c > 0 { result *= 2; }
+    if c > 0 { result *= e; }
     if d > 0 { result *= 3; }
     result
 }

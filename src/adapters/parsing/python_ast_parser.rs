@@ -92,7 +92,8 @@ fn detect_function_metrics(
     let external_calls = count_external_calls(body);
     let branch_count = count_branches(body);
     let method_call_chains = count_call_chains(body);
-    let comment_count = count_comment_lines_in_range(code, range);
+    let comment_count =
+        count_comment_lines_in_range(code, range) + count_docstring_lines(body, code);
 
     let metrics = CodeMetrics {
         loc,
@@ -124,6 +125,8 @@ fn detect_class_metrics(c: &ast::StmtClassDef, code: &str, file_name: &str) -> V
             )
         })
         .count();
+    // Count fields: assignments inside method bodies (self.x = ...)
+    // plus class-level annotated assignments (dataclass fields: name: str)
     let field_count = c
         .body
         .iter()
@@ -134,12 +137,45 @@ fn detect_class_metrics(c: &ast::StmtClassDef, code: &str, file_name: &str) -> V
         })
         .flat_map(|body| body.iter())
         .filter(|s| matches!(s, ast::Stmt::Assign(_) | ast::Stmt::AnnAssign(_)))
-        .count();
+        .count()
+        + c.body
+            .iter()
+            .filter(|s| matches!(s, ast::Stmt::AnnAssign(_) | ast::Stmt::Assign(_)))
+            .count();
+    // Aggregate cyclomatic complexity across all methods in the class.
+    let cyclomatic_complexity: usize = c
+        .body
+        .iter()
+        .filter_map(|s| match s {
+            ast::Stmt::FunctionDef(f) => Some(1 + count_decisions(&f.body)),
+            ast::Stmt::AsyncFunctionDef(f) => Some(1 + count_decisions(&f.body)),
+            _ => None,
+        })
+        .sum();
+    // For subclasses (classes with bases), non-dunder methods are likely overrides
+    let override_count = if !c.bases.is_empty() {
+        c.body
+            .iter()
+            .filter(|s| {
+                let name = match s {
+                    ast::Stmt::FunctionDef(f) => f.name.as_ref(),
+                    ast::Stmt::AsyncFunctionDef(f) => f.name.as_ref(),
+                    _ => "",
+                };
+                !name.is_empty() && !name.starts_with("__")
+            })
+            .count()
+    } else {
+        0
+    };
     let metrics = CodeMetrics {
         loc: count_code_lines_in_range(code, c.range()),
+        cyclomatic_complexity,
         method_count,
         field_count,
-        comment_count: count_comment_lines_in_range(code, c.range()),
+        override_count,
+        comment_count: count_comment_lines_in_range(code, c.range())
+            + count_docstring_lines(&c.body, code),
         item_type: ItemType::Class,
         ..Default::default()
     };
@@ -377,4 +413,30 @@ fn count_comment_lines_in_range(
             t.starts_with('#')
         })
         .count()
+}
+
+/// Count docstring lines in a function/class body.
+/// A docstring is the first statement if it is a string constant expression.
+fn count_docstring_lines(body: &[ast::Stmt], code: &str) -> usize {
+    let Some(first) = body.first() else {
+        return 0;
+    };
+    let ast::Stmt::Expr(expr_stmt) = first else {
+        return 0;
+    };
+    // Check if the first expression is a string constant (docstring)
+    match expr_stmt.value.as_ref() {
+        ast::Expr::Constant(_) => {
+            // Check if the constant is a string by inspecting the source text
+            let start = first.range().start().to_usize().min(code.len());
+            let end = first.range().end().to_usize().min(code.len());
+            let src = code[start..end].trim();
+            if src.starts_with('"') || src.starts_with('\'') {
+                src.lines().count().max(1)
+            } else {
+                0
+            }
+        }
+        _ => 0,
+    }
 }
