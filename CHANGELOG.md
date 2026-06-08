@@ -5,6 +5,34 @@ All notable changes to Episteme will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Evaluation testset and batch evaluation system for search quality regression detection
+- Knowledge graph consolidated into SQLite for unified storage (`feat(db)`)
+
+### Fixed
+
+- Search: homonym layer priority swapped to fix Python query false positives
+- Search: value objects excluded from lazy class tier 2 detection
+- Search: homonym lookup hardened and smell detector accuracy improved
+- Search: eval quality improved with homonym demotion and smell tuning
+- Benchmarks: `eval_runner` updated to use `search` command
+
+### Changed
+
+- Evaluation system documentation and i18n references added
+- Bump `actions/setup-python` from 5 to 6
+
+## [0.3.5] — 2026-06-07
+
+- Version bump (no functional changes)
+
+## [0.3.4] — 2026-06-07
+
+- Version bump (no functional changes)
+
 ## [0.3.3] - 2025-06-07
 
 ### Changed
