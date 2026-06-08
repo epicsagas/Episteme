@@ -273,7 +273,15 @@ static HOMONYM_CONTEXTS: &[(&str, &[&str])] = &[
         ],
     ),
     ("DP-021", &["resume", "document"]),
-    ("DP-022", &["management system", "office", "visitor"]),
+    (
+        "DP-022",
+        &[
+            "management system",
+            "office",
+            "visitor management",
+            "visitor center",
+        ],
+    ),
     ("DP-023", &["corporate governance", "accountability"]),
     ("DP-025", &["gifts", "holiday"]),
     // Refactorings colliding with common English
@@ -333,31 +341,32 @@ static HOMONYM_MAP: LazyLock<HashMap<&str, &[&str]>> =
 
 /// Check whether the query's context conflicts with the given entity.
 ///
-/// Returns `true` when:
-/// 1. The query contains a non-SWE domain signal that matches the entity's
-///    homonym context, AND
-/// 2. The query does NOT contain any SWE-domain guard keywords.
+/// Returns `true` when the query contains a domain signal matching the entity's
+/// homonym context. Entity-specific context signals are checked first (Layer 2)
+/// because they are more precise than query-level SWE guard keywords (Layer 1).
 ///
-/// This prevents demoting legitimate SWE queries that happen to share a word
-/// with a non-SWE context (e.g. "factory pattern for thread safety" contains
-/// "safety" but also "pattern" → not demoted).
+/// Layer priority:
+/// 1. Context signals (entity-specific, precise) — if matched, demote unconditionally
+/// 2. SWE guard (query-level) — protects legitimate SWE queries when no context signal matched
 pub fn is_homonym_mismatch(query: &str, entity_id: &str) -> bool {
     let query_lower = query.to_lowercase();
 
-    // Check SWE guard: if query contains any SWE keyword as a whole word, never demote
+    // Layer 2: entity-specific context signals (evaluated first — more precise)
+    if let Some(signals) = HOMONYM_MAP.get(entity_id) {
+        for signal in *signals {
+            if query_lower.contains(signal) {
+                return true;
+            }
+        }
+    }
+
+    // Layer 1: SWE guard — prevents demoting legitimate SWE queries that share
+    // words with non-SWE contexts (e.g. "factory pattern for thread safety" has
+    // "safety" in DP-001/003 context but also "pattern" → not demoted)
     if SWE_GUARD_RE.is_match(&query_lower) {
         return false;
     }
 
-    // O(1) HashMap lookup instead of linear scan over HOMONYM_CONTEXTS
-    let Some(signals) = HOMONYM_MAP.get(entity_id) else {
-        return false;
-    };
-    for signal in *signals {
-        if query_lower.contains(signal) {
-            return true;
-        }
-    }
     false
 }
 
