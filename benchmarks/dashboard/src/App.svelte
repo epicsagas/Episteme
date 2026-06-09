@@ -1,81 +1,73 @@
 <script>
-  import TrendChart from './lib/TrendChart.svelte';
-  import LatencyTrend from './lib/LatencyTrend.svelte';
-  import LatencySummary from './lib/LatencySummary.svelte';
-  import TierBreakdown from './lib/TierBreakdown.svelte';
+  import CompositeTrend from './lib/CompositeTrend.svelte';
+  import RegressionBanner from './lib/RegressionBanner.svelte';
+  import MetricsCard from './lib/MetricsCard.svelte';
+  import BarChart from './lib/BarChart.svelte';
   import QueryTable from './lib/QueryTable.svelte';
+  import ViolationTable from './lib/ViolationTable.svelte';
+  import HelpButton from './lib/HelpButton.svelte';
+  import { i18n, toggleLocale } from './lib/i18n.svelte';
+  import { help } from './lib/help.js';
 
-  // Load all benchmark result files eagerly
   const rawFiles = import.meta.glob('/results/*.json', { eager: true });
 
-  function parseTimestamp(filename) {
-    // filename: search_benchmark_YYYYMMDD_HHMMSS.json
-    const m = filename.match(/(\d{8})_(\d{6})\.json$/);
-    if (!m) return new Date(0);
-    const [, date, time] = m;
-    const y = date.slice(0, 4);
-    const mo = date.slice(4, 6);
-    const d = date.slice(6, 8);
-    const h = time.slice(0, 2);
-    const mi = time.slice(2, 4);
-    const s = time.slice(4, 6);
-    return new Date(`${y}-${mo}-${d}T${h}:${mi}:${s}Z`);
-  }
-
-  // Build sorted runs array
   const runs = Object.entries(rawFiles)
+    .filter(([path]) => {
+      const name = path.split('/').at(-1);
+      return name.startsWith('eval_') && name.endsWith('.json');
+    })
     .map(([path, mod]) => {
       const filename = path.split('/').at(-1);
       const data = mod.default ?? mod;
       return {
         filename,
-        path,
-        timestamp: parseTimestamp(filename),
-        label: filename.replace('search_benchmark_', '').replace('.json', ''),
-        summary: data.summary,
-        per_query: data.per_query ?? [],
+        timestamp: new Date(data.timestamp),
+        label: filename.replace('eval_', '').replace('.json', ''),
+        git_commit: data.git_commit,
+        composite_score: data.composite_score,
+        regression: data.regression,
+        suites: data.suites,
       };
     })
     .sort((a, b) => a.timestamp - b.timestamp);
 
-  // Trend data derived from all runs
   const trendRuns = runs.map((r) => ({
     label: r.label,
     timestamp: r.timestamp,
-    hit1: r.summary.quality['hit@1'],
-    mrr: r.summary.quality['mrr@5'],
-    ndcg: r.summary.quality['ndcg@5'],
-    queries: r.summary.queries,
-    latencyMean: r.summary.latency_ms.mean,
-    latencyP95: r.summary.latency_ms.p95,
-    topK: r.summary.top_k,
+    composite: r.composite_score.composite,
+    recall: r.composite_score.recall,
+    precision: r.composite_score.precision,
+    specificity: r.composite_score.specificity,
+    smell_recall: r.composite_score.smell_recall,
   }));
 
-  // Selected run index (default = latest)
   let selectedIndex = $state(runs.length - 1);
-
   let selectedRun = $derived(runs[selectedIndex]);
+
+  function pct(v) { return (v * 100).toFixed(1) + '%'; }
 </script>
 
 <div class="app">
   <header>
-    <h1>Episteme <span class="accent">Benchmark</span> Dashboard</h1>
-    <p class="subtitle">{runs.length} runs loaded</p>
+    <div class="header-row">
+      <h1>Episteme <span class="accent">Eval</span> Dashboard</h1>
+      <button class="lang-toggle" onclick={toggleLocale}>
+        {i18n.locale === 'en' ? '한국어' : 'EN'}
+      </button>
+    </div>
+    <p class="subtitle">{runs.length} eval runs | {selectedRun?.git_commit}</p>
   </header>
 
-  <!-- Section 1: Quality Trend -->
+  <!-- Composite Trend -->
   <section class="section">
-    <h2>Quality Trend</h2>
-    <TrendChart runs={trendRuns} />
+    <div class="section-header">
+      <h2>Composite Score Trend</h2>
+      <HelpButton help={help.compositeTrend} />
+    </div>
+    <CompositeTrend runs={trendRuns} />
   </section>
 
-  <!-- Section 2: Latency Trend -->
-  <section class="section">
-    <h2>Latency Trend</h2>
-    <LatencyTrend runs={trendRuns} />
-  </section>
-
-  <!-- Section 3: Selected Run -->
+  <!-- Run Details -->
   <section class="section">
     <div class="section-header">
       <h2>Run Details</h2>
@@ -86,33 +78,113 @@
       </select>
     </div>
     {#if selectedRun}
-      <LatencySummary summary={selectedRun.summary} />
+      <RegressionBanner regression={selectedRun.regression} />
+      <div class="composite-cards">
+        <MetricsCard title="Composite" metrics={{ score: selectedRun.composite_score.composite }} format={pct} help={help.composite} />
+        <MetricsCard title="Recall" metrics={{ recall: selectedRun.composite_score.recall }} format={pct} help={help.recall} />
+        <MetricsCard title="Precision" metrics={{ precision: selectedRun.composite_score.precision }} format={pct} help={help.precision} />
+        <MetricsCard title="Specificity" metrics={{ specificity: selectedRun.composite_score.specificity }} format={pct} help={help.specificity} />
+        <MetricsCard title="Smell Recall" metrics={{ recall: selectedRun.composite_score.smell_recall }} format={pct} help={help.smellRecall} />
+      </div>
     {/if}
   </section>
 
-  <!-- Section 4: Tier Breakdown -->
+  <!-- Search Positive -->
   <section class="section">
-    <h2>Tier Breakdown</h2>
-    {#if selectedRun}
-      <TierBreakdown summary={selectedRun.summary} />
+    <div class="section-header">
+      <h2>Search Positive</h2>
+      <HelpButton help={help.searchPositive} />
+    </div>
+    {#if selectedRun?.suites?.search_positive}
+      <MetricsCard title="Metrics" metrics={selectedRun.suites.search_positive.metrics} format={pct} help={help.searchPositiveMetrics} />
+      <QueryTable perQuery={selectedRun.suites.search_positive.per_query} />
+    {:else}
+      <p class="empty">No data</p>
     {/if}
   </section>
 
-  <!-- Section 5: Per-Query -->
+  <!-- Search Negative -->
   <section class="section">
-    <h2>Per-Query Results</h2>
-    {#if selectedRun}
-      <QueryTable perQuery={selectedRun.per_query} />
+    <div class="section-header">
+      <h2>Search Negative</h2>
+      <HelpButton help={help.searchNegative} />
+    </div>
+    {#if selectedRun?.suites?.search_negative}
+      {@const sn = selectedRun.suites.search_negative}
+      <MetricsCard title="FP Rates" metrics={{ 'fp@1': sn.metrics['fp@1'], 'fp@3': sn.metrics['fp@3'], 'fp@5': sn.metrics['fp@5'] }} format={pct} help={help.searchNegativeFp} />
+      <MetricsCard title="Specificity" metrics={{ specificity: sn.metrics.specificity, true_negatives: sn.metrics.true_negatives, total: sn.metrics.total }} help={help.searchNegativeSpecificity} />
+      <ViolationTable perQuery={sn.per_query} />
+    {:else}
+      <p class="empty">No data</p>
+    {/if}
+  </section>
+
+  <!-- Smell Negative -->
+  <section class="section">
+    <div class="section-header">
+      <h2>Smell Negative (False Positive Rate)</h2>
+      <HelpButton help={help.smellNegative} />
+    </div>
+    {#if selectedRun?.suites?.smell_negative}
+      {@const sm = selectedRun.suites.smell_negative}
+      <MetricsCard title="FP Rate" metrics={{ fp_rate: sm.metrics.fp_rate, fp_count: sm.metrics.fp_count, total: sm.metrics.total, specificity: sm.metrics.specificity }} help={help.smellNegativeFp} />
+      <h3>Per Detector</h3>
+      <BarChart data={sm.metrics.per_detector} color="#ef5350" />
+      <h3>Per Language</h3>
+      <table class="lang-table">
+        <thead>
+          <tr><th>Language</th><th>FP Rate</th></tr>
+        </thead>
+        <tbody>
+          {#each Object.entries(sm.metrics.per_language).sort(([,a],[,b]) => b - a) as [lang, rate]}
+            <tr>
+              <td>{lang}</td>
+              <td class="rate" style="color: {rate === 0 ? 'var(--green)' : rate < 0.5 ? 'var(--yellow)' : 'var(--red)'}">{(rate * 100).toFixed(0)}%</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else}
+      <p class="empty">No data</p>
+    {/if}
+  </section>
+
+  <!-- Analyze Positive -->
+  <section class="section">
+    <div class="section-header">
+      <h2>Analyze Positive (Smell Detection Recall)</h2>
+      <HelpButton help={help.analyzePositive} />
+    </div>
+    {#if selectedRun?.suites?.analyze_positive}
+      {@const ap = selectedRun.suites.analyze_positive}
+      <MetricsCard title="Recall" metrics={{ recall: ap.metrics.recall, hits: ap.metrics.hits, total: ap.metrics.total }} help={help.analyzePositiveRecall} />
+      <h3>Per Smell Recall</h3>
+      <BarChart data={ap.metrics.per_smell_recall} color="#66bb6a" />
+    {:else}
+      <p class="empty">No data</p>
+    {/if}
+  </section>
+
+  <!-- Traversal -->
+  <section class="section">
+    <div class="section-header">
+      <h2>Traversal</h2>
+      <HelpButton help={help.traversal} />
+    </div>
+    {#if selectedRun?.suites?.traversal}
+      {@const tr = selectedRun.suites.traversal}
+      <div class="traversal-grid">
+        <MetricsCard title="Neighbors" metrics={{ recall: tr.metrics.neighbors.recall, hits: tr.metrics.neighbors.hits, total: tr.metrics.neighbors.total }} help={help.traversalNeighbors} />
+        <MetricsCard title="Paths" metrics={{ recall: tr.metrics.paths.recall, hits: tr.metrics.paths.hits, total: tr.metrics.paths.total }} help={help.traversalPaths} />
+      </div>
+    {:else}
+      <p class="empty">No data</p>
     {/if}
   </section>
 </div>
 
 <style>
-  :global(*) {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
+  :global(*) { box-sizing: border-box; margin: 0; padding: 0; }
 
   :global(:root) {
     --bg: #0a0b10;
@@ -126,40 +198,31 @@
   :global(body) {
     background: var(--bg);
     color: #c9d1d9;
-    font-family:
-      -apple-system,
-      BlinkMacSystemFont,
-      'Segoe UI',
-      Roboto,
-      sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.5;
   }
 
-  .app {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem 3rem;
-  }
+  .app { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
 
-  header {
-    margin-bottom: 2rem;
-  }
+  header { margin-bottom: 2rem; }
 
-  h1 {
-    font-size: 1.6rem;
-    color: #e6edf3;
-    font-weight: 700;
-  }
+  .header-row { display: flex; align-items: center; justify-content: space-between; }
 
-  .accent {
-    color: var(--accent);
-  }
+  h1 { font-size: 1.6rem; color: #e6edf3; font-weight: 700; }
+  .accent { color: var(--accent); }
+  .subtitle { color: #8b949e; font-size: 0.85rem; margin-top: 0.25rem; }
 
-  .subtitle {
+  .lang-toggle {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
     color: #8b949e;
-    font-size: 0.85rem;
-    margin-top: 0.25rem;
+    padding: 0.3rem 0.65rem;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
   }
+  .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
 
   .section {
     margin-bottom: 2.5rem;
@@ -169,25 +232,11 @@
     padding: 1.5rem;
   }
 
-  h2 {
-    color: #e6edf3;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
+  h2 { color: #e6edf3; font-size: 1rem; margin-bottom: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  h3 { color: var(--accent); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; margin: 1.25rem 0 0.75rem; }
 
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .section-header h2 {
-    margin-bottom: 0;
-  }
+  .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .section-header h2 { margin-bottom: 0; }
 
   .run-select {
     background: #161b22;
@@ -199,8 +248,30 @@
     cursor: pointer;
     outline: none;
   }
+  .run-select:focus { border-color: var(--accent); }
 
-  .run-select:focus {
-    border-color: var(--accent);
+  .composite-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
   }
+
+  .traversal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .lang-table {
+    width: 100%;
+    max-width: 300px;
+    border-collapse: collapse;
+    font-size: 0.83rem;
+    margin-top: 0.5rem;
+  }
+  .lang-table th { background: #161b22; color: #8b949e; text-transform: uppercase; font-size: 0.75rem; padding: 0.5rem 0.75rem; text-align: left; }
+  .lang-table td { padding: 0.45rem 0.75rem; border-top: 1px solid #21262d; }
+  .lang-table .rate { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .empty { color: #8b949e; font-size: 0.85rem; }
 </style>

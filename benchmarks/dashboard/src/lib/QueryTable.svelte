@@ -1,7 +1,7 @@
 <script>
   import QueryModal from './QueryModal.svelte';
 
-  /** @type {{ perQuery: import('../types').PerQuery[] }} */
+  /** @type {{ perQuery: Array<{ query: string; top_ids: string[]; 'hit@1': number; 'hit@3': number; 'hit@5': number; 'rr@5': number; 'ndcg@5': number }> }} */
   let { perQuery } = $props();
 
   let selected = $state(null);
@@ -23,8 +23,6 @@
         <th>hit@5</th>
         <th>RR</th>
         <th>NDCG</th>
-        <th>top-1 id</th>
-        <th>Latency (ms)</th>
       </tr>
     </thead>
     <tbody>
@@ -38,8 +36,6 @@
           <td class="center">{row['hit@5'] === 1 ? '✓' : '✗'}</td>
           <td class="num">{row['rr@5'].toFixed(3)}</td>
           <td class="num">{row['ndcg@5'].toFixed(3)}</td>
-          <td class="mono">{row.top_ids?.[0] ?? '—'}</td>
-          <td class="num">{row.latency_mean_ms.toFixed(1)}</td>
         </tr>
       {/each}
     </tbody>
@@ -53,13 +49,10 @@
     overflow-x: auto;
     border: 1px solid #21262d;
     border-radius: 8px;
+    margin-top: 1rem;
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.83rem;
-  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
 
   thead th {
     background: #161b22;
@@ -73,55 +66,17 @@
     top: 0;
   }
 
-  tbody tr {
-    cursor: pointer;
-    border-top: 1px solid #21262d;
-    transition: background 0.1s;
-  }
+  tbody tr { cursor: pointer; border-top: 1px solid #21262d; transition: background 0.1s; }
+  tbody tr:hover { background: #161b22; }
 
-  tbody tr:hover {
-    background: #161b22;
-  }
+  td { padding: 0.55rem 0.75rem; color: #c9d1d9; }
 
-  td {
-    padding: 0.55rem 0.75rem;
-    color: #c9d1d9;
-  }
+  .query-cell { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .center { text-align: center; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
 
-  .query-cell {
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .center {
-    text-align: center;
-  }
-
-  .num {
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .mono {
-    font-family: monospace;
-    color: #8b949e;
-  }
-
-  .row-red {
-    background: #3d0c0c55;
-  }
-
-  .row-red:hover {
-    background: #3d0c0c88;
-  }
-
-  .row-yellow {
-    background: #3d2e0055;
-  }
-
-  .row-yellow:hover {
-    background: #3d2e0088;
-  }
+  .row-red { background: #3d0c0c55; }
+  .row-red:hover { background: #3d0c0c88; }
+  .row-yellow { background: #3d2e0055; }
+  .row-yellow:hover { background: #3d2e0088; }
 </style>

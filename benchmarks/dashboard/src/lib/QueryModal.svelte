@@ -1,5 +1,5 @@
 <script>
-  /** @type {{ query: import('../types').PerQuery | null; onclose: () => void }} */
+  /** @type {{ query: { query: string; top_ids: string[]; 'hit@1': number; 'rr@5': number; 'ndcg@5': number } | null; onclose: () => void }} */
   let { query, onclose } = $props();
 
   function handleKeydown(e) {
@@ -18,19 +18,10 @@
       <h2 class="modal-title">{query.query}</h2>
 
       <div class="section">
-        <h3>Relevant IDs</h3>
-        <div class="chips">
-          {#each query.relevant_ids as id}
-            <span class="chip relevant">{id}</span>
-          {/each}
-        </div>
-      </div>
-
-      <div class="section">
         <h3>Top IDs returned</h3>
         <div class="chips">
           {#each query.top_ids as id}
-            <span class="chip" class:match={query.relevant_ids.includes(id)}>{id}</span>
+            <span class="chip">{id}</span>
           {/each}
         </div>
       </div>
@@ -49,10 +40,6 @@
         <div class="metric">
           <span class="label">NDCG@5</span>
           <span class="value">{query['ndcg@5'].toFixed(4)}</span>
-        </div>
-        <div class="metric">
-          <span class="label">Latency mean</span>
-          <span class="value">{query.latency_mean_ms.toFixed(1)} ms</span>
         </div>
       </div>
     </div>
@@ -90,34 +77,15 @@
     cursor: pointer;
     font-size: 1rem;
   }
+  .close:hover { color: #c9d1d9; }
 
-  .close:hover {
-    color: #c9d1d9;
-  }
+  .modal-title { color: #c9d1d9; margin: 0 0 1.25rem; font-size: 1rem; }
 
-  .modal-title {
-    color: #c9d1d9;
-    margin: 0 0 1.25rem;
-    font-size: 1rem;
-  }
+  .section { margin-bottom: 1rem; }
 
-  .section {
-    margin-bottom: 1rem;
-  }
+  h3 { color: var(--accent); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 0.5rem; }
 
-  h3 {
-    color: var(--accent);
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin: 0 0 0.5rem;
-  }
-
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 
   .chip {
     background: #21262d;
@@ -125,47 +93,14 @@
     border-radius: 4px;
     padding: 0.2rem 0.5rem;
     font-size: 0.8rem;
-    color: #8b949e;
-  }
-
-  .chip.relevant {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .chip.match {
-    border-color: var(--green);
-    color: var(--green);
-  }
-
-  .metrics {
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-  }
-
-  .metric {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-  }
-
-  .label {
-    color: #8b949e;
-    font-size: 0.75rem;
-  }
-
-  .value {
     color: #c9d1d9;
-    font-size: 1rem;
-    font-weight: 600;
+    font-family: monospace;
   }
 
-  .value.good {
-    color: var(--green);
-  }
-
-  .value.bad {
-    color: var(--red);
-  }
+  .metrics { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .metric { display: flex; flex-direction: column; gap: 0.2rem; }
+  .label { color: #8b949e; font-size: 0.75rem; }
+  .value { color: #c9d1d9; font-size: 1rem; font-weight: 600; }
+  .value.good { color: var(--green); }
+  .value.bad { color: var(--red); }
 </style>
