@@ -470,14 +470,14 @@ fn count_code_lines_in_range(code: &str, range: rustpython_parser::text_size::Te
         }
 
         // Opening triple-quote (docstring)
-        if t.starts_with("\"\"\"") {
-            if !t[3..].contains("\"\"\"") {
+        if let Some(rest) = t.strip_prefix("\"\"\"") {
+            if !rest.contains("\"\"\"") {
                 in_docstring = true;
             }
             continue;
         }
-        if t.starts_with("'''") {
-            if !t[3..].contains("'''") {
+        if let Some(rest) = t.strip_prefix("'''") {
+            if !rest.contains("'''") {
                 in_docstring = true;
             }
             continue;
