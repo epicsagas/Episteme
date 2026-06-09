@@ -385,5 +385,4 @@ db/*.db-shm
 db/*.db-wal
 
 # Eval results (generated output)
-benchmarks/results/*.json
 !benchmarks/results/.gitkeep
