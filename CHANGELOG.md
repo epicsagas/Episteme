@@ -25,6 +25,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Evaluation system documentation and i18n references added
 - Bump `actions/setup-python` from 5 to 6
 
+## [0.3.6] — 2026-06-10
+
+### Fixed
+
+- **SMELL-16 (Comments) false positive elimination** — doc comments (docstrings, `///`, `/** Javadoc */`) are now excluded from inline comment counting via a new `doc_comment_count` field in `CodeMetrics`
+- **Python AST parser LOC calculation** — multi-line docstring content lines no longer counted as code lines
+- **Rust/Go regex parser position mismatch** — comment counts are now pre-collected from raw (unstripped) code instead of incorrectly indexing into comment-stripped code
+
+### Changed
+
+- Eval composite score improved to 0.7808 (+0.0198), regression PASS
+
 ## [0.3.5] — 2026-06-07
 
 - Version bump (no functional changes)
