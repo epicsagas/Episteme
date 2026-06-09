@@ -888,7 +888,9 @@ pub fn detect_comments(
     name: &str,
 ) -> Option<SmellDetection> {
     // Use only inline comments (exclude doc comments like docstrings, ///)
-    let inline_count = metrics.comment_count.saturating_sub(metrics.doc_comment_count);
+    let inline_count = metrics
+        .comment_count
+        .saturating_sub(metrics.doc_comment_count);
     if inline_count == 0 || metrics.loc == 0 {
         return None;
     }

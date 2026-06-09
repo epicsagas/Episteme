@@ -7,8 +7,8 @@ use crate::ports::parser::CodeParser;
 use super::{
     GenericParser, build_func_metrics_full, cached_regex, cached_regex_owned, calculate_cc_rust,
     count_block_comment_lines, count_delegation_methods, count_doc_comment_lines,
-    count_javadoc_lines, count_line_comment_lines, count_loc, count_local_vars,
-    count_overrides, count_primitive_params_rust, find_matching_brace, line_number,
+    count_javadoc_lines, count_line_comment_lines, count_loc, count_local_vars, count_overrides,
+    count_primitive_params_rust, find_matching_brace, line_number,
 };
 
 /// Extended Rust parser that counts `impl` block methods for each struct.
@@ -57,8 +57,7 @@ impl CodeParser for RustFullParser {
             let raw_body = &code[start..=end_pos];
             let comment_count =
                 count_line_comment_lines(raw_body, "//") + count_block_comment_lines(raw_body);
-            let doc_count =
-                count_doc_comment_lines(raw_body, "//") + count_javadoc_lines(raw_body);
+            let doc_count = count_doc_comment_lines(raw_body, "//") + count_javadoc_lines(raw_body);
             raw_func_comments.insert(name, (comment_count, doc_count));
         }
 
