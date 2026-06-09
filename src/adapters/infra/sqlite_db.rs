@@ -673,9 +673,11 @@ mod tests {
         let conn = init_in_memory().expect("in-memory DB");
 
         // Entity with non-canonical casing in r#type.
-        let mut e = Entity::default();
-        e.id = "SMELL-01".to_owned();
-        e.r#type = "Smell".to_owned(); // non-canonical casing
+        let e = Entity {
+            id: "SMELL-01".to_owned(),
+            r#type: "Smell".to_owned(), // non-canonical casing
+            ..Default::default()
+        };
         let mut map = HashMap::new();
         map.insert("SMELL-01".to_owned(), e);
 
