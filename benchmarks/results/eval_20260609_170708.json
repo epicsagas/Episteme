@@ -1,0 +1,4154 @@
+{
+  "timestamp": "2026-06-09T17:07:08.834170+00:00",
+  "git_commit": "47638bd",
+  "suite": "full",
+  "composite_score": {
+    "recall": 0.769231,
+    "precision": 1.0,
+    "specificity": 0.454545,
+    "smell_recall": 0.704545,
+    "composite": 0.762587,
+    "formula": "0.3*recall + 0.3*precision + 0.2*specificity + 0.2*smell_recall"
+  },
+  "suites": {
+    "search_positive": {
+      "status": "ok",
+      "queries": 65,
+      "metrics": {
+        "hit@1": 0.738462,
+        "hit@3": 0.753846,
+        "hit@5": 0.769231,
+        "mrr@5": 0.747436,
+        "ndcg@5": 0.645163
+      },
+      "per_query": [
+        {
+          "query": "strategy pattern",
+          "top_ids": [
+            "DP-020",
+            "DP-013",
+            "DP-007",
+            "DP-012",
+            "DP-019"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "factory method pattern",
+          "top_ids": [
+            "DP-003",
+            "DP-001",
+            "DP-021"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "abstract factory",
+          "top_ids": [
+            "DP-001",
+            "DP-003",
+            "DP-011",
+            "DP-004"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "builder pattern",
+          "top_ids": [
+            "DP-002",
+            "DP-007",
+            "DP-015",
+            "DP-001",
+            "DP-009"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "singleton pattern",
+          "top_ids": [
+            "DP-005",
+            "DP-015",
+            "DP-007",
+            "DP-001",
+            "DP-008"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "adapter pattern",
+          "top_ids": [
+            "DP-006",
+            "DP-007",
+            "DP-009",
+            "DP-010",
+            "DP-015"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "bridge pattern",
+          "top_ids": [
+            "DP-007",
+            "DP-006",
+            "DP-015",
+            "DP-001",
+            "DP-008"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "composite pattern",
+          "top_ids": [
+            "DP-008",
+            "DP-007",
+            "DP-003",
+            "DP-021"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "decorator pattern",
+          "top_ids": [
+            "DP-009",
+            "DP-003",
+            "DP-022",
+            "DP-012",
+            "DP-007"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "facade pattern",
+          "top_ids": [
+            "DP-010",
+            "DP-003",
+            "DP-007",
+            "DP-008",
+            "DP-001"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "flyweight pattern",
+          "top_ids": [
+            "DP-011",
+            "DP-007",
+            "DP-020",
+            "DP-012",
+            "DP-003"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "proxy pattern",
+          "top_ids": [
+            "DP-012",
+            "DP-015",
+            "DP-007",
+            "DP-013",
+            "DP-003"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "observer pattern",
+          "top_ids": [
+            "DP-018",
+            "DP-006",
+            "DP-015",
+            "DP-007"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "state pattern",
+          "top_ids": [
+            "DP-019",
+            "DP-017",
+            "DP-011",
+            "DP-005",
+            "DP-007"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "template method pattern",
+          "top_ids": [
+            "DP-021",
+            "DP-003",
+            "DP-007"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "visitor pattern",
+          "top_ids": [
+            "DP-022",
+            "DP-015",
+            "DP-016",
+            "DP-008",
+            "DP-018"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "long method smell",
+          "top_ids": [
+            "SMELL-01",
+            "SMELL-02",
+            "SMELL-06",
+            "SMELL-16",
+            "DP-010"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.613147
+        },
+        {
+          "query": "large class smell",
+          "top_ids": [
+            "SMELL-04",
+            "SMELL-11",
+            "SMELL-23",
+            "SMELL-07",
+            "DP-002"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.469279
+        },
+        {
+          "query": "god object smell",
+          "top_ids": [
+            "SMELL-21",
+            "SMELL-08",
+            "SMELL-20",
+            "SMELL-16",
+            "DP-010"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.469279
+        },
+        {
+          "query": "long parameter list",
+          "top_ids": [
+            "SMELL-02",
+            "RF-041",
+            "SMELL-01",
+            "RF-043",
+            "DP-015"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.469279
+        },
+        {
+          "query": "switch statement smell",
+          "top_ids": [
+            "SMELL-06"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.469279
+        },
+        {
+          "query": "duplicate code smell",
+          "top_ids": [
+            "SMELL-13",
+            "SMELL-16",
+            "SMELL-05",
+            "SMELL-17",
+            "RF-001"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.850345
+        },
+        {
+          "query": "feature envy smell",
+          "top_ids": [
+            "SMELL-18",
+            "SMELL-16",
+            "SMELL-15",
+            "SMELL-09",
+            "RF-001"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.650821
+        },
+        {
+          "query": "message chains smell",
+          "top_ids": [
+            "SMELL-20",
+            "SMELL-06",
+            "SMELL-16",
+            "SMELL-01",
+            "RF-011"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.613147
+        },
+        {
+          "query": "shotgun surgery smell",
+          "top_ids": [
+            "SMELL-09",
+            "SMELL-16",
+            "SMELL-12",
+            "SMELL-17",
+            "RF-001"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.469279
+        },
+        {
+          "query": "extract method",
+          "top_ids": [
+            "RF-001",
+            "RF-002",
+            "RF-006",
+            "RF-058",
+            "RF-056"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "move method",
+          "top_ids": [
+            "RF-016",
+            "RF-047",
+            "RF-015",
+            "RF-058",
+            "RF-012"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "extract class",
+          "top_ids": [
+            "RF-057",
+            "RF-058",
+            "RF-010",
+            "RF-056",
+            "RF-055"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "replace conditional with polymorphism",
+          "top_ids": [
+            "RF-039",
+            "RF-031",
+            "RF-052",
+            "RF-035",
+            "RF-028"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "introduce parameter object",
+          "top_ids": [
+            "RF-043",
+            "SMELL-02",
+            "RF-045",
+            "DP-015",
+            "RF-053"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "single responsibility principle",
+          "top_ids": [
+            "LAW-042",
+            "LAW-007",
+            "LAW-009",
+            "LAW-040",
+            "LAW-041"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "open closed principle",
+          "top_ids": [
+            "LAW-042",
+            "LAW-053",
+            "LAW-007",
+            "LAW-009",
+            "LAW-041"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "dependency inversion principle",
+          "top_ids": [
+            "LAW-042",
+            "LAW-054",
+            "LAW-023",
+            "LAW-053",
+            "LAW-044"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.613147
+        },
+        {
+          "query": "law of demeter",
+          "top_ids": [
+            "LAW-043",
+            "LAW-013",
+            "LAW-023",
+            "LAW-018",
+            "LAW-044"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "DRY don't repeat yourself",
+          "top_ids": [
+            "LAW-040",
+            "LAW-036",
+            "LAW-051",
+            "LAW-046",
+            "LAW-043"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "KISS",
+          "top_ids": [
+            "LAW-041",
+            "LAW-050",
+            "LAW-054",
+            "LAW-053",
+            "LAW-017"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "conways law",
+          "top_ids": [
+            "LAW-001",
+            "LAW-056",
+            "LAW-024",
+            "LAW-035",
+            "LAW-019"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "cap theorem",
+          "top_ids": [
+            "LAW-020",
+            "LAW-004",
+            "LAW-039",
+            "LAW-053",
+            "LAW-038"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "brooks law",
+          "top_ids": [
+            "LAW-002",
+            "LAW-027",
+            "LAW-017",
+            "LAW-056",
+            "LAW-011"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "goodharts law",
+          "top_ids": [
+            "LAW-014",
+            "LAW-017",
+            "LAW-037",
+            "LAW-013",
+            "LAW-039"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "swap algorithms at runtime without changing client code",
+          "top_ids": [
+            "DP-020",
+            "RF-018",
+            "RF-020",
+            "SMELL-06",
+            "SMELL-12"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "creating objects without specifying exact class",
+          "top_ids": [
+            "SMELL-07",
+            "SMELL-11",
+            "SMELL-04",
+            "SMELL-23",
+            "RF-057"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "add responsibilities dynamically to objects",
+          "top_ids": [
+            "DP-009",
+            "RF-018",
+            "RF-020",
+            "RF-019"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "simplify interface of a complex subsystem",
+          "top_ids": [
+            "RF-055",
+            "RF-056",
+            "RF-066",
+            "RF-020",
+            "RF-018"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "one way communication between objects when state changes",
+          "top_ids": [
+            "DP-019",
+            "RF-030",
+            "LAW-001",
+            "SMELL-06"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "too many parameters making functions hard to call",
+          "top_ids": [
+            "RF-053",
+            "RF-005",
+            "LAW-044",
+            "RF-020",
+            "RF-018"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "different reasons to change in the same module",
+          "top_ids": [
+            "SMELL-10",
+            "RF-018",
+            "RF-020",
+            "SMELL-23",
+            "SMELL-15"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.613147
+        },
+        {
+          "query": "data grouped together in many places",
+          "top_ids": [
+            "SMELL-05",
+            "SMELL-19",
+            "SMELL-23",
+            "SMELL-20",
+            "SMELL-07"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.613147
+        },
+        {
+          "query": "class knows too much about another class internals",
+          "top_ids": [
+            "SMELL-04",
+            "SMELL-11",
+            "SMELL-07",
+            "SMELL-23",
+            "RF-058"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "break up a function that does too much",
+          "top_ids": [
+            "SMELL-04",
+            "SMELL-11",
+            "SMELL-19",
+            "SMELL-14",
+            "SMELL-15"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "reduce duplication by lifting common logic to parent",
+          "top_ids": [
+            "RF-020",
+            "RF-018",
+            "RF-060",
+            "DP-003",
+            "LAW-044"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "why do teams with more developers sometimes ship slower",
+          "top_ids": [
+            "RF-064",
+            "RF-029",
+            "LAW-028",
+            "LAW-033",
+            "SMELL-23"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "work expands to fill available time",
+          "top_ids": [
+            "RF-018",
+            "RF-020",
+            "LAW-008",
+            "DP-009",
+            "DP-022"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "avoid rigid design that breaks on every change",
+          "top_ids": [
+            "LAW-044",
+            "SMELL-10",
+            "SMELL-03",
+            "RF-018",
+            "RF-020"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "software quality degrades over time without intervention",
+          "top_ids": [
+            "LAW-023",
+            "SMELL-12",
+            "LAW-044",
+            "SMELL-17",
+            "SMELL-14"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "decompose a god class that handles everything",
+          "top_ids": [
+            "RF-065",
+            "RF-017",
+            "RF-012",
+            "RF-066",
+            "RF-020"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "planning fallacies in software estimation",
+          "top_ids": [
+            "LAW-022",
+            "LAW-044",
+            "LAW-024",
+            "LAW-011",
+            "SMELL-15"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 1,
+          "rr@5": 0.25,
+          "ndcg@5": 0.202107
+        },
+        {
+          "query": "improve code without changing external behavior",
+          "top_ids": [
+            "LAW-025",
+            "SMELL-03",
+            "SMELL-14",
+            "SMELL-09",
+            "SMELL-16"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.469279
+        },
+        {
+          "query": "when measuring a metric makes it useless as a target",
+          "top_ids": [
+            "LAW-014",
+            "SMELL-12",
+            "SMELL-07",
+            "SMELL-11",
+            "SMELL-03"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 1.0
+        },
+        {
+          "query": "scaling bottleneck analysis and parallelism limits",
+          "top_ids": [
+            "SMELL-06",
+            "SMELL-19",
+            "DP-014",
+            "LAW-051"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "simplifying complex inheritance hierarchies",
+          "top_ids": [
+            "RF-066",
+            "RF-065",
+            "RF-020",
+            "RF-018"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "managing state transitions and behavior variations",
+          "top_ids": [
+            "DP-019",
+            "RF-030",
+            "DP-014"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.39038
+        },
+        {
+          "query": "premature abstractions and speculative complexity",
+          "top_ids": [
+            "SMELL-12",
+            "LAW-010",
+            "RF-003",
+            "RF-012",
+            "LAW-018"
+          ],
+          "hit@1": 1,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 1.0,
+          "ndcg@5": 0.765361
+        },
+        {
+          "query": "reducing blast radius of changes in a large codebase",
+          "top_ids": [
+            "SMELL-17",
+            "SMELL-13",
+            "SMELL-05",
+            "RF-018",
+            "RF-020"
+          ],
+          "hit@1": 0,
+          "hit@3": 0,
+          "hit@5": 0,
+          "rr@5": 0.0,
+          "ndcg@5": 0.0
+        },
+        {
+          "query": "observable consequences of hidden implementation details",
+          "top_ids": [
+            "LAW-023",
+            "LAW-044",
+            "LAW-018",
+            "LAW-043",
+            "LAW-022"
+          ],
+          "hit@1": 0,
+          "hit@3": 1,
+          "hit@5": 1,
+          "rr@5": 0.333333,
+          "ndcg@5": 0.19519
+        }
+      ]
+    },
+    "search_negative": {
+      "status": "ok",
+      "metrics": {
+        "fp@1": 0.0,
+        "fp@3": 0.0,
+        "fp@5": 0.0,
+        "specificity": 1.0,
+        "true_negatives": 70,
+        "total": 70
+      },
+      "per_query": [
+        {
+          "query": "flexible work hours policy",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-020",
+            "LAW-042"
+          ],
+          "top_ids": [
+            "SMELL-03",
+            "RF-018",
+            "RF-020",
+            "SMELL-06",
+            "SMELL-17"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "factory safety protocols",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-001",
+            "DP-003",
+            "DP-004"
+          ],
+          "top_ids": [],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "observer bias in user studies",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-018"
+          ],
+          "top_ids": [
+            "DP-013",
+            "DP-005"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "state management in React",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-019"
+          ],
+          "top_ids": [
+            "DP-005",
+            "DP-016",
+            "DP-013",
+            "SMELL-15",
+            "RF-030"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "proxy server configuration",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-012"
+          ],
+          "top_ids": [
+            "DP-010",
+            "DP-018"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "bridge networking between Docker containers",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-007"
+          ],
+          "top_ids": [
+            "DP-019",
+            "DP-013",
+            "DP-008",
+            "DP-021"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "singleton variables in lambda calculus",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-005"
+          ],
+          "top_ids": [
+            "DP-013",
+            "DP-021"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "adapter for hardware integration",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-006"
+          ],
+          "top_ids": [
+            "DP-007",
+            "DP-001",
+            "DP-003"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "visitor management system for office",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-022"
+          ],
+          "top_ids": [
+            "DP-017",
+            "DP-010",
+            "RF-013",
+            "LAW-021"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "template for resume generation",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-021"
+          ],
+          "top_ids": [
+            "RF-059",
+            "DP-002",
+            "DP-008",
+            "RF-013"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "decorator in Python decorators",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-009"
+          ],
+          "top_ids": [
+            "DP-013",
+            "DP-005"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "command line interface tutorial",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-014"
+          ],
+          "top_ids": [
+            "RF-056",
+            "RF-004",
+            "RF-003",
+            "RF-012",
+            "SMELL-23"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "mediator variable in statistics",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-016"
+          ],
+          "top_ids": [
+            "SMELL-23",
+            "SMELL-19",
+            "DP-005",
+            "DP-013"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "composite material engineering",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-008"
+          ],
+          "top_ids": [
+            "SMELL-12",
+            "DP-007",
+            "DP-002",
+            "RF-003"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "iterator protocol in Python",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-015"
+          ],
+          "top_ids": [
+            "DP-013",
+            "SMELL-23",
+            "SMELL-15",
+            "DP-005"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "chain of responsibility in corporate governance",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-023"
+          ],
+          "top_ids": [
+            "DP-013",
+            "LAW-009",
+            "DP-005"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "memento keepsake photography",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-017"
+          ],
+          "top_ids": [
+            "DP-011",
+            "DP-012",
+            "DP-007"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "strategy board game design",
+          "category": "homonym",
+          "must_not_contain": [
+            "DP-020"
+          ],
+          "top_ids": [
+            "DP-007",
+            "DP-012",
+            "DP-016",
+            "DP-018",
+            "DP-004"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "extract data from CSV file",
+          "category": "partial_match",
+          "must_not_contain": [
+            "RF-001",
+            "RF-002"
+          ],
+          "top_ids": [
+            "RF-026",
+            "RF-057",
+            "RF-058",
+            "RF-056",
+            "RF-022"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "move files to archive directory",
+          "category": "partial_match",
+          "must_not_contain": [
+            "RF-015",
+            "RF-016"
+          ],
+          "top_ids": [
+            "RF-020",
+            "RF-018",
+            "RF-019",
+            "RF-046"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "inline CSS styles in HTML",
+          "category": "partial_match",
+          "must_not_contain": [
+            "RF-003",
+            "RF-004"
+          ],
+          "top_ids": [
+            "RF-012",
+            "RF-065",
+            "RF-013",
+            "RF-066",
+            "RF-014"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "encapsulate data in JSON web token",
+          "category": "partial_match",
+          "must_not_contain": [
+            "RF-023",
+            "RF-024"
+          ],
+          "top_ids": [
+            "RF-004",
+            "LAW-024",
+            "LAW-022",
+            "LAW-012",
+            "LAW-054"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "build a web server from scratch",
+          "category": "partial_match",
+          "must_not_contain": [
+            "DP-002"
+          ],
+          "top_ids": [
+            "SMELL-12",
+            "RF-018",
+            "RF-020",
+            "SMELL-15",
+            "SMELL-13"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "prototype rapid MVP development",
+          "category": "partial_match",
+          "must_not_contain": [
+            "DP-004"
+          ],
+          "top_ids": [
+            "SMELL-12",
+            "DP-002",
+            "DP-012",
+            "RF-003"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "facade renovation of historical building",
+          "category": "partial_match",
+          "must_not_contain": [
+            "DP-010"
+          ],
+          "top_ids": [
+            "LAW-044",
+            "DP-013",
+            "LAW-018"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "flyweight boxing championship",
+          "category": "partial_match",
+          "must_not_contain": [
+            "DP-011"
+          ],
+          "top_ids": [
+            "RF-018",
+            "RF-020",
+            "DP-020",
+            "SMELL-06",
+            "DP-019"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "wrap gifts for holiday season",
+          "category": "partial_match",
+          "must_not_contain": [
+            "DP-025",
+            "RF-026"
+          ],
+          "top_ids": [
+            "RF-018",
+            "RF-020",
+            "SMELL-06",
+            "RF-013",
+            "RF-059"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "replace battery in smoke detector",
+          "category": "partial_match",
+          "must_not_contain": [
+            "RF-005"
+          ],
+          "top_ids": [
+            "RF-053",
+            "RF-007",
+            "RF-043",
+            "RF-027",
+            "RF-040"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "rename files in batch operation",
+          "category": "partial_match",
+          "must_not_contain": [
+            "RF-006"
+          ],
+          "top_ids": [
+            "RF-048",
+            "RF-043",
+            "RF-065",
+            "RF-066",
+            "RF-004"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "flexible scheduling algorithm",
+          "category": "intent_collision",
+          "must_not_contain": [
+            "DP-020",
+            "LAW-042"
+          ],
+          "top_ids": [
+            "RF-009",
+            "SMELL-06",
+            "SMELL-12",
+            "SMELL-13"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "adapter for international power outlets",
+          "category": "intent_collision",
+          "must_not_contain": [
+            "DP-006"
+          ],
+          "top_ids": [
+            "DP-007",
+            "DP-016",
+            "DP-012",
+            "DP-019"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "observer design for surveillance system",
+          "category": "intent_collision",
+          "must_not_contain": [
+            "DP-018"
+          ],
+          "top_ids": [
+            "DP-006",
+            "DP-015",
+            "DP-016"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "strategy for market penetration",
+          "category": "intent_collision",
+          "must_not_contain": [
+            "DP-020"
+          ],
+          "top_ids": [
+            "DP-010",
+            "DP-017",
+            "DP-012",
+            "DP-021",
+            "DP-007"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "state of the union address",
+          "category": "intent_collision",
+          "must_not_contain": [
+            "DP-019"
+          ],
+          "top_ids": [
+            "RF-020",
+            "RF-018",
+            "LAW-028",
+            "DP-013"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "command structure in military hierarchy",
+          "category": "intent_collision",
+          "must_not_contain": [
+            "DP-014"
+          ],
+          "top_ids": [
+            "LAW-007",
+            "DP-013",
+            "SMELL-19",
+            "SMELL-15"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "builder career progression tips",
+          "category": "intent_collision",
+          "must_not_contain": [
+            "DP-002"
+          ],
+          "top_ids": [
+            "RF-018",
+            "RF-020",
+            "SMELL-09",
+            "DP-022",
+            "RF-001"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "prototype of new electric vehicle",
+          "category": "intent_collision",
+          "must_not_contain": [
+            "DP-004"
+          ],
+          "top_ids": [
+            "DP-013",
+            "LAW-043",
+            "LAW-022",
+            "LAW-018"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "bridge loan for real estate",
+          "category": "intent_collision",
+          "must_not_contain": [
+            "DP-007"
+          ],
+          "top_ids": [
+            "DP-002",
+            "DP-009",
+            "DP-010",
+            "DP-019"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "proxy voting in shareholder meetings",
+          "category": "intent_collision",
+          "must_not_contain": [
+            "DP-012"
+          ],
+          "top_ids": [
+            "DP-013",
+            "DP-005"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "broken windows theory in criminology",
+          "category": "cross_domain",
+          "must_not_contain": [
+            "LAW-028"
+          ],
+          "top_ids": [
+            "LAW-045",
+            "LAW-053",
+            "LAW-056",
+            "LAW-022",
+            "LAW-024"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "technical debt in financial markets",
+          "category": "cross_domain",
+          "must_not_contain": [
+            "LAW-029"
+          ],
+          "top_ids": [
+            "SMELL-12",
+            "SMELL-19",
+            "SMELL-20",
+            "SMELL-15",
+            "SMELL-23"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "parking lot pattern in urban planning",
+          "category": "cross_domain",
+          "must_not_contain": [
+            "DP-020"
+          ],
+          "top_ids": [
+            "DP-007",
+            "DP-013",
+            "DP-005"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "premature optimization in manufacturing",
+          "category": "cross_domain",
+          "must_not_contain": [
+            "LAW-010"
+          ],
+          "top_ids": [
+            "LAW-044",
+            "LAW-032",
+            "LAW-023",
+            "LAW-011",
+            "SMELL-19"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "scalability of cloud vs on-premise databases",
+          "category": "cross_domain",
+          "must_not_contain": [
+            "LAW-020",
+            "LAW-037"
+          ],
+          "top_ids": [
+            "LAW-022",
+            "LAW-023",
+            "LAW-018",
+            "LAW-044",
+            "LAW-043"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "agile animal movement patterns",
+          "category": "cross_domain",
+          "must_not_contain": [
+            "LAW-039"
+          ],
+          "top_ids": [
+            "DP-020",
+            "DP-015",
+            "DP-021",
+            "RF-059",
+            "DP-019"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "coupling in mechanical engineering",
+          "category": "cross_domain",
+          "must_not_contain": [
+            "LAW-020"
+          ],
+          "top_ids": [
+            "SMELL-19",
+            "LAW-044",
+            "SMELL-15",
+            "SMELL-20",
+            "SMELL-23"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "cohesion in chemistry and molecular bonds",
+          "category": "cross_domain",
+          "must_not_contain": [
+            "LAW-021"
+          ],
+          "top_ids": [
+            "SMELL-19",
+            "LAW-044",
+            "LAW-028",
+            "SMELL-23",
+            "DP-016"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "abstraction in modern art movement",
+          "category": "cross_domain",
+          "must_not_contain": [
+            "LAW-018"
+          ],
+          "top_ids": [
+            "RF-003",
+            "RF-012",
+            "RF-056",
+            "RF-013",
+            "RF-037"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "encapsulation in pharmaceutical delivery",
+          "category": "cross_domain",
+          "must_not_contain": [
+            "LAW-019"
+          ],
+          "top_ids": [
+            "LAW-011",
+            "LAW-024",
+            "LAW-044",
+            "LAW-009",
+            "LAW-053"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "inheritance law and estate planning",
+          "category": "cross_domain",
+          "must_not_contain": [
+            "LAW-022"
+          ],
+          "top_ids": [
+            "LAW-019",
+            "LAW-051",
+            "LAW-024"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "polymorphism in biology and evolution",
+          "category": "cross_domain",
+          "must_not_contain": [
+            "LAW-023"
+          ],
+          "top_ids": [
+            "RF-039",
+            "LAW-052",
+            "SMELL-23",
+            "SMELL-19",
+            "SMELL-15"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "duplicate code detection in plagiarism checker",
+          "category": "context_mismatch",
+          "must_not_contain": [
+            "SMELL-13"
+          ],
+          "top_ids": [
+            "RF-034",
+            "SMELL-23",
+            "SMELL-15",
+            "SMELL-19",
+            "SMELL-20"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "long method names in Python PEP 8",
+          "category": "context_mismatch",
+          "must_not_contain": [
+            "SMELL-01"
+          ],
+          "top_ids": [
+            "SMELL-06",
+            "SMELL-23",
+            "SMELL-15",
+            "SMELL-20",
+            "SMELL-19"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "large class sizes in school education",
+          "category": "context_mismatch",
+          "must_not_contain": [
+            "SMELL-04"
+          ],
+          "top_ids": [
+            "SMELL-19",
+            "SMELL-11",
+            "SMELL-23",
+            "SMELL-15",
+            "SMELL-07"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "message queue latency optimization",
+          "category": "context_mismatch",
+          "must_not_contain": [
+            "SMELL-20"
+          ],
+          "top_ids": [
+            "LAW-010",
+            "SMELL-06"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "dead code elimination in compiler optimization",
+          "category": "context_mismatch",
+          "must_not_contain": [
+            "SMELL-17"
+          ],
+          "top_ids": [
+            "RF-004",
+            "RF-047",
+            "RF-003",
+            "RF-037",
+            "LAW-010"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "lazy class loading in JVM",
+          "category": "context_mismatch",
+          "must_not_contain": [
+            "SMELL-11"
+          ],
+          "top_ids": [
+            "SMELL-04",
+            "SMELL-07",
+            "SMELL-19",
+            "SMELL-15",
+            "SMELL-23"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "feature envy in consumer psychology",
+          "category": "context_mismatch",
+          "must_not_contain": [
+            "SMELL-18"
+          ],
+          "top_ids": [
+            "LAW-024",
+            "SMELL-20",
+            "SMELL-15",
+            "SMELL-19",
+            "SMELL-23"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "data clumps in hair styling products",
+          "category": "context_mismatch",
+          "must_not_contain": [
+            "SMELL-05"
+          ],
+          "top_ids": [
+            "SMELL-19",
+            "SMELL-07",
+            "SMELL-23",
+            "SMELL-20",
+            "SMELL-15"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "refused bequest in family disputes",
+          "category": "context_mismatch",
+          "must_not_contain": [
+            "SMELL-15"
+          ],
+          "top_ids": [
+            "SMELL-22",
+            "SMELL-20",
+            "SMELL-19",
+            "LAW-054",
+            "LAW-056"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "don't repeat yourself in writing essays",
+          "category": "colloquial",
+          "must_not_contain": [
+            "LAW-040"
+          ],
+          "top_ids": [
+            "SMELL-15",
+            "SMELL-20",
+            "LAW-054",
+            "SMELL-19",
+            "LAW-012"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "keep it simple stupid life advice",
+          "category": "colloquial",
+          "must_not_contain": [
+            "LAW-041"
+          ],
+          "top_ids": [
+            "SMELL-03",
+            "SMELL-15",
+            "SMELL-06",
+            "SMELL-12",
+            "LAW-049"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "goodhart's law in economics",
+          "category": "colloquial",
+          "must_not_contain": [
+            "LAW-014"
+          ],
+          "top_ids": [
+            "LAW-055",
+            "LAW-011",
+            "LAW-009",
+            "LAW-024",
+            "LAW-012"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "parkinson's law of triviality",
+          "category": "colloquial",
+          "must_not_contain": [
+            "LAW-011"
+          ],
+          "top_ids": [
+            "LAW-013",
+            "LAW-018",
+            "LAW-043",
+            "LAW-023",
+            "LAW-044"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "brooks law in legal context",
+          "category": "colloquial",
+          "must_not_contain": [
+            "LAW-002"
+          ],
+          "top_ids": [
+            "LAW-056",
+            "LAW-024",
+            "LAW-009",
+            "LAW-011",
+            "LAW-028"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "conway's law of physics",
+          "category": "colloquial",
+          "must_not_contain": [
+            "LAW-001"
+          ],
+          "top_ids": [
+            "LAW-018",
+            "LAW-043",
+            "LAW-013",
+            "LAW-023",
+            "LAW-044"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "separation of concerns in political science",
+          "category": "colloquial",
+          "must_not_contain": [
+            "LAW-017"
+          ],
+          "top_ids": [
+            "SMELL-19",
+            "LAW-044",
+            "LAW-053",
+            "LAW-054",
+            "LAW-056"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "law of demeter in greek mythology",
+          "category": "colloquial",
+          "must_not_contain": [
+            "LAW-005"
+          ],
+          "top_ids": [
+            "LAW-043",
+            "LAW-011",
+            "LAW-056",
+            "LAW-053"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "DRY clean humor in comedy",
+          "category": "colloquial",
+          "must_not_contain": [
+            "LAW-040"
+          ],
+          "top_ids": [
+            "LAW-056",
+            "LAW-009",
+            "LAW-053",
+            "LAW-024",
+            "LAW-028"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        },
+        {
+          "query": "SOLID food diet for athletes",
+          "category": "colloquial",
+          "must_not_contain": [
+            "LAW-032",
+            "LAW-033",
+            "LAW-034",
+            "LAW-035",
+            "LAW-036"
+          ],
+          "top_ids": [
+            "LAW-042"
+          ],
+          "fp@1": 0,
+          "fp@3": 0,
+          "fp@5": 0,
+          "violations": []
+        }
+      ]
+    },
+    "smell_negative": {
+      "status": "ok",
+      "metrics": {
+        "fp_rate": 0.545455,
+        "fp_count": 12,
+        "total": 22,
+        "specificity": 0.454545,
+        "per_detector": {
+          "SMELL-02": 4,
+          "SMELL-03": 1,
+          "SMELL-05": 1,
+          "SMELL-06": 2,
+          "SMELL-07": 3,
+          "SMELL-11": 2,
+          "SMELL-14": 4,
+          "SMELL-16": 3
+        },
+        "per_language": {
+          "python": 0.5,
+          "rust": 0.6,
+          "go": 0.5,
+          "typescript": 0.5,
+          "java": 1.0,
+          "ruby": 0.333333
+        }
+      },
+      "per_file": [
+        {
+          "file": "clean_api_docs.py",
+          "language": "python",
+          "false_positive": true,
+          "detected_smells": [
+            "SMELL-16"
+          ]
+        },
+        {
+          "file": "clean_builder.rs",
+          "language": "rust",
+          "false_positive": false,
+          "detected_smells": []
+        },
+        {
+          "file": "clean_config_struct.go",
+          "language": "go",
+          "false_positive": false,
+          "detected_smells": []
+        },
+        {
+          "file": "clean_context_manager.py",
+          "language": "python",
+          "false_positive": true,
+          "detected_smells": [
+            "SMELL-14"
+          ]
+        },
+        {
+          "file": "clean_data_transfer.rs",
+          "language": "rust",
+          "false_positive": false,
+          "detected_smells": []
+        },
+        {
+          "file": "clean_dataclass.py",
+          "language": "python",
+          "false_positive": false,
+          "detected_smells": []
+        },
+        {
+          "file": "clean_delegation.rs",
+          "language": "rust",
+          "false_positive": true,
+          "detected_smells": [
+            "SMELL-16",
+            "SMELL-07"
+          ]
+        },
+        {
+          "file": "clean_enum_dispatch.rs",
+          "language": "rust",
+          "false_positive": true,
+          "detected_smells": [
+            "SMELL-06",
+            "SMELL-06"
+          ]
+        },
+        {
+          "file": "clean_error_switch.go",
+          "language": "go",
+          "false_positive": false,
+          "detected_smells": []
+        },
+        {
+          "file": "clean_event_emitter.ts",
+          "language": "typescript",
+          "false_positive": true,
+          "detected_smells": [
+            "SMELL-14",
+            "SMELL-14"
+          ]
+        },
+        {
+          "file": "clean_factory.ts",
+          "language": "typescript",
+          "false_positive": false,
+          "detected_smells": []
+        },
+        {
+          "file": "clean_fluent_api.py",
+          "language": "python",
+          "false_positive": false,
+          "detected_smells": []
+        },
+        {
+          "file": "clean_functional_options.go",
+          "language": "go",
+          "false_positive": true,
+          "detected_smells": [
+            "SMELL-07"
+          ]
+        },
+        {
+          "file": "clean_init.rs",
+          "language": "rust",
+          "false_positive": true,
+          "detected_smells": [
+            "SMELL-07"
+          ]
+        },
+        {
+          "file": "clean_interface_delegation.go",
+          "language": "go",
+          "false_positive": true,
+          "detected_smells": [
+            "SMELL-16"
+          ]
+        },
+        {
+          "file": "clean_interface_impl.ts",
+          "language": "typescript",
+          "false_positive": true,
+          "detected_smells": [
+            "SMELL-14"
+          ]
+        },
+        {
+          "file": "clean_java_enum_switch.java",
+          "language": "java",
+          "false_positive": true,
+          "detected_smells": [
+            "SMELL-11",
+            "SMELL-11"
+          ]
+        },
+        {
+          "file": "clean_java_record.java",
+          "language": "java",
+          "false_positive": true,
+          "detected_smells": [
+            "SMELL-02",
+            "SMELL-03",
+            "SMELL-05"
+          ]
+        },
+        {
+          "file": "clean_ruby_case.rb",
+          "language": "ruby",
+          "false_positive": false,
+          "detected_smells": []
+        },
+        {
+          "file": "clean_ruby_delegation.rb",
+          "language": "ruby",
+          "false_positive": false,
+          "detected_smells": []
+        },
+        {
+          "file": "clean_ruby_struct.rb",
+          "language": "ruby",
+          "false_positive": true,
+          "detected_smells": [
+            "SMELL-02",
+            "SMELL-02",
+            "SMELL-02"
+          ]
+        },
+        {
+          "file": "clean_value_object.ts",
+          "language": "typescript",
+          "false_positive": false,
+          "detected_smells": []
+        }
+      ]
+    },
+    "analyze_positive": {
+      "status": "ok",
+      "metrics": {
+        "recall": 0.704545,
+        "hits": 31,
+        "total": 44,
+        "per_smell_recall": {
+          "SMELL-01": 0.75,
+          "SMELL-02": 1.0,
+          "SMELL-03": 1.0,
+          "SMELL-04": 0.666667,
+          "SMELL-05": 0.75,
+          "SMELL-06": 0.6,
+          "SMELL-07": 0.666667,
+          "SMELL-10": 1.0,
+          "SMELL-11": 1.0,
+          "SMELL-14": 0.25,
+          "SMELL-16": 0.666667,
+          "SMELL-18": 0.75,
+          "SMELL-20": 0.75,
+          "SMELL-21": 0.666667
+        }
+      },
+      "per_case": [
+        {
+          "id": "analyze-001",
+          "language": "rust",
+          "expected": [
+            "SMELL-01"
+          ],
+          "detected": [
+            "SMELL-01",
+            "SMELL-02",
+            "SMELL-06",
+            "SMELL-18"
+          ],
+          "true_positives": [
+            "SMELL-01"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-02",
+            "SMELL-06",
+            "SMELL-18"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-002",
+          "language": "python",
+          "expected": [
+            "SMELL-01"
+          ],
+          "detected": [
+            "SMELL-06",
+            "SMELL-18"
+          ],
+          "true_positives": [],
+          "false_negatives": [
+            "SMELL-01"
+          ],
+          "false_positives": [
+            "SMELL-06",
+            "SMELL-18"
+          ],
+          "hit": false
+        },
+        {
+          "id": "analyze-003",
+          "language": "rust",
+          "expected": [
+            "SMELL-02",
+            "SMELL-05"
+          ],
+          "detected": [
+            "SMELL-02"
+          ],
+          "true_positives": [
+            "SMELL-02"
+          ],
+          "false_negatives": [
+            "SMELL-05"
+          ],
+          "false_positives": [],
+          "hit": false
+        },
+        {
+          "id": "analyze-004",
+          "language": "python",
+          "expected": [
+            "SMELL-02",
+            "SMELL-05"
+          ],
+          "detected": [
+            "SMELL-02",
+            "SMELL-03",
+            "SMELL-05",
+            "SMELL-18"
+          ],
+          "true_positives": [
+            "SMELL-02",
+            "SMELL-05"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-03",
+            "SMELL-18"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-005",
+          "language": "typescript",
+          "expected": [
+            "SMELL-02"
+          ],
+          "detected": [
+            "SMELL-02",
+            "SMELL-03",
+            "SMELL-05"
+          ],
+          "true_positives": [
+            "SMELL-02"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-03",
+            "SMELL-05"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-006",
+          "language": "rust",
+          "expected": [
+            "SMELL-02",
+            "SMELL-03"
+          ],
+          "detected": [
+            "SMELL-02",
+            "SMELL-03",
+            "SMELL-05",
+            "SMELL-18"
+          ],
+          "true_positives": [
+            "SMELL-02",
+            "SMELL-03"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-05",
+            "SMELL-18"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-007",
+          "language": "python",
+          "expected": [
+            "SMELL-03"
+          ],
+          "detected": [
+            "SMELL-02",
+            "SMELL-03",
+            "SMELL-05"
+          ],
+          "true_positives": [
+            "SMELL-03"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-02",
+            "SMELL-05"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-008",
+          "language": "rust",
+          "expected": [
+            "SMELL-04"
+          ],
+          "detected": [
+            "SMELL-04",
+            "SMELL-18",
+            "SMELL-20"
+          ],
+          "true_positives": [
+            "SMELL-04"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-18",
+            "SMELL-20"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-009",
+          "language": "python",
+          "expected": [
+            "SMELL-04"
+          ],
+          "detected": [
+            "SMELL-04",
+            "SMELL-10"
+          ],
+          "true_positives": [
+            "SMELL-04"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-10"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-010",
+          "language": "java",
+          "expected": [
+            "SMELL-04"
+          ],
+          "detected": [
+            "SMELL-20"
+          ],
+          "true_positives": [],
+          "false_negatives": [
+            "SMELL-04"
+          ],
+          "false_positives": [
+            "SMELL-20"
+          ],
+          "hit": false
+        },
+        {
+          "id": "analyze-011",
+          "language": "python",
+          "expected": [
+            "SMELL-02",
+            "SMELL-05"
+          ],
+          "detected": [
+            "SMELL-02",
+            "SMELL-03",
+            "SMELL-05"
+          ],
+          "true_positives": [
+            "SMELL-02",
+            "SMELL-05"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-03"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-012",
+          "language": "rust",
+          "expected": [
+            "SMELL-06"
+          ],
+          "detected": [
+            "SMELL-06"
+          ],
+          "true_positives": [
+            "SMELL-06"
+          ],
+          "false_negatives": [],
+          "false_positives": [],
+          "hit": true
+        },
+        {
+          "id": "analyze-013",
+          "language": "typescript",
+          "expected": [
+            "SMELL-06"
+          ],
+          "detected": [
+            "SMELL-06"
+          ],
+          "true_positives": [
+            "SMELL-06"
+          ],
+          "false_negatives": [],
+          "false_positives": [],
+          "hit": true
+        },
+        {
+          "id": "analyze-014",
+          "language": "go",
+          "expected": [
+            "SMELL-06"
+          ],
+          "detected": [],
+          "true_positives": [],
+          "false_negatives": [
+            "SMELL-06"
+          ],
+          "false_positives": [],
+          "hit": false
+        },
+        {
+          "id": "analyze-015",
+          "language": "ruby",
+          "expected": [
+            "SMELL-06"
+          ],
+          "detected": [],
+          "true_positives": [],
+          "false_negatives": [
+            "SMELL-06"
+          ],
+          "false_positives": [],
+          "hit": false
+        },
+        {
+          "id": "analyze-016",
+          "language": "python",
+          "expected": [
+            "SMELL-07"
+          ],
+          "detected": [
+            "SMELL-07"
+          ],
+          "true_positives": [
+            "SMELL-07"
+          ],
+          "false_negatives": [],
+          "false_positives": [],
+          "hit": true
+        },
+        {
+          "id": "analyze-019",
+          "language": "python",
+          "expected": [
+            "SMELL-10"
+          ],
+          "detected": [
+            "SMELL-01",
+            "SMELL-06",
+            "SMELL-10",
+            "SMELL-18"
+          ],
+          "true_positives": [
+            "SMELL-10"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-01",
+            "SMELL-06",
+            "SMELL-18"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-021",
+          "language": "python",
+          "expected": [
+            "SMELL-11"
+          ],
+          "detected": [
+            "SMELL-11"
+          ],
+          "true_positives": [
+            "SMELL-11"
+          ],
+          "false_negatives": [],
+          "false_positives": [],
+          "hit": true
+        },
+        {
+          "id": "analyze-022",
+          "language": "rust",
+          "expected": [
+            "SMELL-14"
+          ],
+          "detected": [],
+          "true_positives": [],
+          "false_negatives": [
+            "SMELL-14"
+          ],
+          "false_positives": [],
+          "hit": false
+        },
+        {
+          "id": "analyze-023",
+          "language": "python",
+          "expected": [
+            "SMELL-14"
+          ],
+          "detected": [
+            "SMELL-14"
+          ],
+          "true_positives": [
+            "SMELL-14"
+          ],
+          "false_negatives": [],
+          "false_positives": [],
+          "hit": true
+        },
+        {
+          "id": "analyze-024",
+          "language": "typescript",
+          "expected": [
+            "SMELL-14"
+          ],
+          "detected": [],
+          "true_positives": [],
+          "false_negatives": [
+            "SMELL-14"
+          ],
+          "false_positives": [],
+          "hit": false
+        },
+        {
+          "id": "analyze-025",
+          "language": "python",
+          "expected": [
+            "SMELL-16"
+          ],
+          "detected": [
+            "SMELL-16"
+          ],
+          "true_positives": [
+            "SMELL-16"
+          ],
+          "false_negatives": [],
+          "false_positives": [],
+          "hit": true
+        },
+        {
+          "id": "analyze-026",
+          "language": "java",
+          "expected": [
+            "SMELL-16"
+          ],
+          "detected": [
+            "SMELL-06",
+            "SMELL-16",
+            "SMELL-18"
+          ],
+          "true_positives": [
+            "SMELL-16"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-06",
+            "SMELL-18"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-027",
+          "language": "python",
+          "expected": [
+            "SMELL-18"
+          ],
+          "detected": [
+            "SMELL-03",
+            "SMELL-07",
+            "SMELL-18"
+          ],
+          "true_positives": [
+            "SMELL-18"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-03",
+            "SMELL-07"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-028",
+          "language": "rust",
+          "expected": [
+            "SMELL-18"
+          ],
+          "detected": [
+            "SMELL-18"
+          ],
+          "true_positives": [
+            "SMELL-18"
+          ],
+          "false_negatives": [],
+          "false_positives": [],
+          "hit": true
+        },
+        {
+          "id": "analyze-029",
+          "language": "python",
+          "expected": [
+            "SMELL-20"
+          ],
+          "detected": [],
+          "true_positives": [],
+          "false_negatives": [
+            "SMELL-20"
+          ],
+          "false_positives": [],
+          "hit": false
+        },
+        {
+          "id": "analyze-030",
+          "language": "typescript",
+          "expected": [
+            "SMELL-20"
+          ],
+          "detected": [
+            "SMELL-20"
+          ],
+          "true_positives": [
+            "SMELL-20"
+          ],
+          "false_negatives": [],
+          "false_positives": [],
+          "hit": true
+        },
+        {
+          "id": "analyze-031",
+          "language": "java",
+          "expected": [
+            "SMELL-20"
+          ],
+          "detected": [
+            "SMELL-20"
+          ],
+          "true_positives": [
+            "SMELL-20"
+          ],
+          "false_negatives": [],
+          "false_positives": [],
+          "hit": true
+        },
+        {
+          "id": "analyze-032",
+          "language": "python",
+          "expected": [
+            "SMELL-21"
+          ],
+          "detected": [
+            "SMELL-04",
+            "SMELL-10",
+            "SMELL-21"
+          ],
+          "true_positives": [
+            "SMELL-21"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-04",
+            "SMELL-10"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-033",
+          "language": "java",
+          "expected": [
+            "SMELL-21"
+          ],
+          "detected": [
+            "SMELL-04",
+            "SMELL-21"
+          ],
+          "true_positives": [
+            "SMELL-21"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-04"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-036",
+          "language": "go",
+          "expected": [
+            "SMELL-01"
+          ],
+          "detected": [
+            "SMELL-01",
+            "SMELL-06",
+            "SMELL-18"
+          ],
+          "true_positives": [
+            "SMELL-01"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-06",
+            "SMELL-18"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-037",
+          "language": "go",
+          "expected": [
+            "SMELL-02"
+          ],
+          "detected": [
+            "SMELL-02",
+            "SMELL-03",
+            "SMELL-05"
+          ],
+          "true_positives": [
+            "SMELL-02"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-03",
+            "SMELL-05"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-038",
+          "language": "go",
+          "expected": [
+            "SMELL-06"
+          ],
+          "detected": [
+            "SMELL-06"
+          ],
+          "true_positives": [
+            "SMELL-06"
+          ],
+          "false_negatives": [],
+          "false_positives": [],
+          "hit": true
+        },
+        {
+          "id": "analyze-039",
+          "language": "go",
+          "expected": [
+            "SMELL-02",
+            "SMELL-05"
+          ],
+          "detected": [
+            "SMELL-02",
+            "SMELL-03",
+            "SMELL-05"
+          ],
+          "true_positives": [
+            "SMELL-02",
+            "SMELL-05"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-03"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-040",
+          "language": "go",
+          "expected": [
+            "SMELL-18"
+          ],
+          "detected": [
+            "SMELL-18",
+            "SMELL-20"
+          ],
+          "true_positives": [
+            "SMELL-18"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-20"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-041",
+          "language": "ruby",
+          "expected": [
+            "SMELL-01"
+          ],
+          "detected": [
+            "SMELL-01",
+            "SMELL-06",
+            "SMELL-18"
+          ],
+          "true_positives": [
+            "SMELL-01"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-06",
+            "SMELL-18"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-042",
+          "language": "typescript",
+          "expected": [
+            "SMELL-03"
+          ],
+          "detected": [
+            "SMELL-02",
+            "SMELL-03",
+            "SMELL-05"
+          ],
+          "true_positives": [
+            "SMELL-03"
+          ],
+          "false_negatives": [],
+          "false_positives": [
+            "SMELL-02",
+            "SMELL-05"
+          ],
+          "hit": true
+        },
+        {
+          "id": "analyze-043",
+          "language": "ruby",
+          "expected": [
+            "SMELL-07"
+          ],
+          "detected": [
+            "SMELL-07"
+          ],
+          "true_positives": [
+            "SMELL-07"
+          ],
+          "false_negatives": [],
+          "false_positives": [],
+          "hit": true
+        },
+        {
+          "id": "analyze-044",
+          "language": "ruby",
+          "expected": [
+            "SMELL-14"
+          ],
+          "detected": [],
+          "true_positives": [],
+          "false_negatives": [
+            "SMELL-14"
+          ],
+          "false_positives": [],
+          "hit": false
+        },
+        {
+          "id": "analyze-045",
+          "language": "ruby",
+          "expected": [
+            "SMELL-21"
+          ],
+          "detected": [],
+          "true_positives": [],
+          "false_negatives": [
+            "SMELL-21"
+          ],
+          "false_positives": [],
+          "hit": false
+        },
+        {
+          "id": "analyze-046",
+          "language": "go",
+          "expected": [
+            "SMELL-16"
+          ],
+          "detected": [
+            "SMELL-06"
+          ],
+          "true_positives": [],
+          "false_negatives": [
+            "SMELL-16"
+          ],
+          "false_positives": [
+            "SMELL-06"
+          ],
+          "hit": false
+        },
+        {
+          "id": "analyze-048",
+          "language": "go",
+          "expected": [
+            "SMELL-07"
+          ],
+          "detected": [],
+          "true_positives": [],
+          "false_negatives": [
+            "SMELL-07"
+          ],
+          "false_positives": [],
+          "hit": false
+        },
+        {
+          "id": "analyze-049",
+          "language": "ruby",
+          "expected": [
+            "SMELL-18"
+          ],
+          "detected": [],
+          "true_positives": [],
+          "false_negatives": [
+            "SMELL-18"
+          ],
+          "false_positives": [],
+          "hit": false
+        },
+        {
+          "id": "analyze-050",
+          "language": "ruby",
+          "expected": [
+            "SMELL-20"
+          ],
+          "detected": [
+            "SMELL-20"
+          ],
+          "true_positives": [
+            "SMELL-20"
+          ],
+          "false_negatives": [],
+          "false_positives": [],
+          "hit": true
+        }
+      ]
+    },
+    "traversal": {
+      "status": "ok",
+      "metrics": {
+        "neighbors": {
+          "recall": 0.95,
+          "hits": 19,
+          "total": 20
+        },
+        "paths": {
+          "recall": 1.0,
+          "hits": 20,
+          "total": 20
+        }
+      },
+      "per_case": [
+        {
+          "id": "traverse-001",
+          "type": "neighbors",
+          "entity_id": "SMELL-01",
+          "expected": [
+            "DP-010",
+            "RF-001",
+            "RF-005",
+            "RF-006",
+            "RF-007",
+            "RF-008",
+            "RF-009",
+            "SMELL-16"
+          ],
+          "found": [
+            "DP-010",
+            "LAW-041",
+            "LAW-042-S",
+            "RF-001",
+            "RF-005",
+            "RF-006",
+            "RF-007",
+            "RF-008",
+            "RF-009",
+            "RF-034",
+            "RF-035",
+            "RF-036",
+            "RF-038",
+            "RF-040",
+            "RF-050",
+            "RF-051",
+            "RF-052",
+            "RF-054",
+            "SMELL-16"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-002",
+          "type": "neighbors",
+          "entity_id": "DP-020",
+          "expected": [
+            "DP-006",
+            "DP-014",
+            "DP-021",
+            "LAW-042-O",
+            "RF-037",
+            "SMELL-06"
+          ],
+          "found": [
+            "DP-006",
+            "DP-014",
+            "DP-021",
+            "LAW-042-O",
+            "RF-037",
+            "SMELL-06"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-003",
+          "type": "neighbors",
+          "entity_id": "RF-001",
+          "expected": [
+            "LAW-040",
+            "LAW-041",
+            "LAW-042-S",
+            "LAW-043",
+            "RF-002",
+            "RF-003",
+            "RF-005",
+            "SMELL-01",
+            "SMELL-04",
+            "SMELL-06",
+            "SMELL-09",
+            "SMELL-13",
+            "SMELL-16",
+            "SMELL-18",
+            "SMELL-21",
+            "SMELL-23"
+          ],
+          "found": [
+            "LAW-040",
+            "LAW-041",
+            "LAW-042-S",
+            "LAW-043",
+            "RF-002",
+            "RF-003",
+            "RF-005",
+            "SMELL-01",
+            "SMELL-04",
+            "SMELL-06",
+            "SMELL-09",
+            "SMELL-13",
+            "SMELL-16",
+            "SMELL-18",
+            "SMELL-21",
+            "SMELL-23"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-004",
+          "type": "neighbors",
+          "entity_id": "LAW-042",
+          "expected": [
+            "LAW-040",
+            "LAW-041",
+            "LAW-043"
+          ],
+          "found": [
+            "LAW-040",
+            "LAW-041",
+            "LAW-043"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-005",
+          "type": "neighbors",
+          "entity_id": "SMELL-06",
+          "expected": [
+            "DP-003",
+            "DP-008",
+            "DP-013",
+            "DP-014",
+            "DP-019",
+            "DP-020",
+            "DP-022",
+            "LAW-042-O",
+            "RF-001",
+            "RF-029",
+            "RF-030",
+            "RF-031",
+            "RF-035",
+            "RF-037",
+            "RF-039"
+          ],
+          "found": [
+            "DP-003",
+            "DP-008",
+            "DP-013",
+            "DP-014",
+            "DP-019",
+            "DP-020",
+            "DP-022",
+            "LAW-042",
+            "LAW-042-O",
+            "RF-001",
+            "RF-029",
+            "RF-030",
+            "RF-031",
+            "RF-035",
+            "RF-037",
+            "RF-039"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-006",
+          "type": "neighbors",
+          "entity_id": "DP-009",
+          "expected": [
+            "DP-004",
+            "DP-006",
+            "LAW-042-L",
+            "LAW-042-O",
+            "SMELL-03"
+          ],
+          "found": [
+            "DP-004",
+            "DP-006",
+            "LAW-042-L",
+            "LAW-042-O",
+            "SMELL-03"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-007",
+          "type": "neighbors",
+          "entity_id": "RF-039",
+          "expected": [
+            "LAW-040",
+            "LAW-041",
+            "SMELL-04",
+            "SMELL-06"
+          ],
+          "found": [
+            "LAW-040",
+            "LAW-041",
+            "SMELL-04",
+            "SMELL-06"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-008",
+          "type": "neighbors",
+          "entity_id": "SMELL-13",
+          "expected": [
+            "LAW-040",
+            "RF-001",
+            "RF-008",
+            "RF-019",
+            "RF-021",
+            "RF-022",
+            "RF-027",
+            "RF-034",
+            "RF-044",
+            "RF-058",
+            "RF-059",
+            "RF-060",
+            "RF-061",
+            "RF-062",
+            "SMELL-15",
+            "SMELL-23"
+          ],
+          "found": [
+            "LAW-040",
+            "RF-001",
+            "RF-008",
+            "RF-019",
+            "RF-021",
+            "RF-022",
+            "RF-027",
+            "RF-034",
+            "RF-044",
+            "RF-058",
+            "RF-059",
+            "RF-060",
+            "RF-061",
+            "RF-062",
+            "SMELL-15",
+            "SMELL-23"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-009",
+          "type": "neighbors",
+          "entity_id": "DP-005",
+          "expected": [
+            "DP-001",
+            "DP-002",
+            "DP-004",
+            "DP-010",
+            "DP-011",
+            "LAW-042-S"
+          ],
+          "found": [
+            "DP-001",
+            "DP-002",
+            "DP-004",
+            "DP-010",
+            "DP-011",
+            "LAW-042-S"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-010",
+          "type": "neighbors",
+          "entity_id": "LAW-043",
+          "expected": [
+            "LAW-040",
+            "LAW-041"
+          ],
+          "found": [
+            "DP-012",
+            "DP-016",
+            "DP-018",
+            "LAW-040",
+            "LAW-041",
+            "LAW-042",
+            "RF-001",
+            "RF-011",
+            "RF-015",
+            "RF-016",
+            "RF-017",
+            "RF-018",
+            "RF-019",
+            "RF-020",
+            "RF-022",
+            "RF-023",
+            "RF-032",
+            "RF-045",
+            "RF-066",
+            "SMELL-18",
+            "SMELL-19",
+            "SMELL-20"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-011",
+          "type": "neighbors",
+          "entity_id": "DP-013",
+          "expected": [
+            "DP-014",
+            "DP-016",
+            "LAW-042-O",
+            "LAW-042-S",
+            "SMELL-06"
+          ],
+          "found": [
+            "DP-014",
+            "DP-016",
+            "LAW-042-O",
+            "LAW-042-S",
+            "SMELL-06"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-012",
+          "type": "neighbors",
+          "entity_id": "SMELL-21",
+          "expected": [
+            "DP-010",
+            "LAW-042-S",
+            "RF-001",
+            "RF-010",
+            "RF-016",
+            "RF-033",
+            "RF-035",
+            "RF-040",
+            "RF-049",
+            "RF-054",
+            "RF-056"
+          ],
+          "found": [
+            "DP-010",
+            "LAW-042-S",
+            "RF-001",
+            "RF-010",
+            "RF-016",
+            "RF-033",
+            "RF-035",
+            "RF-040",
+            "RF-049",
+            "RF-054",
+            "RF-056"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-013",
+          "type": "neighbors",
+          "entity_id": "RF-010",
+          "expected": [
+            "LAW-040",
+            "LAW-042-S",
+            "RF-001",
+            "RF-056",
+            "RF-057",
+            "RF-058",
+            "SMELL-04",
+            "SMELL-05",
+            "SMELL-08",
+            "SMELL-09",
+            "SMELL-10",
+            "SMELL-21"
+          ],
+          "found": [
+            "LAW-040",
+            "LAW-042-S",
+            "RF-001",
+            "RF-056",
+            "RF-057",
+            "RF-058",
+            "SMELL-04",
+            "SMELL-05",
+            "SMELL-08",
+            "SMELL-09",
+            "SMELL-10",
+            "SMELL-21"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-014",
+          "type": "neighbors",
+          "entity_id": "DP-018",
+          "expected": [
+            "DP-016",
+            "LAW-042-D",
+            "LAW-042-O",
+            "LAW-043",
+            "SMELL-19"
+          ],
+          "found": [
+            "DP-016",
+            "LAW-042-D",
+            "LAW-042-O",
+            "LAW-043",
+            "SMELL-19"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-015",
+          "type": "neighbors",
+          "entity_id": "LAW-040",
+          "expected": [],
+          "found": [
+            "DP-011",
+            "DP-021",
+            "LAW-042",
+            "RF-001",
+            "RF-005",
+            "RF-007",
+            "RF-010",
+            "RF-019",
+            "RF-021",
+            "RF-022",
+            "RF-026",
+            "RF-027",
+            "RF-032",
+            "RF-034",
+            "RF-039",
+            "RF-043",
+            "RF-044",
+            "RF-046",
+            "RF-053",
+            "RF-058",
+            "RF-059",
+            "RF-060",
+            "RF-061",
+            "RF-062",
+            "SMELL-03",
+            "SMELL-05",
+            "SMELL-08",
+            "SMELL-11",
+            "SMELL-12",
+            "SMELL-13",
+            "SMELL-16",
+            "SMELL-17"
+          ],
+          "coverage": 0.0,
+          "count_ok": true,
+          "hit": false
+        },
+        {
+          "id": "traverse-016",
+          "type": "neighbors",
+          "entity_id": "SMELL-18",
+          "expected": [
+            "LAW-043",
+            "RF-001",
+            "RF-013",
+            "RF-015",
+            "RF-016",
+            "RF-045"
+          ],
+          "found": [
+            "LAW-042",
+            "LAW-043",
+            "RF-001",
+            "RF-013",
+            "RF-015",
+            "RF-016",
+            "RF-045"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-017",
+          "type": "neighbors",
+          "entity_id": "DP-016",
+          "expected": [
+            "DP-010",
+            "DP-013",
+            "DP-014",
+            "DP-018",
+            "LAW-001",
+            "LAW-042-D",
+            "LAW-042-S",
+            "LAW-043",
+            "SMELL-19"
+          ],
+          "found": [
+            "DP-010",
+            "DP-013",
+            "DP-014",
+            "DP-018",
+            "LAW-001",
+            "LAW-042-D",
+            "LAW-042-S",
+            "LAW-043",
+            "SMELL-19"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-018",
+          "type": "neighbors",
+          "entity_id": "SMELL-04",
+          "expected": [
+            "DP-002",
+            "LAW-042-S",
+            "RF-001",
+            "RF-010",
+            "RF-016",
+            "RF-039",
+            "RF-057",
+            "RF-058",
+            "RF-063",
+            "RF-064",
+            "SMELL-08",
+            "SMELL-22"
+          ],
+          "found": [
+            "DP-002",
+            "LAW-042-S",
+            "RF-001",
+            "RF-010",
+            "RF-016",
+            "RF-039",
+            "RF-057",
+            "RF-058",
+            "RF-063",
+            "RF-064",
+            "SMELL-08",
+            "SMELL-22"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-019",
+          "type": "neighbors",
+          "entity_id": "DP-010",
+          "expected": [
+            "DP-001",
+            "DP-005",
+            "DP-006",
+            "DP-012",
+            "DP-016",
+            "LAW-001",
+            "LAW-041",
+            "LAW-042-D",
+            "SMELL-01",
+            "SMELL-21"
+          ],
+          "found": [
+            "DP-001",
+            "DP-005",
+            "DP-006",
+            "DP-012",
+            "DP-016",
+            "LAW-001",
+            "LAW-041",
+            "LAW-042-D",
+            "SMELL-01",
+            "SMELL-21"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-020",
+          "type": "neighbors",
+          "entity_id": "RF-016",
+          "expected": [
+            "LAW-042-S",
+            "LAW-043",
+            "RF-013",
+            "RF-015",
+            "SMELL-04",
+            "SMELL-05",
+            "SMELL-09",
+            "SMELL-10",
+            "SMELL-15",
+            "SMELL-18",
+            "SMELL-19",
+            "SMELL-20",
+            "SMELL-21",
+            "SMELL-22"
+          ],
+          "found": [
+            "LAW-042-S",
+            "LAW-043",
+            "RF-013",
+            "RF-015",
+            "SMELL-04",
+            "SMELL-05",
+            "SMELL-09",
+            "SMELL-10",
+            "SMELL-15",
+            "SMELL-18",
+            "SMELL-19",
+            "SMELL-20",
+            "SMELL-21",
+            "SMELL-22"
+          ],
+          "coverage": 1.0,
+          "count_ok": true,
+          "hit": true
+        },
+        {
+          "id": "traverse-021",
+          "type": "path",
+          "from": "SMELL-01",
+          "to": "RF-001",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "SMELL-01",
+            "RF-001"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-022",
+          "type": "path",
+          "from": "SMELL-06",
+          "to": "RF-039",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "SMELL-06",
+            "RF-039"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-023",
+          "type": "path",
+          "from": "SMELL-21",
+          "to": "RF-010",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "SMELL-21",
+            "RF-010"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-024",
+          "type": "path",
+          "from": "DP-020",
+          "to": "LAW-042-O",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "DP-020",
+            "LAW-042-O"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-025",
+          "type": "path",
+          "from": "SMELL-01",
+          "to": "DP-020",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "SMELL-01",
+            "LAW-042-S",
+            "DP-014",
+            "DP-020"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-026",
+          "type": "path",
+          "from": "SMELL-09",
+          "to": "RF-019",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "SMELL-09",
+            "LAW-042-S",
+            "RF-019"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-027",
+          "type": "path",
+          "from": "LAW-042",
+          "to": "DP-006",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "LAW-042",
+            "LAW-040",
+            "SMELL-11",
+            "DP-006"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-028",
+          "type": "path",
+          "from": "SMELL-04",
+          "to": "DP-002",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "SMELL-04",
+            "DP-002"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-029",
+          "type": "path",
+          "from": "SMELL-18",
+          "to": "RF-001",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "SMELL-18",
+            "RF-001"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-030",
+          "type": "path",
+          "from": "DP-005",
+          "to": "LAW-042-S",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "DP-005",
+            "LAW-042-S"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-031",
+          "type": "path",
+          "from": "SMELL-13",
+          "to": "LAW-040",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "SMELL-13",
+            "LAW-040"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-032",
+          "type": "path",
+          "from": "SMELL-19",
+          "to": "DP-016",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "SMELL-19",
+            "DP-016"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-033",
+          "type": "path",
+          "from": "SMELL-06",
+          "to": "DP-020",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "SMELL-06",
+            "DP-020"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-034",
+          "type": "path",
+          "from": "RF-010",
+          "to": "SMELL-21",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "RF-010",
+            "SMELL-21"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-035",
+          "type": "path",
+          "from": "SMELL-01",
+          "to": "DP-005",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "SMELL-01",
+            "DP-010",
+            "DP-005"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-036",
+          "type": "path",
+          "from": "NONEXISTENT-999",
+          "to": "SMELL-01",
+          "should_find_path": false,
+          "path_found": false,
+          "path_ids": [],
+          "hit": true
+        },
+        {
+          "id": "traverse-037",
+          "type": "path",
+          "from": "SMELL-01",
+          "to": "NONEXISTENT-998",
+          "should_find_path": false,
+          "path_found": false,
+          "path_ids": [],
+          "hit": true
+        },
+        {
+          "id": "traverse-038",
+          "type": "path",
+          "from": "SMELL-07",
+          "to": "DP-002",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "SMELL-07",
+            "LAW-042-S",
+            "DP-005",
+            "DP-002"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-039",
+          "type": "path",
+          "from": "RF-037",
+          "to": "DP-020",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "RF-037",
+            "DP-020"
+          ],
+          "hit": true
+        },
+        {
+          "id": "traverse-040",
+          "type": "path",
+          "from": "DP-021",
+          "to": "SMELL-03",
+          "should_find_path": true,
+          "path_found": true,
+          "path_ids": [
+            "DP-021",
+            "SMELL-03"
+          ],
+          "hit": true
+        }
+      ]
+    }
+  },
+  "regression": {
+    "status": "FAIL",
+    "prev_composite": 0.760951,
+    "delta": 0.001636,
+    "regressions": [
+      "specificity dropped by 0.1364 (threshold: 0.05)"
+    ]
+  }
+}
