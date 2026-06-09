@@ -35,9 +35,14 @@ pub struct CodeMetrics {
     pub delegation_methods: usize,
     #[serde(default)]
     pub ast_hash: String,
-    /// Number of comment lines in the function/class body.
+    /// Number of comment lines in the function/class body (doc + inline).
     #[serde(default)]
     pub comment_count: usize,
+    /// Number of doc-comment lines (docstrings, /// doc comments, /** Javadoc */).
+    /// SMELL-16 uses `comment_count - doc_comment_count` to detect excessive
+    /// *inline* comments without penalising good API documentation.
+    #[serde(default)]
+    pub doc_comment_count: usize,
     /// Number of methods that override parent methods with empty or trivial bodies.
     #[serde(default)]
     pub override_count: usize,
@@ -64,6 +69,7 @@ impl Default for CodeMetrics {
             delegation_methods: 0,
             ast_hash: String::new(),
             comment_count: 0,
+            doc_comment_count: 0,
             override_count: 0,
             item_type: ItemType::Function,
         }

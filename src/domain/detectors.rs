@@ -374,9 +374,6 @@ pub fn detect_switch_statements(
 // Pure data structs (method_count == 0) use lower confidence 0.60 to avoid
 // flagging legitimate Rust/Go data containers; this falls below the default
 // --min-confidence 0.65 and is effectively filtered out in practice.
-// COUPLING NOTE: confidence 0.60 is above the server/API default (0.50) so it
-// will appear in API results, but below the CLI default (0.65) and audit high
-// tier (0.70). Changing either default would change SMELL-07's behavior.
 
 pub fn detect_data_class(
     metrics: &CodeMetrics,
@@ -879,9 +876,9 @@ pub fn detect_parallel_inheritance(
 // -- SMELL-16  Comments -----------------------------------------------------
 // Heuristic: high comment density relative to code suggests the code is not
 // self-documenting.  Uses `comment_count` from CodeMetrics.
-// comment_ratio >= 0.5 -> 0.40 | >= 0.35 -> 0.25
-// Extra: long method + ratio >= 0.35 -> +0.20 | high CC + ratio >= 0.35 -> +0.15
-// Fires at >= 0.50 (requires at least 2 signals).
+// comment_ratio >= 75% -> 0.70 | >= 35% -> 0.40
+// Extra: long method + ratio >= 0.35 -> +0.25 | high CC + ratio >= 0.35 -> +0.20
+// Fires at >= 0.65.
 // NOTE: Low threshold is 35% (not 25%) to avoid flagging well-documented code
 // with rich doc comments (Javadoc, ///, etc.) which commonly reach 25-30%.
 
@@ -890,24 +887,26 @@ pub fn detect_comments(
     location: &str,
     name: &str,
 ) -> Option<SmellDetection> {
-    if metrics.comment_count == 0 || metrics.loc == 0 {
+    // Use only inline comments (exclude doc comments like docstrings, ///)
+    let inline_count = metrics.comment_count.saturating_sub(metrics.doc_comment_count);
+    if inline_count == 0 || metrics.loc == 0 {
         return None;
     }
-    let comment_ratio = metrics.comment_count as f64 / metrics.loc as f64;
+    let comment_ratio = inline_count as f64 / metrics.loc as f64;
     let mut a = TieredAccum::new();
     a.tier(
-        metrics.comment_count,
+        inline_count,
         (metrics.loc as f64 * 0.75) as usize, // > 75% comment lines
-        0.55,
+        0.70,
         format!(
-            "Comment density {:.0}% is very high ({} comment lines / {} LOC)",
+            "Comment density {:.0}% is very high ({} inline comment lines / {} LOC)",
             comment_ratio * 100.0,
-            metrics.comment_count,
+            inline_count,
             metrics.loc
         ),
         // ~35% threshold: (loc * 100 / 285 ≈ 35%). Using integer math: loc * 5 / 14.
         (metrics.loc as f64 * 0.35) as usize,
-        0.25,
+        0.40,
         format!(
             "Comment density {:.0}% suggests code is not self-documenting",
             comment_ratio * 100.0
@@ -915,20 +914,20 @@ pub fn detect_comments(
     );
     if metrics.loc > 50 && comment_ratio >= 0.35 {
         a.add(
-            0.2,
+            0.25,
             "Long method with many comments -- consider extracting named methods".into(),
         );
     }
     if metrics.cyclomatic_complexity > 10 && comment_ratio >= 0.35 {
         a.add(
-            0.15,
+            0.20,
             format!(
                 "High CC={} with many comments suggests complex control flow",
                 metrics.cyclomatic_complexity
             ),
         );
     }
-    a.into_detection("SMELL-16", "Comments", location, name, metrics, 0.4)
+    a.into_detection("SMELL-16", "Comments", location, name, metrics, 0.65)
 }
 
 // -- SMELL-17  Dead Code (placeholder) --------------------------------------

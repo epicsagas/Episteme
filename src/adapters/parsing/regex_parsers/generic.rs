@@ -10,13 +10,13 @@ use crate::ports::parser::CodeParser;
 use super::{
     build_func_metrics_full, calculate_cc, calculate_cc_cpp, calculate_cc_csharp,
     calculate_cc_java, calculate_cc_kotlin, calculate_cc_php, calculate_cc_rust,
-    count_block_comment_lines, count_delegation_methods, count_line_comment_lines, count_loc,
-    count_local_vars, count_local_vars_cpp, count_local_vars_csharp, count_local_vars_kotlin,
-    count_local_vars_php, count_overrides, count_primitive_params_csharp,
-    count_primitive_params_go, count_primitive_params_java, count_primitive_params_kotlin,
-    count_primitive_params_none, count_primitive_params_php, count_primitive_params_rust,
-    find_matching_brace, line_number, remove_block_comments, remove_hash_comments,
-    remove_line_comments,
+    count_block_comment_lines, count_delegation_methods, count_doc_comment_lines,
+    count_javadoc_lines, count_line_comment_lines, count_loc, count_local_vars,
+    count_local_vars_cpp, count_local_vars_csharp, count_local_vars_kotlin, count_local_vars_php,
+    count_overrides, count_primitive_params_csharp, count_primitive_params_go,
+    count_primitive_params_java, count_primitive_params_kotlin, count_primitive_params_none,
+    count_primitive_params_php, count_primitive_params_rust, find_matching_brace, line_number,
+    remove_block_comments, remove_hash_comments, remove_line_comments,
 };
 
 /// Configuration for a brace-based language parser.
@@ -142,7 +142,7 @@ impl CodeParser for GenericParser {
         let skip = self.config.skip_names;
 
         // Pre-collect raw function bodies for comment counting.
-        let raw_func_comments: std::collections::HashMap<String, usize> =
+        let raw_func_comments: std::collections::HashMap<String, (usize, usize)> =
             collect_raw_func_comment_counts(
                 func_re,
                 code,
@@ -171,9 +171,17 @@ impl CodeParser for GenericParser {
 
             let body = &cleaned[start..=end_pos];
             let sig = &cleaned[start..];
-            let comment_count = *raw_func_comments.get(name).unwrap_or(&0);
-            let metrics =
-                build_func_metrics_full(body, sig, cc_fn, vars_fn, primitive_fn, comment_count);
+            let (comment_count, doc_comment_count) =
+                *raw_func_comments.get(name).unwrap_or(&(0, 0));
+            let metrics = build_func_metrics_full(
+                body,
+                sig,
+                cc_fn,
+                vars_fn,
+                primitive_fn,
+                comment_count,
+                doc_comment_count,
+            );
 
             let location = format!("{}:{}", file_name, line_number(&cleaned, start));
             detections.extend(detect_all(&metrics, &location, name));
@@ -397,7 +405,7 @@ fn collect_raw_func_comment_counts(
     skip: &[&str],
     comment_prefix: &str,
     has_block_comments: bool,
-) -> std::collections::HashMap<String, usize> {
+) -> std::collections::HashMap<String, (usize, usize)> {
     let mut map = std::collections::HashMap::new();
     for cap in func_re.captures_iter(raw_code) {
         let name = cap[1].to_string();
@@ -415,13 +423,16 @@ fn collect_raw_func_comment_counts(
         };
         let raw_body = &raw_code[start..=end_pos];
         let mut count = 0;
+        let mut doc_count = 0;
         if !comment_prefix.is_empty() {
             count += count_line_comment_lines(raw_body, comment_prefix);
+            doc_count += count_doc_comment_lines(raw_body, comment_prefix);
         }
         if has_block_comments {
             count += count_block_comment_lines(raw_body);
+            doc_count += count_javadoc_lines(raw_body);
         }
-        map.insert(name, count);
+        map.insert(name, (count, doc_count));
     }
     map
 }

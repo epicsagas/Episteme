@@ -6,7 +6,9 @@
       "id": "analyze-001",
       "name": "Long Method - complex validation function",
       "language": "rust",
-      "expected_smells": ["SMELL-01"],
+      "expected_smells": [
+        "SMELL-01"
+      ],
       "min_confidence": 0.5,
       "code": "pub fn validate_user_registration(\n    username: &str,\n    email: &str,\n    password: &str,\n    confirm_password: &str,\n    age: u32,\n    country: &str,\n    terms_accepted: bool,\n) -> Result<User, ValidationError> {\n    if username.is_empty() {\n        return Err(ValidationError::EmptyField(\"username\"));\n    }\n    if username.len() < 3 {\n        return Err(ValidationError::TooShort(\"username\", 3));\n    }\n    if username.len() > 32 {\n        return Err(ValidationError::TooLong(\"username\", 32));\n    }\n    if !username.chars().all(|c| c.is_alphanumeric() || c == '_') {\n        return Err(ValidationError::InvalidChars(\"username\"));\n    }\n    if email.is_empty() {\n        return Err(ValidationError::EmptyField(\"email\"));\n    }\n    if !email.contains('@') {\n        return Err(ValidationError::InvalidFormat(\"email\"));\n    }\n    let parts: Vec<&str> = email.split('@').collect();\n    if parts.len() != 2 {\n        return Err(ValidationError::InvalidFormat(\"email\"));\n    }\n    if parts[1].split('.').count() < 2 {\n        return Err(ValidationError::InvalidFormat(\"email\"));\n    }\n    if password.is_empty() {\n        return Err(ValidationError::EmptyField(\"password\"));\n    }\n    if password.len() < 8 {\n        return Err(ValidationError::TooShort(\"password\", 8));\n    }\n    if password.len() > 128 {\n        return Err(ValidationError::TooLong(\"password\", 128));\n    }\n    if !password.chars().any(|c| c.is_uppercase()) {\n        return Err(ValidationError::MissingRequirement(\"uppercase letter\"));\n    }\n    if !password.chars().any(|c| c.is_lowercase()) {\n        return Err(ValidationError::MissingRequirement(\"lowercase letter\"));\n    }\n    if !password.chars().any(|c| c.is_numeric()) {\n        return Err(ValidationError::MissingRequirement(\"digit\"));\n    }\n    if !password.chars().any(|c| !c.is_alphanumeric()) {\n        return Err(ValidationError::MissingRequirement(\"special character\"));\n    }\n    if password != confirm_password {\n        return Err(ValidationError::PasswordMismatch);\n    }\n    if age < 13 {\n        return Err(ValidationError::TooYoung(13));\n    }\n    if age > 150 {\n        return Err(ValidationError::InvalidAge);\n    }\n    let banned_countries = [\"XX\", \"YY\", \"ZZ\"];\n    if banned_countries.contains(&country) {\n        return Err(ValidationError::BannedCountry(country.to_string()));\n    }\n    if country.len() != 2 {\n        return Err(ValidationError::InvalidFormat(\"country code\"));\n    }\n    if !terms_accepted {\n        return Err(ValidationError::TermsNotAccepted);\n    }\n    let hashed_password = hash_password(password);\n    let user = User {\n        username: username.to_string(),\n        email: email.to_string(),\n        password_hash: hashed_password,\n        age,\n        country: country.to_string(),\n        created_at: chrono::Utc::now(),\n    };\n    Ok(user)\n}"
     },
@@ -14,7 +16,9 @@
       "id": "analyze-002",
       "name": "Long Method - Python data processing pipeline",
       "language": "python",
-      "expected_smells": ["SMELL-01"],
+      "expected_smells": [
+        "SMELL-01"
+      ],
       "min_confidence": 0.5,
       "code": "def process_order_payload(payload, config, db_session, logger):\n    if not payload:\n        raise ValueError(\"Empty payload\")\n    customer = payload.get(\"customer\")\n    if not customer:\n        raise ValueError(\"Missing customer data\")\n    items = payload.get(\"items\", [])\n    if not items:\n        raise ValueError(\"No items in order\")\n    total = 0.0\n    validated_items = []\n    for item in items:\n        sku = item.get(\"sku\")\n        if not sku:\n            raise ValueError(f\"Missing SKU in item: {item}\")\n        quantity = item.get(\"quantity\", 0)\n        if quantity <= 0:\n            raise ValueError(f\"Invalid quantity for SKU {sku}\")\n        unit_price = item.get(\"unit_price\")\n        if unit_price is None:\n            catalog_entry = db_session.query(Catalog).filter_by(sku=sku).first()\n            if catalog_entry:\n                unit_price = catalog_entry.price\n            else:\n                raise ValueError(f\"Cannot resolve price for SKU {sku}\")\n        line_total = quantity * unit_price\n        if line_total > 10000:\n            logger.warning(f\"High-value item: {sku} = {line_total}\")\n        total += line_total\n        validated_items.append({\n            \"sku\": sku,\n            \"quantity\": quantity,\n            \"unit_price\": unit_price,\n            \"line_total\": line_total,\n        })\n    discount_rate = 0.0\n    if total > 500:\n        discount_rate = 0.05\n    if total > 1000:\n        discount_rate = 0.10\n    if total > 5000:\n        discount_rate = 0.15\n    discount_amount = total * discount_rate\n    tax_rate = config.get(\"tax_rate\", 0.08)\n    taxable_amount = total - discount_amount\n    tax = taxable_amount * tax_rate\n    grand_total = taxable_amount + tax\n    shipping = 0.0\n    if grand_total < 50:\n        shipping = 9.99\n    elif grand_total < 100:\n        shipping = 5.99\n    grand_total += shipping\n    order = Order(\n        customer_id=customer[\"id\"],\n        items=validated_items,\n        subtotal=total,\n        discount=discount_amount,\n        tax=tax,\n        shipping=shipping,\n        total=grand_total,\n        status=\"pending\",\n    )\n    db_session.add(order)\n    db_session.commit()\n    logger.info(f\"Order {order.id} created: total={grand_total}\")\n    return order"
     },
@@ -22,7 +26,10 @@
       "id": "analyze-003",
       "name": "Long Parameter List - Rust HTTP handler",
       "language": "rust",
-      "expected_smells": ["SMELL-02", "SMELL-05"],
+      "expected_smells": [
+        "SMELL-02",
+        "SMELL-05"
+      ],
       "min_confidence": 0.65,
       "code": "pub async fn create_subscription(\n    user_id: i64,\n    plan_id: i32,\n    billing_name: String,\n    billing_email: String,\n    billing_address: String,\n    billing_city: String,\n    billing_zip: String,\n    billing_country: String,\n    payment_token: String,\n    coupon_code: Option<String>,\n    referral_source: Option<String>,\n) -> Result<Subscription, SubscriptionError> {\n    let plan = fetch_plan(plan_id)?;\n    let amount = plan.monthly_price;\n    let charge = charge_payment(payment_token.clone(), amount)?;\n    let sub = Subscription {\n        user_id,\n        plan_id,\n        status: \"active\".to_string(),\n        current_period_start: Utc::now(),\n        current_period_end: Utc::now() + Duration::days(30),\n        billing_name,\n        billing_email,\n        billing_address,\n        billing_city,\n        billing_zip,\n        billing_country,\n        payment_id: charge.id,\n        coupon_code,\n        referral_source,\n    };\n    Ok(sub)\n}"
     },
@@ -30,15 +37,20 @@
       "id": "analyze-004",
       "name": "Long Parameter List - Python report generator",
       "language": "python",
-      "expected_smells": ["SMELL-02", "SMELL-05"],
-      "min_confidence": 0.80,
+      "expected_smells": [
+        "SMELL-02",
+        "SMELL-05"
+      ],
+      "min_confidence": 0.8,
       "code": "def generate_quarterly_report(\n    title,\n    quarter,\n    year,\n    department,\n    revenue_data,\n    expense_data,\n    headcount,\n    prior_year_revenue,\n    prior_year_expense,\n    output_format,\n):\n    report = Report(title=title)\n    report.add_header(f\"Q{quarter} {year} - {department}\")\n    report.add_section(\"Revenue\", revenue_data)\n    report.add_section(\"Expenses\", expense_data)\n    report.add_metric(\"Headcount\", headcount)\n    report.add_comparison(\"YoY Revenue\", revenue_data, prior_year_revenue)\n    report.add_comparison(\"YoY Expense\", expense_data, prior_year_expense)\n    return report.render(output_format)"
     },
     {
       "id": "analyze-005",
       "name": "Long Parameter List - TypeScript API client",
       "language": "typescript",
-      "expected_smells": ["SMELL-02"],
+      "expected_smells": [
+        "SMELL-02"
+      ],
       "min_confidence": 0.65,
       "code": "async function submitApplication(\n  firstName: string,\n  lastName: string,\n  email: string,\n  phone: string,\n  position: string,\n  department: string,\n  salaryExpectation: number,\n  startDate: Date,\n  coverLetter: string,\n): Promise<ApplicationResult> {\n  const payload = {\n    firstName,\n    lastName,\n    email,\n    phone,\n    position,\n    department,\n    salaryExpectation,\n    startDate: startDate.toISOString(),\n    coverLetter,\n  };\n  const response = await fetch('/api/applications', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify(payload),\n  });\n  return response.json();\n}"
     },
@@ -46,7 +58,10 @@
       "id": "analyze-006",
       "name": "Primitive Obsession - Rust coordinate transform",
       "language": "rust",
-      "expected_smells": ["SMELL-03", "SMELL-02"],
+      "expected_smells": [
+        "SMELL-03",
+        "SMELL-02"
+      ],
       "min_confidence": 0.85,
       "code": "pub fn transform_coordinates(\n    x: f64,\n    y: f64,\n    z: f64,\n    rotation_x: f64,\n    rotation_y: f64,\n    rotation_z: f64,\n    scale: f64,\n    offset_x: f64,\n    offset_y: f64,\n) -> (f64, f64, f64) {\n    let cos_x = rotation_x.cos();\n    let sin_x = rotation_x.sin();\n    let cos_y = rotation_y.cos();\n    let sin_y = rotation_y.sin();\n    let cos_z = rotation_z.cos();\n    let sin_z = rotation_z.sin();\n    let rx = y * cos_x - z * sin_x;\n    let rz = y * sin_x + z * cos_x;\n    let ry = rx * cos_y + rz * sin_y;\n    let rz2 = -rx * sin_y + rz * cos_y;\n    let fx = ry * cos_z - rz2 * sin_z;\n    let fy = ry * sin_z + rz2 * cos_z;\n    let fz = rz2;\n    (fx * scale + offset_x, fy * scale + offset_y, fz * scale)\n}"
     },
@@ -54,7 +69,9 @@
       "id": "analyze-007",
       "name": "Primitive Obsession - Python event handler",
       "language": "python",
-      "expected_smells": ["SMELL-03"],
+      "expected_smells": [
+        "SMELL-03"
+      ],
       "min_confidence": 0.85,
       "code": "def schedule_appointment(\n    patient_name: str,\n    patient_dob: str,\n    doctor_name: str,\n    room_number: int,\n    date_str: str,\n    time_str: str,\n    duration_minutes: int,\n    reason: str,\n):\n    appointment = {\n        \"patient_name\": patient_name,\n        \"patient_dob\": patient_dob,\n        \"doctor_name\": doctor_name,\n        \"room_number\": room_number,\n        \"date\": date_str,\n        \"time\": time_str,\n        \"duration_minutes\": duration_minutes,\n        \"reason\": reason,\n    }\n    return appointment"
     },
@@ -62,7 +79,9 @@
       "id": "analyze-008",
       "name": "Large Class - Rust inventory tracker impl",
       "language": "rust",
-      "expected_smells": ["SMELL-04"],
+      "expected_smells": [
+        "SMELL-04"
+      ],
       "min_confidence": 0.5,
       "code": "pub struct InventoryManager {\n    items: HashMap<String, Item>,\n    warehouses: HashMap<String, Warehouse>,\n    suppliers: HashMap<String, Supplier>,\n    orders: Vec<Order>,\n    shipments: Vec<Shipment>,\n    audit_log: Vec<AuditEntry>,\n    pending_transfers: Vec<Transfer>,\n    reorder_points: HashMap<String, u32>,\n    cost_history: HashMap<String, Vec<(DateTime<Utc>, f64)>>,\n    categories: HashMap<String, Category>,\n    tax_rates: HashMap<String, f64>,\n    locations: HashMap<String, Location>,\n    zones: HashMap<String, Zone>,\n    bin_locations: HashMap<String, BinLocation>,\n    stock_adjustments: Vec<Adjustment>,\n    return_records: Vec<ReturnRecord>,\n    damaged_items: Vec<DamagedItem>,\n}\n\nimpl InventoryManager {\n    pub fn new() -> Self { Self::default() }\n    pub fn add_item(&mut self, item: Item) -> Result<(), Error> { self.items.insert(item.sku.clone(), item); Ok(()) }\n    pub fn remove_item(&mut self, sku: &str) -> Result<Item, Error> { self.items.remove(sku).ok_or(Error::NotFound) }\n    pub fn update_quantity(&mut self, sku: &str, qty: i32) -> Result<(), Error> { if let Some(item) = self.items.get_mut(sku) { item.quantity = qty; Ok(()) } else { Err(Error::NotFound) } }\n    pub fn get_item(&self, sku: &str) -> Option<&Item> { self.items.get(sku) }\n    pub fn search_items(&self, query: &str) -> Vec<&Item> { self.items.values().filter(|i| i.name.contains(query)).collect() }\n    pub fn add_warehouse(&mut self, wh: Warehouse) -> Result<(), Error> { self.warehouses.insert(wh.id.clone(), wh); Ok(()) }\n    pub fn remove_warehouse(&mut self, id: &str) -> Result<Warehouse, Error> { self.warehouses.remove(id).ok_or(Error::NotFound) }\n    pub fn transfer_stock(&mut self, from: &str, to: &str, sku: &str, qty: u32) -> Result<(), Error> { let t = Transfer { from: from.into(), to: to.into(), sku: sku.into(), qty, timestamp: Utc::now() }; self.pending_transfers.push(t); Ok(()) }\n    pub fn process_transfer(&mut self, id: usize) -> Result<(), Error> { if id < self.pending_transfers.len() { let t = self.pending_transfers.remove(id); self.apply_transfer(&t); Ok(()) } else { Err(Error::NotFound) } }\n    pub fn add_supplier(&mut self, supplier: Supplier) -> Result<(), Error> { self.suppliers.insert(supplier.id.clone(), supplier); Ok(()) }\n    pub fn remove_supplier(&mut self, id: &str) -> Result<Supplier, Error> { self.suppliers.remove(id).ok_or(Error::NotFound) }\n    pub fn create_order(&mut self, order: Order) -> Result<String, Error> { let id = format!(\"ORD-{}\", self.orders.len()); self.orders.push(order); Ok(id) }\n    pub fn cancel_order(&mut self, id: &str) -> Result<(), Error> { if let Some(order) = self.orders.iter_mut().find(|o| o.id == id) { order.status = \"cancelled\".into(); Ok(()) } else { Err(Error::NotFound) } }\n    pub fn fulfill_order(&mut self, id: &str) -> Result<(), Error> { if let Some(order) = self.orders.iter_mut().find(|o| o.id == id) { order.status = \"fulfilled\".into(); Ok(()) } else { Err(Error::NotFound) } }\n    pub fn create_shipment(&mut self, order_id: &str, tracking: &str) -> Result<(), Error> { let s = Shipment { order_id: order_id.into(), tracking: tracking.into(), status: \"pending\".into() }; self.shipments.push(s); Ok(()) }\n    pub fn track_shipment(&self, tracking: &str) -> Option<&Shipment> { self.shipments.iter().find(|s| s.tracking == tracking) }\n    pub fn set_reorder_point(&mut self, sku: &str, threshold: u32) { self.reorder_points.insert(sku.into(), threshold); }\n    pub fn check_reorder(&self) -> Vec<String> { self.items.iter().filter(|(sku, item)| { self.reorder_points.get(*sku).map_or(false, |threshold| item.quantity as u32 <= *threshold) }).map(|(sku, _)| sku.clone()).collect() }\n    pub fn record_cost(&mut self, sku: &str, cost: f64) { self.cost_history.entry(sku.into()).or_default().push((Utc::now(), cost)); }\n    pub fn get_average_cost(&self, sku: &str) -> Option<f64> { let history = self.cost_history.get(sku)?; if history.is_empty() { return None; } let sum: f64 = history.iter().map(|(_, c)| c).sum(); Some(sum / history.len() as f64) }\n    pub fn add_category(&mut self, cat: Category) { self.categories.insert(cat.id.clone(), cat); }\n    pub fn log_audit(&mut self, action: &str, user: &str, details: &str) { self.audit_log.push(AuditEntry { action: action.into(), user: user.into(), details: details.into(), timestamp: Utc::now() }); }\n    pub fn apply_transfer(&mut self, t: &Transfer) { if let Some(from_item) = self.items.get_mut(&t.sku) { from_item.quantity -= t.qty as i32; } }\n    pub fn add_location(&mut self, loc: Location) { self.locations.insert(loc.id.clone(), loc); }\n    pub fn add_zone(&mut self, zone: Zone) { self.zones.insert(zone.id.clone(), zone); }\n    pub fn add_bin(&mut self, bin: BinLocation) { self.bin_locations.insert(bin.id.clone(), bin); }\n    pub fn record_adjustment(&mut self, adj: Adjustment) { self.stock_adjustments.push(adj); }\n    pub fn record_return(&mut self, ret: ReturnRecord) { self.return_records.push(ret); }\n    pub fn record_damage(&mut self, dmg: DamagedItem) { self.damaged_items.push(dmg); }\n    pub fn calculate_total_value(&self) -> f64 { self.items.values().map(|i| i.quantity as f64 * i.unit_price).sum() }\n    pub fn get_items_by_category(&self, category_id: &str) -> Vec<&Item> { self.items.values().filter(|i| i.category_id == category_id).collect() }\n    pub fn get_low_stock_items(&self) -> Vec<&Item> { self.items.values().filter(|i| i.quantity < 10).collect() }\n    pub fn generate_inventory_report(&self) -> InventoryReport { InventoryReport { total_items: self.items.len(), total_value: self.calculate_total_value(), pending_orders: self.orders.iter().filter(|o| o.status == \"pending\").count(), in_transit: self.shipments.iter().filter(|s| s.status == \"in_transit\").count() } }\n    pub fn get_tax_rate(&self, region: &str) -> f64 { self.tax_rates.get(region).copied().unwrap_or(0.0) }\n    pub fn set_tax_rate(&mut self, region: &str, rate: f64) { self.tax_rates.insert(region.into(), rate); }\n    pub fn get_audit_log(&self, since: DateTime<Utc>) -> Vec<&AuditEntry> { self.audit_log.iter().filter(|e| e.timestamp >= since).collect() }\n    pub fn bulk_import(&mut self, items: Vec<Item>) { for item in items { self.items.insert(item.sku.clone(), item); } }\n    pub fn bulk_export(&self) -> Vec<&Item> { self.items.values().collect() }\n    pub fn clear_discontinued(&mut self) { self.items.retain(|_, i| !i.discontinued); }\n    pub fn merge_quantities(&mut self, target_sku: &str, source_sku: &str) -> Result<(), Error> { let source_qty = self.items.get(source_sku).map(|i| i.quantity).ok_or(Error::NotFound)?; if let Some(target) = self.items.get_mut(target_sku) { target.quantity += source_qty; } self.items.remove(source_sku); Ok(()) }\n    pub fn stats(&self) -> ManagerStats { ManagerStats { total_skus: self.items.len(), total_warehouses: self.warehouses.len(), total_suppliers: self.suppliers.len(), pending_orders: self.orders.len(), pending_transfers: self.pending_transfers.len() } }\n    pub fn reset(&mut self) { self.items.clear(); self.warehouses.clear(); self.suppliers.clear(); self.orders.clear(); self.shipments.clear(); self.pending_transfers.clear(); }\n}"
     },
@@ -70,7 +89,9 @@
       "id": "analyze-009",
       "name": "Large Class - Python analytics service",
       "language": "python",
-      "expected_smells": ["SMELL-04"],
+      "expected_smells": [
+        "SMELL-04"
+      ],
       "min_confidence": 0.5,
       "code": "class AnalyticsService:\n    def __init__(self, db, cache, config):\n        self.db = db\n        self.cache = cache\n        self.config = config\n        self.session_data = {}\n        self.page_views = []\n        self.events = []\n        self.conversions = []\n        self.funnels = {}\n        self.cohorts = {}\n        self.reports = {}\n        self.alerts = []\n        self.dashboards = {}\n        self.segments = {}\n        self.ab_tests = {}\n\n    def track_page_view(self, user_id, page, timestamp):\n        self.page_views.append({\"user_id\": user_id, \"page\": page, \"timestamp\": timestamp})\n\n    def track_event(self, user_id, event_name, properties):\n        self.events.append({\"user_id\": user_id, \"event\": event_name, \"props\": properties})\n\n    def track_conversion(self, user_id, goal, value):\n        self.conversions.append({\"user_id\": user_id, \"goal\": goal, \"value\": value})\n\n    def create_funnel(self, name, steps):\n        self.funnels[name] = steps\n\n    def get_funnel_metrics(self, name):\n        steps = self.funnels.get(name, [])\n        return {\"steps\": len(steps), \"drop_off\": 0.5}\n\n    def create_cohort(self, name, criteria):\n        self.cohorts[name] = criteria\n\n    def get_cohort_retention(self, name, period):\n        return {\"cohort\": name, \"retention\": 0.4}\n\n    def generate_report(self, report_type, filters):\n        return {\"type\": report_type, \"data\": []}\n\n    def schedule_report(self, report_type, frequency):\n        self.reports[report_type] = frequency\n\n    def create_dashboard(self, name, widgets):\n        self.dashboards[name] = widgets\n\n    def get_dashboard(self, name):\n        return self.dashboards.get(name, [])\n\n    def create_segment(self, name, rules):\n        self.segments[name] = rules\n\n    def get_segment_users(self, name):\n        return []\n\n    def start_ab_test(self, name, variants, traffic_split):\n        self.ab_tests[name] = {\"variants\": variants, \"split\": traffic_split}\n\n    def get_ab_results(self, name):\n        return {\"winner\": None, \"confidence\": 0.0}\n\n    def set_alert(self, metric, threshold, channel):\n        self.alerts.append({\"metric\": metric, \"threshold\": threshold, \"channel\": channel})\n\n    def get_user_timeline(self, user_id):\n        return [e for e in self.events if e[\"user_id\"] == user_id]\n\n    def get_active_users(self, period):\n        return len(set(e[\"user_id\"] for e in self.events[-100:]))\n\n    def get_top_pages(self, limit=10):\n        from collections import Counter\n        pages = [pv[\"page\"] for pv in self.page_views]\n        return Counter(pages).most_common(limit)\n\n    def get_conversion_rate(self, goal):\n        conversions = [c for c in self.conversions if c[\"goal\"] == goal]\n        return len(conversions) / max(len(self.events), 1)"
     },
@@ -78,7 +99,9 @@
       "id": "analyze-010",
       "name": "Large Class - Java user management service",
       "language": "java",
-      "expected_smells": ["SMELL-04"],
+      "expected_smells": [
+        "SMELL-04"
+      ],
       "min_confidence": 0.5,
       "code": "public class UserManager {\n    private Map<String, User> users;\n    private Map<String, Role> roles;\n    private Map<String, Permission> permissions;\n    private Map<String, Session> sessions;\n    private Map<String, AuditLog> auditLogs;\n    private Map<String, Team> teams;\n    private PasswordEncoder passwordEncoder;\n    private EmailService emailService;\n    private NotificationService notificationService;\n    private ConfigRepository configRepo;\n    private List<Policy> policies;\n    private Map<String, ApiKey> apiKeys;\n    private Map<String, Invitation> invitations;\n    private Map<String, OAuthToken> oauthTokens;\n    private Map<String, MfaChallenge> mfaChallenges;\n\n    public UserManager(PasswordEncoder encoder, EmailService email, NotificationService notif, ConfigRepository config) {\n        this.users = new HashMap<>();\n        this.roles = new HashMap<>();\n        this.permissions = new HashMap<>();\n        this.sessions = new HashMap<>();\n        this.auditLogs = new HashMap<>();\n        this.teams = new HashMap<>();\n        this.passwordEncoder = encoder;\n        this.emailService = email;\n        this.notificationService = notif;\n        this.configRepo = config;\n        this.policies = new ArrayList<>();\n        this.apiKeys = new HashMap<>();\n        this.invitations = new HashMap<>();\n        this.oauthTokens = new HashMap<>();\n        this.mfaChallenges = new HashMap<>();\n    }\n\n    public User createUser(String username, String email, String password) { User u = new User(username, email, passwordEncoder.encode(password)); users.put(u.getId(), u); return u; }\n    public User getUser(String id) { return users.get(id); }\n    public User updateUser(String id, String email) { User u = users.get(id); if (u != null) { u.setEmail(email); } return u; }\n    public void deleteUser(String id) { users.remove(id); }\n    public List<User> listUsers() { return new ArrayList<>(users.values()); }\n    public User findByUsername(String username) { return users.values().stream().filter(u -> u.getUsername().equals(username)).findFirst().orElse(null); }\n    public User findByEmail(String email) { return users.values().stream().filter(u -> u.getEmail().equals(email)).findFirst().orElse(null); }\n    public Session login(String username, String password) { User u = findByUsername(username); if (u != null && passwordEncoder.matches(password, u.getPassword())) { Session s = new Session(u.getId()); sessions.put(s.getId(), s); return s; } return null; }\n    public void logout(String sessionId) { sessions.remove(sessionId); }\n    public Session getSession(String sessionId) { return sessions.get(sessionId); }\n    public void createRole(String name, List<String> permissionIds) { Role r = new Role(name, permissionIds); roles.put(r.getId(), r); }\n    public void assignRole(String userId, String roleId) { User u = users.get(userId); if (u != null) { u.setRoleIds(List.of(roleId)); } }\n    public boolean hasPermission(String userId, String permissionName) { return true; }\n    public void addPermission(String name, String resource) { Permission p = new Permission(name, resource); permissions.put(p.getId(), p); }\n    public void createTeam(String name, String ownerId) { Team t = new Team(name, ownerId); teams.put(t.getId(), t); }\n    public void addToTeam(String teamId, String userId) { Team t = teams.get(teamId); if (t != null) { t.addMember(userId); } }\n    public void removeFromTeam(String teamId, String userId) { Team t = teams.get(teamId); if (t != null) { t.removeMember(userId); } }\n    public ApiKey createApiKey(String userId, String name) { ApiKey k = new ApiKey(userId, name); apiKeys.put(k.getId(), k); return k; }\n    public void revokeApiKey(String keyId) { apiKeys.remove(keyId); }\n    public Invitation inviteUser(String email, String roleId, String inviterId) { Invitation inv = new Invitation(email, roleId, inviterId); invitations.put(inv.getId(), inv); emailService.sendInvite(email, inv.getId()); return inv; }\n    public void acceptInvitation(String invitationId) { invitations.remove(invitationId); }\n    public void enableMfa(String userId) { User u = users.get(userId); if (u != null) { u.setMfaEnabled(true); } }\n    public MfaChallenge createMfaChallenge(String userId) { MfaChallenge c = new MfaChallenge(userId); mfaChallenges.put(c.getId(), c); return c; }\n    public boolean verifyMfa(String challengeId, String code) { return true; }\n    public void logAction(String userId, String action, String details) { AuditLog log = new AuditLog(userId, action, details); auditLogs.put(log.getId(), log); }\n    public List<AuditLog> getAuditLogs(String userId) { return auditLogs.values().stream().filter(l -> l.getUserId().equals(userId)).collect(Collectors.toList()); }\n}"
     },
@@ -86,15 +109,20 @@
       "id": "analyze-011",
       "name": "Data Clumps - Python payment processing",
       "language": "python",
-      "expected_smells": ["SMELL-05", "SMELL-02"],
-      "min_confidence": 0.80,
+      "expected_smells": [
+        "SMELL-05",
+        "SMELL-02"
+      ],
+      "min_confidence": 0.8,
       "code": "def process_payment(\n    card_number: str,\n    card_expiry: str,\n    card_cvv: str,\n    cardholder_name: str,\n    billing_address: str,\n    billing_city: str,\n    billing_zip: str,\n    amount: float,\n    currency: str,\n    merchant_id: str,\n):\n    charge = PaymentGateway.charge(\n        card_number=card_number,\n        expiry=card_expiry,\n        cvv=card_cvv,\n        name=cardholder_name,\n        address=billing_address,\n        city=billing_city,\n        zip=billing_zip,\n        amount=amount,\n        currency=currency,\n        merchant_id=merchant_id,\n    )\n    return charge\n\n\ndef refund_payment(\n    card_number: str,\n    card_expiry: str,\n    card_cvv: str,\n    cardholder_name: str,\n    billing_address: str,\n    billing_city: str,\n    billing_zip: str,\n    amount: float,\n    currency: str,\n    merchant_id: str,\n):\n    refund = PaymentGateway.refund(\n        card_number=card_number,\n        expiry=card_expiry,\n        cvv=card_cvv,\n        name=cardholder_name,\n        address=billing_address,\n        city=billing_city,\n        zip=billing_zip,\n        amount=amount,\n        currency=currency,\n        merchant_id=merchant_id,\n    )\n    return refund"
     },
     {
       "id": "analyze-012",
       "name": "Switch Statements - Rust HTTP router",
       "language": "rust",
-      "expected_smells": ["SMELL-06"],
+      "expected_smells": [
+        "SMELL-06"
+      ],
       "min_confidence": 0.75,
       "code": "pub fn route_request(method: &str, path: &str) -> Handler {\n    match (method, path) {\n        (\"GET\", \"/\") => Handler::Index,\n        (\"GET\", \"/users\") => Handler::ListUsers,\n        (\"GET\", \"/users/new\") => Handler::NewUser,\n        (\"POST\", \"/users\") => Handler::CreateUser,\n        (\"GET\", \"/users/{id}\") => Handler::GetUser,\n        (\"PUT\", \"/users/{id}\") => Handler::UpdateUser,\n        (\"DELETE\", \"/users/{id}\") => Handler::DeleteUser,\n        (\"GET\", \"/products\") => Handler::ListProducts,\n        (\"GET\", \"/products/{id}\") => Handler::GetProduct,\n        (\"POST\", \"/orders\") => Handler::CreateOrder,\n        (\"GET\", \"/orders/{id}\") => Handler::GetOrder,\n        (\"PUT\", \"/orders/{id}/status\") => Handler::UpdateOrderStatus,\n        _ => Handler::NotFound,\n    }\n}"
     },
@@ -102,7 +130,9 @@
       "id": "analyze-013",
       "name": "Switch Statements - TypeScript status handler",
       "language": "typescript",
-      "expected_smells": ["SMELL-06"],
+      "expected_smells": [
+        "SMELL-06"
+      ],
       "min_confidence": 0.75,
       "code": "function getHttpStatusMessage(statusCode: number): string {\n  switch (statusCode) {\n    case 100: return 'Continue';\n    case 200: return 'OK';\n    case 201: return 'Created';\n    case 204: return 'No Content';\n    case 301: return 'Moved Permanently';\n    case 302: return 'Found';\n    case 304: return 'Not Modified';\n    case 400: return 'Bad Request';\n    case 401: return 'Unauthorized';\n    case 403: return 'Forbidden';\n    case 404: return 'Not Found';\n    default: return 'Unknown Status';\n  }\n}"
     },
@@ -110,15 +140,19 @@
       "id": "analyze-014",
       "name": "Switch Statements - Go command dispatcher",
       "language": "go",
-      "expected_smells": ["SMELL-06"],
-      "min_confidence": 0.60,
+      "expected_smells": [
+        "SMELL-06"
+      ],
+      "min_confidence": 0.6,
       "code": "func handleCommand(cmd string, args []string) error {\n\tswitch cmd {\n\tcase \"init\":\n\t\treturn initProject(args)\n\tcase \"build\":\n\t\treturn buildProject(args)\n\tcase \"test\":\n\t\treturn runTests(args)\n\tcase \"lint\":\n\t\treturn runLinter(args)\n\tcase \"fmt\":\n\t\treturn formatCode(args)\n\tcase \"run\":\n\t\treturn runProject(args)\n\tdefault:\n\t\treturn fmt.Errorf(\"unknown command: %s\", cmd)\n\t}\n}"
     },
     {
       "id": "analyze-015",
       "name": "Switch Statements - Ruby event dispatcher",
       "language": "ruby",
-      "expected_smells": ["SMELL-06"],
+      "expected_smells": [
+        "SMELL-06"
+      ],
       "min_confidence": 0.75,
       "code": "def handle_event(event_type, payload)\n  case event_type\n  when 'user.created'\n    send_welcome_email(payload)\n  when 'user.deleted'\n    cleanup_user_data(payload)\n  when 'user.updated'\n    sync_user_profile(payload)\n  when 'order.placed'\n    process_order(payload)\n  when 'order.shipped'\n    send_tracking_email(payload)\n  when 'order.cancelled'\n    process_refund(payload)\n  when 'payment.succeeded'\n    confirm_payment(payload)\n  when 'payment.failed'\n    notify_payment_failure(payload)\n  else\n    logger.warn(\"Unknown event type: #{event_type}\")\n  end\nend"
     },
@@ -126,47 +160,29 @@
       "id": "analyze-016",
       "name": "Data Class - Python configuration model",
       "language": "python",
-      "expected_smells": ["SMELL-07"],
+      "expected_smells": [
+        "SMELL-07"
+      ],
       "min_confidence": 0.5,
       "code": "class DatabaseConfig:\n    def __init__(self):\n        self.host = \"localhost\"\n        self.port = 5432\n        self.database = \"myapp\"\n        self.username = \"\"\n        self.password = \"\"\n        self.pool_size = 10\n        self.timeout = 30\n        self.ssl_mode = \"prefer\"\n        self.max_connections = 100\n\n    def to_connection_string(self):\n        return f\"postgresql://{self.username}:{self.password}@{self.host}:{self.port}/{self.database}\""
-    },
-    {
-      "id": "analyze-017",
-      "name": "Data Class - Java entity with getters only",
-      "language": "java",
-      "expected_smells": ["SMELL-07"],
-      "min_confidence": 0.5,
-      "code": "public class CustomerDTO {\n    private String firstName;\n    private String lastName;\n    private String email;\n    private String phone;\n    private String street;\n    private String city;\n    private String state;\n    private String zipCode;\n    private String country;\n    private String company;\n    private String jobTitle;\n    private LocalDate registeredAt;\n\n    public String getFirstName() { return firstName; }\n    public String getLastName() { return lastName; }\n    public String getEmail() { return email; }\n    public String getPhone() { return phone; }\n    public String getStreet() { return street; }\n    public String getCity() { return city; }\n    public String getState() { return state; }\n    public String getZipCode() { return zipCode; }\n    public String getCountry() { return country; }\n    public String getCompany() { return company; }\n    public String getJobTitle() { return jobTitle; }\n    public LocalDate getRegisteredAt() { return registeredAt; }\n}"
-    },
-    {
-      "id": "analyze-018",
-      "name": "Data Class - TypeScript interface-only data holder",
-      "language": "typescript",
-      "expected_smells": ["SMELL-07"],
-      "min_confidence": 0.5,
-      "code": "interface UserProfile {\n  userId: string;\n  displayName: string;\n  email: string;\n  avatarUrl: string;\n  bio: string;\n  location: string;\n  website: string;\n  twitterHandle: string;\n}\n\nfunction createUserProfile(data: Partial<UserProfile>): UserProfile {\n  return {\n    userId: data.userId || '',\n    displayName: data.displayName || '',\n    email: data.email || '',\n    avatarUrl: data.avatarUrl || '',\n    bio: data.bio || '',\n    location: data.location || '',\n    website: data.website || '',\n    twitterHandle: data.twitterHandle || '',\n  };\n}"
     },
     {
       "id": "analyze-019",
       "name": "Divergent Change - Python multi-concern handler",
       "language": "python",
-      "expected_smells": ["SMELL-10"],
-      "min_confidence": 0.80,
+      "expected_smells": [
+        "SMELL-10"
+      ],
+      "min_confidence": 0.8,
       "code": "class RequestHandler:\n    def handle(self, request):\n        if request.type == 'create_user':\n            self.validate_user_data(request.data)\n            self.check_permissions(request.user, 'create')\n            user = self.create_user_record(request.data)\n            self.send_welcome_email(user)\n            self.log_audit('user_created', user.id)\n            self.update_metrics('users_created', 1)\n            return {'status': 'created', 'id': user.id}\n        elif request.type == 'update_user':\n            self.validate_user_data(request.data)\n            self.check_permissions(request.user, 'update')\n            user = self.update_user_record(request.data)\n            self.sync_to_crm(user)\n            self.log_audit('user_updated', user.id)\n            self.update_metrics('users_updated', 1)\n            return {'status': 'updated', 'id': user.id}\n        elif request.type == 'delete_user':\n            self.check_permissions(request.user, 'delete')\n            self.archive_user_data(request.data['id'])\n            self.delete_user_record(request.data['id'])\n            self.notify_team(request.data['id'])\n            self.log_audit('user_deleted', request.data['id'])\n            self.update_metrics('users_deleted', 1)\n            return {'status': 'deleted'}\n        elif request.type == 'get_user':\n            self.check_permissions(request.user, 'read')\n            user = self.fetch_user(request.data['id'])\n            self.log_audit('user_fetched', user.id)\n            return {'status': 'ok', 'user': user.to_dict()}\n        elif request.type == 'list_users':\n            self.check_permissions(request.user, 'read')\n            users = self.fetch_all_users(request.data.get('filters', {}))\n            self.log_audit('users_listed', request.user.id)\n            return {'status': 'ok', 'users': [u.to_dict() for u in users]}\n        elif request.type == 'create_order':\n            self.validate_order_data(request.data)\n            self.check_permissions(request.user, 'create')\n            order = self.create_order_record(request.data)\n            self.reserve_inventory(order)\n            self.send_order_confirmation(order)\n            self.log_audit('order_created', order.id)\n            self.update_metrics('orders_created', 1)\n            return {'status': 'created', 'id': order.id}\n        elif request.type == 'cancel_order':\n            self.check_permissions(request.user, 'cancel')\n            order = self.fetch_order(request.data['id'])\n            self.release_inventory(order)\n            self.process_refund(order)\n            self.send_cancellation_email(order)\n            self.log_audit('order_cancelled', order.id)\n            self.update_metrics('orders_cancelled', 1)\n            return {'status': 'cancelled'}\n        elif request.type == 'create_product':\n            self.validate_product_data(request.data)\n            self.check_permissions(request.user, 'create')\n            product = self.create_product_record(request.data)\n            self.index_product(product)\n            self.log_audit('product_created', product.id)\n            self.update_metrics('products_created', 1)\n            return {'status': 'created', 'id': product.id}\n        elif request.type == 'update_product':\n            self.validate_product_data(request.data)\n            self.check_permissions(request.user, 'update')\n            product = self.update_product_record(request.data)\n            self.reindex_product(product)\n            self.log_audit('product_updated', product.id)\n            self.update_metrics('products_updated', 1)\n            return {'status': 'updated', 'id': product.id}\n        elif request.type == 'generate_report':\n            self.check_permissions(request.user, 'report')\n            data = self.aggregate_report_data(request.data)\n            report = self.format_report(data, request.data['format'])\n            self.log_audit('report_generated', request.user.id)\n            return {'status': 'ok', 'report': report}\n        elif request.type == 'sync_external':\n            self.check_permissions(request.user, 'admin')\n            results = self.sync_external_systems()\n            self.log_audit('external_sync', request.user.id)\n            return {'status': 'ok', 'results': results}\n        elif request.type == 'health_check':\n            return {'status': 'ok', 'checks': self.run_health_checks()}\n        else:\n            return {'status': 'error', 'message': f'Unknown type: {request.type}'}\n\n    def validate_user_data(self, data): pass\n    def check_permissions(self, user, action): pass\n    def create_user_record(self, data): pass\n    def update_user_record(self, data): pass\n    def delete_user_record(self, uid): pass\n    def fetch_user(self, uid): pass\n    def fetch_all_users(self, filters): pass\n    def send_welcome_email(self, user): pass\n    def sync_to_crm(self, user): pass\n    def archive_user_data(self, uid): pass\n    def notify_team(self, uid): pass\n    def validate_order_data(self, data): pass\n    def create_order_record(self, data): pass\n    def fetch_order(self, oid): pass\n    def reserve_inventory(self, order): pass\n    def release_inventory(self, order): pass\n    def process_refund(self, order): pass\n    def send_order_confirmation(self, order): pass\n    def send_cancellation_email(self, order): pass\n    def validate_product_data(self, data): pass\n    def create_product_record(self, data): pass\n    def update_product_record(self, data): pass\n    def index_product(self, product): pass\n    def reindex_product(self, product): pass\n    def aggregate_report_data(self, data): pass\n    def format_report(self, data, fmt): pass\n    def sync_external_systems(self): pass\n    def run_health_checks(self): pass\n    def log_audit(self, action, target_id): pass\n    def update_metrics(self, metric, value): pass"
-    },
-    {
-      "id": "analyze-020",
-      "name": "Lazy Class - Rust minimal module",
-      "language": "rust",
-      "expected_smells": ["SMELL-11"],
-      "min_confidence": 0.5,
-      "code": "mod constants {\n    pub const MAX_RETRIES: u32 = 3;\n    pub const TIMEOUT_SECS: u64 = 30;\n}"
     },
     {
       "id": "analyze-021",
       "name": "Lazy Class - Python near-empty class",
       "language": "python",
-      "expected_smells": ["SMELL-11"],
+      "expected_smells": [
+        "SMELL-11"
+      ],
       "min_confidence": 0.5,
       "code": "class AppError(Exception):\n    \"\"\"Base exception for the application.\"\"\"\n    pass"
     },
@@ -174,31 +190,39 @@
       "id": "analyze-022",
       "name": "Middle Man - Rust service wrapper",
       "language": "rust",
-      "expected_smells": ["SMELL-14"],
-      "min_confidence": 0.70,
+      "expected_smells": [
+        "SMELL-14"
+      ],
+      "min_confidence": 0.7,
       "code": "pub struct UserService {\n    repository: UserRepository,\n    cache: UserCache,\n    notifier: UserNotifier,\n}\n\nimpl UserService {\n    pub fn new(repo: UserRepository, cache: UserCache, notifier: UserNotifier) -> Self {\n        Self { repository: repo, cache, notifier }\n    }\n\n    pub fn find_user(&self, id: u64) -> Option<User> {\n        self.cache.get(id)\n    }\n\n    pub fn save_user(&self, user: &User) -> Result<(), Error> {\n        self.repository.save(user)\n    }\n\n    pub fn delete_user(&self, id: u64) -> Result<(), Error> {\n        self.repository.delete(id)\n    }\n\n    pub fn notify_user(&self, user: &User, message: &str) -> Result<(), Error> {\n        self.notifier.send(user, message)\n    }\n\n    pub fn list_users(&self) -> Vec<User> {\n        self.repository.list()\n    }\n}"
     },
     {
       "id": "analyze-023",
       "name": "Middle Man - Python facade wrapper",
       "language": "python",
-      "expected_smells": ["SMELL-14"],
-      "min_confidence": 0.70,
+      "expected_smells": [
+        "SMELL-14"
+      ],
+      "min_confidence": 0.7,
       "code": "class NotificationFacade:\n    def __init__(self, email_service, sms_service, push_service):\n        self.email_service = email_service\n        self.sms_service = sms_service\n        self.push_service = push_service\n\n    def send_email(self, to, subject, body):\n        return self.email_service.send(to, subject, body)\n\n    def send_sms(self, phone, message):\n        return self.sms_service.send(phone, message)\n\n    def send_push(self, device_token, payload):\n        return self.push_service.send(device_token, payload)\n\n    def send_email_template(self, to, template_id, data):\n        return self.email_service.send_template(to, template_id, data)"
     },
     {
       "id": "analyze-024",
       "name": "Middle Man - TypeScript API wrapper",
       "language": "typescript",
-      "expected_smells": ["SMELL-14"],
-      "min_confidence": 0.70,
+      "expected_smells": [
+        "SMELL-14"
+      ],
+      "min_confidence": 0.7,
       "code": "class UserApi {\n  constructor(private client: HttpClient) {}\n\n  getUsers(): Promise<User[]> {\n    return this.client.get<User[]>('/users');\n  }\n\n  getUser(id: string): Promise<User> {\n    return this.client.get<User>(`/users/${id}`);\n  }\n\n  createUser(data: CreateUserDto): Promise<User> {\n    return this.client.post<User>('/users', data);\n  }\n\n  updateUser(id: string, data: UpdateUserDto): Promise<User> {\n    return this.client.put<User>(`/users/${id}`, data);\n  }\n\n  deleteUser(id: string): Promise<void> {\n    return this.client.delete(`/users/${id}`);\n  }\n}"
     },
     {
       "id": "analyze-025",
       "name": "Comments - Python heavily documented function",
       "language": "python",
-      "expected_smells": ["SMELL-16"],
+      "expected_smells": [
+        "SMELL-16"
+      ],
       "min_confidence": 0.5,
       "code": "def calculate_compound_interest(\n    principal: float,\n    rate: float,\n    years: int,\n    compounds_per_year: int,\n) -> float:\n    \"\"\"Calculate compound interest over time.\n\n    This function computes the future value of an investment using\n    the compound interest formula. It takes into account the number\n    of compounding periods per year and returns the final amount.\n\n    Args:\n        principal: The initial investment amount in dollars.\n            Must be a positive number.\n        rate: Annual interest rate as a decimal (e.g., 0.05 for 5%).\n            Must be between 0 and 1.\n        years: Number of years the money is invested.\n            Must be a positive integer.\n        compounds_per_year: How many times per year interest compounds.\n            Common values: 1 (annual), 4 (quarterly), 12 (monthly), 365 (daily).\n\n    Returns:\n        float: The future value of the investment.\n\n    Example:\n        >>> calculate_compound_interest(1000, 0.05, 10, 12)\n        1647.009497...\n\n    Note:\n        This uses the standard formula: A = P(1 + r/n)^(nt)\n        where P=principal, r=rate, n=compounds_per_year, t=years.\n    \"\"\"\n    # Validate inputs first\n    # Principal must be positive\n    if principal <= 0:\n        # Raise error for invalid principal\n        raise ValueError(\"Principal must be positive\")\n\n    # Rate must be between 0 and 1\n    # This represents a percentage as decimal\n    if rate < 0 or rate > 1:\n        # Raise error for invalid rate\n        raise ValueError(\"Rate must be between 0 and 1\")\n\n    # Years must be positive integer\n    if years <= 0:\n        # Raise error for invalid years\n        raise ValueError(\"Years must be positive\")\n\n    # Compounds per year must be at least 1\n    if compounds_per_year < 1:\n        # Raise error for invalid compounds\n        raise ValueError(\"Must compound at least once per year\")\n\n    # Apply the compound interest formula\n    # Step 1: Calculate the periodic rate\n    periodic_rate = rate / compounds_per_year  # r/n in the formula\n\n    # Step 2: Calculate total number of periods\n    total_periods = compounds_per_year * years  # n*t in the formula\n\n    # Step 3: Apply the growth factor\n    growth_factor = (1 + periodic_rate) ** total_periods  # (1 + r/n)^(nt)\n\n    # Step 4: Multiply by principal to get final amount\n    result = principal * growth_factor  # A = P * (1 + r/n)^(nt)\n\n    # Round to 2 decimal places for currency\n    # This matches typical financial reporting standards\n    return round(result, 2)  # Return the final computed amount"
     },
@@ -206,7 +230,9 @@
       "id": "analyze-026",
       "name": "Comments - Java Javadoc-heavy method",
       "language": "java",
-      "expected_smells": ["SMELL-16"],
+      "expected_smells": [
+        "SMELL-16"
+      ],
       "min_confidence": 0.5,
       "code": "/**\n * Parses a CSV line into its constituent fields.\n *\n * <p>This method handles quoted fields, escaped quotes within fields,\n * and variable-length records. It follows RFC 4180 for CSV parsing\n * with the following considerations:</p>\n *\n * <ul>\n *   <li>Fields containing commas must be quoted</li>\n *   <li>Fields containing newlines must be quoted</li>\n *   <li>Fields containing double quotes must have them escaped</li>\n *   <li>Leading/trailing whitespace is preserved in quoted fields</li>\n * </ul>\n *\n * <h3>Implementation Notes:</h3>\n * <p>The parser uses a state machine with the following states:\n * START, IN_FIELD, IN_QUOTE, QUOTE_IN_QUOTE. Transitions\n * happen on comma, quote, and end-of-line characters.</p>\n *\n * @param line the CSV line to parse, must not be null\n * @param delimiter the field delimiter character, typically ','\n * @param quoteChar the quote character, typically '\"'\n * @param escapeChar the escape character, typically '\\\\'\n * @return a list of parsed fields in order of appearance\n * @throws IllegalArgumentException if line is null\n * @throws CsvParseException if the line has unterminated quotes\n *\n * @see CsvParser#parse(InputStream)\n * @see CsvParser#parse(Reader)\n * @since 2.0\n * @deprecated Use {@link #parseLine(String, CsvFormat)} instead\n */\npublic List<String> parseLine(String line, char delimiter, char quoteChar, char escapeChar) {\n    // Validate input - line cannot be null\n    if (line == null) {\n        throw new IllegalArgumentException(\"Line cannot be null\");\n    }\n\n    // Initialize result list to store parsed fields\n    List<String> fields = new ArrayList<>();\n\n    // StringBuilder for accumulating current field value\n    StringBuilder current = new StringBuilder();\n\n    // Flag to track if we are inside a quoted field\n    boolean inQuotes = false;\n\n    // Iterate through each character in the line\n    for (int i = 0; i < line.length(); i++) {\n        char c = line.charAt(i);\n\n        // Handle character based on current parser state\n        if (inQuotes) {\n            // We are inside a quoted field\n            if (c == quoteChar) {\n                // Check for escaped quote (double quote)\n                if (i + 1 < line.length() && line.charAt(i + 1) == quoteChar) {\n                    current.append(quoteChar);\n                    i++; // Skip the next quote character\n                } else {\n                    // End of quoted field\n                    inQuotes = false;\n                }\n            } else if (c == escapeChar) {\n                // Handle escape sequences within quoted fields\n                if (i + 1 < line.length()) {\n                    current.append(line.charAt(i + 1));\n                    i++;\n                }\n            } else {\n                // Regular character inside quoted field\n                current.append(c);\n            }\n        } else {\n            // We are not inside a quoted field\n            if (c == quoteChar && current.length() == 0) {\n                // Start of a quoted field\n                inQuotes = true;\n            } else if (c == delimiter) {\n                // Field separator found, add field and reset\n                fields.add(current.toString());\n                current = new StringBuilder();\n            } else {\n                // Regular character, append to current field\n                current.append(c);\n            }\n        }\n    }\n\n    // Add the last field (after the final delimiter)\n    fields.add(current.toString());\n\n    // Return the list of parsed fields\n    return fields;\n}"
     },
@@ -214,7 +240,9 @@
       "id": "analyze-027",
       "name": "Feature Envy - Python report builder",
       "language": "python",
-      "expected_smells": ["SMELL-18"],
+      "expected_smells": [
+        "SMELL-18"
+      ],
       "min_confidence": 0.5,
       "code": "class ReportBuilder:\n    def build_user_report(self, user, user_service, order_service, payment_service):\n        name = user.get_full_name()\n        email = user.get_email()\n        plan = user.get_subscription_plan()\n        created = user.get_created_at()\n        status = user.get_account_status()\n        orders = order_service.get_orders_for_user(user.get_id())\n        total_spent = order_service.calculate_total_spent(user.get_id())\n        last_payment = payment_service.get_last_payment(user.get_id())\n        payment_method = payment_service.get_payment_method(user.get_id())\n        failed_payments = payment_service.get_failed_payments(user.get_id())\n        report = {\n            \"name\": name,\n            \"email\": email,\n            \"plan\": plan,\n            \"created_at\": created,\n            \"status\": status,\n            \"order_count\": len(orders),\n            \"total_spent\": total_spent,\n            \"last_payment\": last_payment,\n            \"payment_method\": payment_method,\n            \"failed_payments\": len(failed_payments),\n        }\n        return report"
     },
@@ -222,7 +250,9 @@
       "id": "analyze-028",
       "name": "Feature Envy - Rust external data formatter",
       "language": "rust",
-      "expected_smells": ["SMELL-18"],
+      "expected_smells": [
+        "SMELL-18"
+      ],
       "min_confidence": 0.5,
       "code": "pub fn format_invoice(invoice: &Invoice, customer: &Customer, items: &[LineItem]) -> String {\n    let customer_name = customer.full_name();\n    let customer_email = customer.email();\n    let customer_address = customer.billing_address();\n    let customer_tax_id = customer.tax_id();\n    let invoice_number = invoice.number();\n    let invoice_date = invoice.issue_date();\n    let due_date = invoice.due_date();\n    let mut total: f64 = 0.0;\n    for item in items {\n        total += item.quantity() as f64 * item.unit_price();\n    }\n    let tax = customer.calculate_tax(total);\n    let grand_total = total + tax;\n    format!(\n        \"Invoice: {}\\nDate: {}\\nDue: {}\\nCustomer: {}\\nEmail: {}\\nAddress: {}\\nTax ID: {}\\nSubtotal: {:.2}\\nTax: {:.2}\\nTotal: {:.2}\",\n        invoice_number, invoice_date, due_date, customer_name, customer_email,\n        customer_address, customer_tax_id, total, tax, grand_total\n    )\n}"
     },
@@ -230,15 +260,19 @@
       "id": "analyze-029",
       "name": "Message Chains - Python fluent API traversal",
       "language": "python",
-      "expected_smells": ["SMELL-20"],
-      "min_confidence": 0.60,
+      "expected_smells": [
+        "SMELL-20"
+      ],
+      "min_confidence": 0.6,
       "code": "def get_manager_email(employee_id):\n    employee = Company.get_department().get_team().get_member(employee_id)\n    manager = employee.get_reports_to().get_manager()\n    contact = manager.get_contact_info().get_work_email()\n    return contact.get_address()\n\n\ndef get_office_address(employee_id):\n    building = Company.get_department().get_team().get_member(employee_id)\n    floor = building.get_location().get_office().get_floor()\n    room = floor.get_room().get_desk().get_label()\n    return f\"Building {building}, Floor {floor}, Room {room}\""
     },
     {
       "id": "analyze-030",
       "name": "Message Chains - TypeScript deep property access",
       "language": "typescript",
-      "expected_smells": ["SMELL-20"],
+      "expected_smells": [
+        "SMELL-20"
+      ],
       "min_confidence": 0.75,
       "code": "function getCountryTaxRate(orderId: string): number {\n  return getOrderService()\n    .getRepository()\n    .findById(orderId)\n    .getCustomer()\n    .getAddress()\n    .getCountry()\n    .getTaxRate();\n}\n\nfunction getShippingCost(orderId: string): number {\n  return getOrderService()\n    .getRepository()\n    .findById(orderId)\n    .getShipment()\n    .getMethod()\n    .getCalculator()\n    .compute();\n}"
     },
@@ -246,15 +280,19 @@
       "id": "analyze-031",
       "name": "Message Chains - Java deeply nested access",
       "language": "java",
-      "expected_smells": ["SMELL-20"],
-      "min_confidence": 0.60,
+      "expected_smells": [
+        "SMELL-20"
+      ],
+      "min_confidence": 0.6,
       "code": "public class ReportGenerator {\n    public String getCustomerRegion(Order order) {\n        return order.getCustomer()\n            .getProfile()\n            .getAddress()\n            .getRegion()\n            .getName();\n    }\n\n    public BigDecimal calculateDiscount(Order order) {\n        return order.getCustomer()\n            .getMembership()\n            .getTier()\n            .getDiscountPolicy()\n            .calculate(order.getSubtotal());\n    }\n\n    public String getShippingProvider(Order order) {\n        return order.getShipment()\n            .getMethod()\n            .getProvider()\n            .getName();\n    }\n}"
     },
     {
       "id": "analyze-032",
       "name": "God Object - Python monolithic controller",
       "language": "python",
-      "expected_smells": ["SMELL-21"],
+      "expected_smells": [
+        "SMELL-21"
+      ],
       "min_confidence": 0.6,
       "code": "class ApplicationController:\n    def __init__(self):\n        self.users = {}\n        self.products = {}\n        self.orders = {}\n        self.sessions = {}\n        self.payments = {}\n        self.notifications = []\n        self.audit_log = []\n        self.config = {}\n        self.cache = {}\n        self.connections = []\n        self.jobs = []\n        self.reports = {}\n        self.metrics = {}\n        self.features = {}\n        self.health_status = {}\n        self.tenants = {}\n        self.roles = {}\n        self.permissions = {}\n        self.api_keys = {}\n        self.rate_limits = {}\n\n    def create_user(self, data): pass\n    def update_user(self, uid, data): pass\n    def delete_user(self, uid): pass\n    def get_user(self, uid): pass\n    def list_users(self, filters): pass\n    def authenticate(self, username, password): pass\n    def logout(self, session_id): pass\n    def create_product(self, data): pass\n    def update_product(self, pid, data): pass\n    def delete_product(self, pid): pass\n    def get_product(self, pid): pass\n    def list_products(self, filters): pass\n    def search_products(self, query): pass\n    def create_order(self, data): pass\n    def update_order(self, oid, data): pass\n    def cancel_order(self, oid): pass\n    def get_order(self, oid): pass\n    def list_orders(self, filters): pass\n    def process_payment(self, oid, payment_data): pass\n    def refund_payment(self, oid, amount): pass\n    def get_payment_status(self, oid): pass\n    def send_notification(self, uid, message): pass\n    def send_bulk_notification(self, uids, message): pass\n    def log_audit(self, action, target): pass\n    def get_audit_log(self, filters): pass\n    def load_config(self): pass\n    def save_config(self, config): pass\n    def get_config_value(self, key): pass\n    def set_config_value(self, key, value): pass\n    def cache_get(self, key): pass\n    def cache_set(self, key, value, ttl): pass\n    def cache_invalidate(self, key): pass\n    def register_connection(self, conn): pass\n    def close_connection(self, conn_id): pass\n    def schedule_job(self, job_type, data): pass\n    def cancel_job(self, job_id): pass\n    def get_job_status(self, job_id): pass\n    def generate_report(self, report_type, params): pass\n    def schedule_report(self, report_type, frequency): pass\n    def record_metric(self, name, value): pass\n    def get_metrics(self, names): pass\n    def is_feature_enabled(self, feature): pass\n    def set_feature_flag(self, feature, enabled): pass\n    def health_check(self): pass\n    def create_tenant(self, data): pass\n    def get_tenant(self, tid): pass\n    def create_role(self, name, perms): pass\n    def assign_role(self, uid, rid): pass\n    def check_permission(self, uid, perm): pass\n    def create_api_key(self, uid, name): pass\n    def revoke_api_key(self, key_id): pass\n    def check_rate_limit(self, key_id): pass\n    def update_rate_limit(self, key_id, limit): pass\n    def export_data(self, entity, fmt): pass\n    def import_data(self, entity, data): pass\n    def backup(self): pass\n    def restore(self, backup_id): pass\n    def migrate(self, version): pass\n    def shutdown(self): pass"
     },
@@ -262,31 +300,19 @@
       "id": "analyze-033",
       "name": "God Object - Java enterprise service",
       "language": "java",
-      "expected_smells": ["SMELL-21"],
+      "expected_smells": [
+        "SMELL-21"
+      ],
       "min_confidence": 0.6,
       "code": "public class EnterpriseService {\n    private UserRepository userRepo;\n    private ProductRepository productRepo;\n    private OrderRepository orderRepo;\n    private PaymentGateway paymentGateway;\n    private EmailService emailService;\n    private SmsService smsService;\n    private PushService pushService;\n    private CacheService cache;\n    private SearchIndex searchIndex;\n    private MessageQueue messageQueue;\n    private AuditService auditService;\n    private MetricsService metricsService;\n    private ConfigService configService;\n    private FeatureFlags featureFlags;\n    private RateLimiter rateLimiter;\n    private EncryptionService encryptionService;\n    private FileStorage fileStorage;\n    private PdfGenerator pdfGenerator;\n    private ReportEngine reportEngine;\n    private SsoProvider ssoProvider;\n    private WebhookDispatcher webhookDispatcher;\n    private EventStore eventStore;\n\n    public User createUser(UserDto dto) { return userRepo.save(new User(dto)); }\n    public User getUser(Long id) { return userRepo.findById(id); }\n    public User updateUser(Long id, UserDto dto) { return userRepo.save(new User(id, dto)); }\n    public void deleteUser(Long id) { userRepo.deleteById(id); }\n    public List<User> searchUsers(String query) { return userRepo.search(query); }\n    public Session login(String username, String password) { return null; }\n    public void logout(String sessionId) { }\n    public Product createProduct(ProductDto dto) { return productRepo.save(new Product(dto)); }\n    public Product getProduct(Long id) { return productRepo.findById(id); }\n    public Product updateProduct(Long id, ProductDto dto) { return productRepo.save(new Product(id, dto)); }\n    public void deleteProduct(Long id) { productRepo.deleteById(id); }\n    public List<Product> searchProducts(String query) { return searchIndex.search(query); }\n    public Order createOrder(OrderDto dto) { return orderRepo.save(new Order(dto)); }\n    public Order getOrder(Long id) { return orderRepo.findById(id); }\n    public void cancelOrder(Long id) { Order o = orderRepo.findById(id); o.cancel(); orderRepo.save(o); }\n    public PaymentResult processPayment(Long orderId, PaymentMethod method) { return paymentGateway.charge(orderId, method); }\n    public RefundResult refundPayment(Long orderId, BigDecimal amount) { return paymentGateway.refund(orderId, amount); }\n    public void sendEmail(String to, String subject, String body) { emailService.send(to, subject, body); }\n    public void sendSms(String phone, String message) { smsService.send(phone, message); }\n    public void sendPush(String deviceToken, String payload) { pushService.send(deviceToken, payload); }\n    public void publishEvent(String channel, Object data) { messageQueue.publish(channel, data); }\n    public void subscribe(String channel, EventHandler handler) { messageQueue.subscribe(channel, handler); }\n    public byte[] generatePdf(String template, Map<String, Object> data) { return pdfGenerator.generate(template, data); }\n    public Report runReport(String type, Map<String, Object> params) { return reportEngine.generate(type, params); }\n    public void uploadFile(String key, InputStream data) { fileStorage.upload(key, data); }\n    public InputStream downloadFile(String key) { return fileStorage.download(key); }\n    public boolean isFeatureEnabled(String feature) { return featureFlags.isEnabled(feature); }\n    public void checkRateLimit(String clientId) { rateLimiter.check(clientId); }\n    public String encrypt(String plaintext) { return encryptionService.encrypt(plaintext); }\n    public String decrypt(String ciphertext) { return encryptionService.decrypt(ciphertext); }\n    public void registerWebhook(String url, List<String> events) { webhookDispatcher.register(url, events); }\n    public void dispatchWebhook(String event, Object payload) { webhookDispatcher.dispatch(event, payload); }\n    public SsoToken initiateSso(String provider) { return ssoProvider.initiate(provider); }\n    public User completeSso(String provider, String code) { return ssoProvider.complete(provider, code); }\n}"
-    },
-    {
-      "id": "analyze-034",
-      "name": "Refused Bequest - Python subclass override",
-      "language": "python",
-      "expected_smells": ["SMELL-15"],
-      "min_confidence": 0.5,
-      "code": "class NotificationSender:\n    def send(self, recipient, message):\n        self.validate_recipient(recipient)\n        self.format_message(message)\n        self.deliver(recipient, message)\n\n    def validate_recipient(self, recipient):\n        if not recipient:\n            raise ValueError(\"Recipient is required\")\n\n    def format_message(self, message):\n        return f\"[{self.get_prefix()}] {message}\"\n\n    def get_prefix(self):\n        return \"NOTIFICATION\"\n\n    def deliver(self, recipient, message):\n        raise NotImplementedError\n\n\nclass SmsOnlySender(NotificationSender):\n    def validate_recipient(self, recipient):\n        if not recipient.startswith(\"+\"):\n            raise ValueError(\"SMS recipient must start with +\")\n\n    def format_message(self, message):\n        if len(message) > 160:\n            return message[:157] + \"...\"\n        return message\n\n    def get_prefix(self):\n        return None\n\n    def deliver(self, recipient, message):\n        sms_gateway.send(recipient, message)"
-    },
-    {
-      "id": "analyze-035",
-      "name": "Refused Bequest - Java subclass minimal override",
-      "language": "java",
-      "expected_smells": ["SMELL-15"],
-      "min_confidence": 0.5,
-      "code": "public abstract class AbstractReportGenerator {\n    public void generate(ReportConfig config) {\n        validateConfig(config);\n        Object data = fetchData(config);\n        Object processed = processData(data, config);\n        byte[] rendered = render(processed, config);\n        deliver(rendered, config);\n    }\n\n    protected void validateConfig(ReportConfig config) {\n        if (config == null) throw new IllegalArgumentException(\"Config required\");\n    }\n\n    protected abstract Object fetchData(ReportConfig config);\n\n    protected Object processData(Object data, ReportConfig config) {\n        return data;\n    }\n\n    protected abstract byte[] render(Object data, ReportConfig config);\n\n    protected void deliver(byte[] content, ReportConfig config) {\n        System.out.println(\"Report delivered: \" + content.length + \" bytes\");\n    }\n}\n\npublic class CsvReportGenerator extends AbstractReportGenerator {\n    @Override\n    protected Object fetchData(ReportConfig config) {\n        return csvDataSource.query(config.getQuery());\n    }\n\n    @Override\n    protected byte[] render(Object data, ReportConfig config) {\n        return ((String) data).getBytes();\n    }\n}"
     },
     {
       "id": "analyze-036",
       "name": "Long Method - Go HTTP handler",
       "language": "go",
-      "expected_smells": ["SMELL-01"],
+      "expected_smells": [
+        "SMELL-01"
+      ],
       "min_confidence": 0.5,
       "code": "func HandleCheckout(w http.ResponseWriter, r *http.Request) {\n\tif r.Method != http.MethodPost {\n\t\thttp.Error(w, \"Method not allowed\", http.StatusMethodNotAllowed)\n\t\treturn\n\t}\n\tsessionID := r.URL.Query().Get(\"session\")\n\tif sessionID == \"\" {\n\t\thttp.Error(w, \"Missing session\", http.StatusBadRequest)\n\t\treturn\n\t}\n\tsession, ok := sessions[sessionID]\n\tif !ok {\n\t\thttp.Error(w, \"Invalid session\", http.StatusNotFound)\n\t\treturn\n\t}\n\tif err := r.ParseForm(); err != nil {\n\t\thttp.Error(w, \"Invalid form data\", http.StatusBadRequest)\n\t\treturn\n\t}\n\tshippingName := r.FormValue(\"shipping_name\")\n\tshippingAddr := r.FormValue(\"shipping_address\")\n\tshippingCity := r.FormValue(\"shipping_city\")\n\tshippingState := r.FormValue(\"shipping_state\")\n\tshippingZip := r.FormValue(\"shipping_zip\")\n\tif shippingName == \"\" || shippingAddr == \"\" || shippingCity == \"\" {\n\t\thttp.Error(w, \"Missing shipping info\", http.StatusBadRequest)\n\t\treturn\n\t}\n\tbillingName := r.FormValue(\"billing_name\")\n\tbillingAddr := r.FormValue(\"billing_address\")\n\tbillingCity := r.FormValue(\"billing_city\")\n\tbillingState := r.FormValue(\"billing_state\")\n\tbillingZip := r.FormValue(\"billing_zip\")\n\tsameAsShipping := r.FormValue(\"same_as_shipping\")\n\tif sameAsShipping == \"true\" {\n\t\tbillingName = shippingName\n\t\tbillingAddr = shippingAddr\n\t\tbillingCity = shippingCity\n\t\tbillingState = shippingState\n\t\tbillingZip = shippingZip\n\t}\n\tif billingName == \"\" || billingAddr == \"\" || billingCity == \"\" {\n\t\thttp.Error(w, \"Missing billing info\", http.StatusBadRequest)\n\t\treturn\n\t}\n\tpaymentToken := r.FormValue(\"payment_token\")\n\tif paymentToken == \"\" {\n\t\thttp.Error(w, \"Missing payment\", http.StatusBadRequest)\n\t\treturn\n\t}\n\ttotal := 0.0\n\tfor _, item := range session.Cart.Items {\n\t\ttotal += float64(item.Quantity) * item.Price\n\t}\n\ttaxRate := getTaxRate(shippingState)\n\ttax := total * taxRate\n\tgrandTotal := total + tax\n\tif grandTotal > 100 {\n\t\tshipping = 0.0\n\t} else {\n\t\tshipping = 9.99\n\t}\n\tgrandTotal += shipping\n\tcharge, err := processPayment(paymentToken, grandTotal)\n\tif err != nil {\n\t\thttp.Error(w, \"Payment failed\", http.StatusPaymentRequired)\n\t\treturn\n\t}\n\torder := Order{\n\t\tSessionID:     sessionID,\n\t\tShippingName:  shippingName,\n\t\tShippingAddr:  shippingAddr,\n\t\tShippingCity:  shippingCity,\n\t\tShippingState: shippingState,\n\t\tShippingZip:   shippingZip,\n\t\tBillingName:   billingName,\n\t\tBillingAddr:   billingAddr,\n\t\tBillingCity:   billingCity,\n\t\tBillingState:  billingState,\n\t\tBillingZip:    billingZip,\n\t\tSubtotal:      total,\n\t\tTax:           tax,\n\t\tShipping:      shipping,\n\t\tTotal:         grandTotal,\n\t\tPaymentID:     charge.ID,\n\t\tStatus:        \"confirmed\",\n\t}\n\torders[order.ID] = order\n\tsendConfirmationEmail(order)\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tjson.NewEncoder(w).Encode(order)\n}"
     },
@@ -294,15 +320,19 @@
       "id": "analyze-037",
       "name": "Long Parameter List - Go function with many args",
       "language": "go",
-      "expected_smells": ["SMELL-02"],
-      "min_confidence": 0.80,
+      "expected_smells": [
+        "SMELL-02"
+      ],
+      "min_confidence": 0.8,
       "code": "func CreateDeployment(\n\tproject string,\n\tenvironment string,\n\tversion string,\n\tregion string,\n\tinstanceType string,\n\tminInstances int,\n\tmaxInstances int,\n\ttargetPort int,\n\thealthCheckPath string,\n) (*Deployment, error) {\n\td := &Deployment{\n\t\tProject:       project,\n\t\tEnvironment:   environment,\n\t\tVersion:       version,\n\t\tRegion:        region,\n\t\tInstanceType:  instanceType,\n\t\tMinInstances:  minInstances,\n\t\tMaxInstances:  maxInstances,\n\t\tTargetPort:    targetPort,\n\t\tHealthCheck:   healthCheckPath,\n\t}\n\treturn d, nil\n}"
     },
     {
       "id": "analyze-038",
       "name": "Switch Statements - Go log level handler",
       "language": "go",
-      "expected_smells": ["SMELL-06"],
+      "expected_smells": [
+        "SMELL-06"
+      ],
       "min_confidence": 0.75,
       "code": "func formatLogEntry(level int, message string) string {\n\tvar prefix string\n\tswitch level {\n\tcase 0:\n\t\tprefix = \"[EMERGENCY]\"\n\tcase 1:\n\t\tprefix = \"[ALERT]\"\n\tcase 2:\n\t\tprefix = \"[CRITICAL]\"\n\tcase 3:\n\t\tprefix = \"[ERROR]\"\n\tcase 4:\n\t\tprefix = \"[WARNING]\"\n\tcase 5:\n\t\tprefix = \"[NOTICE]\"\n\tcase 6:\n\t\tprefix = \"[INFO]\"\n\tcase 7:\n\t\tprefix = \"[DEBUG]\"\n\tcase 8:\n\t\tprefix = \"[TRACE]\"\n\tdefault:\n\t\tprefix = \"[UNKNOWN]\"\n\t}\n\treturn fmt.Sprintf(\"%s %s\", prefix, message)\n}"
     },
@@ -310,15 +340,20 @@
       "id": "analyze-039",
       "name": "Data Clumps - Go with repeated parameter groups",
       "language": "go",
-      "expected_smells": ["SMELL-05", "SMELL-02"],
-      "min_confidence": 0.80,
+      "expected_smells": [
+        "SMELL-05",
+        "SMELL-02"
+      ],
+      "min_confidence": 0.8,
       "code": "func CreateCustomer(\n\tfirstName string,\n\tlastName string,\n\temail string,\n\tphone string,\n\tstreet string,\n\tcity string,\n\tstate string,\n\tzip string,\n) (*Customer, error) {\n\treturn &Customer{\n\t\tFirstName: firstName,\n\t\tLastName:  lastName,\n\t\tEmail:     email,\n\t\tPhone:     phone,\n\t\tStreet:    street,\n\t\tCity:      city,\n\t\tState:     state,\n\t\tZip:       zip,\n\t}, nil\n}\n\nfunc UpdateCustomer(\n\tid string,\n\tfirstName string,\n\tlastName string,\n\temail string,\n\tphone string,\n\tstreet string,\n\tcity string,\n\tstate string,\n\tzip string,\n) (*Customer, error) {\n\treturn &Customer{\n\t\tID:        id,\n\t\tFirstName: firstName,\n\t\tLastName:  lastName,\n\t\tEmail:     email,\n\t\tPhone:     phone,\n\t\tStreet:    street,\n\t\tCity:      city,\n\t\tState:     state,\n\t\tZip:       zip,\n\t}, nil\n}"
     },
     {
       "id": "analyze-040",
       "name": "Feature Envy - Go function using external struct",
       "language": "go",
-      "expected_smells": ["SMELL-18"],
+      "expected_smells": [
+        "SMELL-18"
+      ],
       "min_confidence": 0.5,
       "code": "func PrintOrderSummary(order *Order) string {\n\tcustomerName := order.GetCustomer().GetName()\n\tcustomerEmail := order.GetCustomer().GetEmail()\n\tcustomerTier := order.GetCustomer().GetTier()\n\tshippingAddr := order.GetShipment().GetAddress().Format()\n\ttrackingNum := order.GetShipment().GetTrackingNumber()\n\tsubtotal := order.GetPricing().GetSubtotal()\n\tdiscount := order.GetPricing().GetDiscount()\n\ttax := order.GetPricing().GetTax()\n\ttotal := order.GetPricing().GetTotal()\n\treturn fmt.Sprintf(\n\t\t\"Customer: %s (%s) [%s]\\nShip to: %s\\nTracking: %s\\nSubtotal: %.2f\\nDiscount: %.2f\\nTax: %.2f\\nTotal: %.2f\",\n\t\tcustomerName, customerEmail, customerTier, shippingAddr, trackingNum,\n\t\tsubtotal, discount, tax, total,\n\t)\n}"
     },
@@ -326,7 +361,9 @@
       "id": "analyze-041",
       "name": "Long Method - Ruby complex import",
       "language": "ruby",
-      "expected_smells": ["SMELL-01"],
+      "expected_smells": [
+        "SMELL-01"
+      ],
       "min_confidence": 0.5,
       "code": "def import_csv_data(file_path, mapping, options = {})\n  require 'csv'\n  skip_header = options.fetch(:skip_header, true)\n  batch_size = options.fetch(:batch_size, 100)\n  on_error = options.fetch(:on_error, :skip)\n  dry_run = options.fetch(:dry_run, false)\n  results = { imported: 0, skipped: 0, errors: [] }\n  csv = CSV.read(file_path, headers: skip_header)\n  csv.each_slice(batch_size) do |batch|\n    batch.each do |row|\n      begin\n        record = {}\n        mapping.each do |csv_col, model_attr|\n          value = row[csv_col]\n          next if value.nil?\n          value = value.strip\n          if model_attr.end_with?('_id')\n            value = Integer(value) rescue nil\n          elsif model_attr.end_with?('_at')\n            value = Time.parse(value) rescue nil\n          elsif model_attr.end_with?('_price') || model_attr.end_with?('_amount')\n            value = value.gsub(/[^0-9.]/, '').to_f\n          elsif model_attr.end_with?('_count') || model_attr.end_with?('_quantity')\n            value = value.to_i\n          elsif model_attr == 'email'\n            value = value.downcase\n          elsif model_attr == 'status'\n            value = normalize_status(value)\n          elsif model_attr == 'phone'\n            value = normalize_phone(value)\n          end\n          record[model_attr] = value\n        end\n        next if record.empty?\n        if dry_run\n          results[:imported] += 1\n        else\n          existing = find_existing(record)\n          if existing\n            if options[:update_existing]\n              update_record(existing, record)\n              results[:imported] += 1\n            else\n              results[:skipped] += 1\n            end\n          else\n            create_record(record)\n            results[:imported] += 1\n          end\n        end\n      rescue => e\n        if on_error == :abort\n          results[:errors] << { row: row, error: e.message }\n          break\n        else\n          results[:skipped] += 1\n          results[:errors] << { row: row, error: e.message }\n        end\n      end\n    end\n  end\n  results\nend"
     },
@@ -334,7 +371,9 @@
       "id": "analyze-042",
       "name": "Primitive Obsession - TypeScript multiple primitives",
       "language": "typescript",
-      "expected_smells": ["SMELL-03"],
+      "expected_smells": [
+        "SMELL-03"
+      ],
       "min_confidence": 0.85,
       "code": "function createShippingLabel(\n  senderName: string,\n  senderStreet: string,\n  senderCity: string,\n  senderZip: string,\n  senderCountry: string,\n  recipientName: string,\n  recipientStreet: string,\n  recipientCity: string,\n  recipientZip: string,\n  recipientCountry: string,\n  weightKg: number,\n  lengthCm: number,\n  widthCm: number,\n  heightCm: number,\n): string {\n  const sender = `${senderName}, ${senderStreet}, ${senderCity} ${senderZip}, ${senderCountry}`;\n  const recipient = `${recipientName}, ${recipientStreet}, ${recipientCity} ${recipientZip}, ${recipientCountry}`;\n  const volume = lengthCm * widthCm * heightCm;\n  return `FROM: ${sender}\\nTO: ${recipient}\\nWeight: ${weightKg}kg\\nVolume: ${volume}cm3`;\n}"
     },
@@ -342,7 +381,9 @@
       "id": "analyze-043",
       "name": "Data Class - Ruby struct-like class",
       "language": "ruby",
-      "expected_smells": ["SMELL-07"],
+      "expected_smells": [
+        "SMELL-07"
+      ],
       "min_confidence": 0.5,
       "code": "class ProductInfo\n  attr_accessor :sku, :name, :description, :price, :category,\n                :brand, :weight, :dimensions, :color, :material,\n                :stock_quantity, :reorder_point\n\n  def initialize(attrs = {})\n    @sku = attrs[:sku]\n    @name = attrs[:name]\n    @description = attrs[:description]\n    @price = attrs[:price]\n    @category = attrs[:category]\n    @brand = attrs[:brand]\n    @weight = attrs[:weight]\n    @dimensions = attrs[:dimensions]\n    @color = attrs[:color]\n    @material = attrs[:material]\n    @stock_quantity = attrs[:stock_quantity]\n    @reorder_point = attrs[:reorder_point]\n  end\n\n  def to_h\n    {\n      sku: @sku, name: @name, description: @description,\n      price: @price, category: @category, brand: @brand,\n      weight: @weight, dimensions: @dimensions, color: @color,\n      material: @material, stock_quantity: @stock_quantity,\n      reorder_point: @reorder_point\n    }\n  end\nend"
     },
@@ -350,15 +391,19 @@
       "id": "analyze-044",
       "name": "Middle Man - Ruby delegation proxy",
       "language": "ruby",
-      "expected_smells": ["SMELL-14"],
-      "min_confidence": 0.70,
+      "expected_smells": [
+        "SMELL-14"
+      ],
+      "min_confidence": 0.7,
       "code": "class StorageProxy\n  def initialize(storage_client)\n    @client = storage_client\n  end\n\n  def upload(key, data)\n    @client.upload(key, data)\n  end\n\n  def download(key)\n    @client.download(key)\n  end\n\n  def delete(key)\n    @client.delete(key)\n  end\n\n  def list(prefix)\n    @client.list(prefix)\n  end\n\n  def exists?(key)\n    @client.exists?(key)\n  end\n\n  def metadata(key)\n    @client.metadata(key)\n  end\nend"
     },
     {
       "id": "analyze-045",
       "name": "God Object - Ruby mega-controller",
       "language": "ruby",
-      "expected_smells": ["SMELL-21"],
+      "expected_smells": [
+        "SMELL-21"
+      ],
       "min_confidence": 0.6,
       "code": "class ApplicationController\n  attr_accessor :users, :products, :orders, :settings,\n                :notifications, :audit_log, :cache,\n                :connections, :jobs, :reports, :metrics\n\n  def initialize\n    @users = {}\n    @products = {}\n    @orders = {}\n    @settings = {}\n    @notifications = []\n    @audit_log = []\n    @cache = {}\n    @connections = []\n    @jobs = []\n    @reports = {}\n    @metrics = {}\n  end\n\n  def create_user(data); end\n  def update_user(id, data); end\n  def delete_user(id); end\n  def find_user(id); end\n  def authenticate(username, password); end\n  def create_product(data); end\n  def update_product(id, data); end\n  def delete_product(id); end\n  def find_product(id); end\n  def search_products(query); end\n  def create_order(data); end\n  def cancel_order(id); end\n  def find_order(id); end\n  def list_orders(filter); end\n  def process_payment(order_id, payment); end\n  def refund_payment(order_id, amount); end\n  def send_notification(user_id, message); end\n  def send_bulk_notification(user_ids, message); end\n  def log_audit(action, target); end\n  def get_audit_log(filter); end\n  def get_setting(key); end\n  def set_setting(key, value); end\n  def cache_get(key); end\n  def cache_set(key, value); end\n  def schedule_job(type, data); end\n  def cancel_job(id); end\n  def generate_report(type, params); end\n  def record_metric(name, value); end\n  def health_check; end\n  def shutdown; end\n  def backup; end\n  def restore(id); end\n  def export_data(entity); end\n  def import_data(entity, data); end\n  def migrate(version); end\n  def reset; end\n  def status; end\nend"
     },
@@ -366,23 +411,19 @@
       "id": "analyze-046",
       "name": "Comments - Go heavily commented function",
       "language": "go",
-      "expected_smells": ["SMELL-16"],
+      "expected_smells": [
+        "SMELL-16"
+      ],
       "min_confidence": 0.5,
       "code": "// CalculatePricing computes the final price for a given order.\n//\n// This function handles all pricing logic including:\n// - Base price calculation from line items\n// - Discount application based on customer tier\n// - Tax computation based on shipping region\n// - Shipping cost based on weight and distance\n// - Promotional code validation and application\n//\n// Parameters:\n//   items - slice of order line items with quantity and unit price\n//   tier - customer membership tier (bronze, silver, gold, platinum)\n//   region - shipping region code for tax calculation\n//   promoCode - optional promotional code string\n//   weightKg - total shipment weight in kilograms\n//\n// Returns:\n//   PriceBreakdown struct with subtotal, discount, tax, shipping, total\n//\nfunc CalculatePricing(items []LineItem, tier string, region string, promoCode string, weightKg float64) PriceBreakdown {\n\t// Step 1: Calculate the subtotal from all line items\n\t// We iterate through each item and sum quantity * unit price\n\tvar subtotal float64 = 0.0 // Initialize subtotal to zero\n\tfor _, item := range items {\n\t\t// Multiply quantity by unit price for this line item\n\t\tlineTotal := float64(item.Quantity) * item.UnitPrice\n\t\t// Add to running subtotal\n\t\tsubtotal += lineTotal\n\t}\n\n\t// Step 2: Apply tier-based discount\n\t// Different tiers get different discount percentages\n\tvar discountRate float64 = 0.0 // No discount by default\n\tif tier == \"bronze\" {\n\t\t// Bronze members get 2% off\n\t\tdiscountRate = 0.02\n\t} else if tier == \"silver\" {\n\t\t// Silver members get 5% off\n\t\tdiscountRate = 0.05\n\t} else if tier == \"gold\" {\n\t\t// Gold members get 10% off\n\t\tdiscountRate = 0.10\n\t} else if tier == \"platinum\" {\n\t\t// Platinum members get 15% off\n\t\tdiscountRate = 0.15\n\t}\n\t// Calculate the actual discount amount\n\tdiscount := subtotal * discountRate\n\n\t// Step 3: Calculate tax based on shipping region\n\t// Each region has a different tax rate\n\tvar taxRate float64 // Tax rate as decimal\n\tswitch region {\n\tcase \"US\":\n\t\ttaxRate = 0.08 // 8% for US\n\tcase \"EU\":\n\t\ttaxRate = 0.20 // 20% VAT for EU\n\tcase \"UK\":\n\t\ttaxRate = 0.20 // 20% VAT for UK\n\tdefault:\n\t\ttaxRate = 0.10 // 10% default for other regions\n\t}\n\t// Apply tax to discounted amount\n\ttaxableAmount := subtotal - discount\n\ttax := taxableAmount * taxRate\n\n\t// Step 4: Calculate shipping based on weight\n\t// Shipping is free for orders over $100 after discount\n\tvar shipping float64\n\tif taxableAmount > 100.0 {\n\t\t// Free shipping for orders over $100\n\t\tshipping = 0.0\n\t} else if weightKg > 10.0 {\n\t\t// Heavy items have a flat $15 rate\n\t\tshipping = 15.00\n\t} else {\n\t\t// Standard shipping rate\n\t\tshipping = 5.99\n\t}\n\n\t// Return the complete price breakdown\n\treturn PriceBreakdown{\n\t\tSubtotal: subtotal,\n\t\tDiscount: discount,\n\t\tTax:      tax,\n\t\tShipping: shipping,\n\t\tTotal:    taxableAmount + tax + shipping,\n\t}\n}"
-    },
-    {
-      "id": "analyze-047",
-      "name": "Lazy Class - Go minimal interface file",
-      "language": "go",
-      "expected_smells": ["SMELL-11"],
-      "min_confidence": 0.5,
-      "code": "package errors\n\nvar (\n\tErrNotFound   = fmt.Errorf(\"not found\")\n\tErrForbidden  = fmt.Errorf(\"forbidden\")\n\tErrBadRequest = fmt.Errorf(\"bad request\")\n)"
     },
     {
       "id": "analyze-048",
       "name": "Data Class - Go struct with no methods",
       "language": "go",
-      "expected_smells": ["SMELL-07"],
+      "expected_smells": [
+        "SMELL-07"
+      ],
       "min_confidence": 0.5,
       "code": "type Address struct {\n\tStreet     string\n\tCity       string\n\tState      string\n\tZipCode    string\n\tCountry    string\n\tLatitude   float64\n\tLongitude  float64\n\tIsPrimary  bool\n\tIsVerified bool\n\tLabel      string\n}\n\ntype ContactInfo struct {\n\tEmail      string\n\tPhone      string\n\tFax        string\n\tWebsite    string\n\tLinkedIn   string\n\tTwitter    string\n}"
     },
@@ -390,7 +431,9 @@
       "id": "analyze-049",
       "name": "Feature Envy - Ruby method accessing other object",
       "language": "ruby",
-      "expected_smells": ["SMELL-18"],
+      "expected_smells": [
+        "SMELL-18"
+      ],
       "min_confidence": 0.5,
       "code": "class OrderFormatter\n  def format_receipt(order)\n    lines = []\n    lines << \"Order ##{order.number}\"\n    lines << \"Customer: #{order.customer.full_name}\"\n    lines << \"Email: #{order.customer.email}\"\n    lines << \"Address: #{order.customer.address.format}\"\n    lines << \"Phone: #{order.customer.phone}\"\n    lines << \"Plan: #{order.customer.subscription.plan_name}\"\n    lines << \"Status: #{order.customer.account.status}\"\n    order.items.each do |item|\n      lines << \"  #{item.product.name} x#{item.quantity} = $#{item.total}\"\n    end\n    lines << \"Subtotal: $#{order.pricing.subtotal}\"\n    lines << \"Tax: $#{order.pricing.tax}\"\n    lines << \"Total: $#{order.pricing.total}\"\n    lines.join(\"\\n\")\n  end\nend"
     },
@@ -398,8 +441,10 @@
       "id": "analyze-050",
       "name": "Message Chains - Ruby deep navigation",
       "language": "ruby",
-      "expected_smells": ["SMELL-20"],
-      "min_confidence": 0.60,
+      "expected_smells": [
+        "SMELL-20"
+      ],
+      "min_confidence": 0.6,
       "code": "class DashboardPresenter\n  def user_region_name\n    current_session.user.settings.preferences.region.country.name\n  end\n\n  def user_currency\n    current_session.user.settings.preferences.region.currency.code\n  end\n\n  def admin_email\n    current_session.user.organization.admin.contact.email.address\n  end\n\n  def billing_provider\n    current_session.user.organization.subscription.plan.provider.name\n  end\nend"
     }
   ]

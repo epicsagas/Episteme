@@ -35,6 +35,30 @@ impl CodeParser for GoFullParser {
         let mut detections: Vec<SmellDetection> = Vec::new();
         let func_re = self.inner.get_func_re();
 
+        // Pre-collect comment counts from raw code (avoids position mismatch
+        // between cleaned and raw code).
+        let mut raw_func_comments: std::collections::HashMap<String, (usize, usize)> =
+            std::collections::HashMap::new();
+        for cap in func_re.captures_iter(code) {
+            let name = cap[1].to_string();
+            if raw_func_comments.contains_key(&name) {
+                continue;
+            }
+            let full = cap.get(0).unwrap();
+            let start = full.start();
+            let Some(off) = code[start..].find('{') else {
+                continue;
+            };
+            let brace_pos = start + off;
+            let Some(end_pos) = find_matching_brace(code, brace_pos) else {
+                continue;
+            };
+            let raw_body = &code[start..=end_pos];
+            let comment_count =
+                count_line_comment_lines(raw_body, "//") + count_block_comment_lines(raw_body);
+            raw_func_comments.insert(name, (comment_count, 0));
+        }
+
         // --- Functions ---
         for cap in func_re.captures_iter(&cleaned) {
             let name = &cap[1];
@@ -52,9 +76,8 @@ impl CodeParser for GoFullParser {
 
             let body = &cleaned[start..=end_pos];
             let sig = &cleaned[start..];
-            let raw_body = &code[start..=end_pos];
-            let comment_count =
-                count_line_comment_lines(raw_body, "//") + count_block_comment_lines(raw_body);
+            let (comment_count, doc_comment_count) =
+                *raw_func_comments.get(name).unwrap_or(&(0, 0));
             let metrics = build_func_metrics_full(
                 body,
                 sig,
@@ -62,6 +85,7 @@ impl CodeParser for GoFullParser {
                 count_local_vars,
                 count_primitive_params_go,
                 comment_count,
+                doc_comment_count,
             );
 
             let location = format!("{}:{}", file_name, line_number(&cleaned, start));

@@ -92,8 +92,8 @@ fn detect_function_metrics(
     let external_calls = count_external_calls(body);
     let branch_count = count_branches(body);
     let method_call_chains = count_call_chains(body);
-    let comment_count =
-        count_comment_lines_in_range(code, range) + count_docstring_lines(body, code);
+    let doc_comment_lines = count_docstring_lines(body, code);
+    let comment_count = count_comment_lines_in_range(code, range) + doc_comment_lines;
 
     let metrics = CodeMetrics {
         loc,
@@ -107,6 +107,7 @@ fn detect_function_metrics(
         branch_count,
         method_call_chains,
         comment_count,
+        doc_comment_count: doc_comment_lines,
         ..Default::default()
     };
     let line = line_number_at_offset(code, range.start().to_usize());
@@ -168,14 +169,42 @@ fn detect_class_metrics(c: &ast::StmtClassDef, code: &str, file_name: &str) -> V
     } else {
         0
     };
+    // Count external calls across all methods in the class
+    let external_calls: usize = c
+        .body
+        .iter()
+        .filter_map(|s| match s {
+            ast::Stmt::FunctionDef(f) => Some(&f.body),
+            ast::Stmt::AsyncFunctionDef(f) => Some(&f.body),
+            _ => None,
+        })
+        .map(|body| count_external_calls(body))
+        .sum();
+    // Count delegation methods: methods whose body is a single return of
+    // a self.xxx.method(...) call (pure forwarding).
+    let delegation_methods = c
+        .body
+        .iter()
+        .filter(|s| {
+            let body = match s {
+                ast::Stmt::FunctionDef(f) => &f.body,
+                ast::Stmt::AsyncFunctionDef(f) => &f.body,
+                _ => return false,
+            };
+            is_delegation_body(body)
+        })
+        .count();
+    let class_doc_lines = count_docstring_lines(&c.body, code);
     let metrics = CodeMetrics {
         loc: count_code_lines_in_range(code, c.range()),
         cyclomatic_complexity,
         method_count,
         field_count,
+        external_calls,
+        delegation_methods,
         override_count,
-        comment_count: count_comment_lines_in_range(code, c.range())
-            + count_docstring_lines(&c.body, code),
+        comment_count: count_comment_lines_in_range(code, c.range()) + class_doc_lines,
+        doc_comment_count: class_doc_lines,
         item_type: ItemType::Class,
         ..Default::default()
     };
@@ -354,6 +383,45 @@ fn count_branches(body: &[ast::Stmt]) -> usize {
         .sum()
 }
 
+/// Check if a method body is a simple delegation: single statement that
+/// returns or directly calls `self.xxx.method(...)`.
+fn is_delegation_body(body: &[ast::Stmt]) -> bool {
+    // Must have exactly one statement
+    if body.len() != 1 {
+        return false;
+    }
+    let expr = match &body[0] {
+        ast::Stmt::Return(r) => r.value.as_deref(),
+        ast::Stmt::Expr(e) => Some(&*e.value),
+        _ => None,
+    };
+    let Some(expr) = expr else { return false };
+    // Check: self.service.method(...) pattern
+    is_self_attribute_call(expr)
+}
+
+/// Check if an expression is `self.xxx.yyy(...)` (attribute call on self.xxx).
+fn is_self_attribute_call(expr: &ast::Expr) -> bool {
+    let ast::Expr::Call(call) = expr else {
+        return false;
+    };
+    // func should be Attribute(Attribute(Name("self"), ...), ...)
+    let ast::Expr::Attribute(attr) = call.func.as_ref() else {
+        return false;
+    };
+    let ast::Expr::Attribute(inner) = attr.value.as_ref() else {
+        // Also accept self.method() — single-level forwarding
+        let ast::Expr::Name(name) = attr.value.as_ref() else {
+            return false;
+        };
+        return name.id.as_str() == "self";
+    };
+    let ast::Expr::Name(name) = inner.value.as_ref() else {
+        return false;
+    };
+    name.id.as_str() == "self"
+}
+
 fn count_call_chains(body: &[ast::Stmt]) -> usize {
     fn chain_len(expr: &ast::Expr) -> usize {
         match expr {
@@ -381,21 +449,46 @@ fn line_number_at_offset(code: &str, offset: usize) -> usize {
 }
 
 /// Count actual code lines (non-blank, non-comment, non-docstring) within a range.
+/// Tracks multi-line docstrings (triple-quoted strings) so content lines between
+/// opening and closing delimiters are excluded from the count.
 fn count_code_lines_in_range(code: &str, range: rustpython_parser::text_size::TextRange) -> usize {
     let start = range.start().to_usize().min(code.len());
     let end = range.end().to_usize().min(code.len());
     let slice = &code[start..end];
-    slice
-        .lines()
-        .filter(|l| {
-            let t = l.trim();
-            !t.is_empty()
-                && !t.starts_with('#')
-                && !t.starts_with("'''")
-                && !t.starts_with("\"\"\"")
-        })
-        .count()
-        .max(1)
+
+    let mut in_docstring = false;
+    let mut count: usize = 0;
+
+    for line in slice.lines() {
+        let t = line.trim();
+
+        if in_docstring {
+            if t.ends_with("\"\"\"") || t.ends_with("'''") {
+                in_docstring = false;
+            }
+            continue;
+        }
+
+        // Opening triple-quote (docstring)
+        if t.starts_with("\"\"\"") {
+            if !t[3..].contains("\"\"\"") {
+                in_docstring = true;
+            }
+            continue;
+        }
+        if t.starts_with("'''") {
+            if !t[3..].contains("'''") {
+                in_docstring = true;
+            }
+            continue;
+        }
+
+        if !t.is_empty() && !t.starts_with('#') {
+            count += 1;
+        }
+    }
+
+    count.max(1)
 }
 
 /// Count comment lines (# lines) within a range.

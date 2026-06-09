@@ -56,6 +56,7 @@ impl CodeParser for TypeScriptParser {
                 count_local_vars,
                 count_primitive_params_typescript,
                 0,
+                0,
             );
 
             let location = format!("{}:{}", file_name, line_number(&cleaned, start));
@@ -100,6 +101,7 @@ impl CodeParser for TypeScriptParser {
                 count_local_vars,
                 count_primitive_params_typescript,
                 0,
+                0,
             );
 
             let location = format!("{}:{}", file_name, line_number(&cleaned, start));
@@ -138,6 +140,43 @@ impl CodeParser for TypeScriptParser {
                 field_count,
                 delegation_methods,
                 override_count,
+                item_type: ItemType::Class,
+                ..Default::default()
+            };
+
+            let location = format!("{}:{}", file_name, line_number(&cleaned, start));
+            detections.extend(detect_all(&metrics, &location, name));
+        }
+
+        // --- Interfaces (TypeScript) ---
+        let iface_re = cached_regex(r"(?m)(?:export\s+)?interface\s+(\w+)");
+        // Interface property: `name: type;` or `readonly name: type;`
+        let iface_prop_re =
+            cached_regex(r#"(?m)^\s+(?:readonly\s+)?\w+\s*(\??)\s*:\s*[\w<>\[\]"']+"#);
+        // Interface method signature: `name(params): type;`
+        let iface_method_re = cached_regex(r"(?m)^\s+\w+\s*\([^)]*\)\s*(?::\s*[\w<>\[\]]+\s*)?;");
+        for cap in iface_re.captures_iter(&cleaned) {
+            let name = &cap[1];
+            let full = cap.get(0).unwrap();
+            let start = full.start();
+
+            let brace_pos = match cleaned[start..].find('{') {
+                Some(off) => start + off,
+                None => continue,
+            };
+            let end_pos = match find_matching_brace(&cleaned, brace_pos) {
+                Some(p) => p,
+                None => continue,
+            };
+
+            let body = &cleaned[start..=end_pos];
+            let field_count = iface_prop_re.find_iter(body).count();
+            let method_count = iface_method_re.find_iter(body).count();
+
+            let metrics = CodeMetrics {
+                loc: count_loc(body),
+                method_count,
+                field_count,
                 item_type: ItemType::Class,
                 ..Default::default()
             };

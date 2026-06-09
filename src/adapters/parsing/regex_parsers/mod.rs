@@ -466,6 +466,23 @@ pub(crate) fn count_block_comment_lines(body: &str) -> usize {
     re.find_iter(body).map(|m| m.as_str().lines().count()).sum()
 }
 
+/// Count doc-comment lines: Rust `///` and `//!`, Go/Java `//` doc (all treated as regular for Go).
+/// For Rust, lines starting with `///` or `//!` after optional whitespace.
+pub(crate) fn count_doc_comment_lines(body: &str, prefix: &str) -> usize {
+    // Only Rust uses separate doc-comment syntax (/// and //!)
+    if prefix != "//" {
+        return 0;
+    }
+    let re = cached_regex(r"(?m)^\s*(///|//!)");
+    re.find_iter(body).count()
+}
+
+/// Count Javadoc block-comment lines (`/** ... */`).
+pub(crate) fn count_javadoc_lines(body: &str) -> usize {
+    let re = cached_regex(r"/\*\*.*?\*/");
+    re.find_iter(body).map(|m| m.as_str().lines().count()).sum()
+}
+
 /// Count hash-comment lines (`#` prefix).
 #[expect(dead_code, reason = "used by Ruby/Python comment counting")]
 pub(crate) fn count_hash_comment_lines(body: &str) -> usize {
@@ -569,6 +586,7 @@ pub(crate) fn build_func_metrics_full(
     vars_fn: fn(&str) -> usize,
     primitive_fn: fn(&str) -> usize,
     comment_count: usize,
+    doc_comment_count: usize,
 ) -> CodeMetrics {
     let params = count_params(sig);
     CodeMetrics {
@@ -583,6 +601,7 @@ pub(crate) fn build_func_metrics_full(
         branch_count: count_branches(body),
         method_call_chains: count_method_call_chains(body),
         comment_count,
+        doc_comment_count,
         ..Default::default()
     }
 }
