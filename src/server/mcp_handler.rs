@@ -140,6 +140,48 @@ impl EpistemeMCP {
         &self.graph
     }
 
+    /// Return all entity IDs — canonical + user (insights) if composite is present.
+    pub fn all_entity_ids(&self) -> Vec<String> {
+        if let Some(c) = &self.composite {
+            c.lock()
+                .map(|g| {
+                    use crate::ports::graph::GraphRepository;
+                    g.all_entity_ids()
+                })
+                .unwrap_or_else(|_| self.graph.all_entity_ids())
+        } else {
+            self.graph.all_entity_ids()
+        }
+    }
+
+    /// Get an entity by ID — looks up composite (canonical + user) if present.
+    pub fn get_entity_merged(&self, id: &str) -> Option<crate::domain::types::Entity> {
+        if let Some(c) = &self.composite {
+            c.lock()
+                .ok()
+                .and_then(|g| {
+                    use crate::ports::graph::GraphRepository;
+                    g.get_entity(id).cloned()
+                })
+        } else {
+            self.graph.get_entity(id).cloned()
+        }
+    }
+
+    /// Get all edges for an entity — composite-aware.
+    pub fn get_all_edges_merged(&self, id: &str) -> Vec<crate::domain::types::GraphEdge> {
+        if let Some(c) = &self.composite {
+            c.lock()
+                .map(|g| {
+                    use crate::ports::graph::GraphRepository;
+                    g.get_all_edges(id)
+                })
+                .unwrap_or_else(|_| self.graph.get_all_edges(id))
+        } else {
+            self.graph.get_all_edges(id)
+        }
+    }
+
     /// Return the number of user entities (insights) in the composite graph.
     pub fn user_entity_count(&self) -> usize {
         self.composite
@@ -214,13 +256,31 @@ impl EpistemeMCP {
         )
     }
 
-    /// Get detailed information about a single entity (delegates to `mcp_graph`).
+    /// Get detailed information about a single entity.
+    /// Tries composite graph first (includes user/TK entities), falls back to canonical.
     pub fn get_entity(&self, entity_id: &str, detail_level: Option<&str>) -> serde_json::Value {
+        if let Some(c) = &self.composite {
+            if let Ok(g) = c.lock() {
+                use crate::ports::graph::GraphRepository;
+                if g.get_entity(entity_id).is_some() {
+                    return super::mcp_graph::get_entity_from_repo(&*g, entity_id, detail_level);
+                }
+            }
+        }
         super::mcp_graph::get_entity(&self.graph, entity_id, detail_level)
     }
 
-    /// Get entities related to a given entity (delegates to `mcp_graph`).
+    /// Get entities related to a given entity, optionally filtered by relation type.
+    /// Tries composite graph first (includes user/TK entities), falls back to canonical.
     pub fn get_neighbors(&self, entity_id: &str, relation_type: Option<&str>) -> serde_json::Value {
+        if let Some(c) = &self.composite {
+            if let Ok(g) = c.lock() {
+                use crate::ports::graph::GraphRepository;
+                if g.get_entity(entity_id).is_some() {
+                    return super::mcp_graph::get_neighbors_from_repo(&*g, entity_id, relation_type);
+                }
+            }
+        }
         super::mcp_graph::get_neighbors(&self.graph, entity_id, relation_type)
     }
 

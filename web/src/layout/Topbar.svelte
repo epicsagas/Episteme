@@ -40,7 +40,7 @@
     searchQuery = '';
     searchResults = [];
     activeIndex = -1;
-    navigate({ page: 'entity', id });
+    navigate({ page: 'entity', id, from: 'explorer' });
   }
 
   function handleKeydown(e: KeyboardEvent) {

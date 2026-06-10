@@ -11,7 +11,7 @@
   const items: NavItem[] = [
     { page: 'dashboard', icon: 'dashboard', label: 'Insights' },
     { page: 'explorer', icon: 'hub', label: 'Explorer' },
-    { page: 'ontology', icon: 'schema', label: 'Ontology' },
+    { page: 'ontology', icon: 'schema', label: 'Categories' },
   ];
 
   function isActive(page: string): boolean {

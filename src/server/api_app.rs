@@ -10,6 +10,8 @@ use tower_http::trace::TraceLayer;
 use crate::adapters::cache::CacheManager;
 use crate::adapters::metrics::{self, MetricsHandle};
 use crate::adapters::rate_limiter::RateLimiter;
+use crate::adapters::user_graph_store::UserGraphStore;
+use crate::domain::composite_graph::CompositeGraph;
 use crate::adapters::rate_limiter_mw::rate_limit_middleware;
 use crate::adapters::telemetry::Telemetry;
 use crate::server::api_middleware::{
@@ -79,7 +81,14 @@ pub async fn create_app(
         sentry_dsn,
     ));
 
-    let mut mcp = EpistemeMCP::new(graph);
+    let db_path = crate::adapters::paths::episteme_home().join("user_knowledge.db");
+    let mut mcp = match UserGraphStore::open(&db_path) {
+        Ok(store) => {
+            let composite = CompositeGraph::new(graph.clone(), Box::new(store));
+            EpistemeMCP::with_composite(graph, composite)
+        }
+        Err(_) => EpistemeMCP::new(graph),
+    };
     mcp.try_attach_rag();
     let state: AppState = Arc::new(mcp);
     let api_keys_state = Arc::new(ApiKeys(api_keys));

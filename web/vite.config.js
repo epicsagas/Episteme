@@ -12,10 +12,17 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     proxy: {
-      '/web-api': {
+      // episteme api server (entity, search, health, stats)
+      '/api/v1': {
+        target: 'http://localhost:58302',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/v1/, ''),
+      },
+      // episteme web server (graph visualization)
+      '/api/web': {
         target: 'http://localhost:8080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/web-api/, ''),
+        rewrite: (path) => path.replace(/^\/api\/web/, ''),
       },
     },
   },

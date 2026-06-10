@@ -13,7 +13,7 @@
   );
 
   function handleNavigate(id: string) {
-    navigate({ page: 'entity', id });
+    navigate({ page: 'entity', id, from: 'explorer' });
   }
 
   function entityTypeColor(type: string): string {

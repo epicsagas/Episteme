@@ -28,14 +28,14 @@ async fn index() -> Html<&'static str> {
     Html(include_str!("graph_viewer.html"))
 }
 
-/// Full graph as Cytoscape.js elements.
+/// Full graph as Cytoscape.js elements — includes canonical + user (insight) entities.
 async fn graph_full(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Value> {
-    let graph = mcp.graph();
     let mut nodes = Vec::new();
     let mut edges = Vec::new();
+    let all_ids = mcp.all_entity_ids();
 
-    for id in graph.all_entity_ids() {
-        let Some(entity) = graph.get_entity(&id) else {
+    for id in &all_ids {
+        let Some(entity) = mcp.get_entity_merged(id) else {
             continue;
         };
 
@@ -49,8 +49,9 @@ async fn graph_full(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Val
             }
         }));
 
-        for edge in graph.get_all_edges(&id) {
-            if graph.get_entity(&edge.to_id).is_none() {
+        for edge in mcp.get_all_edges_merged(id) {
+            // Only include edges where the target is also in our merged set
+            if mcp.get_entity_merged(&edge.to_id).is_none() {
                 continue;
             }
             edges.push(serde_json::json!({
@@ -82,17 +83,26 @@ async fn graph_entity(
     Query(params): Query<EntityParams>,
     State(mcp): State<Arc<EpistemeMCP>>,
 ) -> Result<Json<serde_json::Value>, StatusCode> {
+    // Try canonical subgraph first, fall back to merged lookup for user entities
     let graph = mcp.graph();
     let (ids, edges) = graph.extract_subgraph(&id, params.radius);
 
-    if ids.is_empty() {
-        return Err(StatusCode::NOT_FOUND);
-    }
+    // For user entities not in canonical, include just the entity itself
+    let (final_ids, final_edges) = if ids.is_empty() {
+        if mcp.get_entity_merged(&id).is_some() {
+            (vec![id.clone()], mcp.get_all_edges_merged(&id))
+        } else {
+            return Err(StatusCode::NOT_FOUND);
+        }
+    } else {
+        // extract_subgraph returns HashSet — convert to Vec
+        (ids.into_iter().collect::<Vec<_>>(), edges)
+    };
 
-    let nodes: Vec<_> = ids
+    let nodes: Vec<_> = final_ids
         .iter()
         .filter_map(|eid| {
-            graph.get_entity(eid).map(|e| {
+            mcp.get_entity_merged(eid).map(|e| {
                 serde_json::json!({
                     "data": {
                         "id": eid,
@@ -104,7 +114,7 @@ async fn graph_entity(
         })
         .collect();
 
-    let edge_data: Vec<_> = edges
+    let edge_data: Vec<_> = final_edges
         .iter()
         .map(|e| {
             serde_json::json!({
@@ -174,13 +184,12 @@ async fn entities_search(
     Query(params): Query<SearchParams>,
     State(mcp): State<Arc<EpistemeMCP>>,
 ) -> Json<Vec<serde_json::Value>> {
-    let graph = mcp.graph();
     let query = params.q.to_lowercase();
-    let results: Vec<_> = graph
+    let results: Vec<_> = mcp
         .all_entity_ids()
         .iter()
         .filter_map(|id| {
-            graph.get_entity(id).and_then(|e| {
+            mcp.get_entity_merged(id).and_then(|e| {
                 let title_match = e.title.to_lowercase().contains(&query);
                 let name_match = e.name.to_lowercase().contains(&query);
                 if title_match || name_match {
@@ -207,27 +216,19 @@ async fn entities_search(
 ///
 /// Returns type keys and counts only. Colors/icons/labels are the frontend's concern.
 async fn graph_schema(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Value> {
-    let graph = mcp.graph();
-
-    // Count entities per type
+    // Count across canonical + user entities
     let mut type_counts: std::collections::HashMap<String, usize> =
         std::collections::HashMap::new();
-    for id in graph.all_entity_ids() {
-        if let Some(entity) = graph.get_entity(&id) {
+    for id in mcp.all_entity_ids() {
+        if let Some(entity) = mcp.get_entity_merged(&id) {
             let t = if entity.r#type.is_empty() {
-                "unknown"
+                "unknown".to_owned()
             } else {
-                &entity.r#type
+                entity.r#type.clone()
             };
-            *type_counts.entry(t.to_owned()).or_insert(0) += 1;
+            *type_counts.entry(t).or_insert(0) += 1;
         }
     }
-
-    // Add insight count from user store if available
-    let insight_count = mcp.user_entity_count();
-    type_counts
-        .entry("insight".to_owned())
-        .or_insert(insight_count);
 
     let entity_types: Vec<serde_json::Value> = type_counts
         .iter()
@@ -272,25 +273,24 @@ fn type_label(t: &str) -> &str {
         "refactoring" => "Refactorings",
         "law" => "Laws & Principles",
         "pattern" => "Design Patterns",
+        "insight" => "Insights",
         _ => t,
     }
 }
 
 /// GET /api/graph/sankey -- aggregated flow data for a sankey diagram.
 async fn graph_sankey(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Value> {
-    let graph = mcp.graph();
-
-    // Count entities per type.
+    // Count entities per type — canonical + user.
     let mut type_counts: std::collections::HashMap<String, usize> =
         std::collections::HashMap::new();
-    for id in graph.all_entity_ids() {
-        if let Some(entity) = graph.get_entity(&id) {
+    for id in mcp.all_entity_ids() {
+        if let Some(entity) = mcp.get_entity_merged(&id) {
             let t = if entity.r#type.is_empty() {
-                "unknown"
+                "unknown".to_owned()
             } else {
-                &entity.r#type
+                entity.r#type.clone()
             };
-            *type_counts.entry(t.to_owned()).or_insert(0) += 1;
+            *type_counts.entry(t).or_insert(0) += 1;
         }
     }
 
@@ -309,34 +309,34 @@ async fn graph_sankey(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::V
     let mut link_counts: std::collections::HashMap<(String, String, String), usize> =
         std::collections::HashMap::new();
 
-    for id in graph.all_entity_ids() {
-        let Some(entity) = graph.get_entity(&id) else {
+    for id in mcp.all_entity_ids() {
+        let Some(entity) = mcp.get_entity_merged(&id) else {
             continue;
         };
         let source_type = if entity.r#type.is_empty() {
-            "unknown"
+            "unknown".to_owned()
         } else {
-            &entity.r#type
+            entity.r#type.clone()
         };
 
-        for edge in graph.get_all_edges(&id) {
+        for edge in mcp.get_all_edges_merged(&id) {
             if !SANKEY_RELATIONS.contains(&edge.relation_type.as_str()) {
                 continue;
             }
-            let Some(target) = graph.get_entity(&edge.to_id) else {
+            let Some(target) = mcp.get_entity_merged(&edge.to_id) else {
                 continue;
             };
             let target_type = if target.r#type.is_empty() {
-                "unknown"
+                "unknown".to_owned()
             } else {
-                &target.r#type
+                target.r#type.clone()
             };
 
             *link_counts
                 .entry((
-                    source_type.to_owned(),
+                    source_type.clone(),
                     edge.relation_type.clone(),
-                    target_type.to_owned(),
+                    target_type,
                 ))
                 .or_insert(0) += 1;
         }
@@ -361,36 +361,34 @@ async fn graph_sankey(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::V
 async fn graph_tree(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Value> {
     use std::collections::HashMap;
 
-    let graph = mcp.graph();
-
-    // Group: type -> category -> Vec of (id, title).
+    // Group: type -> category -> Vec of (id, title) — includes user insights.
     let mut by_type: HashMap<String, HashMap<String, Vec<(String, String)>>> = HashMap::new();
 
-    for id in graph.all_entity_ids() {
-        let Some(entity) = graph.get_entity(&id) else {
+    for id in mcp.all_entity_ids() {
+        let Some(entity) = mcp.get_entity_merged(&id) else {
             continue;
         };
         let t = if entity.r#type.is_empty() {
-            "unknown"
+            "unknown".to_owned()
         } else {
-            &entity.r#type
+            entity.r#type.clone()
         };
         let cat = if entity.category.is_empty() {
-            "uncategorized"
+            "uncategorized".to_owned()
         } else {
-            &entity.category
+            entity.category.clone()
         };
 
         by_type
-            .entry(t.to_owned())
+            .entry(t)
             .or_default()
-            .entry(cat.to_owned())
+            .entry(cat)
             .or_default()
             .push((id, entity.title.clone()));
     }
 
-    // Order types consistently.
-    let type_order = ["pattern", "refactoring", "law", "smell"];
+    // Order types consistently — insight appears after canonical types.
+    let type_order = ["pattern", "refactoring", "law", "smell", "insight"];
     let mut sorted_types: Vec<String> = by_type.keys().cloned().collect();
     sorted_types.sort_by(|a, b| {
         let ai = type_order
@@ -420,8 +418,8 @@ async fn graph_tree(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Val
                     let leaf_children: Vec<serde_json::Value> = items
                         .iter()
                         .map(|(id, title)| {
-                            let desc = graph
-                                .get_entity(id)
+                            let desc = mcp
+                                .get_entity_merged(id)
                                 .map(|e| e.description.clone())
                                 .unwrap_or_default();
                             serde_json::json!({"id": id, "title": title, "description": desc})
