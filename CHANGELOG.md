@@ -7,35 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.6] — 2026-06-10
+
 ### Added
 
 - Evaluation testset and batch evaluation system for search quality regression detection
 - Knowledge graph consolidated into SQLite for unified storage (`feat(db)`)
-
-### Fixed
-
-- Search: homonym layer priority swapped to fix Python query false positives
-- Search: value objects excluded from lazy class tier 2 detection
-- Search: homonym lookup hardened and smell detector accuracy improved
-- Search: eval quality improved with homonym demotion and smell tuning
-- Benchmarks: `eval_runner` updated to use `search` command
-
-### Changed
-
-- Evaluation system documentation and i18n references added
-- Bump `actions/setup-python` from 5 to 6
-
-## [0.3.6] — 2026-06-10
+- Dashboard rewrite with i18n help modals
 
 ### Fixed
 
 - **SMELL-16 (Comments) false positive elimination** — doc comments (docstrings, `///`, `/** Javadoc */`) are now excluded from inline comment counting via a new `doc_comment_count` field in `CodeMetrics`
 - **Python AST parser LOC calculation** — multi-line docstring content lines no longer counted as code lines
 - **Rust/Go regex parser position mismatch** — comment counts are now pre-collected from raw (unstripped) code instead of incorrectly indexing into comment-stripped code
+- Search: homonym layer priority swapped to fix Python query false positives
+- Search: value objects excluded from lazy class tier 2 detection
+- Search: homonym lookup hardened and smell detector accuracy improved
+- CI: eval workflow now seeds graph data before evaluation (fixes traversal/search 0% scores)
 
 ### Changed
 
-- Eval composite score improved to 0.7808 (+0.0198), regression PASS
+- Eval composite score improved to 0.7996, regression PASS
+- Benchmarks: `eval_runner` updated to use `search` command
+- Bump `actions/setup-python` from 5 to 6
 
 ## [0.3.5] — 2026-06-07
 
