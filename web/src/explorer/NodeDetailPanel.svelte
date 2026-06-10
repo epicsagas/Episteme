@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getSelectedEntity, getNeighborsList, clearSelection } from '../stores/graph.svelte.ts';
+  import { getSelectedEntity, getNeighborsList, clearSelection, selectEntity, requestCenter } from '../stores/graph.svelte.ts';
   import Badge from '../ui/Badge.svelte';
   import { navigate } from '../router/index.svelte.ts';
   import { ENTITY_TYPE_ICONS } from '../api/types.ts';
@@ -11,6 +11,11 @@
   const displayedNeighbors = $derived(
     showAllRelations ? neighbors : neighbors.slice(0, 8)
   );
+
+  function handleSelectNeighbor(id: string) {
+    requestCenter(id);
+    selectEntity(id);
+  }
 
   function handleNavigate(id: string) {
     navigate({ page: 'entity', id, from: 'explorer' });
@@ -107,7 +112,7 @@
           <div class="space-y-0.5">
             {#each displayedNeighbors as neighbor}
               <button
-                onclick={() => handleNavigate(neighbor.id)}
+                onclick={() => handleSelectNeighbor(neighbor.id)}
                 class="w-full flex items-center justify-between px-2.5 py-2 rounded
                   hover:bg-[var(--color-surface-container-high)]/50 transition-colors
                   cursor-pointer text-left group"

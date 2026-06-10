@@ -9,6 +9,7 @@ let graphData: CytoscapeGraph | null = $state(null);
 let version: number = $state(0);
 let loading = $state(false);
 let errorMsg: string | null = $state(null);
+let centerNodeId: string | null = $state(null);
 
 export function getSelectedEntity(): Entity | null {
   return selectedEntity;
@@ -67,4 +68,18 @@ export async function selectEntity(id: string): Promise<void> {
 export function clearSelection() {
   selectedEntity = null;
   neighbors = [];
+}
+
+export function getCenterNodeId(): string | null {
+  return centerNodeId;
+}
+
+export function requestCenter(id: string) {
+  centerNodeId = id;
+}
+
+export function consumeCenter(): string | null {
+  const id = centerNodeId;
+  centerNodeId = null;
+  return id;
 }

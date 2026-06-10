@@ -72,7 +72,7 @@
   );
 
   function handleOpen(id: string) {
-    navigate({ page: 'entity', id, from: 'ontology' });
+    navigate({ page: 'entity', id, from: 'dashboard' });
   }
 
   function formatScore(desc: string): string | null {

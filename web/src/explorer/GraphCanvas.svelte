@@ -2,7 +2,7 @@
   import cytoscape from 'cytoscape';
   import type { Core, NodeSingular } from 'cytoscape';
   import { onMount, onDestroy } from 'svelte';
-  import { loadFullGraph, getGraphData, isLoading, getError, getVersion } from '../stores/graph.svelte.ts';
+  import { loadFullGraph, getGraphData, isLoading, getError, getVersion, getCenterNodeId, consumeCenter } from '../stores/graph.svelte.ts';
   import { selectEntity } from '../stores/graph.svelte.ts';
   import { waitForReady, checkHealth } from '../stores/connection.svelte.ts';
   import { ENTITY_TYPE_HEX_COLORS, RELATION_TYPE_COLORS } from '../api/types.ts';
@@ -17,23 +17,7 @@
 
   let lastVersion = 0;
 
-  // Entity type → shape mapping for visual distinction
-  const ENTITY_SHAPES: Record<EntityType, string> = {
-    pattern: 'round-rectangle',
-    refactoring: 'diamond',
-    law: 'hexagon',
-    smell: 'triangle',
-    insight: 'ellipse',
-  };
-
-  // Node size by entity type (visual hierarchy)
-  const ENTITY_SIZES: Record<EntityType, number> = {
-    pattern: 40,
-    law: 38,
-    refactoring: 34,
-    smell: 32,
-    insight: 28,
-  };
+  const NODE_SIZE = 8;
 
   onMount(async () => {
     const result = await waitForReady();
@@ -66,26 +50,17 @@
       {
         selector: 'node',
         style: {
-          'label': 'data(label)',
-          'text-wrap': 'ellipsis' as const,
-          'text-max-width': '80px',
-          'font-size': '10px',
-          'font-family': 'Inter, system-ui, sans-serif',
-          'color': c.textColor,
-          'text-outline-color': c.textBg,
-          'text-outline-width': 3,
-          'text-valign': 'bottom',
-          'text-margin-y': 4,
-          'background-color': 'data(type)',
-          'width': 32,
-          'height': 32,
-          'border-width': 2,
-          'border-color': 'data(type)',
+          'label': '',
+          'background-color': '#888',
+          'width': NODE_SIZE,
+          'height': NODE_SIZE,
+          'shape': 'ellipse',
+          'border-width': 1,
+          'border-color': '#888',
           'border-opacity': 0.7,
-          'font-weight': 500,
         },
       },
-      // Per-type node styles with shapes, sizes, and colors
+      // Per-type: color only, shape/size stays circle
       ...(Object.entries(ENTITY_TYPE_HEX_COLORS) as [EntityType, string][]).map(([type, color]) => ({
         selector: `node[type="${type}"]`,
         style: {
@@ -93,9 +68,6 @@
           'background-opacity': c.nodeFillOpacity,
           'border-color': color,
           'border-opacity': c.nodeBorderOpacity,
-          'shape': ENTITY_SHAPES[type],
-          'width': ENTITY_SIZES[type],
-          'height': ENTITY_SIZES[type],
         },
       })),
       {
@@ -136,21 +108,91 @@
       {
         selector: 'node:selected',
         style: {
-          'border-width': 3.5,
+          'label': 'data(label)',
+          'text-wrap': 'ellipsis' as const,
+          'text-max-width': '100px',
+          'font-size': '10px',
+          'font-family': 'Inter, system-ui, sans-serif',
+          'color': c.textColor,
+          'text-outline-color': c.textBg,
+          'text-outline-width': 3,
+          'text-valign': 'bottom',
+          'text-margin-y': 4,
+          'font-weight': 600,
+          'width': NODE_SIZE + 4,
+          'height': NODE_SIZE + 4,
+          'border-width': 2.5,
           'border-color': c.selectionBorder,
           'border-opacity': 1,
-          'background-opacity': 0.4,
+          'background-opacity': 0.5,
         },
       },
       {
         selector: 'node.hovered',
         style: {
-          'border-width': 3,
+          'label': 'data(label)',
+          'text-wrap': 'ellipsis' as const,
+          'text-max-width': '100px',
+          'font-size': '10px',
+          'font-family': 'Inter, system-ui, sans-serif',
+          'color': c.textColor,
+          'text-outline-color': c.textBg,
+          'text-outline-width': 3,
+          'text-valign': 'bottom',
+          'text-margin-y': 4,
+          'font-weight': 500,
+          'width': NODE_SIZE + 3,
+          'height': NODE_SIZE + 3,
+          'border-width': 2,
           'border-opacity': 1,
-          'background-opacity': 0.35,
+          'background-opacity': 0.4,
+        },
+      },
+      // Neighbor highlight: adjacent nodes shown larger with label
+      {
+        selector: 'node.neighbor',
+        style: {
+          'label': 'data(label)',
+          'text-wrap': 'ellipsis' as const,
+          'text-max-width': '90px',
+          'font-size': '9px',
+          'font-family': 'Inter, system-ui, sans-serif',
+          'color': c.textColor,
+          'text-outline-color': c.textBg,
+          'text-outline-width': 2,
+          'text-valign': 'bottom',
+          'text-margin-y': 3,
+          'width': NODE_SIZE + 4,
+          'height': NODE_SIZE + 4,
+          'border-width': 2,
+          'border-opacity': 1,
+          'background-opacity': 0.7,
+        },
+      },
+      // Active edge connecting focused node to neighbor
+      {
+        selector: 'edge.active-edge',
+        style: {
+          'opacity': 0.9,
+          'width': 2.2,
+          'text-opacity': 0.9,
         },
       },
     ];
+  }
+
+  function applyFocus(node: NodeSingular) {
+    if (!cy) return;
+    const connectedEdges = node.connectedEdges();
+    const neighborNodes = connectedEdges.connectedNodes().not(node);
+    node.addClass('hovered');
+    neighborNodes.addClass('neighbor');
+    connectedEdges.addClass('active-edge');
+  }
+
+  function clearFocus() {
+    if (!cy) return;
+    cy.elements().removeClass('neighbor active-edge hovered');
   }
 
   // Rebuild cytoscape instance when graph data changes
@@ -207,24 +249,40 @@
       layout: {
         name: 'cose',
         animate: false,
-        nodeRepulsion: 3500,
-        idealEdgeLength: 90,
-        gravity: 2.5,
-        gravityRange: 5.0,
-        nestingFactor: 1.5,
-        componentSpacing: 20,
-        numIter: 1500,
+        nodeRepulsion: 450000,
+        idealEdgeLength: 80,
+        gravity: 0.8,
+        gravityRange: 3.8,
+        nestingFactor: 1.0,
+        componentSpacing: 100,
+        numIter: 2500,
         coolingFactor: 0.99,
         minTemp: 1.0,
+        nodeOverlap: 20,
+        fit: true,
+        padding: 40,
       },
       minZoom: 0.15,
       maxZoom: 4,
     });
 
-    // Node click → select
+    let clickedNodeId: string | null = null;
+
+    // Node click → select + lock focus on neighborhood
     cy.on('tap', 'node', (evt) => {
       const node: NodeSingular = evt.target;
       selectEntity(node.id());
+      clickedNodeId = node.id();
+      clearFocus();
+      applyFocus(node);
+    });
+
+    // Click on background → clear locked focus
+    cy.on('tap', (evt) => {
+      if (evt.target === cy) {
+        clickedNodeId = null;
+        clearFocus();
+      }
     });
 
     // Edge hover → show label
@@ -235,34 +293,47 @@
       evt.target.removeClass('hovered');
     });
 
-    // Node hover → highlight
+    // Node hover → preview neighborhood (unless a node is click-locked)
     cy.on('mouseover', 'node', (evt) => {
-      evt.target.addClass('hovered');
       document.body.style.cursor = 'pointer';
+      if (clickedNodeId) return;
+      applyFocus(evt.target as NodeSingular);
     });
-    cy.on('mouseout', 'node', (evt) => {
-      evt.target.removeClass('hovered');
+    cy.on('mouseout', 'node', () => {
       document.body.style.cursor = 'default';
+      if (clickedNodeId) return;
+      clearFocus();
     });
 
-    // LOD: hide labels/edges when zoomed out
+    // LOD: dim edges when zoomed out
     cy.on('zoom', () => {
       if (!cy) return;
       const z = cy.zoom();
-      const nodes = cy.nodes();
       const edges = cy.edges();
-
       if (z < 0.3) {
-        nodes.style({ 'label': '', 'opacity': 0.5 });
         edges.style({ 'opacity': 0.1 });
       } else if (z < 0.6) {
-        nodes.style({ 'label': '', 'opacity': 0.8 });
-        edges.style({ 'opacity': 0.25 });
+        edges.style({ 'opacity': 0.2 });
       } else {
-        nodes.removeStyle('label');
-        nodes.removeStyle('opacity');
         edges.removeStyle('opacity');
       }
+    });
+  });
+
+  // Center graph on a node when requested from NodeDetailPanel
+  $effect(() => {
+    const id = getCenterNodeId();
+    if (!id || !cy) return;
+    consumeCenter();
+    const node = cy.getElementById(id);
+    if (!node || node.length === 0) return;
+    clearFocus();
+    applyFocus(node as NodeSingular);
+    cy.animate({
+      center: { eles: node },
+      zoom: Math.max(cy.zoom(), 1.2),
+      duration: 350,
+      easing: 'ease-in-out-cubic',
     });
   });
 

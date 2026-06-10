@@ -28,7 +28,9 @@
   let fromPage = $derived(route.page === 'entity' ? (route.from ?? 'explorer') : 'explorer');
 
   function goBack() {
-    navigate({ page: fromPage === 'ontology' ? 'ontology' : 'explorer' });
+    if (fromPage === 'ontology') navigate({ page: 'ontology' });
+    else if (fromPage === 'dashboard') navigate({ page: 'dashboard' });
+    else navigate({ page: 'explorer' });
   }
 
   function getProvenance(entity: Entity, neighborId: string): string | null {
@@ -58,7 +60,7 @@
       <div class="space-y-2">
         <button onclick={goBack} class="flex items-center gap-1 text-xs text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors mb-2">
           <span class="material-symbols-outlined text-sm">arrow_back</span>
-          {fromPage === 'ontology' ? 'Back to Categories' : 'Back to Explorer'}
+          {fromPage === 'ontology' ? 'Back to Categories' : fromPage === 'dashboard' ? 'Back to Insights' : 'Back to Explorer'}
         </button>
         <div class="flex items-center gap-2" style="color: {ENTITY_TYPE_COLORS[entity.type]}">
           <span class="material-symbols-outlined text-sm">{ENTITY_TYPE_ICONS[entity.type]}</span>
