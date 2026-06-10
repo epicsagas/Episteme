@@ -53,12 +53,22 @@ jobs:
       - name: Test
         run: cargo test
 
+      - name: Seed graph data
+        run: |
+          mkdir -p /tmp/episteme-eval/data /tmp/episteme-eval/raw
+          cp -r meta/* /tmp/episteme-eval/data/
+          cp -r raw/* /tmp/episteme-eval/raw/
+
       - name: Run evaluation (PR — quick suite)
         if: github.event_name == 'pull_request'
+        env:
+          EPISTEME_HOME: /tmp/episteme-eval
         run: python3 benchmarks/eval_runner.py smell-negative
 
       - name: Run evaluation (full)
         if: github.event_name != 'pull_request'
+        env:
+          EPISTEME_HOME: /tmp/episteme-eval
         run: python3 benchmarks/eval_runner.py ${{ github.event.inputs.suite || 'full' }}
 
       - name: Upload results
