@@ -11,6 +11,13 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
+    proxy: {
+      '/web-api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/web-api/, ''),
+      },
+    },
   },
   envPrefix: ['VITE_', 'TAURI_'],
 });

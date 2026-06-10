@@ -23,6 +23,10 @@ export function getBaseUrl(): string {
 }
 
 export function getWebUrl(): string {
+  // In dev mode (Vite), proxy /web-api → localhost:8080
+  if (typeof window !== 'undefined' && window.location.port === '5173') {
+    return `${window.location.origin}/web-api`;
+  }
   return `${baseUrl.split(':').slice(0, 2).join(':')}:${webPort}`;
 }
 
