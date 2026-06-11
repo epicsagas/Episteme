@@ -259,13 +259,12 @@ impl EpistemeMCP {
     /// Get detailed information about a single entity.
     /// Tries composite graph first (includes user/TK entities), falls back to canonical.
     pub fn get_entity(&self, entity_id: &str, detail_level: Option<&str>) -> serde_json::Value {
-        if let Some(c) = &self.composite {
-            if let Ok(g) = c.lock() {
-                use crate::ports::graph::GraphRepository;
-                if g.get_entity(entity_id).is_some() {
-                    return super::mcp_graph::get_entity_from_repo(&*g, entity_id, detail_level);
-                }
-            }
+        use crate::ports::graph::GraphRepository;
+        if let Some(c) = &self.composite
+            && let Ok(g) = c.lock()
+            && g.get_entity(entity_id).is_some()
+        {
+            return super::mcp_graph::get_entity_from_repo(&*g, entity_id, detail_level);
         }
         super::mcp_graph::get_entity(&self.graph, entity_id, detail_level)
     }
@@ -273,13 +272,12 @@ impl EpistemeMCP {
     /// Get entities related to a given entity, optionally filtered by relation type.
     /// Tries composite graph first (includes user/TK entities), falls back to canonical.
     pub fn get_neighbors(&self, entity_id: &str, relation_type: Option<&str>) -> serde_json::Value {
-        if let Some(c) = &self.composite {
-            if let Ok(g) = c.lock() {
-                use crate::ports::graph::GraphRepository;
-                if g.get_entity(entity_id).is_some() {
-                    return super::mcp_graph::get_neighbors_from_repo(&*g, entity_id, relation_type);
-                }
-            }
+        use crate::ports::graph::GraphRepository;
+        if let Some(c) = &self.composite
+            && let Ok(g) = c.lock()
+            && g.get_entity(entity_id).is_some()
+        {
+            return super::mcp_graph::get_neighbors_from_repo(&*g, entity_id, relation_type);
         }
         super::mcp_graph::get_neighbors(&self.graph, entity_id, relation_type)
     }

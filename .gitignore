@@ -386,3 +386,9 @@ db/*.db-wal
 
 # Eval results (generated output)
 !benchmarks/results/.gitkeep
+
+# Dev artifacts
+.playwright-mcp/
+.vite/
+*.png
+web/dist/
