@@ -157,12 +157,10 @@ impl EpistemeMCP {
     /// Get an entity by ID — looks up composite (canonical + user) if present.
     pub fn get_entity_merged(&self, id: &str) -> Option<crate::domain::types::Entity> {
         if let Some(c) = &self.composite {
-            c.lock()
-                .ok()
-                .and_then(|g| {
-                    use crate::ports::graph::GraphRepository;
-                    g.get_entity(id).cloned()
-                })
+            c.lock().ok().and_then(|g| {
+                use crate::ports::graph::GraphRepository;
+                g.get_entity(id).cloned()
+            })
         } else {
             self.graph.get_entity(id).cloned()
         }

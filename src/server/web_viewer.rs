@@ -333,11 +333,7 @@ async fn graph_sankey(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::V
             };
 
             *link_counts
-                .entry((
-                    source_type.clone(),
-                    edge.relation_type.clone(),
-                    target_type,
-                ))
+                .entry((source_type.clone(), edge.relation_type.clone(), target_type))
                 .or_insert(0) += 1;
         }
     }

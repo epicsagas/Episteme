@@ -10,10 +10,10 @@ use tower_http::trace::TraceLayer;
 use crate::adapters::cache::CacheManager;
 use crate::adapters::metrics::{self, MetricsHandle};
 use crate::adapters::rate_limiter::RateLimiter;
-use crate::adapters::user_graph_store::UserGraphStore;
-use crate::domain::composite_graph::CompositeGraph;
 use crate::adapters::rate_limiter_mw::rate_limit_middleware;
 use crate::adapters::telemetry::Telemetry;
+use crate::adapters::user_graph_store::UserGraphStore;
+use crate::domain::composite_graph::CompositeGraph;
 use crate::server::api_middleware::{
     ApiKeys, auth_middleware, cors_layer, global_error_handler, request_id_middleware,
 };
