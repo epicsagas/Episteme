@@ -148,11 +148,11 @@ export const ENTITY_TYPE_COLORS: Record<EntityType, string> = {
 };
 
 export const ENTITY_TYPE_HEX_COLORS: Record<EntityType, string> = {
-  pattern: '#4caf50',
-  refactoring: '#2196f3',
-  law: '#ff9800',
-  smell: '#f44336',
-  insight: '#ab47bc',
+  pattern: '#10b981',
+  refactoring: '#06b6d4',
+  law: '#f59e0b',
+  smell: '#ef4444',
+  insight: '#6366f1',
 };
 
 export const ENTITY_TYPE_ICONS: Record<EntityType, string> = {
@@ -181,16 +181,16 @@ export interface SchemaResponse {
 }
 
 export const RELATION_TYPE_COLORS: Record<string, string> = {
-  solves: '#66bb6a',
-  solved_by: '#81c784',
-  enforces: '#42a5f5',
-  enforced_by: '#64b5f6',
-  violates: '#ef5350',
-  violated_by: '#e57373',
+  solves: '#34d399',
+  solved_by: '#6ee7b7',
+  enforces: '#22d3ee',
+  enforced_by: '#67e8f9',
+  violates: '#f87171',
+  violated_by: '#fca5a5',
   related_to: '#78909c',
-  derives_from: '#9575cd',
-  applies_to: '#4db6ac',
-  supersedes: '#ff8a65',
+  derives_from: '#a78bfa',
+  applies_to: '#2dd4bf',
+  supersedes: '#fb923c',
 };
 
 export const RELATION_DESCRIPTIONS: Record<string, string> = {

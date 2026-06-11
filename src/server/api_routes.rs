@@ -162,16 +162,16 @@ pub async fn health(
 pub async fn stats(State(mcp): State<AppState>) -> impl IntoResponse {
     let resource = mcp.handle_resource_read("episteme://stats");
     let embedding = mcp.embedding_info();
-    match serde_json::from_value::<GraphStats>(resource.clone()) {
-        Ok(gs) => Json(StatsResponse {
+    let insight_count = mcp.user_entity_count();
+
+    let mut response = match serde_json::from_value::<GraphStats>(resource.clone()) {
+        Ok(gs) => StatsResponse {
             total_entities: gs.total_entities,
             total_edges: gs.total_edges,
             by_type: gs.by_type,
             embedding,
-        }),
+        },
         Err(_) => {
-            // Fallback: if the resource returned something unexpected, try
-            // constructing a minimal response from the raw JSON.
             let total_entities = resource
                 .get("total_entities")
                 .and_then(|v| v.as_u64())
@@ -189,14 +189,21 @@ pub async fn stats(State(mcp): State<AppState>) -> impl IntoResponse {
                         .collect()
                 })
                 .unwrap_or_default();
-            Json(StatsResponse {
+            StatsResponse {
                 total_entities,
                 total_edges,
                 by_type,
                 embedding,
-            })
+            }
         }
+    };
+
+    if insight_count > 0 {
+        response.total_entities += insight_count;
+        response.by_type.insert("insight".to_owned(), insight_count);
     }
+
+    Json(response)
 }
 
 pub async fn analyze(

@@ -22,11 +22,15 @@
   });
 
   function handleNavigate(id: string) {
-    navigate({ page: 'entity', id });
+    navigate({ page: 'entity', id, from: fromPage as 'explorer' | 'ontology' | 'dashboard' });
   }
 
+  let fromPage = $derived(route.page === 'entity' ? (route.from ?? 'explorer') : 'explorer');
+
   function goBack() {
-    navigate({ page: 'explorer' });
+    if (fromPage === 'ontology') navigate({ page: 'ontology' });
+    else if (fromPage === 'dashboard') navigate({ page: 'dashboard' });
+    else navigate({ page: 'explorer' });
   }
 
   function getProvenance(entity: Entity, neighborId: string): string | null {
@@ -56,7 +60,7 @@
       <div class="space-y-2">
         <button onclick={goBack} class="flex items-center gap-1 text-xs text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors mb-2">
           <span class="material-symbols-outlined text-sm">arrow_back</span>
-          Back to Explorer
+          {fromPage === 'ontology' ? 'Back to Categories' : fromPage === 'dashboard' ? 'Back to Insights' : 'Back to Explorer'}
         </button>
         <div class="flex items-center gap-2" style="color: {ENTITY_TYPE_COLORS[entity.type]}">
           <span class="material-symbols-outlined text-sm">{ENTITY_TYPE_ICONS[entity.type]}</span>
@@ -148,15 +152,14 @@
             </div>
           </div>
         {/if}
-      </div>
-
-      <!-- Add Insight -->
-      <div class="glass-panel p-6">
-        <h3 class="font-bold text-[var(--color-on-surface)] flex items-center gap-2 mb-4">
-          <span class="material-symbols-outlined text-[var(--color-insight)] text-sm">lightbulb</span>
-          Add Insight
-        </h3>
-        <InsightForm oncreated={(id) => handleNavigate(id)} />
+        <!-- Add Insight Card -->
+        <div class="glass-panel p-6">
+          <h3 class="font-bold text-[var(--color-on-surface)] flex items-center gap-2 mb-4">
+            <span class="material-symbols-outlined text-[var(--color-insight)] text-sm">lightbulb</span>
+            Add Insight
+          </h3>
+          <InsightForm oncreated={(id) => handleNavigate(id)} />
+        </div>
       </div>
 
       <!-- Right: Relations -->

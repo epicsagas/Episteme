@@ -45,18 +45,21 @@
 </script>
 
 <div class="flex h-screen w-screen overflow-hidden bg-[var(--color-background)]">
+  <!-- Left Sidebar -->
   <Sidebar />
+
+  <!-- Main Content Area -->
   <main class="flex-1 flex flex-col h-full overflow-hidden">
     <Topbar />
-    <div class="flex-1 overflow-y-auto p-6">
+    <div class="flex-1 overflow-hidden">
       {#if route.page === 'dashboard'}
-        <Dashboard />
+        <div class="h-full overflow-y-auto p-6"><Dashboard /></div>
       {:else if route.page === 'explorer'}
         <Explorer />
       {:else if route.page === 'entity'}
-        <EntityDetail />
+        <div class="h-full overflow-y-auto p-6"><EntityDetail /></div>
       {:else if route.page === 'ontology'}
-        <Ontology />
+        <div class="h-full overflow-y-auto p-6"><Ontology /></div>
       {/if}
     </div>
   </main>

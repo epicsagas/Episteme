@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#5e5f5b",
+                    "tertiary-fixed": "#e0e2e6",
+                    "surface-dim": "#d0dbed",
+                    "tertiary-fixed-dim": "#c4c7ca",
+                    "surface-container": "#e6eeff",
+                    "background": "#f8f9ff",
+                    "on-surface-variant": "#43474e",
+                    "primary": "#002045",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#f8f9ff",
+                    "inverse-surface": "#27313f",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#c7c7c2",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#9c9fa2",
+                    "surface-container-low": "#eff4ff",
+                    "surface-container-high": "#dee9fc",
+                    "on-secondary-container": "#646561",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#44474a",
+                    "on-primary-fixed-variant": "#2d476f",
+                    "primary-fixed-dim": "#adc7f7",
+                    "on-surface": "#121c2a",
+                    "surface-variant": "#d9e3f6",
+                    "on-secondary-fixed-variant": "#464744",
+                    "on-tertiary-fixed": "#191c1f",
+                    "outline-variant": "#c4c6cf",
+                    "on-background": "#121c2a",
+                    "surface-tint": "#455f88",
+                    "on-secondary-fixed": "#1b1c19",
+                    "tertiary-container": "#333639",
+                    "inverse-primary": "#adc7f7",
+                    "surface": "#f8f9ff",
+                    "error": "#ba1a1a",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#e3e3de",
+                    "on-secondary": "#ffffff",
+                    "outline": "#74777f",
+                    "primary-fixed": "#d6e3ff",
+                    "surface-container-highest": "#d9e3f6",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed": "#e3e3de",
+                    "on-primary-container": "#86a0cd",
+                    "primary-container": "#1a365d",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-primary-fixed": "#001b3c",
+                    "tertiary": "#1e2124"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "section-gap": "64px",
+                    "content-max": "720px",
+                    "container-max": "1280px",
+                    "gutter": "24px",
+                    "margin": "32px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "headline-md": ["Source Serif 4"],
+                    "headline-xl": ["Source Serif 4"],
+                    "display-lg": ["Source Serif 4"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "data-mono": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "headline-xl": ["36px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.7", "fontWeight": "400"}],
+                    "label-sm": ["13px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "data-mono": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f8f9ff;
+            color: #121c2a;
+        }
+        .reading-column {
+            max-width: 720px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md antialiased">
+<!-- TopAppBar -->
+<header class="bg-surface border-b border-outline-variant docked full-width top-0 z-50 flex justify-between items-center h-16 px-gutter w-full fixed">
+<div class="flex items-center gap-4">
+<button class="hover:bg-surface-container-low transition-colors p-2 rounded-full scale-95 active:opacity-80 transition-all text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-semibold tracking-tight text-primary">Archival Graph</h1>
+</div>
+<div class="flex items-center gap-4">
+<nav class="hidden md:flex gap-6 mr-8">
+<a class="text-primary font-semibold font-label-sm text-label-sm" href="#">Explorer</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors font-label-sm text-label-sm" href="#">Discovery</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors font-label-sm text-label-sm" href="#">Schema</a>
+</nav>
+<button class="hover:bg-surface-container-low transition-colors p-2 rounded-full scale-95 active:opacity-80 transition-all text-primary">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</header>
+<div class="flex pt-16 min-h-screen">
+<!-- NavigationDrawer -->
+<aside class="hidden lg:flex flex-col gap-2 p-margin w-80 h-[calc(100vh-64px)] fixed left-0 bg-surface-bright border-r border-outline-variant overflow-y-auto">
+<div class="mb-6 px-4">
+<h2 class="font-headline-xl text-headline-xl text-primary mb-1">Research Repository</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant">v2.4.0 Stable Build</p>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-4 p-3 bg-surface-container-high text-primary font-semibold rounded-lg active:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-body-md text-body-md">Graph Explorer</span>
+</a>
+<a class="flex items-center gap-4 p-3 text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors active:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">search_insights</span>
+<span class="font-body-md text-body-md">Discovery Dashboard</span>
+</a>
+<a class="flex items-center gap-4 p-3 text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors active:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">database</span>
+<span class="font-body-md text-body-md">Entity Library</span>
+</a>
+<a class="flex items-center gap-4 p-3 text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors active:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">architecture</span>
+<span class="font-body-md text-body-md">Ontology Manager</span>
+</a>
+</nav>
+<div class="mt-auto pt-8 border-t border-outline-variant">
+<div class="p-4 rounded bg-surface-container-low border border-outline-variant">
+<h3 class="font-label-sm text-label-sm font-semibold text-primary mb-2">QUICK STATS</h3>
+<div class="space-y-1">
+<p class="text-[12px] text-on-surface-variant">Nodes: <span class="font-data-mono">1.2M</span></p>
+<p class="text-[12px] text-on-surface-variant">Edges: <span class="font-data-mono">8.4M</span></p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 lg:ml-80 transition-all duration-300">
+<!-- Global Search Section -->
+<section class="w-full bg-surface-container py-16 px-gutter border-b border-outline-variant">
+<div class="reading-column">
+<div class="flex flex-col gap-6 text-center mb-10">
+<h2 class="font-display-lg text-display-lg text-primary">Discover Human Knowledge.</h2>
+<p class="font-body-lg text-body-lg text-secondary">A multi-layered semantic engine for archival synthesis and complex historiographic inquiry.</p>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-5 flex items-center pointer-events-none text-primary">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="w-full pl-14 pr-6 py-5 bg-surface-container-lowest border border-outline rounded-lg text-body-lg focus:ring-0 focus:border-primary transition-all placeholder:text-on-tertiary-container shadow-sm" placeholder="Search across entities, relationships, and citations..." type="text"/>
+<div class="absolute inset-y-0 right-5 flex items-center pointer-events-none text-on-surface-variant">
+<span class="font-data-mono text-[12px] px-2 py-1 bg-surface-container border border-outline-variant rounded">⌘K</span>
+</div>
+</div>
+<div class="flex flex-wrap justify-center gap-3 mt-6">
+<span class="font-label-sm text-label-sm text-secondary">Suggested:</span>
+<a class="font-label-sm text-label-sm text-primary hover:underline underline-offset-4" href="#">Industrial Revolution</a>
+<a class="font-label-sm text-label-sm text-primary hover:underline underline-offset-4" href="#">Treaty of Versailles</a>
+<a class="font-label-sm text-label-sm text-primary hover:underline underline-offset-4" href="#">Digital Semiotics</a>
+</div>
+</div>
+</section>
+<div class="max-w-[1280px] mx-auto px-gutter py-section-gap">
+<!-- Collections / Research Fields Bento Grid -->
+<div class="mb-section-gap">
+<div class="flex justify-between items-end mb-8 border-b border-outline-variant pb-4">
+<h3 class="font-headline-md text-headline-md text-primary">Primary Collections</h3>
+<a class="font-label-sm text-label-sm text-primary flex items-center gap-1 hover:underline" href="#">
+                            View All Collections <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Card 1: Historiography -->
+<div class="md:col-span-8 group cursor-pointer border border-outline-variant hover:border-primary bg-surface transition-all overflow-hidden">
+<div class="aspect-[21/9] overflow-hidden bg-surface-container relative">
+<img alt="Library" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A sprawling, high-ceilinged classical library filled with thousands of leather-bound books and tall wooden ladders. Warm sunlight streams through high windows, illuminating dust motes and creating a serene, scholarly atmosphere. The color palette is rich with deep ambers, mahogany browns, and soft creams, reflecting a prestigious and authoritative archival aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFaDCjmGCEFULeKTKCRz4KTDuKd__0WcaGOL3kyWgNXYMB0BIeqPsWXdMl5P_VFECjgAeYLnoOiQUbNaSaYoe2-T8flLxdHOdQl_6FhT-gsWRuZJByx8nZEQWvgEKslX33LwgZo5G2QK_fR8U1eIvS5pMoYcu-o7HRxnBI2iq56JaQ8qJ7IoWXZ5pbDvo-QRDV6UZ41r2NqIZBPMgiYjUHDtv5C6rlIirzzq7K5_6erk_TRVjPv1sx-ImI6ua9-PQMsAa_qTzM2y8Z"/>
+<div class="absolute inset-0 bg-primary/10 group-hover:bg-primary/0 transition-colors"></div>
+</div>
+<div class="p-6">
+<span class="font-label-sm text-label-sm bg-primary text-on-primary px-2 py-1 mb-4 inline-block">CORE DISCIPLINE</span>
+<h4 class="font-headline-md text-headline-md text-primary mb-2">Historiography</h4>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[600px]">Analysis of the methodology of historians in developing history as an academic discipline.</p>
+</div>
+</div>
+<!-- Card 2: Digital Humanities -->
+<div class="md:col-span-4 group cursor-pointer border border-outline-variant hover:border-primary bg-surface transition-all overflow-hidden flex flex-col">
+<div class="aspect-square bg-surface-container relative">
+<img alt="Digital Patterns" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A sophisticated digital visualization of complex data networks, featuring thin glowing lines and subtle geometric nodes connecting across a dark blue canvas. The aesthetic is clean and modern, evoking a sense of deep technological insight and digital humanities research. The lighting is low-key, emphasizing the intricate web of connections in a scholarly blue and ivory color scheme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBu19q-dvMTjJBN38VETmJKN9a5MgxESwNrqFNY79L6eZHHWbRodkv3QM0jVI9kUEg75XU2yZ75ZJgoVGNNp8rIMMUmmlmO0zL1xNxYGg7cvjs8LGD1zTD7VnTBGczxHMRTOkfNP12YxkGodlxYV_H-3yVwFB9dnOuK57lsy96_7BK-Pfwj7pC-Fe34G5TtFpZEiseglp4Vh9Inyi5SRq72Vax1etlgUmenw0O6rFMBjct3-0J-ygeGNhmANJcXOpUrJbdO12QYHFY3"/>
+</div>
+<div class="p-6 flex-1">
+<h4 class="font-headline-md text-headline-md text-primary mb-2">Digital Humanities</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Interdisciplinary research at the intersection of computing and humanities.</p>
+</div>
+</div>
+<!-- Card 3: Philology -->
+<div class="md:col-span-4 group cursor-pointer border border-outline-variant hover:border-primary bg-surface transition-all p-6">
+<span class="material-symbols-outlined text-primary text-[32px] mb-4">translate</span>
+<h4 class="font-headline-md text-headline-md text-primary mb-2">Philology</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">The study of language in oral and written historical sources.</p>
+<span class="font-data-mono text-[12px] text-on-tertiary-container">42,103 Nodes</span>
+</div>
+<!-- Card 4: Archival Science -->
+<div class="md:col-span-8 group cursor-pointer border border-outline-variant hover:border-primary bg-surface transition-all flex items-center overflow-hidden">
+<div class="p-8 flex-1">
+<h4 class="font-headline-md text-headline-md text-primary mb-2">Archival Science</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">The theory and practice of organizing, preserving, and providing access to records.</p>
+<div class="flex gap-4 mt-6">
+<div class="px-3 py-1 bg-surface-container border border-outline-variant font-label-sm text-label-sm text-primary">Taxonomy</div>
+<div class="px-3 py-1 bg-surface-container border border-outline-variant font-label-sm text-label-sm text-primary">Metadata</div>
+</div>
+</div>
+<div class="hidden sm:block w-1/3 h-full bg-surface-container-high relative">
+<img alt="Books" class="w-full h-full object-cover" data-alt="Close-up of old, weathered book spines arranged neatly on a dark wooden shelf. The textures of the paper and leather are highly detailed, showing signs of archival preservation. The lighting is soft and focused, creating a mood of quiet respect for historical documents within a minimalist academic environment using scholarly blue and ivory tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCx5zRq0JWWGY8C1T0p--49CHDsm9LQQrc2U7q1xgZaLZ69H1iY6nN3M4b7cu22tFifeu5gUI8S6qosHBnCeP1jP0Snm88L8X2cKn6O5JEE_0-26JWSV1GE7h6-HJ61_5Cu0e2qOBDP4Imebp43-1ZiE-_9MdhOkKtijyKnDynj-zoSFfEhyKeYY9ASZscVkaO4X7v-W8KiMdvI2THtKXzwgibr7eS2jyZm8jRGtShMPenEcR2BBRlpJ0Ywx1EMaJtJK1KyZj1n2eH"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Trending Entities Section -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<div class="lg:col-span-4">
+<div class="sticky top-24">
+<h3 class="font-headline-md text-headline-md text-primary mb-4">Active Research</h3>
+<p class="font-body-md text-body-md text-secondary mb-8">Real-time analysis of the most queried entities and their evolving relationship densities within the global graph.</p>
+<div class="p-6 bg-primary text-on-primary rounded-lg border border-primary">
+<span class="font-label-sm text-label-sm opacity-80 uppercase tracking-widest mb-2 block">System Status</span>
+<div class="flex items-center gap-2 mb-4">
+<div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+<span class="font-data-mono text-[14px]">Semantic Indexing Active</span>
+</div>
+<hr class="border-on-primary/20 mb-4"/>
+<p class="font-body-md text-body-md opacity-90">Current throughput: 1,240 triplets/sec. Last crawl completed 4m ago.</p>
+</div>
+</div>
+</div>
+<div class="lg:col-span-8">
+<div class="bg-surface border border-outline-variant">
+<div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
+<span class="font-label-sm text-label-sm font-semibold text-primary">TRENDING ENTITIES</span>
+<span class="font-data-mono text-[12px] text-on-tertiary-container">PAST 24 HOURS</span>
+</div>
+<ul class="divide-y divide-outline-variant">
+<!-- Trending Entity 1 -->
+<li class="p-6 hover:bg-surface-container transition-colors group flex justify-between items-center">
+<div class="flex items-start gap-5">
+<div class="w-12 h-12 bg-surface-container-high flex items-center justify-center border border-outline-variant text-primary font-data-mono text-xl">
+                                            01
+                                        </div>
+<div>
+<h5 class="font-headline-md text-headline-md text-primary group-hover:underline underline-offset-4 decoration-1">Thomas Kuhn</h5>
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">folder</span> History of Science
+                                            </p>
+</div>
+</div>
+<div class="text-right">
+<div class="font-data-mono text-primary font-bold">1,892</div>
+<div class="font-label-sm text-label-sm text-secondary">RELATIONSHIPS</div>
+</div>
+</li>
+<!-- Trending Entity 2 -->
+<li class="p-6 hover:bg-surface-container transition-colors group flex justify-between items-center">
+<div class="flex items-start gap-5">
+<div class="w-12 h-12 bg-surface-container-high flex items-center justify-center border border-outline-variant text-primary font-data-mono text-xl">
+                                            02
+                                        </div>
+<div>
+<h5 class="font-headline-md text-headline-md text-primary group-hover:underline underline-offset-4 decoration-1">Paradigm Shift</h5>
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">hub</span> Epistemology
+                                            </p>
+</div>
+</div>
+<div class="text-right">
+<div class="font-data-mono text-primary font-bold">943</div>
+<div class="font-label-sm text-label-sm text-secondary">RELATIONSHIPS</div>
+</div>
+</li>
+<!-- Trending Entity 3 -->
+<li class="p-6 hover:bg-surface-container transition-colors group flex justify-between items-center">
+<div class="flex items-start gap-5">
+<div class="w-12 h-12 bg-surface-container-high flex items-center justify-center border border-outline-variant text-primary font-data-mono text-xl">
+                                            03
+                                        </div>
+<div>
+<h5 class="font-headline-md text-headline-md text-primary group-hover:underline underline-offset-4 decoration-1">The Great Divergence</h5>
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">public</span> Global History
+                                            </p>
+</div>
+</div>
+<div class="text-right">
+<div class="font-data-mono text-primary font-bold">712</div>
+<div class="font-label-sm text-label-sm text-secondary">RELATIONSHIPS</div>
+</div>
+</li>
+<!-- Trending Entity 4 -->
+<li class="p-6 hover:bg-surface-container transition-colors group flex justify-between items-center">
+<div class="flex items-start gap-5">
+<div class="w-12 h-12 bg-surface-container-high flex items-center justify-center border border-outline-variant text-primary font-data-mono text-xl">
+                                            04
+                                        </div>
+<div>
+<h5 class="font-headline-md text-headline-md text-primary group-hover:underline underline-offset-4 decoration-1">Fernand Braudel</h5>
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">menu_book</span> Annales School
+                                            </p>
+</div>
+</div>
+<div class="text-right">
+<div class="font-data-mono text-primary font-bold">588</div>
+<div class="font-label-sm text-label-sm text-secondary">RELATIONSHIPS</div>
+</div>
+</li>
+</ul>
+<div class="p-4 bg-surface-container-lowest border-t border-outline-variant text-center">
+<button class="text-primary font-label-sm text-label-sm hover:underline">Download Trend Report (PDF)</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Section -->
+<footer class="bg-surface border-t border-outline-variant py-12 px-gutter mt-section-gap">
+<div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+<div class="md:col-span-2">
+<h2 class="font-headline-md text-headline-md text-primary mb-4">Archival Graph</h2>
+<p class="font-body-md text-body-md text-secondary max-w-sm">A project dedicated to the rigorous mapping of historical causality and intellectual lineages through computational means.</p>
+</div>
+<div>
+<h4 class="font-label-sm text-label-sm font-semibold text-primary mb-6">RESOURCES</h4>
+<ul class="space-y-4">
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary" href="#">Documentation</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary" href="#">API Reference</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary" href="#">Ontology Schema</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-sm text-label-sm font-semibold text-primary mb-6">INSTITUTION</h4>
+<ul class="space-y-4">
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary" href="#">About Us</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary" href="#">Research Papers</a></li>
+<li><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary" href="#">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-[1280px] mx-auto border-t border-outline-variant mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="font-label-sm text-label-sm text-secondary">© 2024 Archival Graph Research Initiative. All Rights Reserved.</p>
+<div class="flex gap-6">
+<a class="font-label-sm text-label-sm text-secondary hover:text-primary" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-secondary hover:text-primary" href="#">Terms of Use</a>
+</div>
+</div>
+</footer>
+</main>
+</div>
+<!-- BottomNavBar (Visible only on mobile) -->
+<nav class="md:hidden bg-surface border-t border-outline-variant fixed bottom-0 w-full z-50 flex justify-around items-center h-20 pb-safe px-4">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-label-sm text-label-sm">Explorer</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-6 py-1" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-label-sm text-label-sm">Discovery</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">dataset</span>
+<span class="font-label-sm text-label-sm">Detail</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">schema</span>
+<span class="font-label-sm text-label-sm">Schema</span>
+</a>
+</nav>
+</body></html>

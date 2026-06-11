@@ -45,15 +45,15 @@
   }
 
   function handleNavigate(id: string) {
-    navigate({ page: 'entity', id });
+    navigate({ page: 'entity', id, from: 'ontology' });
   }
 </script>
 
 <div class="space-y-6">
   <section class="flex items-end justify-between border-b border-[var(--color-outline-variant)] pb-6">
     <div>
-      <h1 class="text-3xl font-bold tracking-tight text-[var(--color-on-surface)]">Ontology</h1>
-      <p class="text-sm text-[var(--color-on-surface-variant)] mt-1">Schema, categories, and data sources of the knowledge graph</p>
+      <h1 class="text-3xl font-bold tracking-tight text-[var(--color-on-surface)]">Categories</h1>
+      <p class="text-sm text-[var(--color-on-surface-variant)] mt-1">Browse the knowledge graph by entity types, categories, and data sources</p>
     </div>
   </section>
 
