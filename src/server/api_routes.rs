@@ -12,12 +12,13 @@ use crate::adapters::cache::{CacheManager, cache_key};
 use crate::adapters::structured_logging::log_business_event;
 use crate::adapters::telemetry::Telemetry;
 use crate::domain::types::GraphStats;
-use crate::server::mcp_handler::EpistemeMCP;
+use crate::server::mcp_handler::{AnalysisEntityParams, EpistemeMCP, RefactoringEntityParams};
 
 use crate::server::api_models::{
     AnalyzeRequest, AnalyzeResponse, Components, ErrorResponse, GraphNeighborsRequest,
-    GraphPathRequest, GraphPathResponse, HealthResponse, RefactorRequest, RefactorResponse,
-    SearchRequest, SearchResponse, StatsResponse, SubgraphRequest, SystemInfo,
+    GraphPathRequest, GraphPathResponse, HealthResponse, InsightSummary, InsightsListQuery,
+    InsightsListResponse, RefactorRequest, RefactorResponse, SearchRequest, SearchResponse,
+    StatsResponse, SubgraphRequest, SystemInfo,
 };
 
 /// Map an MCP error JSON value to an appropriate HTTP error response.
@@ -261,6 +262,52 @@ pub async fn analyze(
         crate::adapters::metrics::track_smell_detection(smell_id, smell_name);
     }
 
+    // Persist detected smells as TK-xxx entities (fire-and-forget).
+    let lang_for_persist = body.language.as_deref().unwrap_or("unknown").to_owned();
+    for smell in &smells {
+        let sid = smell
+            .get("id")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
+        let sname = smell
+            .get("name")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
+        let loc = smell
+            .get("location")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
+        let fname = smell
+            .get("function_name")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
+        let conf = smell
+            .get("confidence")
+            .and_then(|v| v.as_f64())
+            .unwrap_or(0.0);
+        let reasons: Vec<String> = smell
+            .get("reasons")
+            .and_then(|v| v.as_array())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|r| r.as_str())
+                    .map(|s| s.to_owned())
+                    .collect()
+            })
+            .unwrap_or_default();
+        if let Err(e) = mcp.add_analysis_entity(AnalysisEntityParams {
+            smell_id: sid,
+            smell_name: sname,
+            location: loc,
+            function_name: fname,
+            confidence: conf,
+            reasons: &reasons,
+            language: &lang_for_persist,
+        }) {
+            tracing::warn!("analysis persistence skipped: {e}");
+        }
+    }
+
     // Store successful result in cache.
     let response_value = serde_json::to_value(&AnalyzeResponse {
         smells: smells.clone(),
@@ -321,6 +368,57 @@ pub async fn refactor(
             }
         }
     }
+
+    // Persist refactoring analyses as TK-xxx entities (fire-and-forget).
+    let lang_for_persist = body.language.as_deref().unwrap_or("unknown").to_owned();
+    for analysis in &analyses {
+        let smell = match analysis.get("smell") {
+            Some(s) => s,
+            None => continue,
+        };
+        let sid = smell
+            .get("id")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
+        let sname = smell
+            .get("name")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
+        let loc = smell
+            .get("location")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
+        let fname = smell
+            .get("function_name")
+            .and_then(|v| v.as_str())
+            .unwrap_or("unknown");
+        let conf = smell
+            .get("confidence")
+            .and_then(|v| v.as_f64())
+            .unwrap_or(0.0);
+        let refactoring_ids: Vec<String> = analysis
+            .get("suggestions")
+            .and_then(|v| v.as_array())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(|s| s.get("refactoring_id").and_then(|v| v.as_str()))
+                    .map(|s| s.to_owned())
+                    .collect()
+            })
+            .unwrap_or_default();
+        if let Err(e) = mcp.add_refactoring_entity(RefactoringEntityParams {
+            smell_id: sid,
+            smell_name: sname,
+            location: loc,
+            function_name: fname,
+            confidence: conf,
+            refactoring_ids: &refactoring_ids,
+            language: &lang_for_persist,
+        }) {
+            tracing::warn!("refactor persistence skipped: {e}");
+        }
+    }
+
     telemetry.track_event(
         "refactor_completed",
         serde_json::json!({"count": count, "language": body.language}),
@@ -669,4 +767,35 @@ pub async fn create_insight(
     } else {
         (StatusCode::CREATED, Json(result))
     }
+}
+
+/// GET /insights -- list persisted insight entities (user + analysis).
+///
+/// Query params:
+///   `limit`  — max results (default 20, max 200)
+///   `source` — `"user"` | `"analysis"` | `"all"` (default)
+pub async fn list_insights(
+    State(mcp): State<AppState>,
+    Query(params): Query<InsightsListQuery>,
+) -> impl IntoResponse {
+    let limit = params.limit.unwrap_or(20).min(200);
+    let source = params.source.as_deref();
+    let entities = mcp.list_insights(limit, source);
+    let insights: Vec<InsightSummary> = entities
+        .into_iter()
+        .map(|e| InsightSummary {
+            id: e.id,
+            title: e.title,
+            tags: e.tags,
+            confidence: e.confidence,
+            author: e.author,
+            created_at: e.created_at,
+            relations: e.relations,
+        })
+        .collect();
+    let count = insights.len();
+    (
+        StatusCode::OK,
+        Json(InsightsListResponse { insights, count }),
+    )
 }

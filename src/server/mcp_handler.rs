@@ -6,9 +6,33 @@
 use std::sync::Mutex;
 use std::time::Instant;
 
+use crate::adapters::insight_utils;
 use crate::domain::composite_graph::CompositeGraph;
 use crate::domain::graph::KnowledgeGraph;
+use crate::domain::types::UserEntity;
 use crate::ports::embeddings::EmbeddingProvider;
+
+/// Parameters for persisting a smell detection entity.
+pub struct AnalysisEntityParams<'a> {
+    pub smell_id: &'a str,
+    pub smell_name: &'a str,
+    pub location: &'a str,
+    pub function_name: &'a str,
+    pub confidence: f64,
+    pub reasons: &'a [String],
+    pub language: &'a str,
+}
+
+/// Parameters for persisting a refactoring suggestion entity.
+pub struct RefactoringEntityParams<'a> {
+    pub smell_id: &'a str,
+    pub smell_name: &'a str,
+    pub location: &'a str,
+    pub function_name: &'a str,
+    pub confidence: f64,
+    pub refactoring_ids: &'a [String],
+    pub language: &'a str,
+}
 
 /// Main MCP handler that owns the knowledge graph and delegates to domain services.
 ///
@@ -350,6 +374,176 @@ impl EpistemeMCP {
             rejected,
             merged_with,
         )
+    }
+
+    /// Persist a single smell detection as a `TK-xxx` entity (author="analysis").
+    ///
+    /// Deduplicates by `found_in:<location>:<fn_name>:<smell_id>` — a second call with
+    /// identical code/smell is silently ignored. Returns `Err` only when the composite
+    /// graph is unavailable; callers should treat errors as non-fatal warnings.
+    pub fn add_analysis_entity(&self, params: AnalysisEntityParams<'_>) -> Result<(), String> {
+        let AnalysisEntityParams {
+            smell_id,
+            smell_name,
+            location,
+            function_name,
+            confidence,
+            reasons,
+            language,
+        } = params;
+
+        let composite_mutex = self
+            .composite
+            .as_ref()
+            .ok_or_else(|| "tacit knowledge not enabled".to_owned())?;
+        let composite = composite_mutex
+            .lock()
+            .map_err(|e| format!("mutex poisoned: {e}"))?;
+
+        let dedup_key = format!("found_in:{location}:{function_name}:{smell_id}");
+        let existing = composite.user_store().search_user_entities(&dedup_key, 1);
+        if existing
+            .iter()
+            .any(|e| e.author == "analysis" && e.tags.contains(&dedup_key))
+        {
+            return Ok(());
+        }
+
+        let id = composite.user_store().next_insight_id()?;
+        let now = insight_utils::format_timestamp();
+
+        let mut relations = std::collections::HashMap::new();
+        if self.graph.get_entity(smell_id).is_some() {
+            relations.insert("derived_from".to_owned(), vec![smell_id.to_owned()]);
+        }
+
+        let content = format!(
+            "Smell: {smell_name}\nLocation: {location}\nFunction: {function_name}\nConfidence: {confidence:.2}\nReasons: {}",
+            reasons.join("; ")
+        );
+
+        let entity = UserEntity {
+            id,
+            title: format!("{smell_name} in {function_name}"),
+            content,
+            author: "analysis".to_owned(),
+            confidence,
+            evidence_count: 1,
+            last_validated: now.clone(),
+            tags: vec![
+                "source:analysis".to_owned(),
+                format!("smell:{smell_id}"),
+                format!("lang:{language}"),
+                dedup_key,
+            ],
+            relations,
+            link_provenance: std::collections::HashMap::new(),
+            created_at: now.clone(),
+            updated_at: now,
+        };
+
+        composite.user_store().add_entity(entity)
+    }
+
+    /// Persist a refactoring analysis result as a `TK-xxx` entity (author="analysis").
+    ///
+    /// `smell_id` links to the canonical `SMELL-xxx` entity; `refactoring_ids` link to
+    /// canonical `RF-xxx` entities. Deduplicates the same way as `add_analysis_entity`.
+    pub fn add_refactoring_entity(
+        &self,
+        params: RefactoringEntityParams<'_>,
+    ) -> Result<(), String> {
+        let RefactoringEntityParams {
+            smell_id,
+            smell_name,
+            location,
+            function_name,
+            confidence,
+            refactoring_ids,
+            language,
+        } = params;
+
+        let composite_mutex = self
+            .composite
+            .as_ref()
+            .ok_or_else(|| "tacit knowledge not enabled".to_owned())?;
+        let composite = composite_mutex
+            .lock()
+            .map_err(|e| format!("mutex poisoned: {e}"))?;
+
+        let dedup_key = format!("found_in:{location}:{function_name}:{smell_id}:refactor");
+        let existing = composite.user_store().search_user_entities(&dedup_key, 1);
+        if existing
+            .iter()
+            .any(|e| e.author == "analysis" && e.tags.contains(&dedup_key))
+        {
+            return Ok(());
+        }
+
+        let id = composite.user_store().next_insight_id()?;
+        let now = insight_utils::format_timestamp();
+
+        let mut relations = std::collections::HashMap::new();
+        if self.graph.get_entity(smell_id).is_some() {
+            relations.insert("derived_from".to_owned(), vec![smell_id.to_owned()]);
+        }
+        let valid_refactorings: Vec<String> = refactoring_ids
+            .iter()
+            .filter(|rid| self.graph.get_entity(rid).is_some())
+            .cloned()
+            .collect();
+        if !valid_refactorings.is_empty() {
+            relations.insert("suggests".to_owned(), valid_refactorings);
+        }
+
+        let entity = UserEntity {
+            id,
+            title: format!("Refactoring: {smell_name} in {function_name}"),
+            content: format!(
+                "Smell: {smell_name}\nLocation: {location}\nFunction: {function_name}\nConfidence: {confidence:.2}\nSuggested refactorings: {}",
+                refactoring_ids.join(", ")
+            ),
+            author: "analysis".to_owned(),
+            confidence,
+            evidence_count: 1,
+            last_validated: now.clone(),
+            tags: vec![
+                "source:analysis".to_owned(),
+                format!("smell:{smell_id}"),
+                format!("lang:{language}"),
+                "refactor:suggested".to_owned(),
+                dedup_key,
+            ],
+            relations,
+            link_provenance: std::collections::HashMap::new(),
+            created_at: now.clone(),
+            updated_at: now,
+        };
+
+        composite.user_store().add_entity(entity)
+    }
+
+    /// List user insight entities, optionally filtered by source (author).
+    ///
+    /// `source`: `"user"` | `"analysis"` | `"all"` (default)
+    pub fn list_insights(
+        &self,
+        limit: usize,
+        source: Option<&str>,
+    ) -> Vec<crate::domain::types::UserEntity> {
+        let Some(composite_mutex) = &self.composite else {
+            return Vec::new();
+        };
+        let Ok(composite) = composite_mutex.lock() else {
+            return Vec::new();
+        };
+        let all = composite.user_store().all_user_entities();
+        let filtered: Vec<_> = match source {
+            Some("user") => all.into_iter().filter(|e| e.author != "analysis").collect(),
+            Some("analysis") => all.into_iter().filter(|e| e.author == "analysis").collect(),
+            _ => all,
+        };
+        filtered.into_iter().take(limit).collect()
     }
 
     /// Search user insights (delegates to `mcp_insight`).

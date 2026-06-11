@@ -165,3 +165,30 @@ pub struct SubgraphRequest {
     pub entity_id: String,
     pub depth: Option<usize>,
 }
+
+// ---------------------------------------------------------------------------
+// Insights list
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Deserialize)]
+pub struct InsightsListQuery {
+    pub limit: Option<usize>,
+    pub source: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct InsightSummary {
+    pub id: String,
+    pub title: String,
+    pub tags: Vec<String>,
+    pub confidence: f64,
+    pub author: String,
+    pub created_at: String,
+    pub relations: std::collections::HashMap<String, Vec<String>>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct InsightsListResponse {
+    pub insights: Vec<InsightSummary>,
+    pub count: usize,
+}

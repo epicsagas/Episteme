@@ -44,15 +44,23 @@ async fn graph_full(State(mcp): State<Arc<EpistemeMCP>>) -> Json<serde_json::Val
             continue;
         };
 
-        nodes.push(serde_json::json!({
-            "data": {
-                "id": id,
-                "label": entity.title,
-                "description": entity.description,
-                "type": entity.r#type,
-                "category": entity.category,
-            }
-        }));
+        let is_analysis = entity
+            .source
+            .get("author")
+            .and_then(|v| v.as_str())
+            .map(|a| a == "analysis")
+            .unwrap_or(false);
+        let mut node_data = serde_json::json!({
+            "id": id,
+            "label": entity.title,
+            "description": entity.description,
+            "type": entity.r#type,
+            "category": entity.category,
+        });
+        if is_analysis {
+            node_data["analysis"] = serde_json::Value::Bool(true);
+        }
+        nodes.push(serde_json::json!({ "data": node_data }));
 
         for edge in mcp.get_all_edges_merged(id) {
             // Only include edges where the target is also in our merged set
