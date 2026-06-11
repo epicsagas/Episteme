@@ -22,7 +22,7 @@
   });
 
   function handleNavigate(id: string) {
-    navigate({ page: 'entity', id });
+    navigate({ page: 'entity', id, from: fromPage as 'explorer' | 'ontology' | 'dashboard' });
   }
 
   let fromPage = $derived(route.page === 'entity' ? (route.from ?? 'explorer') : 'explorer');
