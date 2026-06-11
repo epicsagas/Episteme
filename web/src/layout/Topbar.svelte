@@ -50,7 +50,9 @@
     searchResults = [];
     activeIndex = -1;
     setHighlightedNodes(null);
-    navigate({ page: 'entity', id, from: 'explorer' });
+    const current = getCurrentRoute();
+    const from = current.page === 'entity' ? (current.from ?? current.page) : current.page;
+    navigate({ page: 'entity', id, from: from as 'explorer' | 'ontology' | 'dashboard' });
   }
 
   function handleKeydown(e: KeyboardEvent) {
@@ -118,8 +120,8 @@
         bg-[var(--color-surface-container)]">⌘K</kbd>
 
       {#if showDropdown && searchResults.length > 0}
-        <div data-search-dropdown class="absolute top-full left-0 mt-2 w-96 glass-panel shadow-xl z-50
-          max-h-80 overflow-y-auto animate-fade-in">
+        <div data-search-dropdown class="absolute top-full left-0 mt-2 w-96 bg-[var(--color-surface)] border border-[var(--color-outline-variant)] shadow-xl z-50
+          max-h-80 overflow-y-auto rounded-lg">
           {#each searchResults as result, i}
             <button
               class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors
