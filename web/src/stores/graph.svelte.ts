@@ -83,3 +83,14 @@ export function consumeCenter(): string | null {
   centerNodeId = null;
   return id;
 }
+
+// Node highlight signal for Explorer search
+let highlightedNodeIds: string[] | null = $state(null);
+
+export function getHighlightedNodeIds(): string[] | null {
+  return highlightedNodeIds;
+}
+
+export function setHighlightedNodes(ids: string[] | null) {
+  highlightedNodeIds = ids;
+}

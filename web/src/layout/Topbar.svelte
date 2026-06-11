@@ -2,10 +2,13 @@
   import { isDark, toggle } from '../stores/theme.svelte.ts';
   import { getStatus, getBaseUrl } from '../stores/connection.svelte.ts';
   import { search } from '../api/endpoints.ts';
-  import { navigate } from '../router/index.svelte.ts';
+  import { navigate, getCurrentRoute } from '../router/index.svelte.ts';
+  import { setHighlightedNodes } from '../stores/graph.svelte.ts';
   import type { SearchResult } from '../api/types.ts';
 
   let status = $derived(getStatus());
+  let route = $derived(getCurrentRoute());
+  let showSearch = $derived(route.page !== 'dashboard');
 
   let searchQuery = $state('');
   let searchResults: SearchResult[] = $state([]);
@@ -27,6 +30,12 @@
         searchResults = response.results;
         showDropdown = searchResults.length > 0;
         activeIndex = -1;
+        // Highlight matching nodes in Explorer graph
+        if (getCurrentRoute().page === 'explorer' && searchResults.length > 0) {
+          setHighlightedNodes(searchResults.map(r => r.entity_id));
+        } else {
+          setHighlightedNodes(null);
+        }
       } catch {
         searchResults = [];
         showDropdown = false;
@@ -40,6 +49,7 @@
     searchQuery = '';
     searchResults = [];
     activeIndex = -1;
+    setHighlightedNodes(null);
     navigate({ page: 'entity', id, from: 'explorer' });
   }
 
@@ -66,6 +76,7 @@
       return;
     }
     showDropdown = false;
+    setHighlightedNodes(null);
   }
 
   function entityTypeIcon(type: string): string {
@@ -83,6 +94,7 @@
 <header class="flex justify-between items-center px-4 h-[var(--topbar-height)] border-b shrink-0
   bg-[var(--color-surface)]/80 backdrop-blur-md border-[var(--color-outline-variant)]">
   <div class="flex items-center gap-4">
+    {#if showSearch}
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="relative" role="combobox" aria-expanded={showDropdown} onkeydown={handleKeydown}>
       <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2
@@ -135,6 +147,7 @@
         </div>
       {/if}
     </div>
+    {/if}
   </div>
 
   <div class="flex items-center gap-3">
