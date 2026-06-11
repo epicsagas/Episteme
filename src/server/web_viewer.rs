@@ -2,18 +2,23 @@ use axum::{
     Router,
     extract::{Path, Query, State},
     http::StatusCode,
-    response::{Html, Json},
+    response::Json,
     routing::get,
 };
 use serde::Deserialize;
 use std::sync::Arc;
+use tower_http::services::ServeDir;
 
 use crate::server::mcp_handler::EpistemeMCP;
 
 /// Build the web viewer router.
+///
+/// Serves the Vite-built SPA from `web/dist/` on `/`, falling back to `index.html`
+/// for client-side routing. API endpoints remain unchanged.
 pub fn web_router(handler: Arc<EpistemeMCP>) -> Router {
-    Router::new()
-        .route("/", get(index))
+    let dist_dir = std::env::var("EPISTEME_WEB_DIST").unwrap_or_else(|_| "web/dist".to_owned());
+
+    let api_routes = Router::new()
         .route("/api/graph/full", get(graph_full))
         .route("/api/graph/entity/{id}", get(graph_entity))
         .route("/api/graph/path/{from}/{to}", get(graph_path))
@@ -21,11 +26,11 @@ pub fn web_router(handler: Arc<EpistemeMCP>) -> Router {
         .route("/api/graph/schema", get(graph_schema))
         .route("/api/graph/tree", get(graph_tree))
         .route("/api/entities/search", get(entities_search))
-        .with_state(handler)
-}
+        .with_state(handler);
 
-async fn index() -> Html<&'static str> {
-    Html(include_str!("graph_viewer.html"))
+    Router::new().merge(api_routes).fallback_service(
+        ServeDir::new(&dist_dir).fallback(ServeDir::new(format!("{}/index.html", dist_dir))),
+    )
 }
 
 /// Full graph as Cytoscape.js elements — includes canonical + user (insight) entities.
