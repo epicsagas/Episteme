@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Web Viewer Design Overhaul** — complete UI/UX redesign of the web interface
+  - Explorer graph: uniform small circle nodes (8px) with type-based color coding
+  - Explorer graph: neighbor + edge highlighting on hover/click (no dimming of other nodes)
+  - Explorer graph: connected entity click centers the target node instead of navigating away
+  - Explorer graph: search highlights matching nodes in the graph
+  - Explorer graph: toggle buttons for insight nodes (TK) and isolated nodes
+  - Dashboard: TK insight list with search and project filter (replaces metrics-only view)
+  - Context-aware back navigation (Insights → Back to Insights, Categories → Back to Categories)
+  - Opaque search dropdown with keyboard navigation (↑↓ Enter Esc)
+  - `from` parameter propagated through all entity navigation chains
+
+### Changed
+
+- **`epis web` now serves Vite-built SPA** (`web/dist/`) instead of legacy `graph_viewer.html`
+- Legacy `graph_viewer.html` removed (528 lines deleted)
+- REST API (`/api/graph/*`) endpoints unchanged
+- Added `tower-http` `fs` feature for static file serving
+- `EPISTEME_WEB_DIST` env var for custom dist path override
+- Topbar search hidden on Dashboard page (uses its own insight search)
+
+### Fixed
+
+- TK entity 404 from REST API — composite graph initialized in `api_app.rs`
+- Back button always showing "Back to Explorer" — now inherits originating page context
+- Search dropdown invisible due to transparent `glass-panel` background
+- Clippy `collapsible_if` warnings in `mcp_handler.rs`
+- `cargo fmt` formatting drift in `api_app.rs`, `mcp_handler.rs`, `web_viewer.rs`
+
 ## [0.3.6] — 2026-06-10
 
 ### Added
