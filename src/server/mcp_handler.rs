@@ -400,12 +400,15 @@ impl EpistemeMCP {
             .lock()
             .map_err(|e| format!("mutex poisoned: {e}"))?;
 
+        // Dedup key stored as a literal tag — exact string match avoids FTS5 special
+        // character issues (colons are column-filter operators in FTS5 MATCH queries).
         let dedup_key = format!("found_in:{location}:{function_name}:{smell_id}");
-        let existing = composite.user_store().search_user_entities(&dedup_key, 1);
-        if existing
-            .iter()
-            .any(|e| e.author == "analysis" && e.tags.contains(&dedup_key))
-        {
+        let already_exists = composite
+            .user_store()
+            .all_user_entities()
+            .into_iter()
+            .any(|e| e.author == "analysis" && e.tags.contains(&dedup_key));
+        if already_exists {
             return Ok(());
         }
 
@@ -472,11 +475,12 @@ impl EpistemeMCP {
             .map_err(|e| format!("mutex poisoned: {e}"))?;
 
         let dedup_key = format!("found_in:{location}:{function_name}:{smell_id}:refactor");
-        let existing = composite.user_store().search_user_entities(&dedup_key, 1);
-        if existing
-            .iter()
-            .any(|e| e.author == "analysis" && e.tags.contains(&dedup_key))
-        {
+        let already_exists = composite
+            .user_store()
+            .all_user_entities()
+            .into_iter()
+            .any(|e| e.author == "analysis" && e.tags.contains(&dedup_key));
+        if already_exists {
             return Ok(());
         }
 
@@ -783,5 +787,156 @@ impl EpistemeMCP {
                 count.into(),
             );
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::adapters::UserGraphStore;
+    use crate::domain::composite_graph::CompositeGraph;
+    use crate::domain::graph::tests::build_graph_from_entities;
+
+    fn make_mcp_with_composite() -> EpistemeMCP {
+        let kg = build_graph_from_entities(vec![]);
+        let store = UserGraphStore::open_in_memory().unwrap();
+        let composite = CompositeGraph::new(kg.clone(), Box::new(store));
+        EpistemeMCP::with_composite(kg, composite)
+    }
+
+    fn analysis_params_static() -> AnalysisEntityParams<'static> {
+        AnalysisEntityParams {
+            smell_id: "SMELL-01",
+            smell_name: "Long Method",
+            location: "src/lib.rs",
+            function_name: "do_work",
+            confidence: 0.9,
+            reasons: &[],
+            language: "rust",
+        }
+    }
+
+    #[test]
+    fn add_analysis_entity_creates_tk_entity() {
+        let mcp = make_mcp_with_composite();
+        assert!(mcp.add_analysis_entity(analysis_params_static()).is_ok());
+
+        let insights = mcp.list_insights(10, None);
+        assert_eq!(insights.len(), 1);
+        let e = &insights[0];
+        assert_eq!(e.author, "analysis");
+        assert!(e.tags.iter().any(|t| t == "source:analysis"));
+        assert!(e.tags.iter().any(|t| t == "smell:SMELL-01"));
+        assert!(e.tags.iter().any(|t| t == "lang:rust"));
+    }
+
+    #[test]
+    fn add_analysis_entity_no_composite_returns_err() {
+        let mcp = EpistemeMCP::new(build_graph_from_entities(vec![]));
+        let result = mcp.add_analysis_entity(analysis_params_static());
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("tacit knowledge not enabled"));
+    }
+
+    #[test]
+    fn add_refactoring_entity_creates_tk_entity() {
+        let mcp = make_mcp_with_composite();
+        let ids = vec!["RF-001".to_owned()];
+        let result = mcp.add_refactoring_entity(RefactoringEntityParams {
+            smell_id: "SMELL-01",
+            smell_name: "Long Method",
+            location: "src/lib.rs",
+            function_name: "do_work",
+            confidence: 0.85,
+            refactoring_ids: &ids,
+            language: "rust",
+        });
+        assert!(result.is_ok());
+
+        let insights = mcp.list_insights(10, None);
+        assert_eq!(insights.len(), 1);
+        let e = &insights[0];
+        assert_eq!(e.author, "analysis");
+        assert!(e.tags.iter().any(|t| t == "refactor:suggested"));
+    }
+
+    #[test]
+    fn list_insights_source_analysis_filters_correctly() {
+        let mcp = make_mcp_with_composite();
+        mcp.add_analysis_entity(analysis_params_static()).unwrap();
+        mcp.add_insight("manual user note", None, None, None);
+
+        let analysis_only = mcp.list_insights(10, Some("analysis"));
+        assert_eq!(analysis_only.len(), 1);
+        assert!(analysis_only.iter().all(|e| e.author == "analysis"));
+
+        let user_only = mcp.list_insights(10, Some("user"));
+        assert_eq!(user_only.len(), 1);
+        assert!(user_only.iter().all(|e| e.author != "analysis"));
+
+        let all = mcp.list_insights(10, None);
+        assert_eq!(all.len(), 2);
+    }
+
+    #[test]
+    fn add_analysis_entity_deduplicates_identical_calls() {
+        let mcp = make_mcp_with_composite();
+        mcp.add_analysis_entity(analysis_params_static()).unwrap();
+        mcp.add_analysis_entity(analysis_params_static()).unwrap();
+
+        let insights = mcp.list_insights(10, Some("analysis"));
+        assert_eq!(
+            insights.len(),
+            1,
+            "duplicate smell entity must not be created"
+        );
+    }
+
+    #[test]
+    fn add_refactoring_entity_deduplicates_identical_calls() {
+        let mcp = make_mcp_with_composite();
+        let ids = vec!["RF-001".to_owned()];
+        let make = || RefactoringEntityParams {
+            smell_id: "SMELL-01",
+            smell_name: "Long Method",
+            location: "src/lib.rs",
+            function_name: "do_work",
+            confidence: 0.85,
+            refactoring_ids: &ids,
+            language: "rust",
+        };
+        mcp.add_refactoring_entity(make()).unwrap();
+        mcp.add_refactoring_entity(make()).unwrap();
+
+        let insights = mcp.list_insights(10, Some("analysis"));
+        assert_eq!(
+            insights.len(),
+            1,
+            "duplicate refactoring entity must not be created"
+        );
+    }
+
+    #[test]
+    fn analysis_and_refactoring_for_same_smell_are_distinct_entities() {
+        let mcp = make_mcp_with_composite();
+        let ids = vec!["RF-001".to_owned()];
+        mcp.add_analysis_entity(analysis_params_static()).unwrap();
+        mcp.add_refactoring_entity(RefactoringEntityParams {
+            smell_id: "SMELL-01",
+            smell_name: "Long Method",
+            location: "src/lib.rs",
+            function_name: "do_work",
+            confidence: 0.85,
+            refactoring_ids: &ids,
+            language: "rust",
+        })
+        .unwrap();
+
+        let insights = mcp.list_insights(10, Some("analysis"));
+        assert_eq!(
+            insights.len(),
+            2,
+            "analysis and refactoring entities for the same smell must be separate"
+        );
     }
 }
