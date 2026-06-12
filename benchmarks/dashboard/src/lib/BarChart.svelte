@@ -7,11 +7,38 @@
 
   Chart.register(BarController, BarElement, LinearScale, CategoryScale, Tooltip);
 
-  /** @type {{ data: Record<string, number>; color?: string }} */
-  let { data, color = '#4a9eff' } = $props();
+  /** @type {{ data: Record<string, number>; color?: string; format?: (v: number) => string }} */
+  let { data, color = '#4a9eff', format } = $props();
 
   let canvas;
   let chart;
+
+  function fmt(v) {
+    if (format) return format(v);
+    if (Number.isInteger(v)) return v.toString();
+    return v.toFixed(2);
+  }
+
+  // Per-chart plugin: draws each bar's value just past the bar end (horizontal bars).
+  const valueLabels = {
+    id: 'bar-value-labels',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      if (!meta || !meta.data) return;
+      ctx.save();
+      ctx.font = '600 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillStyle = '#c9d1d9';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      meta.data.forEach((bar, i) => {
+        const value = chart.data.datasets[0].data[i];
+        if (value == null) return;
+        ctx.fillText(fmt(value), bar.x + 6, bar.y);
+      });
+      ctx.restore();
+    },
+  };
 
   $effect(() => {
     if (!canvas || !data) return;
@@ -37,12 +64,14 @@
         indexAxis: 'y',
         responsive: true,
         maintainAspectRatio: false,
+        layout: { padding: { right: 36 } },
         plugins: { legend: { display: false } },
         scales: {
           x: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' }, beginAtZero: true },
           y: { ticks: { color: '#c9d1d9', font: { size: 11 } }, grid: { display: false } },
         },
       },
+      plugins: [valueLabels],
     });
   });
 
