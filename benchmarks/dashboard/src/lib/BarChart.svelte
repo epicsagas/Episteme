@@ -1,11 +1,6 @@
 <script>
-  import { onMount, onDestroy } from 'svelte';
-  import {
-    Chart, BarController, BarElement,
-    LinearScale, CategoryScale, Tooltip,
-  } from 'chart.js';
-
-  Chart.register(BarController, BarElement, LinearScale, CategoryScale, Tooltip);
+  import { onDestroy } from 'svelte';
+  import { Chart } from './chart-base.js';
 
   /** @type {{ data: Record<string, number>; color?: string; format?: (v: number) => string }} */
   let { data, color = '#4a9eff', format } = $props();

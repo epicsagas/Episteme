@@ -8,38 +8,14 @@
   import HelpButton from './lib/HelpButton.svelte';
   import { i18n, toggleLocale } from './lib/i18n.svelte';
   import { help } from './lib/help.js';
+  import { loadEvalRuns, toTrendRuns, toSeries, computeDeltas } from './lib/data.js';
+  import { BAR_CHART_RED, BAR_CHART_GREEN } from './lib/colors.js';
 
   const rawFiles = import.meta.glob('/results/*.json', { eager: true });
 
-  const runs = Object.entries(rawFiles)
-    .filter(([path]) => {
-      const name = path.split('/').at(-1);
-      return name.startsWith('eval_') && name.endsWith('.json');
-    })
-    .map(([path, mod]) => {
-      const filename = path.split('/').at(-1);
-      const data = mod.default ?? mod;
-      return {
-        filename,
-        timestamp: new Date(data.timestamp),
-        label: filename.replace('eval_', '').replace('.json', ''),
-        git_commit: data.git_commit,
-        composite_score: data.composite_score,
-        regression: data.regression,
-        suites: data.suites,
-      };
-    })
-    .sort((a, b) => a.timestamp - b.timestamp);
-
-  const trendRuns = runs.map((r) => ({
-    label: r.label,
-    timestamp: r.timestamp,
-    composite: r.composite_score.composite,
-    recall: r.composite_score.recall,
-    precision: r.composite_score.precision,
-    specificity: r.composite_score.specificity,
-    smell_recall: r.composite_score.smell_recall,
-  }));
+  const runs = loadEvalRuns(rawFiles);
+  const trendRuns = toTrendRuns(runs);
+  const series = toSeries(trendRuns);
 
   let selectedIndex = $state(runs.length - 1);
   let selectedRun = $derived(runs[selectedIndex]);
@@ -48,31 +24,7 @@
 
   let prevRun = $derived(selectedIndex > 0 ? runs[selectedIndex - 1] : null);
 
-  // Per-metric full-history series for Hero card sparklines.
-  const series = {
-    composite: trendRuns.map((r) => r.composite),
-    recall: trendRuns.map((r) => r.recall),
-    precision: trendRuns.map((r) => r.precision),
-    specificity: trendRuns.map((r) => r.specificity),
-    smell_recall: trendRuns.map((r) => r.smell_recall),
-  };
-
-  function deltaOf(curr, prev) {
-    return prev == null ? null : curr - prev;
-  }
-
-  let deltas = $derived.by(() => {
-    const cs = selectedRun?.composite_score;
-    const pcs = prevRun?.composite_score;
-    if (!cs) return {};
-    return {
-      composite: deltaOf(cs.composite, pcs?.composite),
-      recall: deltaOf(cs.recall, pcs?.recall),
-      precision: deltaOf(cs.precision, pcs?.precision),
-      specificity: deltaOf(cs.specificity, pcs?.specificity),
-      smell_recall: deltaOf(cs.smell_recall, pcs?.smell_recall),
-    };
-  });
+  let deltas = $derived(computeDeltas(selectedRun?.composite_score, prevRun?.composite_score));
 </script>
 
 <div class="app">
@@ -106,7 +58,7 @@
       </select>
     </div>
     {#if selectedRun}
-      <RegressionBanner regression={selectedRun.regression} />
+      <RegressionBanner regression={selectedRun.regression} {deltas} />
       <div class="composite-cards">
         <MetricsCard title="Composite" metrics={{ score: selectedRun.composite_score.composite }} format={pct} help={help.composite} series={series.composite} delta={deltas.composite} />
         <MetricsCard title="Recall" metrics={{ recall: selectedRun.composite_score.recall }} format={pct} help={help.recall} series={series.recall} delta={deltas.recall} />
@@ -157,7 +109,7 @@
       {@const sm = selectedRun.suites.smell_negative}
       <MetricsCard title="FP Rate" metrics={{ fp_rate: sm.metrics.fp_rate, fp_count: sm.metrics.fp_count, total: sm.metrics.total, specificity: sm.metrics.specificity }} help={help.smellNegativeFp} />
       <h3>Per Detector</h3>
-      <BarChart data={sm.metrics.per_detector} color="#ef5350" />
+      <BarChart data={sm.metrics.per_detector} color={BAR_CHART_RED} />
       <h3>Per Language</h3>
       <table class="lang-table">
         <thead>
@@ -187,7 +139,7 @@
       {@const ap = selectedRun.suites.analyze_positive}
       <MetricsCard title="Recall" metrics={{ recall: ap.metrics.recall, hits: ap.metrics.hits, total: ap.metrics.total }} help={help.analyzePositiveRecall} />
       <h3>Per Smell Recall</h3>
-      <BarChart data={ap.metrics.per_smell_recall} color="#66bb6a" format={pct} />
+      <BarChart data={ap.metrics.per_smell_recall} color={BAR_CHART_GREEN} format={pct} />
     {:else}
       <p class="empty">No data</p>
     {/if}
