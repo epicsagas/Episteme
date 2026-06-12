@@ -141,8 +141,7 @@ jobs:
           ${{ matrix.packages_install }}
       - name: Build web assets
         run: |
-          npm --prefix web install
-          npm --prefix web run build
+          cd web && npm install && npm run build
       - name: Build artifacts
         run: |
           # Actually do builds and make zips and whatnot
