@@ -45,6 +45,34 @@
   let selectedRun = $derived(runs[selectedIndex]);
 
   function pct(v) { return (v * 100).toFixed(1) + '%'; }
+
+  let prevRun = $derived(selectedIndex > 0 ? runs[selectedIndex - 1] : null);
+
+  // Per-metric full-history series for Hero card sparklines.
+  const series = {
+    composite: trendRuns.map((r) => r.composite),
+    recall: trendRuns.map((r) => r.recall),
+    precision: trendRuns.map((r) => r.precision),
+    specificity: trendRuns.map((r) => r.specificity),
+    smell_recall: trendRuns.map((r) => r.smell_recall),
+  };
+
+  function deltaOf(curr, prev) {
+    return prev == null ? null : curr - prev;
+  }
+
+  let deltas = $derived.by(() => {
+    const cs = selectedRun?.composite_score;
+    const pcs = prevRun?.composite_score;
+    if (!cs) return {};
+    return {
+      composite: deltaOf(cs.composite, pcs?.composite),
+      recall: deltaOf(cs.recall, pcs?.recall),
+      precision: deltaOf(cs.precision, pcs?.precision),
+      specificity: deltaOf(cs.specificity, pcs?.specificity),
+      smell_recall: deltaOf(cs.smell_recall, pcs?.smell_recall),
+    };
+  });
 </script>
 
 <div class="app">
@@ -80,11 +108,11 @@
     {#if selectedRun}
       <RegressionBanner regression={selectedRun.regression} />
       <div class="composite-cards">
-        <MetricsCard title="Composite" metrics={{ score: selectedRun.composite_score.composite }} format={pct} help={help.composite} />
-        <MetricsCard title="Recall" metrics={{ recall: selectedRun.composite_score.recall }} format={pct} help={help.recall} />
-        <MetricsCard title="Precision" metrics={{ precision: selectedRun.composite_score.precision }} format={pct} help={help.precision} />
-        <MetricsCard title="Specificity" metrics={{ specificity: selectedRun.composite_score.specificity }} format={pct} help={help.specificity} />
-        <MetricsCard title="Smell Recall" metrics={{ recall: selectedRun.composite_score.smell_recall }} format={pct} help={help.smellRecall} />
+        <MetricsCard title="Composite" metrics={{ score: selectedRun.composite_score.composite }} format={pct} help={help.composite} series={series.composite} delta={deltas.composite} />
+        <MetricsCard title="Recall" metrics={{ recall: selectedRun.composite_score.recall }} format={pct} help={help.recall} series={series.recall} delta={deltas.recall} />
+        <MetricsCard title="Precision" metrics={{ precision: selectedRun.composite_score.precision }} format={pct} help={help.precision} series={series.precision} delta={deltas.precision} />
+        <MetricsCard title="Specificity" metrics={{ specificity: selectedRun.composite_score.specificity }} format={pct} help={help.specificity} series={series.specificity} delta={deltas.specificity} />
+        <MetricsCard title="Smell Recall" metrics={{ recall: selectedRun.composite_score.smell_recall }} format={pct} help={help.smellRecall} series={series.smell_recall} delta={deltas.smell_recall} />
       </div>
     {/if}
   </section>
@@ -159,7 +187,7 @@
       {@const ap = selectedRun.suites.analyze_positive}
       <MetricsCard title="Recall" metrics={{ recall: ap.metrics.recall, hits: ap.metrics.hits, total: ap.metrics.total }} help={help.analyzePositiveRecall} />
       <h3>Per Smell Recall</h3>
-      <BarChart data={ap.metrics.per_smell_recall} color="#66bb6a" />
+      <BarChart data={ap.metrics.per_smell_recall} color="#66bb6a" format={pct} />
     {:else}
       <p class="empty">No data</p>
     {/if}
