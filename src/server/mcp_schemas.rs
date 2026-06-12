@@ -2,7 +2,7 @@ use serde_json::{Value, json};
 
 pub const PROTOCOL_VERSION: &str = "2024-11-05";
 pub const SERVER_NAME: &str = "episteme";
-pub const SERVER_VERSION: &str = "0.1.0";
+pub const SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const MAX_CODE_BYTES: usize = 500_000;
 
 pub fn server_info() -> Value {

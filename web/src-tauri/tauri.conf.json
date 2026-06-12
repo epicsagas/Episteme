@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/nickel-org/json-schema-store/main/tauri.schema.json",
   "productName": "Episteme",
-  "version": "0.1.0",
+  "version": "0.3.8",
   "identifier": "com.episteme.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
