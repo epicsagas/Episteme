@@ -1,11 +1,10 @@
 <script>
   import { onDestroy } from 'svelte';
-  import { Chart, LineController, LineElement, LinearScale, CategoryScale } from 'chart.js';
-
-  Chart.register(LineController, LineElement, LinearScale, CategoryScale);
+  import { Chart } from './chart-base.js';
+  import { METRIC_COLORS } from './colors.js';
 
   /** @type {{ series: number[]; color?: string }} */
-  let { series, color = '#4a9eff' } = $props();
+  let { series, color = METRIC_COLORS.recall } = $props();
 
   let canvas;
   let chart;

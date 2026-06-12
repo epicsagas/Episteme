@@ -5,28 +5,64 @@
   let { perQuery } = $props();
 
   let selected = $state(null);
+  let sortKey = $state(null);   // 'hit@1' | 'hit@3' | 'hit@5' | 'rr@5' | 'ndcg@5'
+  let sortAsc = $state(true);
+  let failuresOnly = $state(false);
 
   function rowClass(row) {
     if (row['hit@1'] === 0) return 'row-red';
     if (row['rr@5'] < 1.0) return 'row-yellow';
     return '';
   }
+
+  function toggleSort(key) {
+    if (sortKey === key) {
+      sortAsc = !sortAsc;
+    } else {
+      sortKey = key;
+      sortAsc = false; // default: descending (worst first)
+    }
+  }
+
+  function sortIcon(key) {
+    if (sortKey !== key) return '↕';
+    return sortAsc ? '↑' : '↓';
+  }
+
+  let filtered = $derived(
+    failuresOnly ? perQuery.filter((r) => r['hit@1'] === 0) : perQuery
+  );
+
+  let sorted = $derived.by(() => {
+    if (!sortKey) return filtered;
+    return [...filtered].sort((a, b) => {
+      const av = a[sortKey], bv = b[sortKey];
+      return sortAsc ? av - bv : bv - av;
+    });
+  });
 </script>
+
+<div class="table-toolbar">
+  <label class="filter-toggle">
+    <input type="checkbox" bind:checked={failuresOnly} />
+    Show failures only
+  </label>
+</div>
 
 <div class="table-wrap">
   <table>
     <thead>
       <tr>
         <th>Query</th>
-        <th>hit@1</th>
-        <th>hit@3</th>
-        <th>hit@5</th>
-        <th>RR</th>
-        <th>NDCG</th>
+        <th class="sortable" onclick={() => toggleSort('hit@1')}>hit@1 {sortIcon('hit@1')}</th>
+        <th class="sortable" onclick={() => toggleSort('hit@3')}>hit@3 {sortIcon('hit@3')}</th>
+        <th class="sortable" onclick={() => toggleSort('hit@5')}>hit@5 {sortIcon('hit@5')}</th>
+        <th class="sortable" onclick={() => toggleSort('rr@5')}>RR {sortIcon('rr@5')}</th>
+        <th class="sortable" onclick={() => toggleSort('ndcg@5')}>NDCG {sortIcon('ndcg@5')}</th>
       </tr>
     </thead>
     <tbody>
-      {#each perQuery as row}
+      {#each sorted as row}
         <!-- svelte-ignore a11y_click_events_have_key_events -->
         <!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role -->
         <tr class={rowClass(row)} onclick={() => (selected = row)}>
@@ -45,6 +81,26 @@
 <QueryModal query={selected} onclose={() => (selected = null)} />
 
 <style>
+  .table-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    color: #8b949e;
+    cursor: pointer;
+  }
+
+  .filter-toggle input {
+    accent-color: var(--accent);
+  }
+
   .table-wrap {
     overflow-x: auto;
     border: 1px solid #21262d;
@@ -65,6 +121,13 @@
     position: sticky;
     top: 0;
   }
+
+  .sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s;
+  }
+  .sortable:hover { color: var(--accent); }
 
   tbody tr { cursor: pointer; border-top: 1px solid #21262d; transition: background 0.1s; }
   tbody tr:hover { background: #161b22; }

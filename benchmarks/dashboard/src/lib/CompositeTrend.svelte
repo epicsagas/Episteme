@@ -1,11 +1,7 @@
 <script>
-  import { onMount, onDestroy } from 'svelte';
-  import {
-    Chart, LineController, LineElement, PointElement,
-    LinearScale, CategoryScale, Tooltip, Legend,
-  } from 'chart.js';
-
-  Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
+  import { onDestroy } from 'svelte';
+  import { Chart } from './chart-base.js';
+  import { METRIC_COLORS } from './colors.js';
 
   /** @type {{ runs: Array<{ label: string; timestamp: Date; composite: number; recall: number; precision: number; specificity: number; smell_recall: number }> }} */
   let { runs } = $props();
@@ -32,11 +28,11 @@
     });
 
     const datasets = [
-      mkds('Composite', runs.map((r) => r.composite), '#e6edf3', 3),
-      mkds('Recall', runs.map((r) => r.recall), '#4a9eff'),
-      mkds('Precision', runs.map((r) => r.precision), '#66bb6a'),
-      mkds('Specificity', runs.map((r) => r.specificity), '#ffd54f'),
-      mkds('Smell Recall', runs.map((r) => r.smell_recall), '#ef5350'),
+      mkds('Composite', runs.map((r) => r.composite), METRIC_COLORS.composite, 3),
+      mkds('Recall', runs.map((r) => r.recall), METRIC_COLORS.recall),
+      mkds('Precision', runs.map((r) => r.precision), METRIC_COLORS.precision),
+      mkds('Specificity', runs.map((r) => r.specificity), METRIC_COLORS.specificity),
+      mkds('Smell Recall', runs.map((r) => r.smell_recall), METRIC_COLORS.smell_recall),
     ];
 
     if (chart) {
