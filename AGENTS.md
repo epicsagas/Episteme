@@ -65,6 +65,26 @@ fn detect_long_method(metrics: &CodeMetrics, loc: &str, name: &str) -> Option<Sm
 - File naming: Inline `mod tests` within each source file
 - Mocking: Concrete test data (JSON fixtures in `raw/`), `tempfile` for FS isolation
 
+## Version Bump Checklist
+
+버전 범프 시 반드시 아래 파일 모두 동일 버전으로 변경:
+
+| 파일 | 위치 |
+|------|------|
+| `Cargo.toml` | `version = "x.y.z"` |
+| `web/package.json` | `"version": "x.y.z"` |
+| `web/src-tauri/Cargo.toml` | `version = "x.y.z"` |
+| `web/src-tauri/tauri.conf.json` | `"version": "x.y.z"` |
+| `.claude-plugin/plugin.json` | `"version": "x.y.z"` |
+| `.codex-plugin/plugin.json` | `"version": "x.y.z"` |
+
+`src/server/mcp_schemas.rs`의 `SERVER_VERSION`은 `env!("CARGO_PKG_VERSION")`을 사용하므로 자동 동기화됨.
+
+아래는 **건드리지 않음** (의도적으로 분리된 버전):
+- `meta/schema.json` — 지식 그래프 스키마 버전
+- `benchmarks/dashboard/package.json` — 벤치마크 대시보드
+- `docs/` — 문서 내 버전 참조
+
 ## Git Workflow
 - Branch strategy: Feature branches (`feature/<name>`)
 - Commit format: Conventional Commits (`type(scope): description`)
