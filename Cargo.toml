@@ -124,6 +124,9 @@ llm-kernel = { version = "0.2.3", features = [
 crossterm = "0.29.0"
 rand = "0.10"
 
+# Static file embedding for web viewer
+rust-embed = { version = "8", features = ["mime-guess"] }
+
 [package.metadata.binstall]
 pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target }.tar.xz"
 pkg-fmt = "txz"

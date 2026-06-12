@@ -1,23 +1,56 @@
 use axum::{
     Router,
     extract::{Path, Query, State},
-    http::StatusCode,
-    response::Json,
+    http::{StatusCode, Uri, header},
+    response::{Html, IntoResponse, Json, Response},
     routing::get,
 };
+use rust_embed::RustEmbed;
 use serde::Deserialize;
 use std::sync::Arc;
 use tower_http::services::ServeDir;
 
 use crate::server::mcp_handler::EpistemeMCP;
 
+/// Embedded web assets compiled into the binary.
+#[derive(RustEmbed)]
+#[folder = "web/dist/"]
+#[allow_missing = true]
+struct WebAssets;
+
+/// Axum handler that serves files from the embedded `WebAssets`.
+/// For SPA routing, non-file paths fall back to `index.html`.
+async fn embedded_static_handler(uri: Uri) -> Response {
+    let path = uri.path().trim_start_matches('/');
+
+    // SPA routes (no extension) or root → serve index.html
+    if path.is_empty() || !path.contains('.') {
+        if let Some(file) = WebAssets::get("index.html") {
+            return Html(String::from_utf8_lossy(&file.data).into_owned()).into_response();
+        }
+        return Html(
+            "<h1>Web viewer not built</h1>\
+             <p>Run <code>npm --prefix web install && npm --prefix web run build</code>, \
+             then recompile.<br/>\
+             Or set <code>EPISTEME_WEB_DIST</code> to serve from a directory.</p>",
+        )
+        .into_response();
+    }
+
+    match WebAssets::get(path) {
+        Some(file) => {
+            let mime = file.metadata.mimetype();
+            ([(header::CONTENT_TYPE, mime)], file.data.to_vec()).into_response()
+        }
+        None => (StatusCode::NOT_FOUND, "404").into_response(),
+    }
+}
+
 /// Build the web viewer router.
 ///
-/// Serves the Vite-built SPA from `web/dist/` on `/`, falling back to `index.html`
-/// for client-side routing. API endpoints remain unchanged.
+/// When `EPISTEME_WEB_DIST` is set, serves from the filesystem (dev hot-reload).
+/// Otherwise, serves from compiled-in embedded assets.
 pub fn web_router(handler: Arc<EpistemeMCP>) -> Router {
-    let dist_dir = std::env::var("EPISTEME_WEB_DIST").unwrap_or_else(|_| "web/dist".to_owned());
-
     let api_routes = Router::new()
         .route("/api/graph/full", get(graph_full))
         .route("/api/graph/entity/{id}", get(graph_entity))
@@ -28,9 +61,20 @@ pub fn web_router(handler: Arc<EpistemeMCP>) -> Router {
         .route("/api/entities/search", get(entities_search))
         .with_state(handler);
 
-    Router::new().merge(api_routes).fallback_service(
-        ServeDir::new(&dist_dir).fallback(ServeDir::new(format!("{}/index.html", dist_dir))),
-    )
+    match std::env::var("EPISTEME_WEB_DIST") {
+        Ok(dir) => {
+            // Development: filesystem serving (supports hot reload)
+            Router::new().merge(api_routes).fallback_service(
+                ServeDir::new(&dir).fallback(ServeDir::new(format!("{dir}/index.html"))),
+            )
+        }
+        Err(_) => {
+            // Production: embedded asset serving
+            Router::new()
+                .merge(api_routes)
+                .fallback(embedded_static_handler)
+        }
+    }
 }
 
 /// Full graph as Cytoscape.js elements — includes canonical + user (insight) entities.
