@@ -1,0 +1,153 @@
+{
+  "_meta": {
+    "purpose": "Pre-registered question bank for the lightweight-model boost eval. Each question describes a concrete SE scenario and lists the concept(s) a correct answer must identify. Rubrics are fixed BEFORE any model run to prevent post-hoc tuning.",
+    "scoring": "A concept is 'hit' if any of its aliases appears as a substring in the lowercased, markdown-stripped model answer. Per-question score = concepts_hit / concepts_required. Aggregate = mean over questions. The examinee is a 7B-class local model; the rubric tests whether the model identifies the correct specific named SE concept (smell/pattern/law/refactoring).",
+    "categories": ["smell", "pattern", "law"]
+  },
+  "questions": [
+    {
+      "id": "S1",
+      "category": "smell",
+      "difficulty": "easy",
+      "query": "god object",
+      "question": "A single class has grown to 5000 lines, imports 40 modules, and handles logging, networking, persistence, and business rules all at once. What is the specific name of this code smell, and what is its core problem in one sentence?",
+      "rubric": [["god object", "god class"]]
+    },
+    {
+      "id": "S2",
+      "category": "smell",
+      "difficulty": "moderate",
+      "query": "feature envy",
+      "question": "A method in class InvoiceCalculator calls 15 getters on a Customer object to compute a discount, using almost no data from InvoiceCalculator itself. What is the specific name of this code smell?",
+      "rubric": [["feature envy"]]
+    },
+    {
+      "id": "S3",
+      "category": "smell",
+      "difficulty": "moderate",
+      "query": "shotgun surgery",
+      "question": "Every time you add a new payment type you must modify 7 different classes scattered across the codebase. What is the specific name of this code smell?",
+      "rubric": [["shotgun surgery"]]
+    },
+    {
+      "id": "S4",
+      "category": "smell",
+      "difficulty": "moderate",
+      "query": "primitive obsession",
+      "question": "A codebase represents money, currency, and account numbers all as raw strings and floats, passing tuples like (amount, currency) through dozens of methods. What is the specific name of this code smell, and what is the typical fix?",
+      "rubric": [["primitive obsession"], ["value object", "introduce parameter object", "replace data value with object"]]
+    },
+    {
+      "id": "S5",
+      "category": "smell",
+      "difficulty": "obscure",
+      "query": "middle man smell",
+      "question": "A class Manager has 12 methods, and every single one just delegates to an inner Worker field (e.g. void foo(){ return worker.foo(); }). What is the specific name of this code smell?",
+      "rubric": [["middle man"]]
+    },
+    {
+      "id": "S6",
+      "category": "smell",
+      "difficulty": "obscure",
+      "query": "message chains",
+      "question": "Code reads a.getB().getC().getD().doThing() — a long chain of calls where the client depends on the internal structure of B, C, and D. What is the specific name of this code smell?",
+      "rubric": [["message chain", "law of demeter violation", "train wreck"]]
+    },
+    {
+      "id": "P1",
+      "category": "pattern",
+      "difficulty": "easy",
+      "query": "builder pattern",
+      "question": "You construct a complex Document object that needs a title, multiple optional sections, headers, footers, and styling. You want to avoid a huge telescoping constructor and keep construction steps reusable. Which design pattern fits best?",
+      "rubric": [["builder"]]
+    },
+    {
+      "id": "P2",
+      "category": "pattern",
+      "difficulty": "easy",
+      "query": "strategy pattern",
+      "question": "You have several pricing algorithms (student, senior, regular, wholesale) and must swap the active one at runtime without modifying the calling code or using long if/else chains. Which design pattern fits best?",
+      "rubric": [["strategy"]]
+    },
+    {
+      "id": "P3",
+      "category": "pattern",
+      "difficulty": "easy",
+      "query": "facade pattern",
+      "question": "A client must coordinate calls to 6 tightly-coupled subsystem classes to perform one business task. You want to give clients a single simple entry point. Which design pattern fits best?",
+      "rubric": [["facade"]]
+    },
+    {
+      "id": "P4",
+      "category": "pattern",
+      "difficulty": "easy",
+      "query": "observer pattern",
+      "question": "When an order's status changes, three independent subsystems (inventory, notification, analytics) must react, and you want them decoupled from the order object itself. Which design pattern fits best?",
+      "rubric": [["observer", "publish-subscribe", "pub-sub", "publish subscribe"]]
+    },
+    {
+      "id": "P5",
+      "category": "pattern",
+      "difficulty": "easy",
+      "query": "decorator pattern",
+      "question": "You need to layer logging, then caching, then permission checks around an existing service object without modifying its code or producing an explosion of subclasses for every combination. Which design pattern fits best?",
+      "rubric": [["decorator"]]
+    },
+    {
+      "id": "P6",
+      "category": "pattern",
+      "difficulty": "obscure",
+      "query": "flyweight pattern",
+      "question": "A game renders 100,000 tree objects that share the same texture and mesh data; per-object state is only position. You want to share the intrinsic (shared) data across instances to slash memory. Which design pattern fits best?",
+      "rubric": [["flyweight"]]
+    },
+    {
+      "id": "L1",
+      "category": "law",
+      "difficulty": "moderate",
+      "query": "conway law",
+      "question": "An organization has four backend teams and the produced web API surface is cleanly partitioned into four independent services, each owned by one team — the architecture mirrors the communication structure of the teams. Which named law/principle explains this?",
+      "rubric": [["conway"]]
+    },
+    {
+      "id": "L2",
+      "category": "law",
+      "difficulty": "moderate",
+      "query": "amdahls law",
+      "question": "You parallelize a batch pipeline across 1000 cores but one serial step that accounts for 10% of the runtime cannot be parallelized. No matter how many more cores you add, the maximum overall speedup is capped at 10x. Which named law predicts this?",
+      "rubric": [["amdahl"]]
+    },
+    {
+      "id": "L3",
+      "category": "law",
+      "difficulty": "moderate",
+      "query": "brooks law",
+      "question": "A project is running late, so management adds more developers to it — yet the project becomes even later because onboarding and communication overhead grow faster than the new throughput. Which named law describes this?",
+      "rubric": [["brooks"]]
+    },
+    {
+      "id": "L4",
+      "category": "law",
+      "difficulty": "obscure",
+      "query": "teslers law",
+      "question": "A product designer observes that every time the application adds a powerful new feature, it must also add complexity somewhere — either the user faces more options, or the system silently makes decisions for them. There is a stated conservation law in UX/HCI that 'every action has an equal and opposite reaction' in terms of who bears the complexity. Which named law is this?",
+      "rubric": [["tesler", "conservation of complexity", "complexity cannot be eliminated", "law of conservation of complexity"]]
+    },
+    {
+      "id": "L5",
+      "category": "law",
+      "difficulty": "obscure",
+      "query": "galls law",
+      "question": "A startup tries to build a complex microservices mesh with 30 services from day one and fails. A noted systems aphorism says a complex system designed from scratch never works and cannot be patched up; it must evolve from a working simple system. Which named law is this?",
+      "rubric": [["gall"]]
+    },
+    {
+      "id": "L6",
+      "category": "law",
+      "difficulty": "moderate",
+      "query": "second system effect",
+      "question": "An architect, fresh off a successful first release, insists the second version must be a grand, over-engineered, feature-laden platform that replaces everything. Fred Brooks warned that second systems tend to be over-designed and bloated because the architect overreaches. Which named effect/law is this?",
+      "rubric": [["second system"]]
+    }
+  ]
+}
