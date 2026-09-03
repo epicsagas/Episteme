@@ -1,0 +1,22 @@
+{
+  "name": "episteme",
+  "version": "0.3.10",
+  "description": "Offline-first, single-binary knowledge graph that connects design patterns, refactoring techniques, and software laws. Built for AI agents first.",
+  "author": {
+    "name": "epicsagas",
+    "url": "https://github.com/epicsagas"
+  },
+  "homepage": "https://github.com/epicsagas/Episteme",
+  "repository": "https://github.com/epicsagas/Episteme",
+  "license": "Apache-2.0",
+  "keywords": [
+    "knowledge-graph",
+    "design-patterns",
+    "refactoring",
+    "mcp",
+    "ai-agents",
+    "code-review"
+  ],
+  "skills": "./registry/skills/",
+  "hooks": "./hooks/hooks.json"
+}

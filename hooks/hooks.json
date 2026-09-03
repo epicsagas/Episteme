@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "R=\"${GROK_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-.}}\"; node \"$R/registry/scripts/install.js\"",
+            "timeout": 60
+          }
+        ],
+        "description": "Install episteme binary if missing, register MCP server"
+      }
+    ]
+  }
+}
