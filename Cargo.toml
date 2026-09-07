@@ -115,7 +115,6 @@ rustpython-parser = "0.4"
 # llm-kernel: shared foundation for AI-native apps
 llm-kernel = { version = "0.30.0", features = [
     "embedding",
-    "embedding-fastembed",
     "embedding-openai",
     "store",
     "search",
@@ -159,5 +158,13 @@ redis-pool = ["dep:deadpool-redis"]
 
 # Dynamic ONNX Runtime loading on targets where static ORT fails to link
 # (matches llm-kernel 0.2.x's built-in windows/linux-arm64 behavior).
-[target.'cfg(any(target_os = "windows", all(target_os = "linux", target_arch = "aarch64")))'.dependencies]
-llm-kernel = { version = "0.30.0", features = ["embedding-fastembed-dynamic-linking"] }
+# fastembed ONNX Runtime linking is platform-specific and mutually exclusive:
+# static prebuilt ORT everywhere except windows and linux-arm64, which load it
+# dynamically (matches llm-kernel 0.2.x's built-in behavior for those targets).
+[target.'cfg(not(any(target_os = "windows", all(target_os = "linux", target_arch = "aarch64"))))'.dependencies.llm-kernel]
+version = "0.30.0"
+features = ["embedding-fastembed"]
+
+[target.'cfg(any(target_os = "windows", all(target_os = "linux", target_arch = "aarch64")))'.dependencies.llm-kernel]
+version = "0.30.0"
+features = ["embedding-fastembed-dynamic-linking"]
