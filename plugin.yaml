@@ -2,7 +2,7 @@
 # Spec: https://hermes-agent.nousresearch.com/docs/developer-guide/plugins
 # Loaded by `hermes plugins` from ~/.hermes/plugins/<name>/plugin.yaml
 name: episteme
-version: "0.3.10"
+version: "0.3.11"
 description: "Software engineering knowledge graph — design patterns, laws, refactorings, and code smells with graph traversal and AI-powered code analysis."
 author:
   name: epicsagas
