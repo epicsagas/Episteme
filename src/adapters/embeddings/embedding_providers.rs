@@ -136,6 +136,7 @@ pub fn create_openai_provider(
 #[cfg(test)]
 mod tests {
     use llm_kernel::embedding::types::{EmbeddingProvider as LkProvider, EmbeddingResult};
+    use llm_kernel::error::KernelError;
 
     use super::*;
 
@@ -153,14 +154,14 @@ mod tests {
             "mock"
         }
 
-        fn embed(&self, text: &str) -> anyhow::Result<EmbeddingResult> {
+        fn embed(&self, text: &str) -> Result<EmbeddingResult, KernelError> {
             Ok(EmbeddingResult {
                 vector: vec![1.0f32; self.dim],
                 text_preview: text[..text.len().min(64)].to_string(),
             })
         }
 
-        fn embed_batch(&self, texts: &[&str]) -> anyhow::Result<Vec<EmbeddingResult>> {
+        fn embed_batch(&self, texts: &[&str]) -> Result<Vec<EmbeddingResult>, KernelError> {
             Ok(texts
                 .iter()
                 .map(|t| EmbeddingResult {
