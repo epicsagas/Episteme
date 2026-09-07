@@ -88,7 +88,7 @@ Le hook du plugin installe le binaire `epis` automatiquement. **Avant de démarr
 epis install   # Télécharge les données du graphe de connaissances depuis GitHub Releases
 ```
 
-`epis install` initialise la base de données du graphe de connaissances et démarre le serveur HTTP API sur le port 58302. Démarrez ensuite une nouvelle session et tout est immédiatement disponible.
+`epis install` initialise la base de données du graphe de connaissances et démarre le serveur HTTP API sur le port 58302. Démarrez ensuite une nouvelle session et tout est immédiatement disponible. Les configurations des agents et des IDE ne sont pas modifiées ; les intégrations se font uniquement sur demande explicite via les commandes ci-dessous.
 
 Mettre à jour : `/plugin update episteme@epicsagas` (Claude Code) ou `codex plugin update episteme@epicsagas` (Codex)
 
@@ -114,7 +114,7 @@ epis install --all        # Tous les outils supportes
 | **cargo** | `cargo binstall episteme` ⚡ ou `cargo install episteme` |
 | **Docker** | Voir [Option 3](#option-3-docker-rust-non-requis) |
 
-> **Configuration du serveur :** l'assistant d'installation demande l'adresse de bind (`127.0.0.1` local uniquement, `0.0.0.0` reseau) et peut generer optionnellement un bearer token d'authentification. Un token est requis pour `0.0.0.0` ; en local il est seulement recommande.
+> **Configuration du serveur :** l'assistant d'installation demande l'adresse de bind (`127.0.0.1` local uniquement, `0.0.0.0` reseau) et s'il faut generer un bearer token d'authentification. La question du token est pre-reglée sur **Non** en local et sur **Oui** pour `0.0.0.0` ; vous pouvez la modifier dans les deux cas.
 
 ### Verifier
 

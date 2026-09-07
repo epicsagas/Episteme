@@ -86,7 +86,7 @@ hermes plugins enable episteme
 epis install   # GitHub Releases에서 지식 그래프 데이터 다운로드
 ```
 
-`epis install`은 지식 그래프 데이터베이스를 초기화하고 포트 58302에서 HTTP API 서버를 시작합니다. 이후 새 세션을 시작하면 바로 사용할 수 있습니다.
+`epis install`은 지식 그래프 데이터베이스를 초기화하고 포트 58302에서 HTTP API 서버를 시작합니다. 이후 새 세션을 시작하면 바로 사용할 수 있습니다. 에이전트나 IDE 설정은 건드리지 않으며, 통합은 아래의 명시적인 명령으로만 진행됩니다(옵트인).
 
 업데이트: `/plugin update episteme@epicsagas` (Claude Code) 또는 `codex plugin update episteme@epicsagas` (Codex)
 
@@ -112,7 +112,7 @@ epis install --all        # 지원되는 모든 도구
 | **cargo** | `cargo binstall episteme` ⚡ 또는 `cargo install episteme` |
 | **Docker** | [옵션 3](#옵션-3-docker-rust-불필요) 참조 |
 
-> **서버 설정:** 설치 마법사가 바인드 주소(`127.0.0.1`은 로컬 전용, `0.0.0.0`은 네트워크 공개)를 선택하고 인증용 베어러 토큰 생성 여부를 묻습니다. `0.0.0.0` 바인딩에는 토큰이 필수이고, 로컬 바인딩은 권장만 됩니다.
+> **서버 설정:** 설치 마법사가 바인드 주소(`127.0.0.1`은 로컬 전용, `0.0.0.0`은 네트워크 공개)를 선택하고 인증용 베어러 토큰 생성 여부를 묻습니다. 토큰 질문의 기본값은 로컬이면 **아니요**, `0.0.0.0`이면 **예**이며, 어느 쪽이든 직접 바꿀 수 있습니다.
 
 ### 확인
 

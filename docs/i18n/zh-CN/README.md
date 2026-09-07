@@ -86,7 +86,7 @@ hermes plugins enable episteme
 epis install   # 从 GitHub Releases 下载知识图谱数据
 ```
 
-`epis install` 会初始化知识图谱数据库并在端口 58302 上启动 HTTP API 服务器。然后启动新会话即可立即使用。
+`epis install` 会初始化知识图谱数据库并在端口 58302 上启动 HTTP API 服务器。然后启动新会话即可立即使用。它不会改动 agent 或 IDE 配置；集成只能通过下方显式命令选择加入。
 
 更新：`/plugin update episteme@epicsagas`（Claude Code）或 `codex plugin update episteme@epicsagas`（Codex）
 
@@ -112,7 +112,7 @@ epis install --all        # 所有支持的工具
 | **cargo** | `cargo binstall episteme` ⚡ 或 `cargo install episteme` |
 | **Docker** | 见 [选项 3](#选项-3docker无需-rust) |
 
-> **服务器配置：** 安装向导会要求选择绑定地址（`127.0.0.1` 仅本机，`0.0.0.0` 对网络开放），并可选生成用于认证的 Bearer 令牌。绑定 `0.0.0.0` 时必须提供令牌；本机绑定则仅为建议。
+> **服务器配置：** 安装向导会要求选择绑定地址（`127.0.0.1` 仅本机，`0.0.0.0` 对网络开放），并询问是否生成用于认证的 Bearer 令牌。令牌提示在本机默认为**否**，在 `0.0.0.0` 上默认为**是**，两种情况下都可以手动更改。
 
 ### 验证
 

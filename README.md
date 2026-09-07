@@ -100,7 +100,7 @@ The plugin hook installs the `epis` binary automatically. **Before starting a ne
 epis install   # download knowledge graph data from GitHub Releases
 ```
 
-`epis install` seeds the knowledge graph database and starts the HTTP API server on port 58302. Then start a new session and you're done.
+`epis install` seeds the knowledge graph database and starts the HTTP API server on port 58302. Then start a new session and you're done. It does not touch agent or IDE configurations; integrations are opt-in via the explicit commands below.
 
 Updates with `/plugin update episteme@epicsagas` (Claude Code) or `codex plugin update episteme@epicsagas` (Codex).
 
@@ -126,7 +126,7 @@ epis install --all        # All supported tools
 | **cargo** | `cargo binstall episteme` ⚡ or `cargo install episteme` |
 | **Docker** | See [Option 3](#option-3-docker-no-rust-required) |
 
-> **Server configuration:** The install wizard will ask you to choose a bind address (`127.0.0.1` for localhost-only or `0.0.0.0` for network access) and optionally generate a bearer token for authentication. Non-localhost binding (`0.0.0.0`) requires a token; localhost binding recommends one but does not require it.
+> **Server configuration:** The install wizard will ask you to choose a bind address (`127.0.0.1` for localhost-only or `0.0.0.0` for network access) and whether to generate a bearer token for authentication. The token prompt defaults to **No** on localhost and **Yes** on `0.0.0.0`, but you can override it either way.
 
 ### Verify
 
