@@ -46,20 +46,6 @@ fn mcp_server_config(transport: &Transport) -> Value {
     }
 }
 
-/// Install registry artifacts for Claude Code (~/.claude/).
-/// MCP config is not auto-configured in skill-driven mode.
-pub fn install_claude(dry_run: bool, _transport: &Transport) -> Result<Vec<String>, String> {
-    let home = dirs_home();
-    let mut messages = Vec::new();
-
-    // Upsert registry artifacts (agents, skills) into ~/.claude/
-    let claude_dir = home.join(".claude");
-    let registry_msgs = upsert_registry_artifacts(&claude_dir, dry_run, "Claude Code")?;
-    messages.extend(registry_msgs);
-
-    Ok(messages)
-}
-
 /// Install rules for Cursor (~/.cursor/rules/).
 /// MCP config is not auto-configured in skill-driven mode.
 pub fn install_cursor(dry_run: bool, _transport: &Transport) -> Result<Vec<String>, String> {
@@ -69,36 +55,6 @@ pub fn install_cursor(dry_run: bool, _transport: &Transport) -> Result<Vec<Strin
     let rules_msgs = upsert_cursor_rules(dry_run, "Cursor")?;
     msgs.extend(rules_msgs);
 
-    Ok(msgs)
-}
-
-/// Install AGENTS.md section for Codex and seed skills to ~/.codex/.
-pub fn install_codex(dry_run: bool) -> Result<Vec<String>, String> {
-    let home = dirs_home();
-    let mut msgs = Vec::new();
-
-    // Seed registry artifacts (agents + skills) into ~/.codex/
-    let codex_dir = home.join(".codex");
-    let registry_msgs = upsert_registry_artifacts(&codex_dir, dry_run, "Codex")?;
-    msgs.extend(registry_msgs);
-
-    // Also handle AGENTS.md in CWD
-    let project_dir = std::env::current_dir().map_err(|e| e.to_string())?;
-    let agents_md = project_dir.join("AGENTS.md");
-
-    if agents_md.exists() {
-        let content = fs::read_to_string(&agents_md).map_err(|e| e.to_string())?;
-        if content.contains("epis mcp") || content.contains(EPISTEME_BEGIN) {
-            msgs.push("Codex: AGENTS.md already configured".to_owned());
-            let skill_msgs = upsert_skill_to_file(&agents_md, dry_run, "Codex")?;
-            msgs.extend(skill_msgs);
-            return Ok(msgs);
-        }
-    }
-
-    if msgs.is_empty() {
-        msgs.push("Codex: Add 'epis mcp' to AGENTS.md manually".to_owned());
-    }
     Ok(msgs)
 }
 
@@ -364,9 +320,7 @@ pub fn install_all(dry_run: bool, transport: &Transport) -> Result<Vec<String>, 
     messages.push("   To use MCP, see registry/mcp.json for manual setup.".to_owned());
 
     for result in [
-        install_claude(dry_run, transport),
         install_cursor(dry_run, transport),
-        install_codex(dry_run),
         install_opencode(dry_run, transport),
         install_cline(dry_run, transport),
     ] {

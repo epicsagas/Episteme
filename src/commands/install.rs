@@ -57,7 +57,7 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
 
     // Agent integrations are opt-in via explicit targets (`epis install cursor`).
     let mut selected: Vec<String> = if all || tools.iter().any(|t| t == "all") {
-        vec!["claude", "cursor", "codex", "opencode", "cline"]
+        vec!["cursor", "opencode", "cline"]
             .into_iter()
             .map(|s| s.to_owned())
             .collect()
@@ -97,9 +97,7 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
 
     for tool in &selected {
         let result = match tool.as_str() {
-            "claude" => installer::install_claude(dry_run, &transport),
             "cursor" => installer::install_cursor(dry_run, &transport),
-            "codex" => installer::install_codex(dry_run),
             "opencode" => installer::install_opencode(dry_run, &transport),
             "cline" => installer::install_cline(dry_run, &transport),
             _ => Err(format!("Unknown tool: {tool}")),
