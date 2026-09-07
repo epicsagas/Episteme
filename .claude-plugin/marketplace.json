@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "episteme",
+  "owner": {
+    "name": "epicsagas",
+    "url": "https://github.com/epicsagas"
+  },
+  "metadata": {
+    "description": "Standalone catalog for installing the Episteme plugin without the epicsagas hub."
+  },
+  "plugins": [
+    {
+      "name": "episteme",
+      "source": "./",
+      "description": "Software engineering knowledge graph: design patterns, laws, code smells, and refactorings with graph traversal and AI-powered code analysis."
+    }
+  ]
+}
