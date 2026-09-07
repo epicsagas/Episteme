@@ -2,7 +2,6 @@
 
 ## Getting Started
 - [../README.md](../README.md) - Project overview, architecture, installation
-- [../QUICKSTART.md](../QUICKSTART.md) - Get running in 2 minutes
 - [../DEVELOPMENT.md](../DEVELOPMENT.md) - Architecture, tech stack, contributing
 
 ## Integration

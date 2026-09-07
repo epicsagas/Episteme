@@ -4,7 +4,7 @@
 
 <p align="center"><sub>Episteme (συν ταγμα) — ギリシャ語で「組織化された体系」または「識別力」を意味する</sub></p>
 
-<p align="center">オフラインファーストの単一バイナリナレッジグラフ。デザインパターン、リファクタリング手法、ソフトウェアの法則を意味的な関係性を通じて接続します。<br><b>AIエージェントファーストで構築</b> — ソフトウェアエンジニアリングの専門知識をClaude Code、Cursor、その他のMCP互換ツールに直接統合できます。</p>
+<p align="center">オフラインファーストの単一バイナリナレッジグラフ。デザインパターン、リファクタリング手法、ソフトウェアの法則を意味的な関係性を通じて接続します。<br><b>AIエージェントファーストで構築</b> — 5ホストプラグイン（Claude Code · Codex · Grok Build · agy · Hermes）として提供され、Cursorおよびその他のMCP互換ツールに統合されます。</p>
 
 <p align="center">Rustで記述 · 単一バイナリ · 完全オフライン</p>
 
@@ -45,23 +45,40 @@
 ```
 /plugin marketplace add epicsagas/plugins
 /plugin install episteme@epicsagas
+
+# またはターミナルから
+claude plugin marketplace add epicsagas/plugins
+claude plugin add episteme@epicsagas
 ```
-
-プラグインフックが `epis` バイナリを自動的にインストールします。**新しいセッションを開始する前に**、ターミナルで以下のコマンドを一度実行してください：
-
-```bash
-epis install   # GitHub Releasesからナレッジグラフデータをダウンロード
-```
-
-`epis install` はナレッジグラフデータベースを初期化し、ポート58302でHTTP APIサーバーを起動します。その後、新しいClaude Codeセッションを起動すれば完了です。
-
-アップデート: `/plugin update episteme@epicsagas`
 
 ### Codex CLI
 
 ```bash
 codex plugin marketplace add epicsagas/plugins
+codex plugin add episteme@epicsagas
 ```
+
+### Grok Build
+
+```bash
+grok plugin install epicsagas/Episteme --trust
+```
+
+### agy（Antigravity）/ Hermes
+
+agyとHermesにはインストールフックがないため、先にバイナリをインストールし（[手動インストール](#手動インストール)参照）、その後プラグインを追加します：
+
+```bash
+agy plugin install https://github.com/epicsagas/Episteme
+agy plugin enable episteme
+
+hermes plugins install https://github.com/epicsagas/Episteme
+hermes plugins enable episteme
+```
+
+> Hermesのインストールスキャナーが、このリポジトリのファイル（`AGENTS.md`、`Cargo.toml`、docsなど）をCRITICAL persistenceと誤判定してブロックすることがあります。`--force`を付けるか、Hermes設定で `plugins.scan_on_install: false` にしてスキャンを無効化してください。
+
+### インストール後（Claude Code、Codex、Grok Build）
 
 プラグインフックが `epis` バイナリを自動的にインストールします。**新しいセッションを開始する前に**、ターミナルで以下のコマンドを一度実行してください：
 
@@ -69,11 +86,12 @@ codex plugin marketplace add epicsagas/plugins
 epis install   # GitHub Releasesからナレッジグラフデータをダウンロード
 ```
 
-`epis install` はナレッジグラフデータベースを初期化し、ポート58302でHTTP APIサーバーを起動します。その後、新しいセッションを起動すれば即時利用可能です。
+`epis install` はナレッジグラフデータベースを初期化し、ポート58302でHTTP APIサーバーを起動します。その後、新しいセッションを起動すれば完了です。
 
-アップデート: `codex plugin update episteme@epicsagas`
+アップデート: `/plugin update episteme@epicsagas`（Claude Code）または `codex plugin update episteme@epicsagas`（Codex）
 
-### その他のツール
+<details>
+<summary><b>その他のツール（Cursor、OpenCode、Cline）</b></summary>
 
 ```bash
 epis install cursor       # Cursor IDE
@@ -81,6 +99,8 @@ epis install opencode     # OpenCode
 epis install cline        # Cline
 epis install --all        # 対応するすべてのツール
 ```
+
+</details>
 
 ### 手動インストール
 
@@ -91,6 +111,8 @@ epis install --all        # 対応するすべてのツール
 | **PowerShell** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex` |
 | **cargo** | `cargo binstall episteme` ⚡ または `cargo install episteme` |
 | **Docker** | [オプション3](#option-3-docker-rust不要)を参照 |
+
+> **サーバー設定：** インストールウィザードがバインドアドレス（`127.0.0.1` はローカルのみ、`0.0.0.0` はネットワーク公開）を選択し、必要に応じて認証用ベアラートークンの生成を尋ねます。`0.0.0.0` バインドではトークンが必須、ローカルバインドでは推奨のみです。
 
 ### 動作確認
 
@@ -209,14 +231,14 @@ Epistemeは完全にオフラインで動作します：単一バイナリ、ロ
 | 🧠 | **22のGoFデザインパターン** | 実例を含む完全なカタログ |
 | 🔧 | **66のリファクタリング手法** | コードサンプル付きのFowlerのカタログ |
 | ⚖️ | **56のソフトウェア法則・原則** | SOLID、コンウェイの法則、CAP定理など |
-| 👃 | **17のコードスメルタイプ** | Long Method、God Object、Feature Envyなど ¹ |
+| 👃 | **23のコードスメルタイプ** | Long Method、God Object、Feature Envyなど ¹ |
 | 🔗 | **201のセマンティック関係** | 「解決する」「強制する」「違反する」「関連する」 |
 | 🤖 | **9つのMCPツール + 4つのエージェント** | 高忠実度AIエージェント連携とエージェント間ハンドオフ |
 | 🌐 | **HTTP APIサーバー** | ポート58302でREST API、インストール時に自動起動 |
 | 🌍 | **10言語サポート** | Python（AST）、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin |
 | 📊 | **決定論的分析** | ASTベースPython + 正規表現マルチ言語、常に同じ結果 |
 | 🏷️ | **引用可能なナレッジ** | すべての発見が明示的エンティティID（`RF-001`、`LAW-021`）にリンク |
-| 🌐 | **REST API（17エンドポイント）** | 認証、レート制限、ヘルスプローブ、Prometheusメトリクス |
+| 🌐 | **REST API（20+エンドポイント）** | 認証、レート制限、ヘルスプローブ、Prometheusメトリクス |
 | 📦 | **単一バイナリ** | ランタイム不要、クロスプラットフォーム（macOS、Linux、Windows） |
 | 🔌 | **ローカル埋め込み** | fastembed（ONNX Runtime）、ゼロ設定セマンティック検索 |
 | 🐳 | **Dockerサポート** | ヘルスチェック付きマルチステージビルド |
@@ -409,6 +431,11 @@ episteme web --port 8080  # Web UI（インタラクティブなグラフエク�
 
 # 配布パッケージング
 episteme dist --out-dir release/
+
+# バックグラウンドMCPデーモン（HTTPプロキシ）
+epis service start
+epis service status
+epis service stop
 ```
 
 ---
@@ -417,7 +444,6 @@ episteme dist --out-dir release/
 
 | ドキュメント | 説明 |
 |----------|-------------|
-| [クイックスタート](./QUICKSTART.md) | ステップバイステップのセットアップ、初回実行、トラブルシューティング |
 | [MCP統合ガイド](./mcp-integration-guide.md) | ツールリファレンス、エージェントの使用例、会話フロー |
 | [暗黙知アーキテクチャ](./tacit-knowledge.md) | 二重データベース設計、インサイトのライフサイクル、スキーマ |
 | [Alcoveエコシステム比較](./alcove-ecosystem.md) | 保存モデル、検索機能、ユースケースマトリクス |
@@ -519,6 +545,13 @@ EPISTEME_MCP_PORT=43175
 epis api --port 58303   # 別のポートを使用
 ```
 
+**「データベースが見つからない」場合**
+```bash
+epis install   # データアーカイブを再ダウンロード
+# または
+epis install --local
+```
+
 **初回起動が遅い場合**
 
 Epistemeは初回実行時にローカル埋め込みインデックスを構築します。これには30〜60秒かかり、一度だけのコストです。2回目以降の起動は瞬時です。
@@ -531,7 +564,7 @@ rustup update stable
 rustup show   # アクティブなツールチェーンを確認
 ```
 
-> さらなるヘルプ：[QUICKSTART.mdのトラブルシューティングセクション](../../QUICKSTART.md#troubleshooting) · [イシューを開く](https://github.com/epicsagas/Episteme/issues)
+> さらなるヘルプ：[トラブルシューティングセクション](../../README.md#troubleshooting) · [イシューを開く](https://github.com/epicsagas/Episteme/issues)
 
 ---
 

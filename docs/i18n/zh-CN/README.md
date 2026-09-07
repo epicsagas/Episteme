@@ -4,7 +4,7 @@
 
 <p align="center"><sub>Episteme (συνταγμα) —— 希腊语中意为"有组织的系统"或"辨识力"</sub></p>
 
-<p align="center">一个离线优先、单二进制文件的知识图谱，通过语义关系将设计模式、重构技术和软件法则连接在一起。<br><b>优先为 AI 智能体而生</b> —— 将软件工程专业知识直接集成到 Claude Code、Cursor 及其他兼容 MCP 的工具中。</p>
+<p align="center">一个离线优先、单二进制文件的知识图谱，通过语义关系将设计模式、重构技术和软件法则连接在一起。<br><b>优先为 AI 智能体而生</b> —— 以五主机插件（Claude Code · Codex · Grok Build · agy · Hermes）形式提供，并可集成到 Cursor 及其他兼容 MCP 的工具中。</p>
 
 <p align="center">使用 Rust 编写 · 单一二进制文件 · 完全离线</p>
 
@@ -45,23 +45,40 @@
 ```
 /plugin marketplace add epicsagas/plugins
 /plugin install episteme@epicsagas
+
+# 或在终端中
+claude plugin marketplace add epicsagas/plugins
+claude plugin add episteme@epicsagas
 ```
-
-插件钩子会自动安装 `epis` 二进制文件。**在启动新会话之前**，请在终端中运行一次以下命令：
-
-```bash
-epis install   # 从 GitHub Releases 下载知识图谱数据
-```
-
-`epis install` 会初始化知识图谱数据库并在端口 58302 上启动 HTTP API 服务器。然后启动新的 Claude Code 会话即可。
-
-更新：`/plugin update episteme@epicsagas`
 
 ### Codex CLI
 
 ```bash
 codex plugin marketplace add epicsagas/plugins
+codex plugin add episteme@epicsagas
 ```
+
+### Grok Build
+
+```bash
+grok plugin install epicsagas/Episteme --trust
+```
+
+### agy（Antigravity）/ Hermes
+
+agy 与 Hermes 没有安装钩子，因此请先安装二进制文件（参见[手动安装](#手动安装)），然后添加插件：
+
+```bash
+agy plugin install https://github.com/epicsagas/Episteme
+agy plugin enable episteme
+
+hermes plugins install https://github.com/epicsagas/Episteme
+hermes plugins enable episteme
+```
+
+> Hermes 的安装扫描器可能会将本仓库的文件（`AGENTS.md`、`Cargo.toml`、docs 等）误判为 CRITICAL 持久化并阻止安装。可以传入 `--force`，或在 Hermes 配置中设置 `plugins.scan_on_install: false` 关闭扫描。
+
+### 安装后（Claude Code、Codex、Grok Build）
 
 插件钩子会自动安装 `epis` 二进制文件。**在启动新会话之前**，请在终端中运行一次以下命令：
 
@@ -71,9 +88,10 @@ epis install   # 从 GitHub Releases 下载知识图谱数据
 
 `epis install` 会初始化知识图谱数据库并在端口 58302 上启动 HTTP API 服务器。然后启动新会话即可立即使用。
 
-更新：`codex plugin update episteme@epicsagas`
+更新：`/plugin update episteme@epicsagas`（Claude Code）或 `codex plugin update episteme@epicsagas`（Codex）
 
-### 其他工具
+<details>
+<summary><b>其他工具（Cursor、OpenCode、Cline）</b></summary>
 
 ```bash
 epis install cursor       # Cursor IDE
@@ -81,6 +99,8 @@ epis install opencode     # OpenCode
 epis install cline        # Cline
 epis install --all        # 所有支持的工具
 ```
+
+</details>
 
 ### 手动安装
 
@@ -91,6 +111,8 @@ epis install --all        # 所有支持的工具
 | **PowerShell** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex` |
 | **cargo** | `cargo binstall episteme` ⚡ 或 `cargo install episteme` |
 | **Docker** | 见 [选项 3](#选项-3docker无需-rust) |
+
+> **服务器配置：** 安装向导会要求选择绑定地址（`127.0.0.1` 仅本机，`0.0.0.0` 对网络开放），并可选生成用于认证的 Bearer 令牌。绑定 `0.0.0.0` 时必须提供令牌；本机绑定则仅为建议。
 
 ### 验证
 
@@ -209,14 +231,14 @@ Episteme 完全离线运行：单一二进制文件、本地 SQLite 数据库、
 | 🧠 | **22个GoF设计模式** | 包含实际示例的完整目录 |
 | 🔧 | **66个重构技术** | Fowler目录，附带代码示例 |
 | ⚖️ | **56条软件定律与原则** | SOLID、康威定律、CAP定理等 |
-| 👃 | **17种代码异味类型** | Long Method、God Object、Feature Envy等 ¹ |
+| 👃 | **23种代码异味类型** | Long Method、God Object、Feature Envy等 ¹ |
 | 🔗 | **201条语义关系** | "解决"、"强制"、"违反"、"关联" |
 | 🤖 | **9个MCP工具 + 4个代理** | 高保真AI代理交互，支持代理间交接 |
 | 🌐 | **HTTP API 服务器** | 端口 58302 上的 REST API，安装时自动启动 |
 | 🌍 | **10种语言支持** | Python（AST）、Java、TypeScript、Go、Rust、C++、C#、PHP、Ruby、Kotlin |
 | 📊 | **确定性分析** | 基于AST的Python + 正则多语言，每次结果一致 |
 | 🏷️ | **可引用的知识** | 每个发现都链接到明确的实体ID（`RF-001`、`LAW-021`） |
-| 🌐 | **REST API（17个端点）** | 认证、速率限制、健康探针、Prometheus指标 |
+| 🌐 | **REST API（20+个端点）** | 认证、速率限制、健康探针、Prometheus指标 |
 | 📦 | **单一二进制文件** | 无运行时依赖，跨平台（macOS、Linux、Windows） |
 | 🔌 | **本地嵌入** | fastembed（ONNX Runtime），零配置语义搜索 |
 | 🐳 | **Docker支持** | 带健康检查的多阶段构建 |
@@ -409,6 +431,11 @@ episteme web --port 8080  # Web UI（交互式图谱浏览器）
 
 # 分发打包
 episteme dist --out-dir release/
+
+# 后台 MCP 守护进程（HTTP 代理）
+epis service start
+epis service status
+epis service stop
 ```
 
 ---
@@ -417,7 +444,6 @@ episteme dist --out-dir release/
 
 | 文档 | 说明 |
 |----------|-------------|
-| [快速开始](./QUICKSTART.md) | 逐步设置、首次运行、故障排除 |
 | [MCP 集成指南](./mcp-integration-guide.md) | 工具参考、智能体示例、对话流程 |
 | [隐性知识架构](./tacit-knowledge.md) | 双数据库设计、洞察生命周期、模式 |
 | [Alcove 生态系统对比](./alcove-ecosystem.md) | 存储模型、搜索能力、用例矩阵 |
@@ -519,6 +545,13 @@ EPISTEME_MCP_PORT=43175
 epis api --port 58303   # 使用不同的端口
 ```
 
+**找不到数据库**
+```bash
+epis install   # 重新下载数据归档
+# 或
+epis install --local
+```
+
 **首次启动缓慢**
 
 Episteme 在首次运行时会构建本地嵌入索引。这需要 30–60 秒，是一次性成本。后续启动是即时的。
@@ -531,7 +564,7 @@ rustup update stable
 rustup show   # 确认当前工具链
 ```
 
-> 更多帮助：[QUICKSTART.md 故障排除部分](../../QUICKSTART.md#troubleshooting) · [提交 Issue](https://github.com/epicsagas/Episteme/issues)
+> 更多帮助：[故障排除部分](../../README.md#troubleshooting) · [提交 Issue](https://github.com/epicsagas/Episteme/issues)
 
 ---
 

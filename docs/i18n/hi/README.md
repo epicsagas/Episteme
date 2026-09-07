@@ -4,7 +4,7 @@
 
 <p align="center"><sub>Episteme (συν ταγμα) — यूनानी भाषा में "संगठित प्रणाली" या "विवेक" का अर्थ</sub></p>
 
-<p align="center">एक ऑफलाइन-फर्स्ट, सिंगल-बाइनरी ज्ञान ग्राफ जो डिज़ाइन पैटर्न, रिफैक्टरिंग तकनीकों और सॉफ्टवेयर नियमों को semantic संबंधों के माध्यम से जोड़ता है।<br><b>AI एजेंट्स के लिए सर्वप्रथम बनाया गया</b> — सॉफ्टवेयर इंजीनियरिंग विशेषज्ञता को सीधे Claude Code, Cursor और अन्य MCP-संगत उपकरणों में एकीकृत करें।</p>
+<p align="center">एक ऑफलाइन-फर्स्ट, सिंगल-बाइनरी ज्ञान ग्राफ जो डिज़ाइन पैटर्न, रिफैक्टरिंग तकनीकों और सॉफ्टवेयर नियमों को semantic संबंधों के माध्यम से जोड़ता है।<br><b>AI एजेंट्स के लिए सर्वप्रथम बनाया गया</b> — पाँच होस्ट प्लगइन (Claude Code · Codex · Grok Build · agy · Hermes) के रूप में उपलब्ध और Cursor तथा अन्य MCP-संगत उपकरणों में एकीकृत।</p>
 
 <p align="center">Rust में लिखा गया · सिंगल बाइनरी · पूरी तरह ऑफलाइन</p>
 
@@ -45,23 +45,40 @@
 ```
 /plugin marketplace add epicsagas/plugins
 /plugin install episteme@epicsagas
+
+# या टर्मिनल में
+claude plugin marketplace add epicsagas/plugins
+claude plugin add episteme@epicsagas
 ```
-
-प्लगइन हुक `epis` बाइनरी को स्वचालित रूप से इंस्टॉल करता है। **नया सेशन शुरू करने से पहले** टर्मिनल में एक बार यह कमांड चलाएँ:
-
-```bash
-epis install   # GitHub Releases से नॉलेज ग्राफ डेटा डाउनलोड करता है
-```
-
-`epis install` नॉलेज ग्राफ डेटाबेस को इनिशियलाइज़ करता है और पोर्ट 58302 पर HTTP API सर्वर शुरू करता है। इसके बाद नया Claude Code सेशन शुरू करें और तैयार हैं।
-
-अपडेट करें: `/plugin update episteme@epicsagas`
 
 ### Codex CLI
 
 ```bash
 codex plugin marketplace add epicsagas/plugins
+codex plugin add episteme@epicsagas
 ```
+
+### Grok Build
+
+```bash
+grok plugin install epicsagas/Episteme --trust
+```
+
+### agy (Antigravity) / Hermes
+
+agy और Hermes में इंस्टॉल हुक नहीं है, इसलिए पहले बाइनरी इंस्टॉल करें ([मैनुअल इंस्टॉल](#मैनुअल-इंस्टॉल) देखें) और फिर प्लगइन जोड़ें:
+
+```bash
+agy plugin install https://github.com/epicsagas/Episteme
+agy plugin enable episteme
+
+hermes plugins install https://github.com/epicsagas/Episteme
+hermes plugins enable episteme
+```
+
+> Hermes का इंस्टॉल स्कैनर इस रिपॉज़िटरी की फ़ाइलों (`AGENTS.md`, `Cargo.toml`, docs...) को CRITICAL persistence मानकर ब्लॉक कर सकता है। `--force` पास करें, या Hermes कॉन्फ़िग में `plugins.scan_on_install: false` सेट करके स्कैन बंद करें।
+
+### इंस्टॉल के बाद (Claude Code, Codex, Grok Build)
 
 प्लगइन हुक `epis` बाइनरी को स्वचालित रूप से इंस्टॉल करता है। **नया सेशन शुरू करने से पहले** टर्मिनल में एक बार यह कमांड चलाएँ:
 
@@ -71,9 +88,10 @@ epis install   # GitHub Releases से नॉलेज ग्राफ डे�
 
 `epis install` नॉलेज ग्राफ डेटाबेस को इनिशियलाइज़ करता है और पोर्ट 58302 पर HTTP API सर्वर शुरू करता है। इसके बाद नया सेशन शुरू करें और तुरंत उपलब्ध है।
 
-अपडेट करें: `codex plugin update episteme@epicsagas`
+अपडेट करें: `/plugin update episteme@epicsagas` (Claude Code) या `codex plugin update episteme@epicsagas` (Codex)
 
-### अन्य टूल्स
+<details>
+<summary><b>अन्य टूल्स (Cursor, OpenCode, Cline)</b></summary>
 
 ```bash
 epis install cursor       # Cursor IDE
@@ -81,6 +99,8 @@ epis install opencode     # OpenCode
 epis install cline        # Cline
 epis install --all        # सभी समर्थित टूल्स
 ```
+
+</details>
 
 ### मैनुअल इंस्टॉल
 
@@ -91,6 +111,8 @@ epis install --all        # सभी समर्थित टूल्स
 | **PowerShell** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex` |
 | **cargo** | `cargo binstall episteme` ⚡ या `cargo install episteme` |
 | **Docker** | [विकल्प 3](#विकल्प-3-docker-rust-की-आवश्यकता-नहीं) देखें |
+
+> **सर्वर कॉन्फ़िगरेशन:** इंस्टॉल विज़ार्ड बाइंड एड्रेस (`127.0.0.1` केवल लोकल, `0.0.0.0` नेटवर्क के लिए) चुनने और वैकल्पिक रूप से प्रमाणीकरण के लिए बेयर टोकन जेनरेट करने को कहेगा। `0.0.0.0` बाइंड के लिए टोकन ज़रूरी है; लोकल बाइंड में केवल अनुशंसित है।
 
 ### सत्यापित करें
 
@@ -209,14 +231,14 @@ Episteme पूरी तरह से ऑफलाइन चलता है: �
 | 🧠 | **22 GoF डिज़ाइन पैटर्न** | वास्तविक उदाहरणों के साथ पूर्ण कैटलॉग |
 | 🔧 | **66 रिफैक्टरिंग तकनीकें** | कोड नमूनों के साथ Fowler का कैटलॉग |
 | ⚖️ | **56 सॉफ्टवेयर नियम और सिद्धांत** | SOLID, Conway का नियम, CAP प्रमेय आदि |
-| 👃 | **17 कोड स्मेल प्रकार** | Long Method, God Object, Feature Envy आदि ¹ |
+| 👃 | **23 कोड स्मेल प्रकार** | Long Method, God Object, Feature Envy आदि ¹ |
 | 🔗 | **201 अर्थपूर्ण संबंध** | "हल करता है", "लागू करता है", "उल्लंघन करता है", "संबंधित है" |
 | 🤖 | **9 MCP उपकरण + 4 एजेंट** | उच्च-निष्ठता AI एजेंट इंटरैक्शन, एजेंट-बीच हैंडऑफ |
 | 🌐 | **HTTP API सर्वर** | पोर्ट 58302 पर REST API, इंस्टॉल पर स्वचालित रूप से शुरू |
 | 🌍 | **10 भाषा समर्थन** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
 | 📊 | **नियतात्मक विश्लेषण** | AST-आधारित Python + रेगेक्स बहु-भाषा, हर बार एक ही परिणाम |
 | 🏷️ | **उद्धरणीय ज्ञान** | प्रत्येक खोज स्पष्ट एंटिटी ID (`RF-001`, `LAW-021`) से जुड़ी है |
-| 🌐 | **REST API (17 एंडपॉइंट)** | प्रमाणीकरण, दर सीमा, हेल्थ प्रोब, Prometheus मेट्रिक्स |
+| 🌐 | **REST API (20+ एंडपॉइंट)** | प्रमाणीकरण, दर सीमा, हेल्थ प्रोब, Prometheus मेट्रिक्स |
 | 📦 | **एकल बाइनरी** | कोई रनटाइम नहीं, क्रॉस-प्लेटफॉर्म (macOS, Linux, Windows) |
 | 🔌 | **स्थानीय एम्बेडिंग्स** | fastembed (ONNX Runtime), शून्य-कॉन्फ़िग अर्थपूर्ण खोज |
 | 🐳 | **Docker समर्थन** | हेल्थ चेक के साथ मल्टी-स्टेज बिल्ड |
@@ -409,6 +431,11 @@ episteme web --port 8080  # Web UI (इंटरैक्टिव ग्रा�
 
 # वितरण पैकेजिंग
 episteme dist --out-dir release/
+
+# बैकग्राउंड MCP डेमन (HTTP प्रॉक्सी)
+epis service start
+epis service status
+epis service stop
 ```
 
 ---
@@ -417,7 +444,6 @@ episteme dist --out-dir release/
 
 | दस्तावेज़ | विवरण |
 |----------|-------------|
-| [त्वरित शुरुआत](./QUICKSTART.md) | चरण-दर-चरण सेटअप, पहला रन, समस्या निवारण |
 | [MCP एकीकरण गाइड](./mcp-integration-guide.md) | टूल संदर्भ, एजेंट उदाहरण, वार्तालाप प्रवाह |
 | [अंतर्निहित ज्ञान आर्किटेक्चर](./tacit-knowledge.md) | दो-डेटाबेस डिज़ाइन, अंतर्दृष्टि जीवनचक्र, स्कीमा |
 | [Alcove पारिस्थितिकी तंत्र तुलना](./alcove-ecosystem.md) | स्टोरेज मॉडल, खोज क्षमताएँ, उपयोग-केस मैट्रिक्स |
@@ -519,6 +545,13 @@ EPISTEME_MCP_PORT=43175
 epis api --port 58303   # एक भिन्न पोर्ट का उपयोग करें
 ```
 
+**डेटाबेस नहीं मिला**
+```bash
+epis install   # डेटा आर्काइव दोबारा डाउनलोड करें
+# या
+epis install --local
+```
+
 **पहली बार शुरू करने में धीमापन**
 
 Episteme पहली बार चलने पर एक स्थानीय एम्बेडिंग इंडेक्स बनाता है। इसमें 30–60 सेकंड लगते हैं और यह एक बार की लागत है। बाद के शुरू होने तुरंत होते हैं।
@@ -531,7 +564,7 @@ rustup update stable
 rustup show   # सक्रिय टूलचेन की पुष्टि करें
 ```
 
-> अधिक सहायता: [QUICKSTART.md समस्या निवारण अनुभाग](../../QUICKSTART.md#troubleshooting) · [एक इश्यू खोलें](https://github.com/epicsagas/Episteme/issues)
+> अधिक सहायता: [समस्या निवारण अनुभाग](../../README.md#troubleshooting) · [एक इश्यू खोलें](https://github.com/epicsagas/Episteme/issues)
 
 ---
 

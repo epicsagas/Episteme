@@ -4,7 +4,7 @@
 
 <p align="center"><sub>Episteme (συνταγμα) — du grec « systeme organise » ou « discernement »</sub></p>
 
-<p align="center">Un graphe de connaissances hors-ligne, en un seul binaire, qui connecte les motifs de conception, les techniques de refactoring et les lois du logiciel par des relations semantiques.<br><b>Concu d'abord pour les agents IA</b> — integrez l'expertise en genie logiciel directement dans Claude Code, Cursor et autres outils compatibles MCP.</p>
+<p align="center">Un graphe de connaissances hors-ligne, en un seul binaire, qui connecte les motifs de conception, les techniques de refactoring et les lois du logiciel par des relations semantiques.<br><b>Concu d'abord pour les agents IA</b> — disponible en plugin pour cinq hotes (Claude Code · Codex · Grok Build · agy · Hermes) et integrable dans Cursor et autres outils compatibles MCP.</p>
 
 <p align="center">Ecrit en Rust · Binaire unique · Entierement hors-ligne</p>
 
@@ -47,23 +47,40 @@
 ```
 /plugin marketplace add epicsagas/plugins
 /plugin install episteme@epicsagas
+
+# ou dans le terminal
+claude plugin marketplace add epicsagas/plugins
+claude plugin add episteme@epicsagas
 ```
-
-Le hook du plugin installe le binaire `epis` automatiquement. **Avant de démarrer une nouvelle session**, exécutez cette commande une fois dans votre terminal :
-
-```bash
-epis install   # Télécharge les données du graphe de connaissances depuis GitHub Releases
-```
-
-`epis install` initialise la base de données du graphe de connaissances et démarre le serveur HTTP API sur le port 58302. Démarrez ensuite une nouvelle session Claude Code et c'est prêt.
-
-Mettre à jour : `/plugin update episteme@epicsagas`
 
 ### Codex CLI
 
 ```bash
 codex plugin marketplace add epicsagas/plugins
+codex plugin add episteme@epicsagas
 ```
+
+### Grok Build
+
+```bash
+grok plugin install epicsagas/Episteme --trust
+```
+
+### agy (Antigravity) / Hermes
+
+agy et Hermes n'ont pas de hook d'installation : installez d'abord le binaire (voir [Installation manuelle](#installation-manuelle)), puis ajoutez le plugin :
+
+```bash
+agy plugin install https://github.com/epicsagas/Episteme
+agy plugin enable episteme
+
+hermes plugins install https://github.com/epicsagas/Episteme
+hermes plugins enable episteme
+```
+
+> Le scanner d'installation de Hermes peut signaler des fichiers de ce depot (`AGENTS.md`, `Cargo.toml`, docs...) comme persistence CRITICAL et bloquer. Passez `--force`, ou desactivez le scan dans la configuration Hermes : `plugins.scan_on_install: false`.
+
+### Apres l'installation (Claude Code, Codex, Grok Build)
 
 Le hook du plugin installe le binaire `epis` automatiquement. **Avant de démarrer une nouvelle session**, exécutez cette commande une fois dans votre terminal :
 
@@ -73,9 +90,10 @@ epis install   # Télécharge les données du graphe de connaissances depuis Git
 
 `epis install` initialise la base de données du graphe de connaissances et démarre le serveur HTTP API sur le port 58302. Démarrez ensuite une nouvelle session et tout est immédiatement disponible.
 
-Mettre à jour : `codex plugin update episteme@epicsagas`
+Mettre à jour : `/plugin update episteme@epicsagas` (Claude Code) ou `codex plugin update episteme@epicsagas` (Codex)
 
-### Autres outils
+<details>
+<summary><b>Autres outils (Cursor, OpenCode, Cline)</b></summary>
 
 ```bash
 epis install cursor       # Cursor IDE
@@ -83,6 +101,8 @@ epis install opencode     # OpenCode
 epis install cline        # Cline
 epis install --all        # Tous les outils supportes
 ```
+
+</details>
 
 ### Installation manuelle
 
@@ -93,6 +113,8 @@ epis install --all        # Tous les outils supportes
 | **PowerShell** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex` |
 | **cargo** | `cargo binstall episteme` ⚡ ou `cargo install episteme` |
 | **Docker** | Voir [Option 3](#option-3-docker-rust-non-requis) |
+
+> **Configuration du serveur :** l'assistant d'installation demande l'adresse de bind (`127.0.0.1` local uniquement, `0.0.0.0` reseau) et peut generer optionnellement un bearer token d'authentification. Un token est requis pour `0.0.0.0` ; en local il est seulement recommande.
 
 ### Verifier
 
@@ -211,14 +233,14 @@ Episteme fonctionne entierement hors-ligne : binaire unique, base de donnees SQL
 | 🧠 | **22 motifs de conception GoF** | Catalogue complet avec exemples concrets |
 | 🔧 | **66 techniques de refactoring** | Catalogue de Fowler avec exemples de code |
 | ⚖️ | **56 lois et principes logiciels** | SOLID, loi de Conway, théorème CAP, etc. |
-| 👃 | **17 types de code smells** | Long Method, God Object, Feature Envy, etc. ¹ |
+| 👃 | **23 types de code smells** | Long Method, God Object, Feature Envy, etc. ¹ |
 | 🔗 | **201 relations sémantiques** | « résout », « impose », « viole », « est lié à » |
 | 🤖 | **9 outils MCP + 4 agents** | Interaction agent IA haute fidélité avec transferts inter-agents |
 | 🌐 | **Serveur HTTP API** | API REST sur le port 58302, démarré automatiquement à l'installation |
 | 🌍 | **Support de 10 langages** | Python (AST), Java, TypeScript, Go, Rust, C++, C#, PHP, Ruby, Kotlin |
 | 📊 | **Analyse déterministe** | Python basé AST + regex multilangage, résultat identique à chaque fois |
 | 🏷️ | **Connaissances citables** | Chaque découverte est liée à des IDs d'entité explicites (`RF-001`, `LAW-021`) |
-| 🌐 | **API REST (17 points d'accès)** | Auth, limitation de débit, sondes de santé, métriques Prometheus |
+| 🌐 | **API REST (20+ points d'accès)** | Auth, limitation de débit, sondes de santé, métriques Prometheus |
 | 📦 | **Binaire unique** | Pas de runtime, multiplateforme (macOS, Linux, Windows) |
 | 🔌 | **Embeddings locaux** | fastembed (ONNX Runtime), recherche sémantique sans configuration |
 | 🐳 | **Support Docker** | Build multi-étape avec vérifications de santé |
@@ -411,6 +433,11 @@ episteme web --port 8080  # Interface Web (explorateur de graphe interactif)
 
 # Packaging de distribution
 episteme dist --out-dir release/
+
+# Daemon MCP en arriere-plan (proxy HTTP)
+epis service start
+epis service status
+epis service stop
 ```
 
 ---
@@ -419,7 +446,6 @@ episteme dist --out-dir release/
 
 | Document | Description |
 |----------|-------------|
-| [Demarrage rapide](./QUICKSTART.md) | Installation etape par etape, premiere execution, depannage |
 | [Guide d'integration MCP](./mcp-integration-guide.md) | Reference des outils, exemples d'agents, flux de conversation |
 | [Architecture de la connaissance tacite](./tacit-knowledge.md) | Conception a deux bases, cycle de vie des insights, schema |
 | [Comparaison de l'ecosysteme Alcove](./alcove-ecosystem.md) | Modeles de stockage, capacites de recherche, matrice des cas d'usage |
@@ -521,6 +547,13 @@ Le serveur HTTP API démarre automatiquement sur le port 58302 après `epis inst
 epis api --port 58303   # utiliser un port different
 ```
 
+**Base de donnees introuvable**
+```bash
+epis install   # Retelecharger l'archive de donnees
+# ou
+epis install --local
+```
+
 **Premier demarrage lent**
 
 Episteme construit un index d'embeddings local au premier lancement. Cela prend 30 a 60 secondes et est un cout ponctuel. Les demarrages suivants sont instantanes.
@@ -533,7 +566,7 @@ rustup update stable
 rustup show   # confirmer la toolchain active
 ```
 
-> Plus d'aide : [Section depannage de QUICKSTART.md](../../QUICKSTART.md#troubleshooting) · [Ouvrir un ticket](https://github.com/epicsagas/Episteme/issues)
+> Plus d'aide : [Section depannage](../../README.md#troubleshooting) · [Ouvrir un ticket](https://github.com/epicsagas/Episteme/issues)
 
 ---
 

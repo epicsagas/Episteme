@@ -4,7 +4,7 @@
 
 <p align="center"><sub>Episteme (σύνταγμα) — 그리스어로 "조직화된 체계" 또는 "분별력"</sub></p>
 
-<p align="center">오프라인 우선, 단일 바이너리 지식 그래프로 설계 패턴, 리팩토링 기법, 소프트웨어 법칙을 의미론적 관계로 연결합니다.<br><b>AI 에이전트를 최우선으로 설계</b> — 소프트웨어 엔지니어링 전문 지식을 Claude Code, Cursor 및 기타 MCP 호환 도구에 직접 통합하세요.</p>
+<p align="center">오프라인 우선, 단일 바이너리 지식 그래프로 설계 패턴, 리팩토링 기법, 소프트웨어 법칙을 의미론적 관계로 연결합니다.<br><b>AI 에이전트를 최우선으로 설계</b> — 다섯 호스트 플러그인(Claude Code · Codex · Grok Build · agy · Hermes)으로 제공되며 Cursor 및 기타 MCP 호환 도구에 통합됩니다.</p>
 
 <p align="center">Rust로 작성됨 · 단일 바이너리 · 완전 오프라인</p>
 
@@ -45,23 +45,40 @@
 ```
 /plugin marketplace add epicsagas/plugins
 /plugin install episteme@epicsagas
+
+# 또는 터미널에서
+claude plugin marketplace add epicsagas/plugins
+claude plugin add episteme@epicsagas
 ```
-
-플러그인 훅이 `epis` 바이너리를 자동으로 설치합니다. **새 세션을 시작하기 전에** 터미널에서 아래 명령을 한 번 실행하세요:
-
-```bash
-epis install   # GitHub Releases에서 지식 그래프 데이터 다운로드
-```
-
-`epis install`은 지식 그래프 데이터베이스를 초기화하고 포트 58302에서 HTTP API 서버를 시작합니다. 이후 새 Claude Code 세션을 시작하면 바로 사용할 수 있습니다.
-
-업데이트: `/plugin update episteme@epicsagas`
 
 ### Codex CLI
 
 ```bash
 codex plugin marketplace add epicsagas/plugins
+codex plugin add episteme@epicsagas
 ```
+
+### Grok Build
+
+```bash
+grok plugin install epicsagas/Episteme --trust
+```
+
+### agy (Antigravity) / Hermes
+
+agy와 Hermes는 설치 훅이 없으므로 먼저 바이너리를 설치한 뒤([수동 설치](#수동-설치) 참조) 플러그인을 추가합니다:
+
+```bash
+agy plugin install https://github.com/epicsagas/Episteme
+agy plugin enable episteme
+
+hermes plugins install https://github.com/epicsagas/Episteme
+hermes plugins enable episteme
+```
+
+> Hermes 설치 스캐너가 이 저장소의 파일(`AGENTS.md`, `Cargo.toml`, docs 등)을 CRITICAL persistence로 오판해 설치를 막을 수 있습니다. `--force`를 쓰거나 Hermes 설정에서 `plugins.scan_on_install: false`로 스캔을 끄세요.
+
+### 설치 후 (Claude Code, Codex, Grok Build)
 
 플러그인 훅이 `epis` 바이너리를 자동으로 설치합니다. **새 세션을 시작하기 전에** 터미널에서 아래 명령을 한 번 실행하세요:
 
@@ -69,11 +86,12 @@ codex plugin marketplace add epicsagas/plugins
 epis install   # GitHub Releases에서 지식 그래프 데이터 다운로드
 ```
 
-`epis install`은 지식 그래프 데이터베이스를 초기화하고 포트 58302에서 HTTP API 서버를 시작합니다. 이후 새 세션을 시작하면 즉시 사용 가능합니다.
+`epis install`은 지식 그래프 데이터베이스를 초기화하고 포트 58302에서 HTTP API 서버를 시작합니다. 이후 새 세션을 시작하면 바로 사용할 수 있습니다.
 
-업데이트: `codex plugin update episteme@epicsagas`
+업데이트: `/plugin update episteme@epicsagas` (Claude Code) 또는 `codex plugin update episteme@epicsagas` (Codex)
 
-### 기타 도구
+<details>
+<summary><b>기타 도구 (Cursor, OpenCode, Cline)</b></summary>
 
 ```bash
 epis install cursor       # Cursor IDE
@@ -81,6 +99,8 @@ epis install opencode     # OpenCode
 epis install cline        # Cline
 epis install --all        # 지원되는 모든 도구
 ```
+
+</details>
 
 ### 수동 설치
 
@@ -91,6 +111,8 @@ epis install --all        # 지원되는 모든 도구
 | **PowerShell** | `irm https://github.com/epicsagas/Episteme/releases/latest/download/episteme-installer.ps1 \| iex` |
 | **cargo** | `cargo binstall episteme` ⚡ 또는 `cargo install episteme` |
 | **Docker** | [옵션 3](#옵션-3-docker-rust-불필요) 참조 |
+
+> **서버 설정:** 설치 마법사가 바인드 주소(`127.0.0.1`은 로컬 전용, `0.0.0.0`은 네트워크 공개)를 선택하고 인증용 베어러 토큰 생성 여부를 묻습니다. `0.0.0.0` 바인딩에는 토큰이 필수이고, 로컬 바인딩은 권장만 됩니다.
 
 ### 확인
 
@@ -409,6 +431,11 @@ episteme web --port 8080  # 웹 UI (대화형 그래프 탐색기)
 
 # 배포 패키징
 episteme dist --out-dir release/
+
+# 백그라운드 MCP 데몬 (HTTP 프록시)
+epis service start
+epis service status
+epis service stop
 ```
 
 ---
@@ -417,7 +444,6 @@ episteme dist --out-dir release/
 
 | 문서 | 설명 |
 |------|------|
-| [빠른 시작](./QUICKSTART.md) | 단계별 설정, 첫 실행, 문제 해결 |
 | [MCP 통합 가이드](./mcp-integration-guide.md) | 도구 참조, 에이전트 예시, 대화 흐름 |
 | [암묵지 아키텍처](./tacit-knowledge.md) | 이중 데이터베이스 설계, 인사이트 수명주기, 스키마 |
 | [Alcove 생태계 비교](./alcove-ecosystem.md) | 저장 모델, 검색 기능, 사용 사례 매트릭스 |
@@ -519,6 +545,13 @@ EPISTEME_MCP_PORT=43175
 epis api --port 58303   # 다른 포트 사용
 ```
 
+**데이터베이스를 찾을 수 없는 경우**
+```bash
+epis install   # 데이터 아카이브 재다운로드
+# 또는
+epis install --local
+```
+
 **첫 시작이 느린 경우**
 
 Episteme는 첫 실행 시 로컬 임베딩 인덱스를 빌드합니다. 30-60초가 소요되며 일회성 비용입니다. 이후 시작은 즉시 이루어집니다.
@@ -531,7 +564,7 @@ rustup update stable
 rustup show   # 활성 툴체인 확인
 ```
 
-> 추가 도움: [QUICKSTART.md 문제 해결 섹션](../../QUICKSTART.md#troubleshooting) · [이슈 열기](https://github.com/epicsagas/Episteme/issues)
+> 추가 도움: [문제 해결 섹션](../../README.md#troubleshooting) · [이슈 열기](https://github.com/epicsagas/Episteme/issues)
 
 ---
 
