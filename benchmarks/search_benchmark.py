@@ -20,7 +20,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-
 ID_PATTERN = re.compile(r"\[([A-Z]+-[A-Z0-9-]+)\]")
 
 
@@ -282,7 +281,7 @@ def main() -> int:
     else:
         out_dir = repo_root / "benchmarks" / "results"
         out_dir.mkdir(parents=True, exist_ok=True)
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")  # noqa: DTZ005  local-time filename by design
         output_path = out_dir / f"search_benchmark_{ts}.json"
 
     output_path.write_text(

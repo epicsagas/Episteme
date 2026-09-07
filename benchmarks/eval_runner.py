@@ -409,9 +409,8 @@ def eval_smell_negative(epis: Path, min_confidence: float) -> dict:
 
     fp_rate = round(fp_count / total, 6) if total > 0 else 0.0
     per_lang_rate = {}
-    for lang in per_language_total:
+    for lang, tot in per_language_total.items():
         fp = per_language_fp.get(lang, 0)
-        tot = per_language_total[lang]
         per_lang_rate[lang] = round(fp / tot, 6) if tot > 0 else 0.0
 
     metrics = {
@@ -1032,7 +1031,7 @@ def _git_commit() -> str:
             cwd=str(repo_root()),
         )
         return proc.stdout.strip() or "unknown"
-    except Exception:
+    except Exception:  # noqa: BLE001  fall back to "unknown" on any git failure
         return "unknown"
 
 

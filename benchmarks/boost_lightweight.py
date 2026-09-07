@@ -122,7 +122,7 @@ def safe_ollama(
     """ollama_chat that never raises -- returns (text, error_str_or_None)."""
     try:
         return ollama_chat(ollama_url, model, user_msg, temperature), None
-    except Exception as exc:  # network / timeout / JSON / OOM-kill of ollama, etc.
+    except Exception as exc:  # noqa: BLE001  network / timeout / JSON / OOM-kill of ollama, etc.
         return "", f"{type(exc).__name__}: {exc}"
 
 
@@ -311,7 +311,7 @@ def main(argv: list[str]) -> int:
             f"[ok] Episteme: {h.get('status')} (kg={h.get('components', {}).get('knowledge_graph')})",
             file=sys.stderr,
         )
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001  benchmark must survive provider failures
         print(
             f"[fatal] Episteme unreachable at {args.episteme_url}: {exc}",
             file=sys.stderr,
@@ -333,7 +333,7 @@ def main(argv: list[str]) -> int:
         print(
             f"[ok] ollama: {len(names)} models; using {args.model!r}", file=sys.stderr
         )
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001  benchmark must survive provider failures
         print(
             f"[fatal] ollama unreachable at {args.ollama_url}: {exc}", file=sys.stderr
         )
