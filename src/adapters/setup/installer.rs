@@ -158,6 +158,14 @@ pub fn seed_data(dry_run: bool) -> Result<Vec<String>, String> {
         copy_dir_recursive(&registry_src, &registry_dst)?;
     }
 
+    // Seed root skills/ into registry/skills (single skill source of truth).
+    let skills_src = cwd.join("skills");
+    let skills_dst = registry_dst.join("skills");
+    if skills_src.exists() && !dry_run {
+        fs::create_dir_all(&skills_dst).map_err(|e| e.to_string())?;
+        copy_dir_recursive(&skills_src, &skills_dst)?;
+    }
+
     let source_dirs: Vec<PathBuf> = vec![cwd.join("raw"), cwd.join("data"), cwd.join("meta")]
         .into_iter()
         .filter(|p| p.exists() && p.is_dir())
@@ -233,7 +241,7 @@ fn seed_from_extracted(
     messages: &mut Vec<String>,
     label: &str,
 ) -> Result<bool, String> {
-    let data_dirs = ["raw", "data", "meta", "db", "registry"];
+    let data_dirs = ["raw", "data", "meta", "db", "registry", "skills"];
     let mut copied = false;
 
     // Collect candidate roots: the extract dir itself + any immediate subdirectories
@@ -256,6 +264,9 @@ fn seed_from_extracted(
                         .map(|p| p.to_path_buf())
                         .unwrap_or_else(|| crate::adapters::paths::episteme_home().join("db")),
                     "registry" => crate::adapters::paths::episteme_home().join("registry"),
+                    "skills" => crate::adapters::paths::episteme_home()
+                        .join("registry")
+                        .join("skills"),
                     _ => crate::adapters::paths::data_dir(),
                 };
                 fs::create_dir_all(&target).map_err(|e| e.to_string())?;
