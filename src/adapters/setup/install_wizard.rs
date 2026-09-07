@@ -153,198 +153,6 @@ const ACCENT: crossterm::style::Color = crossterm::style::Color::Cyan;
 const DIM: crossterm::style::Color = crossterm::style::Color::DarkGrey;
 const HI: crossterm::style::Color = crossterm::style::Color::Yellow;
 
-const TOOLS: &[(&str, &str)] = &[
-    ("cursor", "Cursor (IDE)"),
-    ("opencode", "OpenCode"),
-    ("cline", "Cline (VS Code)"),
-];
-
-/// Interactive multi-select when stdin+stdout are TTYs.
-/// Pre-selects tools whose names appear in `installed`.
-/// On error or non-interactive, returns `Err` so caller can fall back.
-pub fn interactive_select_tools(installed: &[&str]) -> io::Result<Vec<String>> {
-    let mut checked: Vec<bool> = TOOLS
-        .iter()
-        .map(|(name, _)| installed.contains(name))
-        .collect();
-
-    let result = run_tui(&mut checked)?;
-
-    if result.is_empty() {
-        return Ok(vec![]);
-    }
-
-    Ok(result)
-}
-
-fn selected_names(checked: &[bool]) -> Vec<String> {
-    TOOLS
-        .iter()
-        .zip(checked.iter())
-        .filter_map(|((name, _), &on)| on.then_some(name.to_string()))
-        .collect()
-}
-
-fn run_tui(checked: &mut [bool]) -> io::Result<Vec<String>> {
-    enable_raw_mode()?;
-
-    let mut stdout = io::stdout();
-    execute!(
-        stdout,
-        EnterAlternateScreen,
-        Hide,
-        MoveTo(0, 0),
-        Clear(ClearType::All)
-    )?;
-
-    struct RawGuard;
-    impl Drop for RawGuard {
-        fn drop(&mut self) {
-            let _ = execute!(io::stdout(), LeaveAlternateScreen, Show);
-            let _ = disable_raw_mode();
-        }
-    }
-    let _guard = RawGuard;
-
-    let mut cursor = 0usize;
-    let mut warning = false;
-
-    loop {
-        draw(&mut stdout, checked, cursor, warning)?;
-        stdout.flush()?;
-
-        let ev = event::read()?;
-        let Event::Key(key) = ev else {
-            continue;
-        };
-        if key.kind != KeyEventKind::Press {
-            continue;
-        }
-
-        warning = false;
-
-        match key.code {
-            KeyCode::Up | KeyCode::Char('k') | KeyCode::Char('K') => {
-                cursor = cursor.saturating_sub(1);
-            }
-            KeyCode::Down | KeyCode::Char('j') | KeyCode::Char('J') => {
-                cursor = (cursor + 1).min(TOOLS.len() - 1);
-            }
-            KeyCode::Char(' ') => {
-                checked[cursor] = !checked[cursor];
-            }
-            KeyCode::Char('a') | KeyCode::Char('A') => {
-                let all_on = checked.iter().all(|&c| c);
-                checked.fill(!all_on);
-            }
-            KeyCode::Char('n') | KeyCode::Char('N') => {
-                checked.fill(false);
-            }
-            KeyCode::Enter => {
-                if checked.iter().any(|&c| c) {
-                    return Ok(selected_names(checked));
-                }
-                warning = true;
-            }
-            KeyCode::Esc | KeyCode::Char('q') | KeyCode::Char('Q') => {
-                return Ok(vec![]);
-            }
-            KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => {
-                return Ok(vec![]);
-            }
-            _ => {}
-        }
-    }
-}
-
-fn draw(w: &mut impl Write, checked: &[bool], cursor: usize, warning: bool) -> io::Result<()> {
-    queue!(w, MoveTo(0, 0), Clear(ClearType::All))?;
-
-    queue!(
-        w,
-        SetForegroundColor(ACCENT),
-        SetAttribute(Attribute::Bold),
-        Print(" ╭────────────────────────────────────────────────────────────────────────╮\r\n"),
-        Print(" │ "),
-        ResetColor,
-        SetForegroundColor(ACCENT),
-        SetAttribute(Attribute::Bold),
-        Print("Episteme"),
-        ResetColor,
-        Print("  ·  Install integrations"),
-        SetForegroundColor(ACCENT),
-        Print("                                         │\r\n"),
-        Print(" ╰────────────────────────────────────────────────────────────────────────╯\r\n"),
-        ResetColor,
-        Print("\r\n"),
-    )?;
-
-    for (i, ((name, desc), on)) in TOOLS.iter().zip(checked.iter()).enumerate() {
-        let row_hi = i == cursor;
-        let mark = if *on { "[x]" } else { "[ ]" };
-        let prefix = if row_hi { " › " } else { "   " };
-
-        if row_hi {
-            queue!(
-                w,
-                SetForegroundColor(HI),
-                SetAttribute(Attribute::Bold),
-                Print(prefix),
-                Print(mark),
-                Print("  "),
-                Print(format!("{name:<12}")),
-                ResetColor,
-                SetForegroundColor(DIM),
-                Print("  "),
-                Print(truncate_desc(desc, 44)),
-                ResetColor,
-                Print("\r\n"),
-            )?;
-        } else {
-            queue!(
-                w,
-                Print(prefix),
-                SetForegroundColor(DIM),
-                Print(mark),
-                ResetColor,
-                Print("  "),
-                Print(format!("{name:<12}")),
-                SetForegroundColor(DIM),
-                Print("  "),
-                Print(truncate_desc(desc, 44)),
-                ResetColor,
-                Print("\r\n"),
-            )?;
-        }
-    }
-
-    queue!(
-        w,
-        Print("\r\n"),
-        SetForegroundColor(DIM),
-        Print(" ────────────────────────────────────────────────────────────────────────\r\n"),
-    )?;
-
-    if warning {
-        queue!(
-            w,
-            SetForegroundColor(crossterm::style::Color::Red),
-            SetAttribute(Attribute::Bold),
-            Print("  Select at least one tool.\r\n"),
-            ResetColor,
-        )?;
-    } else {
-        queue!(
-            w,
-            SetForegroundColor(DIM),
-            Print("  ↑/↓ Move   Space Toggle   A All   N Clear   Enter Confirm   Esc/Q Quit\r\n"),
-            ResetColor,
-        )?;
-    }
-
-    Ok(())
-}
-
 fn truncate_desc(s: &str, max_chars: usize) -> String {
     let count = s.chars().count();
     if count <= max_chars {
@@ -367,8 +175,7 @@ pub struct ServerConfig {
 /// Interactive server configuration screen.
 ///
 /// - Asks for bind address (127.0.0.1 or 0.0.0.0)
-/// - If 0.0.0.0: token is auto-generated and mandatory
-/// - If 127.0.0.1: token is optional (recommended)
+/// - Token generation defaults to Yes for 0.0.0.0 and No for 127.0.0.1
 ///
 /// Non-TTY returns defaults (127.0.0.1, current port, no token).
 pub fn configure_server_tui(
@@ -388,30 +195,23 @@ pub fn configure_server_tui(
     // Step 1: Host selection
     let host = run_host_select_tui()?;
 
-    // Step 2: Token decision
+    // Step 2: Token decision. Default follows the bind address:
+    // remote bind defaults to Yes, localhost defaults to No.
     let is_public = !crate::server::mcp_auth::is_localhost(&host);
-    let token = if is_public {
-        // Mandatory token for non-localhost
+    let generate = run_yes_no_tui(
+        "Server auth",
+        &format!("Generate a bearer token for {server_label} access?"),
+        is_public,
+    )?;
+    let token = if generate {
         let t = crate::server::mcp_auth::generate_token();
-        show_token_tui(&t, true)?;
+        show_token_tui(&t)?;
         Some(t)
+    } else if !current_token.is_empty() {
+        // Keep existing token if present
+        Some(current_token.to_owned())
     } else {
-        // Optional but recommended
-        let generate = run_yes_no_tui(
-            "Server auth",
-            &format!("Generate a bearer token for {server_label} access? (recommended)"),
-            true,
-        )?;
-        if generate {
-            let t = crate::server::mcp_auth::generate_token();
-            show_token_tui(&t, false)?;
-            Some(t)
-        } else if !current_token.is_empty() {
-            // Keep existing token if present
-            Some(current_token.to_owned())
-        } else {
-            None
-        }
+        None
     };
 
     // Step 3: Port (reuse existing)
@@ -548,7 +348,7 @@ fn run_host_select_tui() -> io::Result<String> {
 }
 
 /// Display a generated token to the user and wait for Enter.
-fn show_token_tui(token: &str, mandatory: bool) -> io::Result<()> {
+fn show_token_tui(token: &str) -> io::Result<()> {
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(
@@ -568,11 +368,7 @@ fn show_token_tui(token: &str, mandatory: bool) -> io::Result<()> {
     }
     let _guard = RawGuard;
 
-    let title = if mandatory {
-        "Token generated (required for 0.0.0.0)"
-    } else {
-        "Token generated"
-    };
+    let title = "Token generated";
 
     loop {
         queue!(stdout, MoveTo(0, 0), Clear(ClearType::All))?;
@@ -839,77 +635,30 @@ where
 }
 
 fn tui_header(w: &mut impl Write, subtitle: &str) -> io::Result<()> {
-    let right_pad = 72usize.saturating_sub(12 + subtitle.len());
-    let pad = " ".repeat(right_pad);
     queue!(
         w,
         SetForegroundColor(ACCENT),
         SetAttribute(Attribute::Bold),
-        Print(" ╭────────────────────────────────────────────────────────────────────────╮\r\n"),
-        Print(" │ "),
+        Print(" ────────────────────────────────────────────────────────────────────────\r\n"),
+        Print("  "),
         ResetColor,
         SetForegroundColor(ACCENT),
         SetAttribute(Attribute::Bold),
         Print("Episteme"),
         ResetColor,
-        Print(format!("  ·  {subtitle}")),
+        Print(format!("  ·  {subtitle}\r\n")),
         SetForegroundColor(ACCENT),
-        Print(format!("{pad}│\r\n")),
-        Print(" ╰────────────────────────────────────────────────────────────────────────╯\r\n"),
+        SetAttribute(Attribute::Bold),
+        Print(" ────────────────────────────────────────────────────────────────────────\r\n"),
         ResetColor,
     )?;
     Ok(())
-}
-
-/// Non-TTY (CI, pipes): comma-separated indices or `a` / `all` for everything.
-pub fn fallback_select_tools() -> Vec<String> {
-    eprintln!();
-    eprintln!("Episteme — Select integrations to install");
-    eprintln!("──────────────────────────────────────────");
-    for (i, (name, desc)) in TOOLS.iter().enumerate() {
-        eprintln!("  [{}] {:<12} {}", i + 1, name, desc);
-    }
-    eprintln!("  [a] All of the above");
-    eprintln!();
-    eprint!("Selection (e.g. 1,3 or a): ");
-    let _ = io::stderr().flush();
-
-    let mut line = String::new();
-    if io::stdin().read_line(&mut line).is_err() {
-        return vec![];
-    }
-    let line = line.trim().to_lowercase();
-
-    if line == "a" || line == "all" {
-        return TOOLS.iter().map(|(name, _)| name.to_string()).collect();
-    }
-
-    let mut selected = Vec::new();
-    for token in line.split(',') {
-        let token = token.trim();
-        if let Ok(n) = token.parse::<usize>()
-            && n >= 1
-            && n <= TOOLS.len()
-        {
-            selected.push(TOOLS[n - 1].0.to_string());
-        }
-    }
-    selected
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::adapters::installer::Transport;
-
-    #[test]
-    fn selected_names_filters_checked() {
-        let checked = vec![true, false, true];
-        assert_eq!(
-            selected_names(&checked),
-            vec!["cursor".to_string(), "cline".to_string()]
-        );
-    }
 
     /// In a non-TTY context (stdin is not a terminal, e.g. CI), `select_transport`
     /// must return HTTP + default port without blocking.

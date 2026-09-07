@@ -55,23 +55,20 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
     // --- Tool installation ---
     use episteme::adapters::installer::Transport;
 
+    // Agent integrations are opt-in via explicit targets (`epis install cursor`).
     let mut selected: Vec<String> = if all || tools.iter().any(|t| t == "all") {
         vec!["claude", "cursor", "codex", "opencode", "cline"]
             .into_iter()
             .map(|s| s.to_owned())
             .collect()
-    } else if tools.is_empty() && io::stdin().is_terminal() {
-        let installed: Vec<&str> = detect_installed_tools().into_iter().collect();
-        let selected =
-            match episteme::adapters::install_wizard::interactive_select_tools(&installed) {
-                Ok(s) if !s.is_empty() => s,
-                Ok(_) => anyhow::bail!("install cancelled"),
-                Err(e) => {
-                    eprintln!("Interactive UI failed ({e}); falling back to text prompt.");
-                    episteme::adapters::install_wizard::fallback_select_tools()
-                }
-            };
+    } else {
+        tools.to_vec()
+    };
+    selected.sort();
+    selected.dedup();
 
+    // Interactive-only setup: optional Redis cache and telemetry consent.
+    if tools.is_empty() && !all && io::stdin().is_terminal() {
         #[cfg(feature = "redis-cache")]
         {
             let cfg = EpistemeConfig::load().unwrap_or_default();
@@ -94,13 +91,7 @@ pub fn cmd_install(tools: &[String], all: bool, dry_run: bool, local: bool) -> R
             .map_err(|e| anyhow::anyhow!(e))?;
         episteme::adapters::telemetry::write_consent(telemetry_enabled)
             .map_err(|e| anyhow::anyhow!(e))?;
-
-        selected
-    } else {
-        tools.to_vec()
-    };
-    selected.sort();
-    selected.dedup();
+    }
 
     let transport = Transport::default();
 
@@ -249,76 +240,6 @@ fn fetch_release_asset_url(api_url: &str, prefix: &str) -> Result<String> {
     anyhow::bail!("no matching asset in release")
 }
 
-pub fn detect_installed_tools() -> std::collections::HashSet<&'static str> {
-    use serde_json::Value;
-    use std::collections::HashSet;
-    use std::path::Path;
-
-    fn has_json_path(path: &Path, parent: &str, child: &str) -> bool {
-        let Ok(text) = std::fs::read_to_string(path) else {
-            return false;
-        };
-        let Ok(v) = serde_json::from_str::<Value>(&text) else {
-            return false;
-        };
-        v.get(parent).and_then(|m| m.get(child)).is_some()
-    }
-
-    let mut installed = HashSet::new();
-    let home = std::env::var("HOME").unwrap_or_default();
-    let cwd = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
-
-    if has_json_path(
-        &PathBuf::from(&home).join(".claude.json"),
-        "mcpServers",
-        "episteme",
-    ) {
-        installed.insert("claude");
-    }
-    if has_json_path(
-        &PathBuf::from(&home).join(".cursor").join("mcp.json"),
-        "mcpServers",
-        "episteme",
-    ) {
-        installed.insert("cursor");
-    }
-    if has_json_path(
-        &PathBuf::from(&home)
-            .join(".config")
-            .join("opencode")
-            .join("opencode.json"),
-        "mcp",
-        "episteme",
-    ) {
-        installed.insert("opencode");
-    }
-    let cline_path = if cfg!(target_os = "macos") {
-        PathBuf::from(&home)
-            .join("Library")
-            .join("Application Support")
-            .join("Code")
-            .join("User")
-            .join("globalStorage")
-            .join("saoudrizwan.claude-dev")
-    } else {
-        PathBuf::from(&home)
-            .join(".config")
-            .join("Code")
-            .join("User")
-            .join("globalStorage")
-            .join("saoudrizwan.claude-dev")
-    };
-    if cline_path.exists() {
-        installed.insert("cline");
-    }
-    if let Ok(content) = std::fs::read_to_string(cwd.join("AGENTS.md"))
-        && (content.contains("EPISTEME-BEGIN") || content.contains("epis mcp"))
-    {
-        installed.insert("codex");
-    }
-    installed
-}
-
 #[cfg(feature = "redis-cache")]
 fn upsert_config_yaml(
     redis_enabled: bool,
@@ -381,51 +302,4 @@ fn upsert_api_config_yaml(host: &str, port: u16, keys: Option<&str>) -> Result<(
     let yaml = noyalib::to_string(&root)?;
     std::fs::write(path, yaml)?;
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::collections::HashSet;
-
-    /// Cline이 VS Code globalStorage 경로로 감지되는지 확인.
-    /// 임시 디렉토리에 경로를 생성한 뒤 HOME을 덮어써서 격리 테스트.
-    #[cfg(target_os = "macos")]
-    #[test]
-    fn detect_cline_via_vscode_global_storage() {
-        let tmp = tempfile::tempdir().unwrap();
-        let home = tmp.path();
-
-        // macOS 경로 생성
-        let cline_dir = home
-            .join("Library")
-            .join("Application Support")
-            .join("Code")
-            .join("User")
-            .join("globalStorage")
-            .join("saoudrizwan.claude-dev");
-        std::fs::create_dir_all(&cline_dir).unwrap();
-
-        // HOME을 임시 디렉토리로 교체
-        // SAFETY: 단일 스레드 테스트 내에서 환경 변수를 격리 목적으로만 변경
-        unsafe { std::env::set_var("HOME", home) };
-
-        let installed: HashSet<&str> = detect_installed_tools();
-        assert!(
-            installed.contains("cline"),
-            "cline이 VS Code globalStorage 경로에서 감지되어야 합니다"
-        );
-    }
-
-    /// TOOLS 배열에 cline 항목이 존재하는지 확인.
-    #[test]
-    fn tools_array_contains_cline() {
-        use episteme::adapters::install_wizard;
-        // fallback_select_tools는 TOOLS를 순회하므로 간접적으로 TOOLS 내용을 확인
-        // 직접 접근은 pub이 아니므로 install_wizard의 공개 API를 통해 검증
-        let selected = install_wizard::interactive_select_tools(&["cline"]);
-        // non-TTY 환경에서는 Err가 반환되므로 Ok/Err 여부는 무관, cline이 TOOLS에 있으면 충분
-        // 여기서는 단순히 컴파일되고 패닉 없이 실행되면 통과
-        let _ = selected;
-    }
 }
