@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "R=\"${GROK_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-.}}\"; node \"$R/registry/scripts/install.js\"",
+            "command": "command -v node >/dev/null 2>&1 || exit 0; R=\"${GROK_PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT:-.}}\"; node \"$R/registry/scripts/install.js\"",
             "timeout": 60
           }
         ],

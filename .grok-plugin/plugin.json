@@ -17,6 +17,6 @@
     "ai-agents",
     "code-review"
   ],
-  "skills": "./registry/skills/",
+  "skills": "./skills/",
   "hooks": "./hooks/hooks.json"
 }

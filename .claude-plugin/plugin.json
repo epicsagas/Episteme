@@ -1,6 +1,6 @@
 {
   "name": "episteme",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "description": "Software engineering knowledge graph — design patterns, laws, refactorings, and code smells with graph traversal and AI-powered code analysis.",
   "author": {
     "name": "epicsagas",
@@ -16,6 +16,6 @@
     "refactoring",
     "architecture"
   ],
-  "skills": "./registry/skills/",
+  "skills": "./skills/",
   "hooks": "./.claude-plugin/hooks.json"
 }
