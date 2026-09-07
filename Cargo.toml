@@ -156,3 +156,8 @@ default = []
 openai-embeddings = []
 redis-cache = ["dep:redis", "dep:deadpool-redis"]
 redis-pool = ["dep:deadpool-redis"]
+
+# Dynamic ONNX Runtime loading on targets where static ORT fails to link
+# (matches llm-kernel 0.2.x's built-in windows/linux-arm64 behavior).
+[target.'cfg(any(target_os = "windows", all(target_os = "linux", target_arch = "aarch64")))'.dependencies]
+llm-kernel = { version = "0.30.0", features = ["embedding-fastembed-dynamic-linking"] }
