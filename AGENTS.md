@@ -75,10 +75,17 @@ fn detect_long_method(metrics: &CodeMetrics, loc: &str, name: &str) -> Option<Sm
 | `web/package.json` | `"version": "x.y.z"` |
 | `web/src-tauri/Cargo.toml` | `version = "x.y.z"` |
 | `web/src-tauri/tauri.conf.json` | `"version": "x.y.z"` |
+| `plugin.json` (루트) | `"version": "x.y.z"` |
+| `plugin.yaml` (루트) | `version: "x.y.z"` |
 | `.claude-plugin/plugin.json` | `"version": "x.y.z"` |
 | `.codex-plugin/plugin.json` | `"version": "x.y.z"` |
+| `.grok-plugin/plugin.json` | `"version": "x.y.z"` |
 
 `src/server/mcp_schemas.rs`의 `SERVER_VERSION`은 `env!("CARGO_PKG_VERSION")`을 사용하므로 자동 동기화됨.
+
+루트 `plugin.json`은 agy용 매니페스트지만 **grok가 이 파일을 먼저 읽고**, 루트가 없을 때만 `.grok-plugin/plugin.json`으로 폴백한다 (grok 1.0.13 실측). `.grok-plugin`만 범프하면 grok가 에러 없이 구버전을 계속 서빙하므로 두 파일이 갈라져서는 안 된다.
+
+푸시 후에는 허브(`epicsagas/plugins`) 재핀이 필요하다. grok 항목은 `.grok-plugin/marketplace.json`(있으면 `.grok-plugin/plugin-index.json`도)에 40자 `source.sha`와 `version`을, hermes는 `.hermes/episteme/plugin.yaml`에 `version`을 들고 있다. 이 sha가 옛 커밋을 가리키는 동안에는 이 저장소를 아무리 푸시해도 `grok plugin update`가 핀이 가리키는 커밋을 계속 설치한다. claude와 codex 허브 항목은 원격 HEAD를 추적하므로 손댈 필요 없다. `forge.py publish --marketplace epicsagas/plugins`가 grok과 hermes를 갱신한다.
 
 아래는 **건드리지 않음** (의도적으로 분리된 버전):
 - `meta/schema.json` — 지식 그래프 스키마 버전
