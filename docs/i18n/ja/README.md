@@ -61,7 +61,8 @@ codex plugin add episteme@epicsagas
 ### Grok Build
 
 ```bash
-grok plugin install epicsagas/Episteme --trust
+grok plugin marketplace add epicsagas/plugins
+grok plugin install episteme@epicsagas --trust
 ```
 
 ### agy（Antigravity）/ Hermes
