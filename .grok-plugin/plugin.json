@@ -1,6 +1,6 @@
 {
   "name": "episteme",
-  "version": "0.3.14",
+  "version": "0.3.15",
   "description": "Offline-first, single-binary knowledge graph that connects design patterns, refactoring techniques, and software laws. Built for AI agents first.",
   "author": {
     "name": "epicsagas",

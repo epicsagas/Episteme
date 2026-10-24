@@ -591,7 +591,9 @@ impl MutableGraphRepository for UserGraphStore {
                 |row| row.get(0),
             )
             .ok()?;
-        blob.chunks_exact(4)
+        blob.as_chunks::<4>()
+            .0
+            .iter()
             .map(|chunk| {
                 let bytes: [u8; 4] = [chunk[0], chunk[1], chunk[2], chunk[3]];
                 f32::from_le_bytes(bytes)
