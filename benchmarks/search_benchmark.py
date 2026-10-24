@@ -16,7 +16,7 @@ import re
 import statistics
 import subprocess
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -247,7 +247,7 @@ def main() -> int:
     per_tier = {k: bucket_summary(v) for k, v in sorted(tier_accum.items())}
     per_category = {k: bucket_summary(v) for k, v in sorted(category_accum.items())}
     summary = {
-        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        "timestamp_utc": datetime.now(UTC).isoformat(),
         "eval_version": eval_version,
         "queries": n,
         "repeats": args.repeats,
@@ -281,7 +281,7 @@ def main() -> int:
     else:
         out_dir = repo_root / "benchmarks" / "results"
         out_dir.mkdir(parents=True, exist_ok=True)
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")  # noqa: DTZ005  local-time filename by design
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_path = out_dir / f"search_benchmark_{ts}.json"
 
     output_path.write_text(

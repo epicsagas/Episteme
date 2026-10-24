@@ -32,7 +32,7 @@ import os
 import re
 import subprocess
 import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -961,7 +961,7 @@ def main() -> int:
 
     # Build report
     report = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "git_commit": _git_commit(),
         "suite": args.suite,
         "composite_score": composite,
@@ -979,7 +979,7 @@ def main() -> int:
     if args.output:
         out_path = Path(args.output)
     else:
-        ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        ts = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
         out_path = out_dir / f"eval_{ts}.json"
 
     out_path.write_text(
