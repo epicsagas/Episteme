@@ -15,7 +15,7 @@ const SCHEMA_VERSION: u32 = 2;
 
 /// Full DDL for the RAG database.
 ///
-/// Includes `_meta` table required by [`llm_kernel::store::init_schema`].
+/// Includes `_meta` table tracking the schema version.
 const SCHEMA_DDL: &str = "
     CREATE TABLE IF NOT EXISTS _meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
     INSERT OR IGNORE INTO _meta (key, value) VALUES ('schema_version', '0');
@@ -68,18 +68,61 @@ const SCHEMA_DDL: &str = "
 // Database initialization
 // ---------------------------------------------------------------------------
 
-/// Initialize the RAG database at `path` using llm-kernel's `init_schema`.
+/// Initialize the RAG database at `path`.
 ///
 /// Creates parent directories, applies PRAGMAs (WAL, foreign keys, busy timeout),
 /// runs the DDL, and validates schema versioning.
 pub fn open_database(path: &std::path::Path) -> Result<Connection> {
-    llm_kernel::store::init_schema(path, SCHEMA_DDL, SCHEMA_VERSION)
-        .map_err(|e| InfraError::Database(e.to_string()))
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent).map_err(|e| InfraError::Database(e.to_string()))?;
+    }
+
+    let conn = Connection::open(path).map_err(|e| InfraError::Database(e.to_string()))?;
+    apply_pragma(&conn)?;
+
+    // Check current schema version (stored as TEXT — parse to u32)
+    let current_version: u32 = conn
+        .query_row(
+            "SELECT value FROM _meta WHERE key = 'schema_version'",
+            [],
+            |row| row.get::<_, String>(0),
+        )
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(0);
+
+    if current_version != SCHEMA_VERSION {
+        // Fresh or outdated — apply full DDL
+        conn.execute_batch(SCHEMA_DDL)
+            .map_err(|e| InfraError::Database(e.to_string()))?;
+
+        conn.execute(
+            "INSERT OR REPLACE INTO _meta (key, value) VALUES ('schema_version', ?1)",
+            [SCHEMA_VERSION.to_string()],
+        )
+        .map_err(|e| InfraError::Database(e.to_string()))?;
+    }
+
+    Ok(conn)
 }
 
 /// Initialize an in-memory database for testing.
 pub fn init_in_memory() -> Result<Connection> {
-    llm_kernel::store::init_in_memory(SCHEMA_DDL).map_err(|e| InfraError::Database(e.to_string()))
+    let conn = Connection::open_in_memory().map_err(|e| InfraError::Database(e.to_string()))?;
+    apply_pragma(&conn)?;
+    conn.execute_batch(SCHEMA_DDL)
+        .map_err(|e| InfraError::Database(e.to_string()))?;
+    Ok(conn)
+}
+
+fn apply_pragma(conn: &Connection) -> Result<()> {
+    conn.execute_batch(
+        "PRAGMA journal_mode = WAL;
+         PRAGMA foreign_keys = ON;
+         PRAGMA busy_timeout = 5000;
+         PRAGMA synchronous = NORMAL;",
+    )
+    .map_err(|e| InfraError::Database(e.to_string()))
 }
 
 // ---------------------------------------------------------------------------
@@ -690,5 +733,22 @@ mod tests {
             loaded["SMELL-01"].r#type, "smell",
             "entity_type should be normalized"
         );
+    }
+
+    #[test]
+    fn open_database_creates_dirs_schema_and_stamps_version() {
+        let dir = tempfile::tempdir().expect("tempdir");
+        let db_path = dir.path().join("nested").join("rag.db");
+        let conn = open_database(&db_path).expect("open database");
+        assert!(db_path.exists(), "parent directories should be created");
+        assert_eq!(
+            get_meta(&conn, "schema_version").expect("read schema_version"),
+            Some(SCHEMA_VERSION.to_string()),
+            "schema version should be stamped on fresh database"
+        );
+        let journal_mode: String = conn
+            .query_row("PRAGMA journal_mode", [], |row| row.get(0))
+            .expect("journal_mode");
+        assert_eq!(journal_mode, "wal", "WAL pragma should be applied");
     }
 }
