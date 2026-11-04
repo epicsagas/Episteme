@@ -94,7 +94,7 @@ metrics-exporter-prometheus = "0.18"
 indicatif = "0.18"
 
 # REPL
-rustyline = "18"
+rustyline = "19"
 
 # HTTP client
 reqwest = { version = "0.13", default-features = false, features = ["json", "blocking", "rustls"] }
