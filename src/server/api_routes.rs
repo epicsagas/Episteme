@@ -109,20 +109,34 @@ fn gather_components(mcp: &EpistemeMCP) -> Components {
 fn gather_system_info() -> SystemInfo {
     use sysinfo::System;
 
-    let mut sys = System::new();
+    let mut sys = match System::new() {
+        Ok(sys) => sys,
+        // Unsupported platform: report zeros (pre-0.40 behaviour).
+        Err(_) => {
+            return SystemInfo {
+                memory_used_mb: 0.0,
+                memory_total_mb: 0.0,
+                cpu_usage_percent: 0.0,
+                disk_used_gb: 0.0,
+                disk_total_gb: 0.0,
+            };
+        }
+    };
     sys.refresh_memory();
     sys.refresh_cpu_usage();
 
     let memory_used_mb = sys.used_memory() as f64 / 1024.0 / 1024.0;
     let memory_total_mb = sys.total_memory() as f64 / 1024.0 / 1024.0;
 
-    let disks = sysinfo::Disks::new_with_refreshed_list();
-    let (disk_used_gb, disk_total_gb) = disks.first().map_or((0.0, 0.0), |d| {
-        (
-            (d.total_space() - d.available_space()) as f64 / 1024.0 / 1024.0 / 1024.0,
-            d.total_space() as f64 / 1024.0 / 1024.0 / 1024.0,
-        )
-    });
+    let (disk_used_gb, disk_total_gb) =
+        sysinfo::Disks::new_with_refreshed_list().map_or((0.0, 0.0), |disks| {
+            disks.first().map_or((0.0, 0.0), |d| {
+                (
+                    (d.total_space() - d.available_space()) as f64 / 1024.0 / 1024.0 / 1024.0,
+                    d.total_space() as f64 / 1024.0 / 1024.0 / 1024.0,
+                )
+            })
+        });
 
     SystemInfo {
         memory_used_mb,
@@ -716,10 +730,28 @@ pub async fn infer_transitive(State(mcp): State<AppState>) -> impl IntoResponse 
 pub async fn debug_profile() -> Json<serde_json::Value> {
     use sysinfo::System;
 
-    let mut sys = System::new();
+    let pid = sysinfo::get_current_pid().unwrap_or(sysinfo::Pid::from(0));
+    let mut sys = match System::new() {
+        Ok(sys) => sys,
+        // Unsupported platform: report zeros (pre-0.40 behaviour).
+        Err(_) => {
+            return Json(serde_json::json!({
+                "process": {"pid": pid.as_u32(), "error": "process not found"},
+                "system": {
+                    "total_memory_mb": 0,
+                    "used_memory_mb": 0,
+                    "cpu_usage": 0.0,
+                    "uptime_secs": System::uptime().unwrap_or(0),
+                },
+                "build": {
+                    "version": env!("CARGO_PKG_VERSION"),
+                    "debug_assertions": cfg!(debug_assertions),
+                },
+            }));
+        }
+    };
     sys.refresh_all();
 
-    let pid = sysinfo::get_current_pid().unwrap_or(sysinfo::Pid::from(0));
     let process = sys.process(pid);
 
     let process_info = if let Some(p) = process {
@@ -739,7 +771,7 @@ pub async fn debug_profile() -> Json<serde_json::Value> {
             "total_memory_mb": sys.total_memory() / 1024,
             "used_memory_mb": sys.used_memory() / 1024,
             "cpu_usage": sys.global_cpu_usage(),
-            "uptime_secs": System::uptime(),
+            "uptime_secs": System::uptime().unwrap_or(0),
         },
         "build": {
             "version": env!("CARGO_PKG_VERSION"),
